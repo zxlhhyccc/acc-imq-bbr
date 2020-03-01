@@ -14,6 +14,7 @@ SUBTARGETS:=generic legacy geode 64
 MAINTAINER:=Felix Fietkau <nbd@nbd.name>
 
 KERNEL_PATCHVER:=4.19
+KERNEL_TESTING_PATCHVER:=5.4
 
 KERNELNAME:=bzImage
 
@@ -25,7 +26,7 @@ htop lm-sensors autocore automount ddns-scripts_aliyun ddns-scripts_dnspod ca-ce
 luci-app-zerotier luci-proto-relay luci-app-pptp-server luci-app-unblockmusic luci-app-v2ray-server \
 ath10k-firmware-qca988x ath10k-firmware-qca9888 ath10k-firmware-qca9984 brcmfmac-firmware-43602a1-pcie kmod-crypto-misc \
 alsa-utils kmod-ac97 kmod-sound-hda-core kmod-sound-hda-codec-realtek kmod-sound-hda-codec-via kmod-sound-via82xx kmod-usb-audio \
-kmod-usb-net kmod-usb-net-asix kmod-usb-net-asix-ax88179 kmod-usb-net-rtl8150 kmod-usb-net-rtl8152 
+kmod-usb-net kmod-usb-net-asix kmod-usb-net-asix-ax88179 kmod-usb-net-rtl8150 kmod-usb-net-rtl8152
 
 $(eval $(call BuildTarget))
 

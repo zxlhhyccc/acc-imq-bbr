@@ -457,7 +457,6 @@ endef
 
 $(eval $(call KernelPackage,ipt-nat))
 
-
 define KernelPackage/ipt-cgroup
   SUBMENU:=$(NF_MENU)
   TITLE:=cgroup netfilter module
@@ -474,7 +473,6 @@ define KernelPackage/ipt-cgroup/description
  Include:
  - cgroup
 endef
-
 
 define KernelPackage/ipt-raw
   TITLE:=Netfilter IPv4 raw table support
@@ -1136,7 +1134,7 @@ $(eval $(call KernelPackage,ipt-rpfilter))
 define KernelPackage/nft-core
   SUBMENU:=$(NF_MENU)
   TITLE:=Netfilter nf_tables support
-  DEPENDS:=+kmod-nfnetlink +kmod-nf-reject +kmod-nf-reject6 +kmod-nf-conntrack6
+  DEPENDS:=+kmod-nfnetlink +kmod-nf-reject +kmod-nf-reject6 +kmod-nf-conntrack6 +LINUX_5_4:kmod-nf-nat
   FILES:=$(foreach mod,$(NFT_CORE-m),$(LINUX_DIR)/net/$(mod).ko)
   AUTOLOAD:=$(call AutoProbe,$(notdir $(NFT_CORE-m)))
   KCONFIG:= \
