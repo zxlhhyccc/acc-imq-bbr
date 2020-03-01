@@ -1,0 +1,29 @@
+{
+	"admin/system/ttyd": {
+		"title": "ttyd",
+		"action": {
+			"type": "firstchild"
+		},
+		"depends": {
+			"uci": { "ttyd": true }
+		}
+	},
+
+	"admin/system/ttyd/ttyd": {
+		"title": "Terminal",
+		"order": 1,
+		"action": {
+			"type": "view",
+			"path": "ttyd/term"
+		}
+	},
+
+	"admin/system/ttyd/config": {
+		"title": "Config",
+		"order": 2,
+		"action": {
+			"type": "view",
+			"path": "ttyd/config"
+		}
+	}
+}
