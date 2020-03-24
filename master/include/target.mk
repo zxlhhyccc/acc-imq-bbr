@@ -19,7 +19,7 @@ default-settings luci-proto-relay luci luci-app-ddns luci-app-sqm luci-app-upnp 
 luci-app-filetransfer luci-app-vsftpd luci-app-ssr-plus \
 luci-app-pptp-server luci-app-arpbind luci-app-vlmcsd luci-app-wol luci-app-ramfree \
 luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-zerotier luci-app-xlnetacc \
-ddns-scripts_aliyun ddns-scripts_dnspod libustream-openssl
+ddns-scripts_aliyun ddns-scripts_dnspod libustream-openssl bind-host
 # For nas targets
 DEFAULT_PACKAGES.nas:=fdisk lsblk mdadm automount autosamba luci-app-usb-printer
 # For router targets
