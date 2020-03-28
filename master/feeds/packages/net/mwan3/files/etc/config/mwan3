@@ -4,7 +4,7 @@ config globals 'globals'
 	option rtmon_interval '5'
 
 config interface 'wan'
-	option enabled '0'
+	option enabled '1'
 	list track_ip '114.114.114.114'
 	list track_ip '119.29.29.29'
 	list track_ip '223.5.5.5'
