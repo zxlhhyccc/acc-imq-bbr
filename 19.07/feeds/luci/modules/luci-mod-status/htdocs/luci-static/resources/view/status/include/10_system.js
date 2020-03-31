@@ -51,7 +51,7 @@ return L.Class.extend({
 
 		var fields = [
 			_('Hostname'),         boardinfo.hostname,
-			_('Model'),            'J3160',
+			_('Model'),            "J3160" + boardinfo.model,
 			_('Architecture'),     boardinfo.system,
 			_('Firmware Version'), (L.isObject(boardinfo.release) ? boardinfo.release.description + ' / ' : '') + (luciversion || ''),
 			_('Kernel Version'),   boardinfo.kernel,
