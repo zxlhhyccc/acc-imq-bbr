@@ -1126,7 +1126,7 @@ define KernelPackage/mlx4-core
   SUBMENU:=$(NETWORK_DEVICES_MENU)
   TITLE:=Mellanox ConnectX(R) mlx4 core Network Driver
   DEPENDS:=@PCI_SUPPORT +kmod-ptp
-  FILES:= \
+   FILES:= \
 	$(LINUX_DIR)/drivers/net/ethernet/mellanox/mlx4/mlx4_core.ko \
 	$(LINUX_DIR)/drivers/net/ethernet/mellanox/mlx4/mlx4_en.ko
   KCONFIG:= CONFIG_MLX4_EN \
