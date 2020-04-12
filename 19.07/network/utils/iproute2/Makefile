@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=iproute2
 PKG_VERSION:=5.0.0
-PKG_RELEASE:=2.1
+PKG_RELEASE:=2.2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@KERNEL/linux/utils/net/iproute2
@@ -73,7 +73,7 @@ endef
 define Package/ss
 $(call Package/iproute2/Default)
   TITLE:=Socket statistics utility
-  DEPENDS:=+libnl-tiny +(PACKAGE_devlink||PACKAGE_rdma):libmnl +(PACKAGE_tc||PACKAGE_ip-full):libelf +PACKAGE_ip-full:libcap
+  DEPENDS:=+libnl-tiny +(PACKAGE_devlink||PACKAGE_rdma):libmnl +(PACKAGE_tc||PACKAGE_ip-full):libelf +PACKAGE_ip-full:libcap +kmod-netlink-diag
 endef
 
 define Package/nstat
@@ -145,6 +145,10 @@ define Build/InstallDev
 	$(CP) $(PKG_BUILD_DIR)/include/{libgenl,libnetlink}.h $(1)/usr/include/
 	$(INSTALL_DIR) $(1)/usr/lib
 	$(CP) $(PKG_BUILD_DIR)/lib/libnetlink.a $(1)/usr/lib/
+	# Hack for qos-gargoyle
+	$(INSTALL_DIR) $(1)/usr/lib/iproute2/{tc,lib,include}
+	$(CP) $(PKG_BUILD_DIR)/{tc,include,lib} $(1)/usr/lib/iproute2
+	# Hack end
 endef
 
 define Package/ip-tiny/install
