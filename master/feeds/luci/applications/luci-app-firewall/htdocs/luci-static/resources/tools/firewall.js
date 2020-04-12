@@ -1,6 +1,4 @@
 'use strict';
-'require baseclass';
-'require dom';
 'require ui';
 'require uci';
 'require form';
@@ -83,7 +81,7 @@ function lookupProto(x) {
 	return [ -1, x, x ];
 }
 
-return baseclass.extend({
+return L.Class.extend({
 	fmt: function(fmtstr, args, values) {
 		var repl = [],
 		    wrap = false,
@@ -114,7 +112,7 @@ return baseclass.extend({
 		};
 
 		var isset = function(val) {
-			if (L.isObject(val) && !dom.elem(val)) {
+			if (L.isObject(val) && !L.dom.elem(val)) {
 				for (var k in val)
 					if (val.hasOwnProperty(k))
 						return true;
@@ -130,7 +128,7 @@ return baseclass.extend({
 		};
 
 		var parse = function(tokens, text) {
-			if (dom.elem(text)) {
+			if (L.dom.elem(text)) {
 				tokens.push('<span data-fmt-placeholder="%d"></span>'.format(values.length));
 				values.push(text);
 			}
