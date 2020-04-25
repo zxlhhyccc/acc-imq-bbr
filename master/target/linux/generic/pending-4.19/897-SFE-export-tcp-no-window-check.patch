@@ -1,3 +1,8 @@
+diff --git a/git b/git
+new file mode 100644
+index 0000000..e69de29
+diff --git a/net/netfilter/nf_conntrack_proto_tcp.c b/net/netfilter/nf_conntrack_proto_tcp.c
+index 4b17c7e..f584e4b 100644
 --- a/net/netfilter/nf_conntrack_proto_tcp.c
 +++ b/net/netfilter/nf_conntrack_proto_tcp.c
 @@ -36,6 +36,7 @@
