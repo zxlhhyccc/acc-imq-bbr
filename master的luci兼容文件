@@ -1,1 +1,4 @@
 footer.htm、map.htm:commit c48a8d58132b4f175ec0a4b4ec4e15eb199edeb8
+
+luci-mod-status: fix register functions：https://github.com/project-openwrt/luci/commit/9dac25d9219d450e60c2835d4e2114e21d08dd25
+

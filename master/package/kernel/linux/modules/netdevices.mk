@@ -108,7 +108,6 @@ endef
 $(eval $(call KernelPackage,libphy))
 
 
-
 define KernelPackage/phylink
   SUBMENU:=$(NETWORK_DEVICES_MENU)
   TITLE:=Model for MAC to optional PHY connection
@@ -717,12 +716,15 @@ endef
 
 $(eval $(call KernelPackage,ixgbevf))
 
+
 define KernelPackage/i40e
   SUBMENU:=$(NETWORK_DEVICES_MENU)
   TITLE:=Intel(R) Ethernet Controller XL710 Family support
-  DEPENDS:=@PCI_SUPPORT +kmod-mdio +kmod-ptp +kmod-hwmon-core
+  DEPENDS:=@PCI_SUPPORT +kmod-mdio +kmod-ptp +kmod-hwmon-core +LINUX_5_4:kmod-libphy
   KCONFIG:=CONFIG_I40E \
-    CONFIG_I40E_DCB=n
+    CONFIG_I40E_VXLAN=n \
+    CONFIG_I40E_HWMON=y \
+    CONFIG_I40E_DCA=n
   FILES:=$(LINUX_DIR)/drivers/net/ethernet/intel/i40e/i40e.ko
   AUTOLOAD:=$(call AutoProbe,i40e)
 endef
@@ -732,6 +734,29 @@ define KernelPackage/i40e/description
 endef
 
 $(eval $(call KernelPackage,i40e))
+
+
+define KernelPackage/iavf
+  SUBMENU:=$(NETWORK_DEVICES_MENU)
+  TITLE:=Intel(R) Ethernet Adaptive Virtual Function support
+  DEPENDS:=@PCI_SUPPORT
+  KCONFIG:= \
+       CONFIG_I40EVF \
+       CONFIG_IAVF
+  FILES:= \
+       $(LINUX_DIR)/drivers/net/ethernet/intel/i40evf/i40evf.ko@lt4.20 \
+       $(LINUX_DIR)/drivers/net/ethernet/intel/iavf/iavf.ko@ge4.20
+  AUTOLOAD:=$(call AutoProbe,i40evf iavf)
+  AUTOLOAD:=$(call AutoProbe,iavf)
+endef
+
+define KernelPackage/iavf/description
+ Kernel modules for Intel XL710,
+	  X710, X722, XXV710, and all devices advertising support for
+	  Intel Ethernet Adaptive Virtual Function devices.
+endef
+
+$(eval $(call KernelPackage,iavf))
 
 
 define KernelPackage/i40evf
