@@ -1,4 +1,5 @@
 'use strict';
+'require view';
 'require rpc';
 'require uci';
 'require form';
@@ -7,7 +8,7 @@
 'require tools.firewall as fwtool';
 'require tools.widgets as widgets';
 
-return L.view.extend({
+return view.extend({
 	callConntrackHelpers: rpc.declare({
 		object: 'luci',
 		method: 'getConntrackHelpers',
@@ -82,6 +83,12 @@ return L.view.extend({
 		s.addremove = true;
 		s.anonymous = true;
 		s.sortable  = true;
+
+		s.handleRemove = function(section_id, ev) {
+			return firewall.deleteZone(section_id).then(L.bind(function() {
+				return this.super('handleRemove', [section_id, ev]);
+			}, this));
+		};
 
 		s.tab('general', _('General Settings'));
 		s.tab('advanced', _('Advanced Settings'));
