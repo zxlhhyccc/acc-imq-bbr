@@ -1,5 +1,5 @@
 diff --git a/Makefile b/Makefile
-index d07b46a..2c2adb3 100644
+index d07b46a..9dad1cf 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -30,7 +30,7 @@ include $(INCLUDE_DIR)/package.mk
@@ -7,16 +7,18 @@ index d07b46a..2c2adb3 100644
    SECTION:=admin
    CATEGORY:=Administration
 -  DEPENDS:=+zlib +libuuid +libuv +libmnl +libjson-c
-+  DEPENDS:=+zlib +libuuid +libmnl +libjson-c +libuv +libopenssl +liblz4 +libJudy
++  DEPENDS:=+zlib +libuuid +libmnl +libjson-c +libuv +libopenssl +liblz4 +libJudy +libcap
    TITLE:=Real-time performance monitoring tool
    URL:=https://www.netdata.cloud/
  endef
-@@ -53,8 +53,6 @@ CONFIGURE_ARGS += \
+@@ -52,9 +52,7 @@ CONFIGURE_ARGS += \
+ 	--with-math \
  	--disable-x86-sse \
  	--enable-lto \
- 	--without-libcap \
+-	--without-libcap \
 -	--disable-https \
 -	--disable-dbengine \
++	--enable-libcap \
  	--disable-plugin-nfacct \
  	--disable-plugin-freeipmi \
  	--disable-plugin-cups \
