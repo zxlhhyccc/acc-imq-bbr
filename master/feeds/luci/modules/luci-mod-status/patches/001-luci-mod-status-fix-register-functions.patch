@@ -1,0 +1,13 @@
+diff --git a/root/usr/share/rpcd/acl.d/luci-mod-status.json b/root/usr/share/rpcd/acl.d/luci-mod-status.json
+index 05569d7..fc6a4c4 100644
+--- a/root/usr/share/rpcd/acl.d/luci-mod-status.json
++++ b/root/usr/share/rpcd/acl.d/luci-mod-status.json
+@@ -3,7 +3,7 @@
+ 		"description": "Grant access to realtime statistics",
+ 		"read": {
+ 			"ubus": {
+-				"luci": [ "getConntrackList", "getRealtimeStats" ],
++				"luci": [ "getConntrackList", "getRealtimeStats", "getCPUBench", "getCPUUsage", "getOnlineUsers" ],
+ 				"network.rrdns": [ "lookup" ]
+ 			}
+ 		}
