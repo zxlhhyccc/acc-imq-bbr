@@ -1,0 +1,13 @@
+diff --git a/Makefile b/Makefile
+index 668c731..361d273 100644
+--- a/Makefile
++++ b/Makefile
+@@ -7,7 +7,7 @@
+ include $(TOPDIR)/rules.mk
+ 
+ LUCI_TITLE:=LuCI Support for Transmission
+-LUCI_DEPENDS:=
++LUCI_DEPENDS:=+transmission-cli-openssl +transmission-daemon-openssl +transmission-remote-openssl +transmission-web-control
+ 
+ include ../../luci.mk
+ 
