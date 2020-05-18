@@ -1,5 +1,5 @@
 diff --git a/htdocs/luci-static/resources/view/network/wireless.js b/htdocs/luci-static/resources/view/network/wireless.js
-index 5d4b3cd..4baeb50 100644
+index ca0cdf6..789a131 100644
 --- a/htdocs/luci-static/resources/view/network/wireless.js
 +++ b/htdocs/luci-static/resources/view/network/wireless.js
 @@ -892,6 +892,10 @@ return view.extend({
@@ -11,5 +11,5 @@ index 5d4b3cd..4baeb50 100644
 +					o.default = '0';
 +
  					o = ss.taboption('advanced', form.Value, 'distance', _('Distance Optimization'), _('Distance to farthest network member in meters.'));
- 					o.datatype = 'range(0,114750)';
+ 					o.datatype = 'or(range(0,114750),"auto")';
  					o.placeholder = 'auto';
