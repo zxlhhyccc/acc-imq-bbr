@@ -1,5 +1,5 @@
 diff --git a/Makefile b/Makefile
-index d07b46a..c2c73f9 100644
+index d07b46a..9dad1cf 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -30,7 +30,7 @@ include $(INCLUDE_DIR)/package.mk
@@ -11,12 +11,14 @@ index d07b46a..c2c73f9 100644
    TITLE:=Real-time performance monitoring tool
    URL:=https://www.netdata.cloud/
  endef
-@@ -52,7 +52,7 @@ CONFIGURE_ARGS += \
+@@ -52,9 +52,7 @@ CONFIGURE_ARGS += \
  	--with-math \
  	--disable-x86-sse \
  	--enable-lto \
 -	--without-libcap \
+-	--disable-https \
+-	--disable-dbengine \
 +	--enable-libcap \
- 	--disable-https \
- 	--disable-dbengine \
  	--disable-plugin-nfacct \
+ 	--disable-plugin-freeipmi \
+ 	--disable-plugin-cups \
