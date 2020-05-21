@@ -27,10 +27,10 @@ include $(INCLUDE_DIR)/package.mk
 
 define KernelPackage/fs-exfat
 	SUBMENU:=Filesystems
-	TITLE:=ExFAT Kernel driver (deprecated)
+	TITLE:=ExFAT Kernel driver
 	FILES:=$(PKG_BUILD_DIR)/exfat.ko
 	AUTOLOAD:=$(call AutoLoad,30,exfat,1)
-	DEPENDS:=+kmod-nls-base @(LINUX_4_14||LINUX_4_19)
+	DEPENDS:=+kmod-nls-base
 endef
 
 define KernelPackage/fs-exfat/description
