@@ -11,7 +11,7 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=exfat-nofuse
-PKG_RELEASE:=3
+PKG_RELEASE:=2
 
 PKG_SOURCE_URL:=https://github.com/AdrianBan/exfat-nofuse.git
 PKG_SOURCE_PROTO:=git
@@ -37,10 +37,16 @@ define KernelPackage/fs-exfat/description
 	Kernel module for ExFAT Filesytems
 endef
 
+MAKE_OPTS:= \
+	ARCH="$(LINUX_KARCH)" \
+	CROSS_COMPILE="$(TARGET_CROSS)" \
+	M="$(PKG_BUILD_DIR)"
+
+
 define Build/Compile
-	$(KERNEL_MAKE) \
+	$(MAKE) -C "$(LINUX_DIR)" \
+		$(MAKE_OPTS) \
 		CONFIG_EXFAT_FS=m \
-		M="$(PKG_BUILD_DIR)" \
 		modules
 endef
 
