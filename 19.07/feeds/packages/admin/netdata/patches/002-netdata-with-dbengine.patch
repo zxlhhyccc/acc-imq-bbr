@@ -1,0 +1,22 @@
+diff --git a/Makefile b/Makefile
+index f543c7c..073e3cc 100644
+--- a/Makefile
++++ b/Makefile
+@@ -30,7 +30,7 @@ include $(INCLUDE_DIR)/package.mk
+ define Package/netdata
+   SECTION:=admin
+   CATEGORY:=Administration
+-  DEPENDS:=+zlib +libuuid +libmnl +libjson-c
++  DEPENDS:=+zlib +libuuid +libmnl +libjson-c +libuv +libopenssl +liblz4 +libJudy +libcap
+   TITLE:=Real-time performance monitoring tool
+   URL:=https://www.netdata.cloud/
+ endef
+@@ -52,7 +52,7 @@ CONFIGURE_ARGS += \
+ 	--with-math \
+ 	--disable-x86-sse \
+ 	--enable-lto \
+-	--without-libcap \
++	--enable-libcap \
+ 	--disable-https \
+ 	--disable-dbengine \
+ 	--disable-plugin-nfacct \
