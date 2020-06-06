@@ -1,0 +1,24 @@
+diff --git a/files/dhcp.conf b/files/dhcp.conf
+index 19052e2..03bdd9b 100644
+--- a/files/dhcp.conf
++++ b/files/dhcp.conf
+@@ -20,6 +20,7 @@ config dnsmasq
+ 	#list notinterface	lo
+ 	#list bogusnxdomain     '64.94.110.11'
+ 	option localservice	1  # disable to allow DNS requests from non-local subnets
++	option filteraaaa	1
+ 
+ config dhcp lan
+ 	option interface	lan
+diff --git a/files/dnsmasq.init b/files/dnsmasq.init
+index 9288971..3f5a7c9 100644
+--- a/files/dnsmasq.init
++++ b/files/dnsmasq.init
+@@ -865,6 +865,7 @@ dnsmasq_start()
+ 	append_bool "$cfg" sequential_ip "--dhcp-sequential-ip"
+ 	append_bool "$cfg" allservers "--all-servers"
+ 	append_bool "$cfg" noping "--no-ping"
++	append_bool "$cfg" filteraaaa "--filter-aaaa"
+ 	append_bool "$cfg" rapidcommit "--dhcp-rapid-commit"
+ 	append_bool "$cfg" scriptarp "--script-arp"
+ 
