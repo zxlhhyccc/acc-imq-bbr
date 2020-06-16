@@ -1,0 +1,26 @@
+diff --git a/files/dnsmasq.init b/files/dnsmasq.init
+index 3f5a7c9..7aac3c8 100644
+--- a/files/dnsmasq.init
++++ b/files/dnsmasq.init
+@@ -1066,8 +1066,11 @@ dnsmasq_start()
+ 		done
+ 	}
+ 
+-	procd_open_instance $cfg
+-	procd_set_param command $PROG -C $CONFIGFILE -k -x /var/run/dnsmasq/dnsmasq."${cfg}".pid
++	threads=$(cat /proc/cpuinfo | grep 'processor' | wc -l)
++
++	for i in $(seq 1 $threads); do
++	procd_open_instance $cfg$i
++	procd_set_param command $PROG -C $CONFIGFILE -k -x /var/run/dnsmasq/dnsmasq."${cfg}"."$i".pid
+ 	procd_set_param file $CONFIGFILE
+ 	[ -n "$user_dhcpscript" ] && procd_set_param env USER_DHCPSCRIPT="$user_dhcpscript"
+ 	procd_set_param respawn
+@@ -1077,6 +1080,7 @@ dnsmasq_start()
+ 	procd_add_jail_mount_rw /var/run/dnsmasq/ $leasefile
+ 
+ 	procd_close_instance
++	done
+ }
+ 
+ dnsmasq_stop()
