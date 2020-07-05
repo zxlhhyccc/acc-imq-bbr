@@ -1,10 +1,10 @@
 diff --git a/htdocs/luci-static/resources/view/firewall/zones.js b/htdocs/luci-static/resources/view/firewall/zones.js
-index 85e20a2..be5fc8c 100644
+index b24521e..71131e2 100644
 --- a/htdocs/luci-static/resources/view/firewall/zones.js
 +++ b/htdocs/luci-static/resources/view/firewall/zones.js
-@@ -43,6 +43,7 @@ return view.extend({
+@@ -56,6 +56,7 @@ return view.extend({
+ 		};
  
- 		o = s.option(form.Flag, 'syn_flood', _('Enable SYN-flood protection'));
  		o = s.option(form.Flag, 'drop_invalid', _('Drop invalid packets'));
 +		o = s.option(form.Flag, 'fullcone', _('Enable FullCone NAT'));
  
