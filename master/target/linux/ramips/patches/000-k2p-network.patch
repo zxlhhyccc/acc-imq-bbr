@@ -1,5 +1,5 @@
 diff --git a/image/mt7621.mk b/image/mt7621.mk
-index de20934..494ae34 100644
+index d7a4b9f..1cf4ef5 100644
 --- a/image/mt7621.mk
 +++ b/image/mt7621.mk
 @@ -233,8 +233,8 @@ define Device/d-team_newifi-d2
@@ -25,7 +25,7 @@ index de20934..494ae34 100644
  endef
  TARGET_DEVICES += phicomm_k2p
  
-@@ -993,7 +991,7 @@ define Device/xiaomi_redmi-router-ac2100
+@@ -1003,7 +1001,7 @@ define Device/xiaomi_redmi-router-ac2100
    IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
    DEVICE_VENDOR := Xiaomi
    DEVICE_MODEL := Redmi Router AC2100
@@ -35,7 +35,7 @@ index de20934..494ae34 100644
  TARGET_DEVICES += xiaomi_redmi-router-ac2100
  
 diff --git a/mt7621/base-files/etc/board.d/01_leds b/mt7621/base-files/etc/board.d/01_leds
-index 716bc6e..5edd7d6 100755
+index 2e3dca7..34f6214 100755
 --- a/mt7621/base-files/etc/board.d/01_leds
 +++ b/mt7621/base-files/etc/board.d/01_leds
 @@ -19,8 +19,8 @@ led_wlan="$(get_dt_led wlan)"
@@ -50,7 +50,7 @@ index 716bc6e..5edd7d6 100755
  d-team,pbr-m1|\
  gehua,ghl-r-001)
 diff --git a/mt7621/base-files/etc/board.d/02_network b/mt7621/base-files/etc/board.d/02_network
-index 03cc921..f62f894 100755
+index a276d08..63258ef 100755
 --- a/mt7621/base-files/etc/board.d/02_network
 +++ b/mt7621/base-files/etc/board.d/02_network
 @@ -19,11 +19,14 @@ ramips_setup_interfaces()
@@ -69,7 +69,7 @@ index 03cc921..f62f894 100755
  		;;
  	gnubee,gb-pc1|\
  	gnubee,gb-pc2)
-@@ -44,6 +47,9 @@ ramips_setup_interfaces()
+@@ -45,6 +48,9 @@ ramips_setup_interfaces()
  	mikrotik,routerboard-750gr3)
  		ucidef_set_interfaces_lan_wan "lan2 lan3 lan4 lan5" "wan"
  		;;
