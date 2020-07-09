@@ -11,7 +11,7 @@ index b24521e..71131e2 100644
  		var p = [
  			s.option(form.ListValue, 'input', _('Input')),
 diff --git a/po/zh_Hans/firewall.po b/po/zh_Hans/firewall.po
-index a91e15b..d3b0395 100644
+index 6ab67e1..f320484 100644
 --- a/po/zh_Hans/firewall.po
 +++ b/po/zh_Hans/firewall.po
 @@ -307,6 +307,9 @@ msgstr "启用 NAT 环回"
@@ -21,6 +21,6 @@ index a91e15b..d3b0395 100644
 +msgid "Enable FullCone NAT"
 +msgstr "启用FullCone-NAT"
 +
- #: applications/luci-app-firewall/htdocs/luci-static/resources/view/firewall/zones.js:236
+ #: applications/luci-app-firewall/htdocs/luci-static/resources/view/firewall/zones.js:249
  msgid "Enable logging on this zone"
  msgstr "启用此区域的日志记录"
