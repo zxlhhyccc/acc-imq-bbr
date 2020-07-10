@@ -24,7 +24,7 @@ DEFAULT_PACKAGES.basic:=
 # For nas targets
 DEFAULT_PACKAGES.nas:=fdisk lsblk mdadm automount autosamba
 # For router targets
-DEFAULT_PACKAGES.router:=dnsmasq-full iptables ppp ppp-mod-pppoe firewall kmod-ipt-offload kmod-tcp-bbr
+DEFAULT_PACKAGES.router:=dnsmasq-full iptables ip6tables ppp ppp-mod-pppoe firewall kmod-ipt-offload kmod-tcp-bbr
 
 ifneq ($(DUMP),)
   all: dumpinfo
