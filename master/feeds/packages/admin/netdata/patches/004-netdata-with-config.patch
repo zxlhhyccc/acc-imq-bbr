@@ -1,13 +1,21 @@
 diff --git a/files/netdata.conf b/files/netdata.conf
-index 46b87a8..41c1af0 100644
+index 46b87a8..12aebb9 100644
 --- a/files/netdata.conf
 +++ b/files/netdata.conf
-@@ -25,5 +25,30 @@
+@@ -12,6 +12,7 @@
+ 	error log = syslog
+ 	access log = none
+ 	run as user = root
++	plugins directory = "/usr/lib/netdata/plugins.d" "/etc/netdata/custom-plugins.d"
+ 
+ [web]
+ 	allow connections from = localhost 10.* 192.168.* 172.16.* 172.17.* 172.18.* 172.19.* 172.20.* 172.21.* 172.22.* 172.23.* 172.24.* 172.25.* 172.26.* 172.27.* 172.28.* 172.29.* 172.30.* 172.31.*
+@@ -25,5 +26,30 @@
  	node.d = no
  	python.d = no
  
 +[plugin:proc]
-+        ipc = no
++        ipc =no
 +        /proc/sysvipc/shm = no
 +        /sys/devices/system/edac/mc = no
 +        /sys/devices/system/node = no
@@ -19,13 +27,13 @@ index 46b87a8..41c1af0 100644
 +        /proc/net/ip_vs/stats = no
 +        /proc/net/stat/synproxy = no
 +        /sys/kernel/mm/ksm = no
++        /dev/mapper = no
 +        /proc/spl/kstat/zfs/arcstats = no
 +        /proc/mdstat = no
 +        /proc/pressure/cpu = no
 +        /proc/net/rpc/nfsd = no
 +        /proc/pressure/memory = no
 +        /proc/pressure/io = no
-+        /dev/mapper = no
 +
 +[plugin:proc:/proc/diskstats]
 +        path to /dev/vx/dsk  =
