@@ -1,8 +1,8 @@
 diff --git a/image/mt7621.mk b/image/mt7621.mk
-index 0215683..9f99c7a 100644
+index 25de2fa..395872f 100644
 --- a/image/mt7621.mk
 +++ b/image/mt7621.mk
-@@ -246,8 +246,8 @@ define Device/d-team_newifi-d2
+@@ -241,8 +241,8 @@ define Device/d-team_newifi-d2
    IMAGE_SIZE := 32448k
    DEVICE_VENDOR := Newifi
    DEVICE_MODEL := D2
@@ -13,7 +13,7 @@ index 0215683..9f99c7a 100644
  endef
  TARGET_DEVICES += d-team_newifi-d2
  
-@@ -793,10 +793,8 @@ define Device/phicomm_k2p
+@@ -788,10 +788,8 @@ define Device/phicomm_k2p
    IMAGE_SIZE := 15744k
    DEVICE_VENDOR := Phicomm
    DEVICE_MODEL := K2P
