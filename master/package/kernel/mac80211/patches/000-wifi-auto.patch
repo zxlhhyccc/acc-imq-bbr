@@ -1,5 +1,5 @@
 diff --git a/files/lib/wifi/mac80211.sh b/files/lib/wifi/mac80211.sh
-index be9c537..e76efdf 100644
+index be9c537..3918fe5 100644
 --- a/files/lib/wifi/mac80211.sh
 +++ b/files/lib/wifi/mac80211.sh
 @@ -82,9 +82,9 @@ detect_mac80211() {
@@ -14,13 +14,13 @@ index be9c537..e76efdf 100644
  			iw phy "$dev" info | grep -q 'VHT Capabilities' && htmode="VHT80"
  		}
  
-@@ -104,8 +104,8 @@ detect_mac80211() {
+@@ -104,8 +104,9 @@ detect_mac80211() {
  			set wireless.radio${devidx}.hwmode=11${mode_band}
  			${dev_id}
  			${ht_capab}
 -			set wireless.radio${devidx}.disabled=1
--
 +			set wireless.radio${devidx}.disabled=0
+ 
 +			set wireless.radio${devidx}.country=US
  			set wireless.default_radio${devidx}=wifi-iface
  			set wireless.default_radio${devidx}.device=radio${devidx}
