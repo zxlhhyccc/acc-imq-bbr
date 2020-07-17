@@ -1,0 +1,90 @@
+diff --git a/Makefile b/Makefile
+index 5e7b713..bec9c60 100644
+--- a/Makefile
++++ b/Makefile
+@@ -94,7 +94,7 @@ define Package/$(PKG_NAME)
+   +PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR:shadowsocksr-libev-ssr-local \
+   +PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Server:shadowsocksr-libev-server \
+   +PACKAGE_$(PKG_NAME)_INCLUDE_V2ray:v2ray \
+-  +PACKAGE_$(PKG_NAME)_INCLUDE_Trojan:trojan \
++  +PACKAGE_$(PKG_NAME)_INCLUDE_Trojan:trojan-plus \
+   +PACKAGE_$(PKG_NAME)_INCLUDE_Trojan_GO:trojan-go \
+   +PACKAGE_$(PKG_NAME)_INCLUDE_Brook:brook \
+   +PACKAGE_$(PKG_NAME)_INCLUDE_kcptun:kcptun-client \
+diff --git a/luasrc/model/cbi/passwall/node_config.lua b/luasrc/model/cbi/passwall/node_config.lua
+index 32dec23..9a78c75 100644
+--- a/luasrc/model/cbi/passwall/node_config.lua
++++ b/luasrc/model/cbi/passwall/node_config.lua
+@@ -92,7 +92,7 @@ end
+ if is_installed("brook") or is_finded("brook") then
+     type:value("Brook", translate("Brook"))
+ end
+-if is_installed("trojan") or is_finded("trojan") then
++if is_installed("trojan-plus") or is_finded("trojan-plus") then
+     type:value("Trojan", translate("Trojan-Plus"))
+ end
+ if is_installed("trojan-go") or is_finded("trojan-go") then
+diff --git a/luasrc/model/cbi/passwall/server/api/app.lua b/luasrc/model/cbi/passwall/server/api/app.lua
+index 3c405b9..76c7937 100644
+--- a/luasrc/model/cbi/passwall/server/api/app.lua
++++ b/luasrc/model/cbi/passwall/server/api/app.lua
+@@ -81,7 +81,7 @@ local function start()
+                 bin = ln_start(_api.get_v2ray_path(), "v2ray", "-config=" .. config_file)
+             elseif type == "Trojan" then
+                 config = require("luci.model.cbi.passwall.server.api.trojan").gen_config(user)
+-                bin = ln_start("/usr/sbin/trojan", "trojan", "-c " .. config_file)
++                bin = ln_start("/usr/sbin/trojan-plus", "trojan-plus", "-c " .. config_file)
+             elseif type == "Brook" then
+                 local brook_protocol = user.brook_protocol
+                 local brook_password = user.password
+@@ -127,4 +127,4 @@ if action then
+ 	elseif action == "stop" then
+         stop()
+ 	end
+-end
+\ No newline at end of file
++end
+diff --git a/luasrc/model/cbi/passwall/server/user.lua b/luasrc/model/cbi/passwall/server/user.lua
+index 1a07c0e..b44d4e2 100644
+--- a/luasrc/model/cbi/passwall/server/user.lua
++++ b/luasrc/model/cbi/passwall/server/user.lua
+@@ -74,7 +74,7 @@ end
+ if is_installed("brook") or is_finded("brook") then
+     type:value("Brook", translate("Brook"))
+ end
+-if is_installed("trojan") or is_finded("trojan") then
++if is_installed("trojan-plus") or is_finded("trojan-plus") then
+     type:value("Trojan", translate("Trojan-Plus"))
+ end
+ if is_installed("trojan-go") or is_finded("trojan-go") then
+diff --git a/root/usr/share/passwall/app.sh b/root/usr/share/passwall/app.sh
+index 48be664..357fa92 100755
+--- a/root/usr/share/passwall/app.sh
++++ b/root/usr/share/passwall/app.sh
+@@ -255,7 +255,7 @@ run_socks() {
+ 		ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray "-config=$config_file"
+ 	elif [ "$type" == "trojan" ]; then
+ 		lua $API_GEN_TROJAN $node client $bind $local_port > $config_file
+-		ln_start_bin $(find_bin trojan) trojan "-c $config_file"
++		ln_start_bin $(find_bin trojan-plus) trojan-plus "-c $config_file"
+ 	elif [ "$type" == "trojan-go" ]; then
+ 		lua $API_GEN_TROJAN $node client $bind $local_port > $config_file
+ 		ln_start_bin $(config_t_get global_app trojan_go_file $(find_bin trojan-go)) trojan-go "-config $config_file"
+@@ -308,7 +308,7 @@ run_redir() {
+ 			ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray "-config=$config_file"
+ 		elif [ "$type" == "trojan" ]; then
+ 			lua $API_GEN_TROJAN $node nat "0.0.0.0" $local_port >$config_file
+-			ln_start_bin $(find_bin trojan) trojan "-c $config_file"
++			ln_start_bin $(find_bin trojan-plus) trojan-plus "-c $config_file"
+ 		elif [ "$type" == "trojan-go" ]; then
+ 			lua $API_GEN_TROJAN $node nat "0.0.0.0" $local_port >$config_file
+ 			ln_start_bin $(config_t_get global_app trojan_go_file $(find_bin trojan-go)) trojan-go "-config $config_file"
+@@ -343,7 +343,7 @@ run_redir() {
+ 		elif [ "$type" == "trojan" ]; then
+ 			lua $API_GEN_TROJAN $node nat "0.0.0.0" $local_port > $config_file
+ 			for k in $(seq 1 $process); do
+-				ln_start_bin $(find_bin trojan) trojan "-c $config_file"
++				ln_start_bin $(find_bin trojan-plus) trojan-plus "-c $config_file"
+ 			done
+ 		elif [ "$type" == "trojan-go" ]; then
+ 			lua $API_GEN_TROJAN $node nat "0.0.0.0" $local_port > $config_file
