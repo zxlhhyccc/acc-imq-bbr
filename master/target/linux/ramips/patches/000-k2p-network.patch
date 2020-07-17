@@ -1,8 +1,8 @@
 diff --git a/image/mt7621.mk b/image/mt7621.mk
-index e97d231..3768660 100644
+index 0315822..30b944f 100644
 --- a/image/mt7621.mk
 +++ b/image/mt7621.mk
-@@ -256,8 +256,8 @@ define Device/d-team_newifi-d2
+@@ -275,8 +275,8 @@ define Device/d-team_newifi-d2
    IMAGE_SIZE := 32448k
    DEVICE_VENDOR := Newifi
    DEVICE_MODEL := D2
@@ -13,7 +13,7 @@ index e97d231..3768660 100644
  endef
  TARGET_DEVICES += d-team_newifi-d2
  
-@@ -830,10 +830,8 @@ define Device/phicomm_k2p
+@@ -849,10 +849,8 @@ define Device/phicomm_k2p
    IMAGE_SIZE := 15744k
    DEVICE_VENDOR := Phicomm
    DEVICE_MODEL := K2P
@@ -25,7 +25,7 @@ index e97d231..3768660 100644
  endef
  TARGET_DEVICES += phicomm_k2p
  
-@@ -1013,7 +1011,7 @@ define Device/xiaomi-ac2100
+@@ -1032,7 +1030,7 @@ define Device/xiaomi-ac2100
    IMAGE/rootfs0.bin := append-ubi | check-size
    IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
    DEVICE_VENDOR := Xiaomi
@@ -35,7 +35,7 @@ index e97d231..3768660 100644
  
  define Device/xiaomi_mi-router-ac2100
 diff --git a/mt7621/base-files/etc/board.d/01_leds b/mt7621/base-files/etc/board.d/01_leds
-index a44b1a0..7c70a30 100755
+index 43cd77c..6ce8d1f 100755
 --- a/mt7621/base-files/etc/board.d/01_leds
 +++ b/mt7621/base-files/etc/board.d/01_leds
 @@ -19,8 +19,8 @@ led_wlan="$(get_dt_led wlan)"
