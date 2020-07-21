@@ -1,0 +1,473 @@
+diff --git a/luci-base/po/zh_Hans/base.po b/luci-base/po/zh_Hans/base.po
+index 3a28f3e..9bbe0c9 100644
+--- a/luci-base/po/zh_Hans/base.po
++++ b/luci-base/po/zh_Hans/base.po
+@@ -396,6 +396,9 @@ msgstr "活动的 <abbr title=\"Internet Protocol Version 6\">IPv6</abbr> 路由
+ msgid "Active Connections"
+ msgstr "活动连接"
+ 
++msgid "Online Users"
++msgstr "在线用户数"
++
+ #: modules/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js:33
+ #: modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/40_dhcp.js:92
+ msgid "Active DHCP Leases"
+@@ -490,6 +493,18 @@ msgstr "额外的 HOSTS 文件"
+ msgid "Additional servers file"
+ msgstr "额外的 SERVERS 文件"
+ 
++msgid "Disable IPv6 DNS forwards"
++msgstr "禁止解析 IPv6 DNS 记录"
++
++msgid "Filter IPv6(AAAA) DNS Query Name Resolve"
++msgstr "过滤掉 IPv6(AAAA) ，只返回 IPv4 DNS 域名记录"
++
++msgid "Minimum TTL to send to clients"
++msgstr "客户端缓存的最小 DNS TTL"
++
++msgid "Modify DNS entries minimum TTL (max is 86400, 0 is no modify)"
++msgstr "修改发送到客户端的域名记录的 TTL 时间 (最大 86400, 0 表示不修改)"
++
+ #: modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/30_network.js:34
+ #: modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/30_network.js:35
+ #: modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/30_network.js:36
+@@ -7704,6 +7719,51 @@ msgstr "是"
+ msgid "« Back"
+ msgstr "« 后退"
+ 
++msgid "Custom Redirect Domain"
++msgstr "自定义挟持域名"
++
++msgid "Define a custom domain name and the corresponding PTR record"
++msgstr "自定义域名对应的IP地址（需要客户端DNS指向本路由）"
++
++msgid "Domain Name"
++msgstr "域名（不带 HTTP(S)://）"
++
++msgid "Comments"
++msgstr "备注"
++
++msgid "Enables The 802.11k standard provides information to discover the best available access point"
++msgstr "启用 802.11k 自动寻找发现最佳可用接入点的信息"
++
++msgid "Enable neighbor report via radio measurements"
++msgstr "启用无线电测量邻居报告"
++
++msgid "Enable beacon report via radio measurements"
++msgstr "启用无线电测量信标报告"
++
++msgid "Enables 802.11v allows client devices to exchange information about the network topology,tating overall improvement of the wireless network."
++msgstr "启用 802.11v 将允许客户端设备交换有关网络拓扑的信息，从而全面改善无线网络漫游"
++
++msgid "extended sleep mode for stations"
++msgstr "扩展无线休眠节能模式"
++
++msgid "BSS Transition Management"
++msgstr "BSS 传输管理"
++
++msgid "Time advertisement"
++msgstr "广播同步时间"
++
++msgid "time zone"
++msgstr "时区"
++
++msgid "Local time zone as specified in 8.3 of IEEE Std 1003.1-2004"
++msgstr "本地时区采用 IEEE Std 1003.1-2004 的 8.3 格式（例如 UTC8）"
++
++msgid "Enable 256-QAM"
++msgstr "启用 256-QAM"
++
++msgid "802.11n 2.4Ghz Only"
++msgstr "只适合 802.11n 2.4Ghz"
++
+ #~ msgid "default-on (kernel)"
+ #~ msgstr "默认开启（内核）"
+ 
+diff --git a/luci-base/root/bin/getcpu b/luci-base/root/bin/getcpu
+new file mode 100755
+index 0000000..61e8d6e
+--- /dev/null
++++ b/luci-base/root/bin/getcpu
+@@ -0,0 +1,8 @@
++#!/bin/sh
++
++if [ $(busybox ps -w | grep getcpu | grep -v grep | wc -l) -le 2 ]; then
++  AT=$(cat /proc/stat | grep "^cpu " | awk '{print $2+$3+$4+$5+$6+$7+$8 " " $2+$3+$4+$7+$8}')
++  sleep 1
++  BT=$(cat /proc/stat | grep "^cpu " | awk '{print $2+$3+$4+$5+$6+$7+$8 " " $2+$3+$4+$7+$8}')
++  printf "%.01f%%" $(echo $AT $BT | awk '{print (($4-$2)/($3-$1))*100}') >/tmp/cpuusage
++fi
+\ No newline at end of file
+diff --git a/luci-base/root/usr/libexec/rpcd/luci b/luci-base/root/usr/libexec/rpcd/luci
+index 7f0c0b2..4767f22 100755
+--- a/luci-base/root/usr/libexec/rpcd/luci
++++ b/luci-base/root/usr/libexec/rpcd/luci
+@@ -612,6 +612,37 @@ local methods = {
+ 			end
+ 			return { result = res }
+ 		end
++	},
++
++	getCPUBench = {
++		call = function()
++			local sys = require "luci.sys"
++			local cpubench = {}
++
++			cpubench.cpubench = sys.exec("cat /etc/bench.log 2>/dev/null")
++			return cpubench
++		end
++	},
++
++	getCPUUsage = {
++		call = function()
++			local sys = require "luci.sys"
++			local cpuusage = {}
++
++			cpuusage.cpuusage = (sys.exec("expr 100 - $(top -n 1 | grep 'CPU:' | awk -F '%' '{print$4}' | awk -F ' ' '{print$2}')") or "2.33") .. "%"
++			return cpuusage
++		end
++	},
++
++	getOnlineUsers = {
++		call = function()
++			local sys = require "luci.sys"
++			local onlineusers = {}
++
++			onlineusers.onlineusers = sys.exec("cat /proc/net/arp | grep 'br-lan' | grep '0x2' | wc -l")
++			return onlineusers
++
++		end
+ 	}
+ }
+ 
+diff --git a/luci-base/root/usr/share/luci/menu.d/luci-base.json b/luci-base/root/usr/share/luci/menu.d/luci-base.json
+index eb72c56..24ca785 100644
+--- a/luci-base/root/usr/share/luci/menu.d/luci-base.json
++++ b/luci-base/root/usr/share/luci/menu.d/luci-base.json
+@@ -34,16 +34,16 @@
+ 
+ 	"admin/services": {
+ 		"title": "Services",
+-		"order": 40,
++		"order": 30,
+ 		"action": {
+ 			"type": "firstchild",
+ 			"recurse": true
+ 		}
+ 	},
+ 
+-	"admin/network": {
+-		"title": "Network",
+-		"order": 50,
++	"admin/nas": {
++		"title": "NAS",
++		"order": 40,
+ 		"action": {
+ 			"type": "firstchild",
+ 			"recurse": true
+@@ -52,7 +52,16 @@
+ 
+ 	"admin/vpn": {
+ 		"title": "VPN",
+-		"order": 70,
++		"order": 50,
++		"action": {
++			"type": "firstchild",
++			"recurse": true
++		}
++	},
++
++	"admin/network": {
++		"title": "Network",
++		"order": 60,
+ 		"action": {
+ 			"type": "firstchild",
+ 			"recurse": true
+diff --git a/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js b/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js
+index fa991db..aa26052 100644
+--- a/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js
++++ b/luci-mod-network/htdocs/luci-static/resources/view/network/dhcp.js
+@@ -163,6 +163,7 @@ return view.extend({
+ 		s.tab('tftp', _('TFTP Settings'));
+ 		s.tab('advanced', _('Advanced Settings'));
+ 		s.tab('leases', _('Static Leases'));
++		s.tab('domain', _('Custom Redirect Domain'));
+ 
+ 		s.taboption('general', form.Flag, 'domainneeded',
+ 			_('Domain required'),
+@@ -199,6 +200,11 @@ return view.extend({
+ 		s.taboption('files', form.DynamicList, 'addnhosts',
+ 			_('Additional Hosts files')).optional = true;
+ 
++		o = s.taboption('advanced', form.Flag, 'filter_aaaa',
++			_('Disable IPv6 DNS forwards'),
++			_('Filter IPv6(AAAA) DNS Query Name Resolve'));
++		o.optional = true;
++
+ 		o = s.taboption('advanced', form.Flag, 'quietdhcp',
+ 			_('Suppress logging'),
+ 			_('Suppress logging of the routine operation of these protocols'));
+@@ -357,6 +363,13 @@ return view.extend({
+ 		o.datatype = 'range(0,10000)';
+ 		o.placeholder = 150;
+ 
++		o = s.taboption('advanced', form.Value, 'mini_ttl',
++			_('Minimum TTL to send to clients'),
++			_('Modify DNS entries minimum TTL (max is 86400, 0 is no modify)'));
++		o.optional = true;
++		o.datatype = 'range(0,86400)';
++		o.placeholder = 0;
++
+ 		s.taboption('tftp', form.Flag, 'enable_tftp',
+ 			_('Enable TFTP server')).optional = true;
+ 
+@@ -564,5 +577,20 @@ return view.extend({
+ 
+ 			return mapEl;
+ 		});
++
++		o = s.taboption('domain', form.SectionValue, '__domain__', form.GridSection, 'host', null,
++			_('Define a custom domain name and the corresponding PTR record'));
++		ss = o.subsection;
++		ss.anonymous = true;
++		ss.addremove = false;
++
++		so = ss.taboption('domain', form.Value, 'name', _('Domain Name'));
++		so.rmempty = true;
++
++		so = ss.taboption('domain', form.Value, 'ip', _('<abbr title=\"Internet Protocol Version 4\">IPv4</abbr>-Address'));
++		so.datatype = 'or(ip4addr,"ignore")';
++
++		so = ss.taboption('domain', form.Value, 'comments', _('Comments'));
++		so.rmempty = true;
+ 	}
+ });
+diff --git a/luci-mod-network/htdocs/luci-static/resources/view/network/wireless.js b/luci-mod-network/htdocs/luci-static/resources/view/network/wireless.js
+index dc75c95..f868c4a 100644
+--- a/luci-mod-network/htdocs/luci-static/resources/view/network/wireless.js
++++ b/luci-mod-network/htdocs/luci-static/resources/view/network/wireless.js
+@@ -892,6 +892,9 @@ return view.extend({
+ 					o = ss.taboption('advanced', form.Flag, 'legacy_rates', _('Allow legacy 802.11b rates'));
+ 					o.default = o.enabled;
+ 
++					o = ss.taboption('advanced', form.Flag, 'mu_beamformer', _('MU-MIMO'));
++					o.default = o.disabled;
++
+ 					o = ss.taboption('advanced', form.Value, 'distance', _('Distance Optimization'), _('Distance to farthest network member in meters.'));
+ 					o.datatype = 'or(range(0,114750),"auto")';
+ 					o.placeholder = 'auto';
+@@ -907,6 +910,9 @@ return view.extend({
+ 					o = ss.taboption('advanced', form.Flag, 'noscan', _('Force 40MHz mode'), _('Always use 40MHz channels even if the secondary channel overlaps. Using this option does not comply with IEEE 802.11n-2009!'));
+ 					o.rmempty = true;
+ 
++					o = ss.taboption('advanced', form.Flag, 'vendor_vht', _('Enable 256-QAM'), _('802.11n 2.4Ghz Only'));
++					o.default = o.disabled;
++
+ 					o = ss.taboption('advanced', form.Value, 'beacon_int', _('Beacon Interval'));
+ 					o.datatype = 'range(15,65535)';
+ 					o.placeholder = 100;
+@@ -1425,6 +1431,76 @@ return view.extend({
+ 
+ 
+ 				if (hwtype == 'mac80211') {
++
++					// Probe 802.11k support
++					o = ss.taboption('encryption', form.Flag, 'ieee80211k', _('802.11k'), _('Enables The 802.11k standard provides information to discover the best available access point'));
++					o.depends({ mode: 'ap', encryption: 'wpa' });
++					o.depends({ mode: 'ap', encryption: 'wpa2' });
++					o.depends({ mode: 'ap-wds', encryption: 'wpa' });
++					o.depends({ mode: 'ap-wds', encryption: 'wpa2' });
++					o.depends({ mode: 'ap', encryption: 'psk' });
++					o.depends({ mode: 'ap', encryption: 'psk2' });
++					o.depends({ mode: 'ap', encryption: 'psk-mixed' });
++					o.depends({ mode: 'ap-wds', encryption: 'psk' });
++					o.depends({ mode: 'ap-wds', encryption: 'psk2' });
++					o.depends({ mode: 'ap-wds', encryption: 'psk-mixed' });
++					o.depends({ mode: 'ap', encryption: 'sae' });
++					o.depends({ mode: 'ap', encryption: 'sae-mixed' });
++					o.depends({ mode: 'ap-wds', encryption: 'sae' });
++					o.depends({ mode: 'ap-wds', encryption: 'sae-mixed' });
++					o.rmempty = true;
++
++					o = ss.taboption('encryption', form.Flag, 'rrm_neighbor_report', _('Enable neighbor report via radio measurements'));
++					o.default = o.enabled;
++					o.depends({ ieee80211k: '1' });
++					o.rmempty = true;
++
++					o = ss.taboption('encryption', form.Flag, 'rrm_beacon_report', _('Enable beacon report via radio measurements'));
++					o.default = o.enabled;
++					o.depends({ ieee80211k: '1' });
++					o.rmempty = true;
++					// End of 802.11k options
++
++					// Probe 802.11v support
++					o = ss.taboption('encryption', form.Flag, 'ieee80211v', _('802.11v'), _('Enables 802.11v allows client devices to exchange information about the network topology,tating overall improvement of the wireless network.'));
++					o.depends({ mode: 'ap', encryption: 'wpa' });
++					o.depends({ mode: 'ap', encryption: 'wpa2' });
++					o.depends({ mode: 'ap-wds', encryption: 'wpa' });
++					o.depends({ mode: 'ap-wds', encryption: 'wpa2' });
++					o.depends({ mode: 'ap', encryption: 'psk' });
++					o.depends({ mode: 'ap', encryption: 'psk2' });
++					o.depends({ mode: 'ap', encryption: 'psk-mixed' });
++					o.depends({ mode: 'ap-wds', encryption: 'psk' });
++					o.depends({ mode: 'ap-wds', encryption: 'psk2' });
++					o.depends({ mode: 'ap-wds', encryption: 'psk-mixed' });
++					o.depends({ mode: 'ap', encryption: 'sae' });
++					o.depends({ mode: 'ap', encryption: 'sae-mixed' });
++					o.depends({ mode: 'ap-wds', encryption: 'sae' });
++					o.depends({ mode: 'ap-wds', encryption: 'sae-mixed' });
++					o.rmempty = true;
++
++					o = ss.taboption('encryption', form.Flag, 'wnm_sleep_mode', _('extended sleep mode for stations'));
++					o.default = o.enabled;
++					o.depends({ ieee80211v: '1' });
++					o.rmempty = true;
++
++					o = ss.taboption('encryption', form.Flag, 'bss_transition', _('BSS Transition Management'));
++					o.default = o.enabled;
++					o.depends({ ieee80211v: '1' });
++					o.rmempty = true;
++
++					o = ss.taboption('encryption', form.ListValue, 'time_advertisement', _('Time advertisement"'));
++					o.depends({ ieee80211v: '1' });
++					o.value('0', _('disabled'));
++					o.value('2', _('UTC time at which the TSF timer is 0'));
++					o.rmempty = true;
++
++					o = ss.taboption('encryption', form.Value, 'time_zone', _('Local time zone as specified in 8.3 of IEEE Std 1003.1-2004'));
++					o.depends({ time_advertisement: '2' });
++					o.placeholder = 'UTC8';
++					o.rmempty = true;
++					// End of 802.11v options
++
+ 					// Probe 802.11r support (and EAP support as a proxy for Openwrt)
+ 					var has_80211r = L.hasSystemFeature('hostapd', '11r') || L.hasSystemFeature('hostapd', 'eap');
+ 
+diff --git a/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js b/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js
+index 942b2dd..3051cf2 100644
+--- a/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js
++++ b/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js
+@@ -13,6 +13,16 @@ var callSystemInfo = rpc.declare({
+ 	method: 'info'
+ });
+ 
++var callCPUBench = rpc.declare({
++	object: 'luci',
++	method: 'getCPUBench'
++});
++
++var callCPUUsage = rpc.declare({
++	object: 'luci',
++	method: 'getCPUUsage'
++});
++
+ return baseclass.extend({
+ 	title: _('System'),
+ 
+@@ -20,6 +30,8 @@ return baseclass.extend({
+ 		return Promise.all([
+ 			L.resolveDefault(callSystemBoard(), {}),
+ 			L.resolveDefault(callSystemInfo(), {}),
++			L.resolveDefault(callCPUBench(), {}),
++			L.resolveDefault(callCPUUsage(), {}),
+ 			fs.lines('/usr/lib/lua/luci/version.lua')
+ 		]);
+ 	},
+@@ -27,13 +39,17 @@ return baseclass.extend({
+ 	render: function(data) {
+ 		var boardinfo   = data[0],
+ 		    systeminfo  = data[1],
+-		    luciversion = data[2];
++		    cpubench    = data[2],
++		    cpuusage    = data[3]; //,
++//		    luciversion = data[4];
+ 
++/*
+ 		luciversion = luciversion.filter(function(l) {
+ 			return l.match(/^\s*(luciname|luciversion)\s*=/);
+ 		}).map(function(l) {
+ 			return l.replace(/^\s*\w+\s*=\s*['"]([^'"]+)['"].*$/, '$1');
+ 		}).join(' ');
++*/
+ 
+ 		var datestr = null;
+ 
+@@ -52,9 +68,9 @@ return baseclass.extend({
+ 
+ 		var fields = [
+ 			_('Hostname'),         boardinfo.hostname,
+-			_('Model'),            boardinfo.model,
++			_('Model'),            boardinfo.model + cpubench.cpubench,
+ 			_('Architecture'),     boardinfo.system,
+-			_('Firmware Version'), (L.isObject(boardinfo.release) ? boardinfo.release.description + ' / ' : '') + (luciversion || ''),
++			_('Firmware Version'), (L.isObject(boardinfo.release) ? boardinfo.release.description: '')/* + ' / ' : '') + (luciversion || '')*/,
+ 			_('Kernel Version'),   boardinfo.kernel,
+ 			_('Local Time'),       datestr,
+ 			_('Uptime'),           systeminfo.uptime ? '%t'.format(systeminfo.uptime) : null,
+@@ -62,7 +78,8 @@ return baseclass.extend({
+ 				systeminfo.load[0] / 65535.0,
+ 				systeminfo.load[1] / 65535.0,
+ 				systeminfo.load[2] / 65535.0
+-			) : null
++			) : null,
++			_('CPU usage (%)'),    cpuusage.cpuusage
+ 		];
+ 
+ 		var table = E('div', { 'class': 'table' });
+diff --git a/luci-mod-status/htdocs/luci-static/resources/view/status/include/30_network.js b/luci-mod-status/htdocs/luci-static/resources/view/status/include/30_network.js
+index d528408..c9d9c8e 100644
+--- a/luci-mod-status/htdocs/luci-static/resources/view/status/include/30_network.js
++++ b/luci-mod-status/htdocs/luci-static/resources/view/status/include/30_network.js
+@@ -1,8 +1,14 @@
+ 'use strict';
+ 'require baseclass';
+ 'require fs';
++'require rpc';
+ 'require network';
+ 
++var callOnlineUsers = rpc.declare({
++        object: 'luci',
++        method: 'getOnlineUsers'
++});
++
+ function progressbar(value, max, byte) {
+ 	var vn = parseInt(value) || 0,
+ 	    mn = parseInt(max) || 100,
+@@ -67,7 +73,8 @@ return baseclass.extend({
+ 			fs.trimmed('/proc/sys/net/netfilter/nf_conntrack_count'),
+ 			fs.trimmed('/proc/sys/net/netfilter/nf_conntrack_max'),
+ 			network.getWANNetworks(),
+-			network.getWAN6Networks()
++			network.getWAN6Networks(),
++			L.resolveDefault(callOnlineUsers(), {})
+ 		]);
+ 	},
+ 
+@@ -75,10 +82,12 @@ return baseclass.extend({
+ 		var ct_count  = +data[0],
+ 		    ct_max    = +data[1],
+ 		    wan_nets  = data[2],
+-		    wan6_nets = data[3];
++		    wan6_nets = data[3],
++		    onlineusers = data[4];
+ 
+ 		var fields = [
+-			_('Active Connections'), ct_max ? ct_count : null
++			_('Active Connections'), ct_max ? ct_count : null,
++			_('Online Users'), onlineusers.onlineusers
+ 		];
+ 
+ 		var ctstatus = E('div', { 'class': 'table' });
+diff --git a/luci-mod-status/root/usr/share/rpcd/acl.d/luci-mod-status.json b/luci-mod-status/root/usr/share/rpcd/acl.d/luci-mod-status.json
+index 05569d7..fc6a4c4 100644
+--- a/luci-mod-status/root/usr/share/rpcd/acl.d/luci-mod-status.json
++++ b/luci-mod-status/root/usr/share/rpcd/acl.d/luci-mod-status.json
+@@ -3,7 +3,7 @@
+ 		"description": "Grant access to realtime statistics",
+ 		"read": {
+ 			"ubus": {
+-				"luci": [ "getConntrackList", "getRealtimeStats" ],
++				"luci": [ "getConntrackList", "getRealtimeStats", "getCPUBench", "getCPUUsage", "getOnlineUsers" ],
+ 				"network.rrdns": [ "lookup" ]
+ 			}
+ 		}
