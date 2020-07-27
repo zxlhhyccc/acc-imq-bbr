@@ -1,8 +1,8 @@
 diff --git a/image/mt7621.mk b/image/mt7621.mk
-index 0315822..30b944f 100644
+index f13be3d..2fc4245 100644
 --- a/image/mt7621.mk
 +++ b/image/mt7621.mk
-@@ -275,8 +275,8 @@ define Device/d-team_newifi-d2
+@@ -298,8 +298,8 @@ define Device/d-team_newifi-d2
    IMAGE_SIZE := 32448k
    DEVICE_VENDOR := Newifi
    DEVICE_MODEL := D2
@@ -13,7 +13,7 @@ index 0315822..30b944f 100644
  endef
  TARGET_DEVICES += d-team_newifi-d2
  
-@@ -849,10 +849,8 @@ define Device/phicomm_k2p
+@@ -872,10 +872,8 @@ define Device/phicomm_k2p
    IMAGE_SIZE := 15744k
    DEVICE_VENDOR := Phicomm
    DEVICE_MODEL := K2P
@@ -25,7 +25,7 @@ index 0315822..30b944f 100644
  endef
  TARGET_DEVICES += phicomm_k2p
  
-@@ -1032,7 +1030,7 @@ define Device/xiaomi-ac2100
+@@ -1067,7 +1065,7 @@ define Device/xiaomi-ac2100
    IMAGE/rootfs0.bin := append-ubi | check-size
    IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
    DEVICE_VENDOR := Xiaomi
@@ -35,7 +35,7 @@ index 0315822..30b944f 100644
  
  define Device/xiaomi_mi-router-ac2100
 diff --git a/mt7621/base-files/etc/board.d/01_leds b/mt7621/base-files/etc/board.d/01_leds
-index 43cd77c..6ce8d1f 100755
+index 63c0bce..3d3ff17 100755
 --- a/mt7621/base-files/etc/board.d/01_leds
 +++ b/mt7621/base-files/etc/board.d/01_leds
 @@ -19,8 +19,8 @@ led_wlan="$(get_dt_led wlan)"
@@ -50,10 +50,10 @@ index 43cd77c..6ce8d1f 100755
  d-team,pbr-m1|\
  gehua,ghl-r-001)
 diff --git a/mt7621/base-files/etc/board.d/02_network b/mt7621/base-files/etc/board.d/02_network
-index 9c32f59..8d136a5 100755
+index b9f2740..705d27c 100755
 --- a/mt7621/base-files/etc/board.d/02_network
 +++ b/mt7621/base-files/etc/board.d/02_network
-@@ -19,6 +19,9 @@ ramips_setup_interfaces()
+@@ -20,6 +20,9 @@ ramips_setup_interfaces()
  	xiaomi,mir3g-v2)
  		ucidef_set_interfaces_lan_wan "lan1 lan2" "wan"
  		;;
@@ -63,7 +63,7 @@ index 9c32f59..8d136a5 100755
  	edimax,re23s|\
  	mikrotik,routerboard-m11g|\
  	netgear,ex6150|\
-@@ -34,7 +37,7 @@ ramips_setup_interfaces()
+@@ -35,7 +38,7 @@ ramips_setup_interfaces()
  	xiaomi,mi-router-ac2100|\
  	xiaomi,mir3p|\
  	xiaomi,redmi-router-ac2100)
@@ -72,7 +72,7 @@ index 9c32f59..8d136a5 100755
  		;;
  	gnubee,gb-pc1|\
  	gnubee,gb-pc2)
-@@ -47,6 +50,9 @@ ramips_setup_interfaces()
+@@ -48,6 +51,9 @@ ramips_setup_interfaces()
  	mikrotik,routerboard-750gr3)
  		ucidef_set_interfaces_lan_wan "lan2 lan3 lan4 lan5" "wan"
  		;;
@@ -80,5 +80,5 @@ index 9c32f59..8d136a5 100755
 +		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4 ra0 rax0" "wan"
 +		;;
  	ubnt,edgerouter-x)
- 		ucidef_set_interface_lan_wan "eth1 eth2 eth3 eth4" "eth0"
+ 		ucidef_set_interfaces_lan_wan "eth1 eth2 eth3 eth4" "eth0"
  		;;
