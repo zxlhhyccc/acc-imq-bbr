@@ -14,7 +14,7 @@ diff --git a/files/dnsmasq.init b/files/dnsmasq.init
 index 9288971..3f5a7c9 100644
 --- a/files/dnsmasq.init
 +++ b/files/dnsmasq.init
-@@ -865,6 +865,7 @@ dnsmasq_start()
+@@ -869,6 +869,7 @@ dnsmasq_start()
  	append_bool "$cfg" sequential_ip "--dhcp-sequential-ip"
  	append_bool "$cfg" allservers "--all-servers"
  	append_bool "$cfg" noping "--no-ping"
