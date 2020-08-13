@@ -1,5 +1,5 @@
 diff --git a/image/mt7621.mk b/image/mt7621.mk
-index c922303..1180809 100644
+index 060b322..9a93ad8 100644
 --- a/image/mt7621.mk
 +++ b/image/mt7621.mk
 @@ -320,8 +320,8 @@ define Device/d-team_newifi-d2
@@ -13,7 +13,7 @@ index c922303..1180809 100644
  endef
  TARGET_DEVICES += d-team_newifi-d2
  
-@@ -924,10 +924,8 @@ define Device/phicomm_k2p
+@@ -931,10 +931,8 @@ define Device/phicomm_k2p
    IMAGE_SIZE := 15744k
    DEVICE_VENDOR := Phicomm
    DEVICE_MODEL := K2P
@@ -25,7 +25,7 @@ index c922303..1180809 100644
  endef
  TARGET_DEVICES += phicomm_k2p
  
-@@ -1137,7 +1135,7 @@ define Device/xiaomi-ac2100
+@@ -1144,7 +1142,7 @@ define Device/xiaomi-ac2100
    IMAGE/rootfs0.bin := append-ubi | check-size
    IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
    DEVICE_VENDOR := Xiaomi
@@ -35,7 +35,7 @@ index c922303..1180809 100644
  endef
  
 diff --git a/mt7621/base-files/etc/board.d/01_leds b/mt7621/base-files/etc/board.d/01_leds
-index 63c0bce..3d3ff17 100755
+index 8708de3..e594b47 100755
 --- a/mt7621/base-files/etc/board.d/01_leds
 +++ b/mt7621/base-files/etc/board.d/01_leds
 @@ -19,8 +19,8 @@ led_wlan="$(get_dt_led wlan)"
@@ -50,7 +50,7 @@ index 63c0bce..3d3ff17 100755
  d-team,pbr-m1|\
  gehua,ghl-r-001)
 diff --git a/mt7621/base-files/etc/board.d/02_network b/mt7621/base-files/etc/board.d/02_network
-index b9f2740..705d27c 100755
+index cf3df76..52c39dd 100755
 --- a/mt7621/base-files/etc/board.d/02_network
 +++ b/mt7621/base-files/etc/board.d/02_network
 @@ -20,6 +20,9 @@ ramips_setup_interfaces()
@@ -79,6 +79,6 @@ index b9f2740..705d27c 100755
 +	phicomm,k2p)
 +		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4 ra0 rax0" "wan"
 +		;;
- 	ubnt,edgerouter-x)
- 		ucidef_set_interfaces_lan_wan "eth1 eth2 eth3 eth4" "eth0"
+ 	mikrotik,routerboard-760igs)
+ 		ucidef_set_interfaces_lan_wan "lan2 lan3 lan4 lan5" "wan sfp"
  		;;
