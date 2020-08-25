@@ -1,7 +1,7 @@
 diff -Naupr linux-5.4.10_orig/drivers/net/Kconfig linux-5.4.10/drivers/net/Kconfig
 --- linux-5.4.10_orig/drivers/net/Kconfig	2020-01-09 11:25:53.000000000 +0200
 +++ linux-5.4.10/drivers/net/Kconfig	2020-01-10 15:16:47.222143243 +0200
-@@ -282,6 +282,125 @@ config RIONET_RX_SIZE
+@@ -283,6 +283,125 @@ config RIONET_RX_SIZE
  	depends on RIONET
  	default "128"
  
@@ -1125,7 +1125,7 @@ diff -Naupr linux-5.4.10_orig/include/linux/imq.h linux-5.4.10/include/linux/imq
 diff -Naupr linux-5.4.10_orig/include/linux/netdevice.h linux-5.4.10/include/linux/netdevice.h
 --- linux-5.4.10_orig/include/linux/netdevice.h	2020-01-09 11:25:53.000000000 +0200
 +++ linux-5.4.10/include/linux/netdevice.h	2020-01-10 15:16:47.223143243 +0200
-@@ -1936,6 +1936,11 @@ struct net_device {
+@@ -1938,6 +1938,11 @@ struct net_device {
  /*
   * Cache lines mostly used on receive path (including eth_type_trans())
   */
@@ -1137,7 +1137,7 @@ diff -Naupr linux-5.4.10_orig/include/linux/netdevice.h linux-5.4.10/include/lin
  	/* Interface address info used in eth_type_trans() */
  	unsigned char		*dev_addr;
  
-@@ -4033,6 +4038,19 @@ static inline void netif_tx_unlock_bh(st
+@@ -4037,6 +4042,19 @@ static inline void netif_tx_unlock_bh(st
  	}						\
  }
  
@@ -1241,7 +1241,7 @@ diff -Naupr linux-5.4.10_orig/include/linux/skbuff.h linux-5.4.10/include/linux/
  #ifdef CONFIG_NET_CLS_ACT
  	__u8			tc_skip_classify:1;
  	__u8			tc_at_ingress:1;
-@@ -1023,6 +1035,10 @@ void skb_tx_error(struct sk_buff *skb);
+@@ -1025,6 +1037,10 @@ void skb_tx_error(struct sk_buff *skb);
  void consume_skb(struct sk_buff *skb);
  void __consume_stateless_skb(struct sk_buff *skb);
  void  __kfree_skb(struct sk_buff *skb);
@@ -1252,7 +1252,7 @@ diff -Naupr linux-5.4.10_orig/include/linux/skbuff.h linux-5.4.10/include/linux/
  extern struct kmem_cache *skbuff_head_cache;
  
  void kfree_skb_partial(struct sk_buff *skb, bool head_stolen);
-@@ -4216,6 +4232,10 @@ static inline void __nf_copy(struct sk_b
+@@ -4218,6 +4234,10 @@ static inline void __nf_copy(struct sk_b
  	dst->_nfct = src->_nfct;
  	nf_conntrack_get(skb_nfct(src));
  #endif
@@ -1294,7 +1294,7 @@ diff -Naupr linux-5.4.10_orig/include/net/pkt_sched.h linux-5.4.10/include/net/p
 diff -Naupr linux-5.4.10_orig/include/net/sch_generic.h linux-5.4.10/include/net/sch_generic.h
 --- linux-5.4.10_orig/include/net/sch_generic.h	2020-01-09 11:25:53.000000000 +0200
 +++ linux-5.4.10/include/net/sch_generic.h	2020-01-10 15:16:47.226143243 +0200
-@@ -810,6 +810,13 @@ static inline int qdisc_enqueue(struct s
+@@ -796,6 +796,13 @@ static inline int qdisc_enqueue(struct s
  	return sch->enqueue(skb, sch, to_free);
  }
  
@@ -1324,7 +1324,7 @@ diff -Naupr linux-5.4.10_orig/include/uapi/linux/netfilter.h linux-5.4.10/includ
 diff -Naupr linux-5.4.10_orig/net/core/dev.c linux-5.4.10/net/core/dev.c
 --- linux-5.4.10_orig/net/core/dev.c	2020-01-09 11:25:53.000000000 +0200
 +++ linux-5.4.10/net/core/dev.c	2020-01-10 15:16:47.227143243 +0200
-@@ -137,6 +137,9 @@
+@@ -138,6 +138,9 @@
  #include <linux/hrtimer.h>
  #include <linux/netfilter_ingress.h>
  #include <linux/crash_dump.h>
@@ -1334,7 +1334,7 @@ diff -Naupr linux-5.4.10_orig/net/core/dev.c linux-5.4.10/net/core/dev.c
  #include <linux/sctp.h>
  #include <net/udp_tunnel.h>
  #include <linux/net_namespace.h>
-@@ -3191,6 +3194,13 @@ static int xmit_one(struct sk_buff *skb,
+@@ -3188,6 +3191,13 @@ static int xmit_one(struct sk_buff *skb,
  	unsigned int len;
  	int rc;
  
@@ -1348,7 +1348,7 @@ diff -Naupr linux-5.4.10_orig/net/core/dev.c linux-5.4.10/net/core/dev.c
  	if (dev_nit_active(dev))
  		dev_queue_xmit_nit(skb, dev);
  
-@@ -3230,6 +3240,8 @@ out:
+@@ -3227,6 +3237,8 @@ out:
  	return skb;
  }
  
@@ -1473,7 +1473,7 @@ diff -Naupr linux-5.4.10_orig/net/core/skbuff.c linux-5.4.10/net/core/skbuff.c
 diff -Naupr linux-5.4.10_orig/net/netfilter/Kconfig linux-5.4.10/net/netfilter/Kconfig
 --- linux-5.4.10_orig/net/netfilter/Kconfig	2020-01-09 11:25:53.000000000 +0200
 +++ linux-5.4.10/net/netfilter/Kconfig	2020-01-10 15:16:47.229143243 +0200
-@@ -929,6 +929,18 @@ config NETFILTER_XT_TARGET_LOG
+@@ -941,6 +941,18 @@ config NETFILTER_XT_TARGET_LOG
  
  	  To compile it as a module, choose M here.  If unsure, say N.
  
@@ -1495,7 +1495,7 @@ diff -Naupr linux-5.4.10_orig/net/netfilter/Kconfig linux-5.4.10/net/netfilter/K
 diff -Naupr linux-5.4.10_orig/net/netfilter/Makefile linux-5.4.10/net/netfilter/Makefile
 --- linux-5.4.10_orig/net/netfilter/Makefile	2020-01-09 11:25:53.000000000 +0200
 +++ linux-5.4.10/net/netfilter/Makefile	2020-01-10 15:16:47.229143243 +0200
-@@ -142,6 +142,7 @@ obj-$(CONFIG_NETFILTER_XT_TARGET_CT) +=
+@@ -145,6 +145,7 @@ obj-$(CONFIG_NETFILTER_XT_TARGET_CT) +=
  obj-$(CONFIG_NETFILTER_XT_TARGET_DSCP) += xt_DSCP.o
  obj-$(CONFIG_NETFILTER_XT_TARGET_HL) += xt_HL.o
  obj-$(CONFIG_NETFILTER_XT_TARGET_HMARK) += xt_HMARK.o
