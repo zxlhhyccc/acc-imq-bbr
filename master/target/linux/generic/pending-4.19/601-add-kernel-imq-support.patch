@@ -1137,7 +1137,7 @@ diff -Naupr linux-4.19.94_orig/include/linux/netdevice.h linux-4.19.94/include/l
  	/* Interface address info used in eth_type_trans() */
  	unsigned char		*dev_addr;
  
-@@ -3938,6 +3943,19 @@ static inline void netif_tx_unlock_bh(st
+@@ -3959,6 +3964,19 @@ static inline void netif_tx_unlock_bh(st
  	}						\
  }
  
@@ -1318,7 +1318,7 @@ diff -Naupr linux-4.19.94_orig/include/net/pkt_sched.h linux-4.19.94/include/net
 diff -Naupr linux-4.19.94_orig/include/net/sch_generic.h linux-4.19.94/include/net/sch_generic.h
 --- linux-4.19.94_orig/include/net/sch_generic.h	2020-01-09 11:19:10.000000000 +0200
 +++ linux-4.19.94/include/net/sch_generic.h	2020-01-10 13:42:30.109018732 +0200
-@@ -704,6 +704,13 @@ static inline int qdisc_enqueue(struct s
+@@ -705,6 +705,13 @@ static inline int qdisc_enqueue(struct s
  	return sch->enqueue(skb, sch, to_free);
  }
  
@@ -1348,7 +1348,7 @@ diff -Naupr linux-4.19.94_orig/include/uapi/linux/netfilter.h linux-4.19.94/incl
 diff -Naupr linux-4.19.94_orig/net/core/dev.c linux-4.19.94/net/core/dev.c
 --- linux-4.19.94_orig/net/core/dev.c	2020-01-09 11:19:10.000000000 +0200
 +++ linux-4.19.94/net/core/dev.c	2020-01-10 13:42:30.110018732 +0200
-@@ -142,6 +142,9 @@
+@@ -143,6 +143,9 @@
  #include <linux/hrtimer.h>
  #include <linux/netfilter_ingress.h>
  #include <linux/crash_dump.h>
@@ -1358,7 +1358,7 @@ diff -Naupr linux-4.19.94_orig/net/core/dev.c linux-4.19.94/net/core/dev.c
  #include <linux/sctp.h>
  #include <net/udp_tunnel.h>
  #include <linux/net_namespace.h>
-@@ -3250,7 +3253,12 @@ static int xmit_one(struct sk_buff *skb,
+@@ -3248,7 +3251,12 @@ static int xmit_one(struct sk_buff *skb,
  	unsigned int len;
  	int rc;
  
@@ -1371,7 +1371,7 @@ diff -Naupr linux-4.19.94_orig/net/core/dev.c linux-4.19.94/net/core/dev.c
  		dev_queue_xmit_nit(skb, dev);
  
  	len = skb->len;
-@@ -3289,6 +3297,8 @@ out:
+@@ -3287,6 +3295,8 @@ out:
  	return skb;
  }
  
@@ -1498,7 +1498,7 @@ diff -Naupr linux-4.19.94_orig/net/core/skbuff.c linux-4.19.94/net/core/skbuff.c
 diff -Naupr linux-4.19.94_orig/net/netfilter/Kconfig linux-4.19.94/net/netfilter/Kconfig
 --- linux-4.19.94_orig/net/netfilter/Kconfig	2020-01-09 11:19:10.000000000 +0200
 +++ linux-4.19.94/net/netfilter/Kconfig	2020-01-10 13:42:30.111018732 +0200
-@@ -920,6 +920,18 @@ config NETFILTER_XT_TARGET_LOG
+@@ -932,6 +932,18 @@ config NETFILTER_XT_TARGET_LOG
  
  	  To compile it as a module, choose M here.  If unsure, say N.
  
@@ -1520,7 +1520,7 @@ diff -Naupr linux-4.19.94_orig/net/netfilter/Kconfig linux-4.19.94/net/netfilter
 diff -Naupr linux-4.19.94_orig/net/netfilter/Makefile linux-4.19.94/net/netfilter/Makefile
 --- linux-4.19.94_orig/net/netfilter/Makefile	2020-01-09 11:19:10.000000000 +0200
 +++ linux-4.19.94/net/netfilter/Makefile	2020-01-10 13:42:30.111018732 +0200
-@@ -142,6 +142,7 @@ obj-$(CONFIG_NETFILTER_XT_TARGET_CT) +=
+@@ -145,6 +145,7 @@ obj-$(CONFIG_NETFILTER_XT_TARGET_CT) +=
  obj-$(CONFIG_NETFILTER_XT_TARGET_DSCP) += xt_DSCP.o
  obj-$(CONFIG_NETFILTER_XT_TARGET_HL) += xt_HL.o
  obj-$(CONFIG_NETFILTER_XT_TARGET_HMARK) += xt_HMARK.o

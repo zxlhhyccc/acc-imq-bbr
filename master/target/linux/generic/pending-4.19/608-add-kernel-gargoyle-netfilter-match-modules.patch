@@ -269,7 +269,7 @@
 +#endif /*_IPT_WEBURL_H*/
 --- a/net/ipv4/netfilter/Kconfig
 +++ b/net/ipv4/netfilter/Kconfig
-@@ -417,5 +417,25 @@ config IP_NF_ARP_MANGLE
+@@ -418,5 +418,25 @@ config IP_NF_ARP_MANGLE
  
  endif # IP_NF_ARPTABLES
  
@@ -297,7 +297,7 @@
  
 --- a/net/ipv4/netfilter/Makefile
 +++ b/net/ipv4/netfilter/Makefile
-@@ -55,6 +55,10 @@ obj-$(CONFIG_IP_NF_RAW) += iptable_raw.o
+@@ -53,6 +53,10 @@ obj-$(CONFIG_IP_NF_RAW) += iptable_raw.o
  obj-$(CONFIG_IP_NF_SECURITY) += iptable_security.o
  
  # matches
