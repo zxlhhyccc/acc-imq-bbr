@@ -13,18 +13,75 @@ __target_inc=1
 DEVICE_TYPE?=router
 
 # Default packages - the really basic set
-DEFAULT_PACKAGES:=base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd urandom-seed urngd \
-block-mount coremark coreutils kmod-nf-nathelper kmod-nf-nathelper-extra kmod-ipt-raw wget libustream-openssl ca-certificates \
-default-settings luci luci-lib-base luci-compat luci-lib-fs luci-lib-ipkg luci-proto-relay luci-app-ddns luci-app-sqm luci-app-upnp luci-app-adbyby-plus luci-app-autoreboot \
-luci-app-vsftpd luci-app-ssr-plus luci-app-arpbind luci-app-vlmcsd luci-app-wol luci-app-ramfree \
-luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol \
-ddns-scripts_aliyun ddns-scripts_dnspod bind-host
+DEFAULT_PACKAGES:=\
+	base-files \
+	busybox \
+	ca-bundle \
+	dropbear \
+	fstools \
+	libc \
+	libgcc \
+	libustream-wolfssl \
+	logd \
+	mtd \
+	netifd \
+	opkg \
+	uci \
+	uclient-fetch \
+	urandom-seed \
+	urngd \
+	netifd \
+	coremark \
+	coreutils \
+	kmod-nf-nathelper \
+	kmod-nf-nathelper-extra \
+	kmod-ipt-raw \
+	wget \
+	ca-certificates \
+	default-settings \
+	luci \
+	luci-lib-base \
+	luci-compat \
+	luci-lib-fs \
+	luci-lib-ipkg \
+	luci-proto-relay \
+	luci-app-ddns \
+	luci-app-sqm \
+	luci-app-upnp \
+	luci-app-adbyby-plus \
+	luci-app-autoreboot \
+	luci-app-vsftpd \
+	luci-app-ssr-plus \
+	luci-app-arpbind \
+	luci-app-vlmcsd \
+	luci-app-wol \
+	luci-app-ramfree \
+	luci-app-flowoffload \
+	luci-app-nlbwmon \
+	luci-app-accesscontrol \
+	ddns-scripts_aliyun \
+	ddns-scripts_dnspod \
+	bind-host
 # For the basic set
 DEFAULT_PACKAGES.basic:=
 # For nas targets
-DEFAULT_PACKAGES.nas:=fdisk lsblk mdadm automount autosamba
+DEFAULT_PACKAGES.nas:=\
+	block-mount \
+	fdisk \
+	lsblk \
+	mdadm \
+	automount \
+	autosamba
 # For router targets
-DEFAULT_PACKAGES.router:=dnsmasq-full iptables ip6tables ppp ppp-mod-pppoe firewall odhcpd-ipv6only odhcp6c
+DEFAULT_PACKAGES.router:=\
+	dnsmasq-full \
+	firewall \
+	ip6tables \
+	iptables \
+	odhcp6c \
+	odhcpd-ipv6only \
+	ppp \
+	ppp-mod-pppoe
 
 ifneq ($(DUMP),)
   all: dumpinfo
@@ -61,7 +118,7 @@ endif
 DEFAULT_PACKAGES += $(DEFAULT_PACKAGES.$(DEVICE_TYPE))
 
 filter_packages = $(filter-out -% $(patsubst -%,%,$(filter -%,$(1))),$(1))
-extra_packages = $(if $(filter wpad-mini wpad-basic wpad nas,$(1)),iwinfo)
+extra_packages = $(if $(filter wpad-mini wpad-basic wpad-basic-wolfssl wpad nas,$(1)),iwinfo)
 
 define ProfileDefault
   NAME:=
