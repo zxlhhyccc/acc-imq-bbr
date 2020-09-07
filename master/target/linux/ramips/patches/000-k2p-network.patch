@@ -2,7 +2,7 @@ diff --git a/image/mt7621.mk b/image/mt7621.mk
 index 060b322..9a93ad8 100644
 --- a/image/mt7621.mk
 +++ b/image/mt7621.mk
-@@ -320,8 +320,8 @@ define Device/d-team_newifi-d2
+@@ -327,8 +327,8 @@ define Device/d-team_newifi-d2
    IMAGE_SIZE := 32448k
    DEVICE_VENDOR := Newifi
    DEVICE_MODEL := D2
@@ -13,7 +13,7 @@ index 060b322..9a93ad8 100644
  endef
  TARGET_DEVICES += d-team_newifi-d2
  
-@@ -931,10 +931,8 @@ define Device/phicomm_k2p
+@@ -938,10 +938,8 @@ define Device/phicomm_k2p
    IMAGE_SIZE := 15744k
    DEVICE_VENDOR := Phicomm
    DEVICE_MODEL := K2P
@@ -25,7 +25,7 @@ index 060b322..9a93ad8 100644
  endef
  TARGET_DEVICES += phicomm_k2p
  
-@@ -1144,7 +1142,7 @@ define Device/xiaomi-ac2100
+@@ -1160,7 +1158,7 @@ define Device/xiaomi-ac2100
    IMAGE/rootfs0.bin := append-ubi | check-size
    IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
    DEVICE_VENDOR := Xiaomi
