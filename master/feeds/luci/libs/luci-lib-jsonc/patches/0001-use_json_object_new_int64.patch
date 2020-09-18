@@ -8,10 +8,10 @@ Subject: [PATCH] luci-lib-jsonc: stringify int use json_object_new_int64
  feeds/luci/libs/luci-lib-jsonc/src/jsonc.c | 9 ++++-----
  1 file changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/luci-lib-jsonc/src/jsonc.c b/luci-lib-jsonc/src/jsonc.c
+diff --git a/src/jsonc.c b/src/jsonc.c
 index 2f56a4a688..1ccfda8765 100644
---- a/luci-lib-jsonc/src/jsonc.c
-+++ b/luci-lib-jsonc/src/jsonc.c
+--- a/src/jsonc.c
++++ b/src/jsonc.c
 @@ -365,12 +365,11 @@ static struct json_object * _lua_to_json_rec(lua_State *L, int index,
  
  	case LUA_TNUMBER:
