@@ -1,7 +1,7 @@
 diff --git a/mt7621.dtsi b/mt7621.dtsi
 index 1c19545..51e2747 100644
---- a/mt7621.dtsi
-+++ b/mt7621.dtsi
+--- a/dts/mt7621.dtsi
++++ b/dts/mt7621.dtsi
 @@ -464,6 +464,9 @@
  
  		mediatek,ethsys = <&ethsys>;
