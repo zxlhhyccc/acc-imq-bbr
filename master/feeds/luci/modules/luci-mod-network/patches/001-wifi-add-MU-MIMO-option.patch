@@ -1,7 +1,7 @@
-diff --git a/wireless.js b/wireless.js
+diff --git a/htdocs/luci-static/resources/view/network/wireless.js b/htdocs/luci-static/resources/view/network/wireless.js
 index dc75c95..7c12641 100644
---- a/wireless.js
-+++ b/wireless.js
+--- a/htdocs/luci-static/resources/view/network/wireless.js
++++ b/htdocs/luci-static/resources/view/network/wireless.js
 @@ -890,7 +890,11 @@ return view.extend({
  					o.wifiNetwork = radioNet;
  
