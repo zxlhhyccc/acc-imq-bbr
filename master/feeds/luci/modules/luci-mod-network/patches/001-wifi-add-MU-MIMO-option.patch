@@ -1,15 +1,17 @@
-diff --git a/htdocs/luci-static/resources/view/network/wireless.js b/htdocs/luci-static/resources/view/network/wireless.js
-index ca0cdf6..789a131 100644
---- a/htdocs/luci-static/resources/view/network/wireless.js
-+++ b/htdocs/luci-static/resources/view/network/wireless.js
-@@ -892,6 +892,10 @@ return view.extend({
- 					o = ss.taboption('advanced', form.Flag, 'legacy_rates', _('Allow legacy 802.11b rates'));
- 					o.default = o.enabled;
+diff --git a/wireless.js b/wireless.js
+index dc75c95..7c12641 100644
+--- a/wireless.js
++++ b/wireless.js
+@@ -890,7 +890,11 @@ return view.extend({
+ 					o.wifiNetwork = radioNet;
  
+ 					o = ss.taboption('advanced', form.Flag, 'legacy_rates', _('Allow legacy 802.11b rates'));
+-					o.default = o.enabled;
++					o.default = o.disable;
++
 +					o = ss.taboption("advanced", form.Flag, 'mu_beamformer', _('MU-MIMO'));
 +					o.rmempty = false;
-+					o.default = '0';
-+
++					o.default = '1';
+ 
  					o = ss.taboption('advanced', form.Value, 'distance', _('Distance Optimization'), _('Distance to farthest network member in meters.'));
  					o.datatype = 'or(range(0,114750),"auto")';
- 					o.placeholder = 'auto';
