@@ -309,7 +309,7 @@ index 04111c1..8c741f7 100644
  	struct nf_conn *ct = item->ct;
  	struct sk_buff *skb;
  	unsigned int type;
-@@ -3502,9 +3515,15 @@ static int ctnetlink_stat_exp_cpu(struct net *net, struct sock *ctnl,
+@@ -3504,9 +3517,15 @@ static int ctnetlink_stat_exp_cpu(struct net *net, struct sock *ctnl,
  }
  
  #ifdef CONFIG_NF_CONNTRACK_EVENTS
