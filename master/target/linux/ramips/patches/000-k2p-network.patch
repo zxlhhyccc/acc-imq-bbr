@@ -25,7 +25,7 @@ index 274d9f7..f25ab4b 100644
  endef
  TARGET_DEVICES += phicomm_k2p
  
-@@ -1168,7 +1166,7 @@ define Device/xiaomi-ac2100
+@@ -1180,7 +1178,7 @@ define Device/xiaomi-ac2100
    IMAGE/rootfs0.bin := append-ubi | check-size
    IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
    DEVICE_VENDOR := Xiaomi
