@@ -757,7 +757,7 @@ mwan3_set_policy()
 		else
 			probability="1"
 		fi
-		
+
 		$IPT -I "mwan3_policy_$policy" \
 			-m mark --mark 0x0/$MMX_MASK \
 			-m statistic \
