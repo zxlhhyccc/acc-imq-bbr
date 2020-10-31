@@ -1,0 +1,158 @@
+diff --git a/modules/netdevices.mk b/modules/netdevices.mk
+index bf43bcb..fe0a22a 100644
+--- a/modules/netdevices.mk
++++ b/modules/netdevices.mk
+@@ -758,6 +758,21 @@ endef
+ $(eval $(call KernelPackage,iavf))
+ 
+ 
++define KernelPackage/i40evf
++  SUBMENU:=$(NETWORK_DEVICES_MENU)
++  TITLE:=Intel(R) Ethernet Adaptive Virtual Function support
++  DEPENDS:=@!LINUX_5_4 @PCI_SUPPORT +kmod-i40e
++  KCONFIG:=CONFIG_I40EVF
++  FILES:=$(LINUX_DIR)/drivers/net/ethernet/intel/i40evf/i40evf.ko
++  AUTOLOAD:=$(call AutoProbe,i40evf)
++endef
++
++define KernelPackage/i40evf/description
++ Kernel modules for Intel(R) Ethernet Controller XL710 Family Virtual Function Ethernet adapters.
++endef
++
++$(eval $(call KernelPackage,i40evf))
++
+ define KernelPackage/b44
+   TITLE:=Broadcom 44xx driver
+   KCONFIG:=CONFIG_B44
+@@ -1203,3 +1218,26 @@ define KernelPackage/igc/description
+ endef
+ 
+ $(eval $(call KernelPackage,igc))
++
++
++define KernelPackage/sfc
++  SUBMENU:=$(NETWORK_DEVICES_MENU)
++  TITLE:=Solarflare SFC9000/SFC9100-family 10Gbps NIC support
++  DEPENDS:=@PCI_SUPPORT +kmod-mdio +kmod-i2c-core +kmod-i2c-algo-bit +kmod-hwmon-core +kmod-ptp +kmod-lib-crc32c
++# add PCI_IOV
++  KCONFIG:= \
++    CONFIG_NET_VENDOR_SOLARFLARE=y \
++    CONFIG_SFC=y \
++    CONFIG_MTD=y \
++    CONFIG_MCDI_MON=y \
++    CONFIG_SRIOV=n \
++    CONFIG_MCDI_LOGGING=n \
++  FILES:=$(LINUX_DIR)/drivers/net/ethernet/sfc/sfc.ko
++  AUTOLOAD:=$(call AutoProbe, sfc)
++endef
++
++define KernelPackage/sfc/description
++  Solarflare SFC9000/SFC9100-family 10Gbps NIC support
++endef
++
++$(eval $(call KernelPackage,sfc))
+diff --git a/modules/netfilter.mk b/modules/netfilter.mk
+index 22a9f8e..b7ac08f 100644
+--- a/modules/netfilter.mk
++++ b/modules/netfilter.mk
+@@ -458,6 +458,24 @@ endef
+ $(eval $(call KernelPackage,ipt-nat))
+ 
+ 
++define KernelPackage/ipt-cgroup
++  SUBMENU:=$(NF_MENU)
++  TITLE:=cgroup netfilter module
++  KCONFIG:=$(KCONFIG_IPT_CGROUP)
++  FILES:=$(LINUX_DIR)/net/netfilter/*cgroup*.$(LINUX_KMOD_SUFFIX)
++  AUTOLOAD:=$(call AutoLoad,$(notdir $(IPT_CGROUP-m)))
++  DEPENDS:= kmod-ipt-core
++endef
++
++$(eval $(call KernelPackage,ipt-cgroup))
++
++define KernelPackage/ipt-cgroup/description
++ Kernel support for cgroup netfilter module
++ Include:
++ - cgroup
++endef
++
++
+ define KernelPackage/ipt-raw
+   TITLE:=Netfilter IPv4 raw table support
+   KCONFIG:=CONFIG_IP_NF_RAW
+@@ -469,6 +487,75 @@ endef
+ $(eval $(call KernelPackage,ipt-raw))
+ 
+ 
++define KernelPackage/ipt-imq
++  TITLE:=Intermediate Queueing support
++  KCONFIG:= \
++	CONFIG_IMQ \
++	CONFIG_IMQ_BEHAVIOR_BA=y \
++	CONFIG_IMQ_NUM_DEVS=2 \
++	CONFIG_NETFILTER_XT_TARGET_IMQ
++  FILES:= \
++	$(LINUX_DIR)/drivers/net/imq.$(LINUX_KMOD_SUFFIX) \
++	$(foreach mod,$(IPT_IMQ-m),$(LINUX_DIR)/net/$(mod).$(LINUX_KMOD_SUFFIX))
++  AUTOLOAD:=$(call AutoProbe,$(notdir imq $(IPT_IMQ-m)))
++  $(call AddDepends/ipt)
++endef
++
++define KernelPackage/ipt-imq/description
++ Kernel support for Intermediate Queueing devices
++endef
++
++$(eval $(call KernelPackage,ipt-imq))
++
++
++define KernelPackage/ipt-bandwidth
++  SUBMENU:=$(NF_MENU)
++  TITLE:=bandwidth
++  KCONFIG:=$(KCONFIG_IPT_BANDWIDTH)
++  FILES:=$(LINUX_DIR)/net/ipv4/netfilter/*bandwidth*.$(LINUX_KMOD_SUFFIX)
++  AUTOLOAD:=$(call AutoLoad,$(notdir $(IPT_BANDWIDTH-m)))
++  DEPENDS:=@!LINUX_5_4 kmod-ipt-core
++endef
++
++$(eval $(call KernelPackage,ipt-bandwidth))
++
++
++define KernelPackage/ipt-timerange
++  SUBMENU:=$(NF_MENU)
++  TITLE:=timerange
++  KCONFIG:=$(KCONFIG_IPT_TIMERANGE)
++  FILES:=$(LINUX_DIR)/net/ipv4/netfilter/*timerange*.$(LINUX_KMOD_SUFFIX)
++  AUTOLOAD:=$(call AutoLoad,$(notdir $(IPT_TIMERANGE-m)))
++  DEPENDS:=@!LINUX_5_4 kmod-ipt-core
++endef
++
++$(eval $(call KernelPackage,ipt-timerange))
++
++
++define KernelPackage/ipt-webmon
++  SUBMENU:=$(NF_MENU)
++  TITLE:=webmon
++  KCONFIG:=$(KCONFIG_IPT_WEBMON)
++  FILES:=$(LINUX_DIR)/net/ipv4/netfilter/*webmon*.$(LINUX_KMOD_SUFFIX)
++  AUTOLOAD:=$(call AutoLoad,$(notdir $(IPT_WEBMON-m)))
++  DEPENDS:=@!LINUX_5_4 kmod-ipt-core
++endef
++
++$(eval $(call KernelPackage,ipt-webmon))
++
++
++define KernelPackage/ipt-weburl
++  SUBMENU:=$(NF_MENU)
++  TITLE:=weburl
++  KCONFIG:=$(KCONFIG_IPT_WEBURL)
++  FILES:=$(LINUX_DIR)/net/ipv4/netfilter/*weburl*.$(LINUX_KMOD_SUFFIX)
++  AUTOLOAD:=$(call AutoLoad,$(notdir $(IPT_WEBURL-m)))
++  DEPENDS:=@!LINUX_5_4 kmod-ipt-core
++endef
++
++$(eval $(call KernelPackage,ipt-weburl))
++
++
+ define KernelPackage/ipt-raw6
+   TITLE:=Netfilter IPv6 raw table support
+   DEPENDS:=@IPV6
