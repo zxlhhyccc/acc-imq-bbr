@@ -2,10 +2,10 @@ diff --git a/files/dhcp.conf b/files/dhcp.conf
 index 19052e2..03bdd9b 100644
 --- a/files/dhcp.conf
 +++ b/files/dhcp.conf
-@@ -20,6 +20,7 @@ config dnsmasq
- 	#list notinterface	lo
+@@ -21,6 +21,7 @@ config dnsmasq
  	#list bogusnxdomain     '64.94.110.11'
  	option localservice	1  # disable to allow DNS requests from non-local subnets
+	option ednspacket_max	1232
 +	option filteraaaa	1
  
  config dhcp lan
