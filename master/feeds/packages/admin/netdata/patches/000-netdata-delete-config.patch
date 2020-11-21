@@ -1,0 +1,12 @@
+diff --git a/Makefile b/Makefile
+index 324f77d..7cf4e8b 100644
+--- a/Makefile
++++ b/Makefile
+@@ -71,7 +71,6 @@ endef
+ define Package/netdata/install
+ 	$(INSTALL_DIR) $(1)/etc/netdata/custom-plugins.d
+ 	$(CP) $(PKG_INSTALL_DIR)/etc/netdata $(1)/etc
+-	$(CP) ./files/netdata.conf $(1)/etc/netdata
+ 	touch $(1)/etc/netdata/.opt-out-from-anonymous-statistics
+ 	$(INSTALL_DIR) $(1)/usr/lib
+ 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/netdata $(1)/usr/lib
