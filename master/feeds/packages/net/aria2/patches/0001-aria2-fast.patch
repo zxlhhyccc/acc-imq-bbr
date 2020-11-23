@@ -1,5 +1,5 @@
---- aria2-1.34.0/src/OptionHandlerFactory.cc	2018-05-15 20:33:25.000000000 +0800
-+++ OptionHandlerFactory.cc	2018-07-05 10:40:25.000000000 +0800
+--- a/src/OptionHandlerFactory.cc	2018-05-15 20:33:25.000000000 +0800
++++ b/src/OptionHandlerFactory.cc	2018-07-05 10:40:25.000000000 +0800
 @@ -158,7 +158,7 @@
    }
    {
