@@ -83,7 +83,7 @@
        "Enable multilink operation", OPT_PRIO | 1 },
 --- a/pppd/pppd.h
 +++ b/pppd/pppd.h
-@@ -343,6 +343,7 @@ extern char	*bundle_name;	/* bundle name
+@@ -344,6 +344,7 @@ extern char	*bundle_name;	/* bundle name
  extern bool	dump_options;	/* print out option values */
  extern bool	dryrun;		/* check everything, print options, exit */
  extern int	child_wait;	/* # seconds to wait for children at end */
