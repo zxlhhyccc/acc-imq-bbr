@@ -1,5 +1,5 @@
 diff --git a/htdocs/luci-static/resources/view/status/include/10_system.js b/htdocs/luci-static/resources/view/status/include/10_system.js
-index 942b2dd..a5893c8 100644
+index ea8f2bb..4cd9bbe 100644
 --- a/htdocs/luci-static/resources/view/status/include/10_system.js
 +++ b/htdocs/luci-static/resources/view/status/include/10_system.js
 @@ -13,6 +13,16 @@ var callSystemInfo = rpc.declare({
@@ -57,4 +57,4 @@ index 942b2dd..a5893c8 100644
 +			_('CPU usage (%)'),    cpuusage.cpuusage
  		];
  
- 		var table = E('div', { 'class': 'table' });
+ 		var table = E('table', { 'class': 'table' });

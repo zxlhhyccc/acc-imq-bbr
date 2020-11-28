@@ -1,8 +1,8 @@
 diff --git a/image/mt7621.mk b/image/mt7621.mk
-index 274d9f7..f25ab4b 100644
+index ce9a3ae..be82afc 100644
 --- a/image/mt7621.mk
 +++ b/image/mt7621.mk
-@@ -333,8 +333,8 @@ define Device/d-team_newifi-d2
+@@ -319,8 +319,8 @@ define Device/d-team_newifi-d2
    IMAGE_SIZE := 32448k
    DEVICE_VENDOR := Newifi
    DEVICE_MODEL := D2
@@ -13,7 +13,7 @@ index 274d9f7..f25ab4b 100644
  endef
  TARGET_DEVICES += d-team_newifi-d2
  
-@@ -953,10 +953,8 @@ define Device/phicomm_k2p
+@@ -942,10 +942,8 @@ define Device/phicomm_k2p
    IMAGE_SIZE := 15744k
    DEVICE_VENDOR := Phicomm
    DEVICE_MODEL := K2P
@@ -25,7 +25,7 @@ index 274d9f7..f25ab4b 100644
  endef
  TARGET_DEVICES += phicomm_k2p
  
-@@ -1187,7 +1185,7 @@ define Device/xiaomi-ac2100
+@@ -1176,7 +1174,7 @@ define Device/xiaomi-ac2100
    IMAGE/rootfs0.bin := append-ubi | check-size
    IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
    DEVICE_VENDOR := Xiaomi
@@ -35,7 +35,7 @@ index 274d9f7..f25ab4b 100644
  endef
  
 diff --git a/mt7621/base-files/etc/board.d/01_leds b/mt7621/base-files/etc/board.d/01_leds
-index a492132..3450403 100755
+index 3dd2a21..4de7ee4 100755
 --- a/mt7621/base-files/etc/board.d/01_leds
 +++ b/mt7621/base-files/etc/board.d/01_leds
 @@ -10,8 +10,8 @@ board_config_update
@@ -50,7 +50,7 @@ index a492132..3450403 100755
  d-team,pbr-m1|\
  gehua,ghl-r-001|\
 diff --git a/mt7621/base-files/etc/board.d/02_network b/mt7621/base-files/etc/board.d/02_network
-index 2606347..0ab75cc 100755
+index fccd9c6..eeee4de 100755
 --- a/mt7621/base-files/etc/board.d/02_network
 +++ b/mt7621/base-files/etc/board.d/02_network
 @@ -13,6 +13,9 @@ ramips_setup_interfaces()
