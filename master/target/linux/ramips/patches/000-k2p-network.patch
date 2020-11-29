@@ -1,8 +1,8 @@
 diff --git a/image/mt7621.mk b/image/mt7621.mk
-index ce9a3ae..be82afc 100644
+index 7b8a73c..85a5007 100644
 --- a/image/mt7621.mk
 +++ b/image/mt7621.mk
-@@ -319,8 +319,8 @@ define Device/d-team_newifi-d2
+@@ -330,8 +330,8 @@ define Device/d-team_newifi-d2
    IMAGE_SIZE := 32448k
    DEVICE_VENDOR := Newifi
    DEVICE_MODEL := D2
@@ -13,7 +13,7 @@ index ce9a3ae..be82afc 100644
  endef
  TARGET_DEVICES += d-team_newifi-d2
  
-@@ -942,10 +942,8 @@ define Device/phicomm_k2p
+@@ -953,10 +953,8 @@ define Device/phicomm_k2p
    IMAGE_SIZE := 15744k
    DEVICE_VENDOR := Phicomm
    DEVICE_MODEL := K2P
@@ -25,7 +25,7 @@ index ce9a3ae..be82afc 100644
  endef
  TARGET_DEVICES += phicomm_k2p
  
-@@ -1176,7 +1174,7 @@ define Device/xiaomi-ac2100
+@@ -1187,7 +1185,7 @@ define Device/xiaomi-ac2100
    IMAGE/rootfs0.bin := append-ubi | check-size
    IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
    DEVICE_VENDOR := Xiaomi
@@ -35,11 +35,11 @@ index ce9a3ae..be82afc 100644
  endef
  
 diff --git a/mt7621/base-files/etc/board.d/01_leds b/mt7621/base-files/etc/board.d/01_leds
-index 3dd2a21..4de7ee4 100755
+index cd1814c..a46628c 100755
 --- a/mt7621/base-files/etc/board.d/01_leds
 +++ b/mt7621/base-files/etc/board.d/01_leds
-@@ -10,8 +10,8 @@ board_config_update
- case $board in
+@@ -14,8 +14,8 @@ asus,rt-n56u-b1)
+ 	;;
  d-team,newifi-d2)
  	ucidef_set_led_netdev "internet" "internet" "amber:internet" "wan"
 -	ucidef_set_led_netdev "wlan2g" "WiFi 2.4GHz" "blue:wlan2g" "wlan0"
