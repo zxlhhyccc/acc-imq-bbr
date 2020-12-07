@@ -22,7 +22,7 @@
 
 --- a/package/kernel/linux/modules/lib.mk
 +++ b/package/kernel/linux/modules/lib.mk
-@@ -165,6 +165,27 @@ endef
+@@ -167,6 +167,27 @@ endef
  $(eval $(call KernelPackage,lib-lz4))
  
  
@@ -41,7 +41,7 @@
 +endef
 +
 +define KernelPackage/lib-lz4hc/description
-+ Kernel module for LZ4HC compression/decompression support
++  Kernel module for LZ4HC compression/decompression support
 +endef
 +
 +$(eval $(call KernelPackage,lib-lz4hc))
@@ -50,7 +50,6 @@
  define KernelPackage/lib-raid6
    SUBMENU:=$(LIB_MENU)
    TITLE:=RAID6 algorithm support
-
 --- a/package/kernel/linux/modules/other.mk
 +++ b/package/kernel/linux/modules/other.mk
 @@ -935,6 +935,85 @@ endef
