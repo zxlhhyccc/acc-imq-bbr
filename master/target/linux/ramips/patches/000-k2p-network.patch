@@ -64,8 +64,8 @@ index fccd9c6..eeee4de 100755
  	lenovo,newifi-d1|\
  	mikrotik,routerboard-m33g|\
 @@ -36,7 +39,7 @@ ramips_setup_interfaces()
+ 	xiaomi,mi-router-3-pro|\
  	xiaomi,mi-router-ac2100|\
- 	xiaomi,mir3p|\
  	xiaomi,redmi-router-ac2100)
 -		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" "wan"
 +		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 ra0 rai0" "wan"
