@@ -58,18 +58,3 @@ index 7f46740..394bc1d 100644
  		s.taboption('tftp', form.Flag, 'enable_tftp',
  			_('Enable TFTP server')).optional = true;
  
-diff --git a/htdocs/luci-static/resources/view/network/interfaces.js b/htdocs/luci-static/resources/view/network/interfaces.js
-index bee5753..1ef1d6b 100644
---- a/htdocs/luci-static/resources/view/network/interfaces.js
-+++ b/htdocs/luci-static/resources/view/network/interfaces.js
-@@ -879,6 +879,10 @@ return view.extend({
- 		o = s.option(form.Value, 'ula_prefix', _('IPv6 ULA-Prefix'));
- 		o.datatype = 'cidr6';
- 
-+
-+		o = s.option(form.Flag, 'packet_steering', _('Packet Steering'), _('Enable packet steering across all CPUs. May help or hinder network speed.'));
-+		o.optional = true;
-+
- 		o = s.option(form.Flag, 'packet_steering', _('Packet Steering'), _('Enable packet steering across all CPUs. May help or hinder network speed.'));
- 		o.optional = true;
- 
