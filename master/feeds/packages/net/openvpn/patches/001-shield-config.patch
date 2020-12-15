@@ -1,0 +1,22 @@
+diff --git a/Makefile b/Makefile
+index 5c8a0a4..ff00032 100644
+--- a/Makefile
++++ b/Makefile
+@@ -97,7 +97,6 @@ define Package/openvpn-$(BUILD_VARIANT)/install
+ 		$(1)/usr/sbin \
+ 		$(1)/usr/share/openvpn \
+ 		$(1)/etc/init.d \
+-		$(1)/etc/config \
+ 		$(1)/etc/openvpn \
+ 		$(1)/lib/functions \
+ 		$(1)/lib/upgrade/keep.d \
+@@ -132,9 +131,6 @@ define Package/openvpn-$(BUILD_VARIANT)/install
+ 		files/openvpn.options \
+ 		$(1)/usr/share/openvpn/openvpn.options
+ 
+-	$(INSTALL_CONF) files/openvpn.config \
+-		$(1)/etc/config/openvpn
+-
+ 	$(INSTALL_DATA) \
+ 		files/openvpn.upgrade \
+ 		$(1)/lib/upgrade/keep.d/openvpn

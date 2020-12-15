@@ -21,7 +21,7 @@ index 7b8a73c..85a5007 100644
 -  DEVICE_ALT0_MODEL := KE 2P
    SUPPORTED_DEVICES += k2p
 -  DEVICE_PACKAGES := kmod-mt7615e kmod-mt7615-firmware
-+  DEVICE_PACKAGES := kmod-mt7615d luci-app-mtwifi
++  DEVICE_PACKAGES := kmod-mt7615d_dbdc
  endef
  TARGET_DEVICES += phicomm_k2p
  
