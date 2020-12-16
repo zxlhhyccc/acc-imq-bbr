@@ -1,0 +1,33 @@
+diff --git a/files/https-dns-proxy.config b/files/https-dns-proxy.config
+index 3c5eecf..47bc55c 100644
+--- a/files/https-dns-proxy.config
++++ b/files/https-dns-proxy.config
+@@ -1,5 +1,5 @@
+ config main 'config'
+-	option update_dnsmasq_config '*'
++	option update_dnsmasq_config ''
+ 
+ config https-dns-proxy
+ 	option bootstrap_dns '8.8.8.8,8.8.4.4'
+diff --git a/files/https-dns-proxy.init b/files/https-dns-proxy.init
+index cb56137..69278d8 100755
+--- a/files/https-dns-proxy.init
++++ b/files/https-dns-proxy.init
+@@ -93,7 +93,7 @@ service_triggers() {
+ start_service() {
+ 	local p=5053
+ 	config_load 'https-dns-proxy'
+-	config_get dnsmasqConfig	'config' 'update_dnsmasq_config' '*'
++	config_get dnsmasqConfig	'config' 'update_dnsmasq_config' ''
+ 	dhcp_backup 'create'
+ 	config_load 'https-dns-proxy'
+ 	config_foreach start_instance 'https-dns-proxy'
+@@ -105,7 +105,7 @@ start_service() {
+ 
+ stop_service() {
+ 	config_load 'https-dns-proxy'
+-	config_get dnsmasqConfig	'config' 'update_dnsmasq_config' '*'
++	config_get dnsmasqConfig	'config' 'update_dnsmasq_config' ''
+ 	dhcp_backup 'restore'
+ 	if [ -n "$(uci -q changes dhcp)" ]; then
+ 		uci -q commit dhcp
