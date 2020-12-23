@@ -1,11 +1,11 @@
 diff --git a/Makefile b/Makefile
-index fd1a216..eb76291 100644
+index 1f2e965..d0be20e 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -47,7 +47,9 @@ $(call Package/wget/Default)
+@@ -46,7 +46,9 @@ $(call Package/wget/Default)
+   DEPENDS+= +libopenssl +librt
    TITLE+= (with SSL support)
    VARIANT:=ssl
-   PROVIDES+=wget-ssl
 -  ALTERNATIVES:=300:/usr/bin/wget:/usr/libexec/wget-ssl
 +  ALTERNATIVES:=\
 +    300:/usr/bin/wget:/usr/libexec/wget-ssl \
@@ -13,10 +13,10 @@ index fd1a216..eb76291 100644
  endef
  
  define Package/wget/description
-@@ -60,7 +62,9 @@ $(call Package/wget/Default)
+@@ -58,7 +60,9 @@ define Package/wget-nossl
+ $(call Package/wget/Default)
    TITLE+= (without SSL support)
    VARIANT:=nossl
-   PROVIDES+=wget
 -  ALTERNATIVES:=300:/usr/bin/wget:/usr/libexec/wget-nossl
 +  ALTERNATIVES:=\
 +    300:/usr/bin/wget:/usr/libexec/wget-nossl \

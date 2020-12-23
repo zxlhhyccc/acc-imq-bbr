@@ -1,8 +1,8 @@
 diff --git a/image/mt7621.mk b/image/mt7621.mk
-index 282152e..62aa9a3 100644
+index f6b72a6..3ecfef0 100644
 --- a/image/mt7621.mk
 +++ b/image/mt7621.mk
-@@ -330,8 +330,8 @@ define Device/d-team_newifi-d2
+@@ -340,8 +340,8 @@ define Device/d-team_newifi-d2
    IMAGE_SIZE := 32448k
    DEVICE_VENDOR := Newifi
    DEVICE_MODEL := D2
@@ -13,7 +13,7 @@ index 282152e..62aa9a3 100644
  endef
  TARGET_DEVICES += d-team_newifi-d2
  
-@@ -962,10 +962,8 @@ define Device/phicomm_k2p
+@@ -989,10 +989,8 @@ define Device/phicomm_k2p
    IMAGE_SIZE := 15744k
    DEVICE_VENDOR := Phicomm
    DEVICE_MODEL := K2P
@@ -25,7 +25,7 @@ index 282152e..62aa9a3 100644
  endef
  TARGET_DEVICES += phicomm_k2p
  
-@@ -1196,7 +1194,7 @@ define Device/xiaomi-ac2100
+@@ -1223,7 +1221,7 @@ define Device/xiaomi-ac2100
    IMAGE/rootfs0.bin := append-ubi | check-size
    IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
    DEVICE_VENDOR := Xiaomi
@@ -35,7 +35,7 @@ index 282152e..62aa9a3 100644
  endef
  
 diff --git a/mt7621/base-files/etc/board.d/01_leds b/mt7621/base-files/etc/board.d/01_leds
-index cd1814c..a46628c 100755
+index 8d91b36..16de405 100755
 --- a/mt7621/base-files/etc/board.d/01_leds
 +++ b/mt7621/base-files/etc/board.d/01_leds
 @@ -14,8 +14,8 @@ asus,rt-n56u-b1)
