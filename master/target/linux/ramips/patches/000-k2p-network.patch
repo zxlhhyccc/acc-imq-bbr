@@ -1,5 +1,5 @@
 diff --git a/image/mt7621.mk b/image/mt7621.mk
-index f6b72a6..3ecfef0 100644
+index 720d435..83562cb 100644
 --- a/image/mt7621.mk
 +++ b/image/mt7621.mk
 @@ -340,8 +340,8 @@ define Device/d-team_newifi-d2
@@ -25,7 +25,7 @@ index f6b72a6..3ecfef0 100644
  endef
  TARGET_DEVICES += phicomm_k2p
  
-@@ -1223,7 +1221,7 @@ define Device/xiaomi-ac2100
+@@ -1233,7 +1231,7 @@ define Device/xiaomi-ac2100
    IMAGE/rootfs0.bin := append-ubi | check-size
    IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
    DEVICE_VENDOR := Xiaomi
@@ -50,7 +50,7 @@ index 8d91b36..16de405 100755
  d-team,pbr-m1|\
  gehua,ghl-r-001|\
 diff --git a/mt7621/base-files/etc/board.d/02_network b/mt7621/base-files/etc/board.d/02_network
-index bca4cc2..69ab704 100755
+index 83c4162..f92376a 100755
 --- a/mt7621/base-files/etc/board.d/02_network
 +++ b/mt7621/base-files/etc/board.d/02_network
 @@ -13,6 +13,9 @@ ramips_setup_interfaces()
@@ -63,7 +63,7 @@ index bca4cc2..69ab704 100755
  	asiarf,ap7621-nv1|\
  	glinet,gl-mt1300|\
  	lenovo,newifi-d1|\
-@@ -37,7 +40,7 @@ ramips_setup_interfaces()
+@@ -38,7 +41,7 @@ ramips_setup_interfaces()
  	xiaomi,mi-router-3-pro|\
  	xiaomi,mi-router-ac2100|\
  	xiaomi,redmi-router-ac2100)
@@ -72,7 +72,7 @@ index bca4cc2..69ab704 100755
  		;;
  	gnubee,gb-pc1|\
  	gnubee,gb-pc2)
-@@ -53,6 +56,9 @@ ramips_setup_interfaces()
+@@ -54,6 +57,9 @@ ramips_setup_interfaces()
  	mikrotik,routerboard-760igs)
  		ucidef_set_interfaces_lan_wan "lan2 lan3 lan4 lan5" "wan sfp"
  		;;
