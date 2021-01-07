@@ -9,8 +9,8 @@ index fd2d836..0f8b7f6 100644
 +	CONFIG_PACKAGE_kmod-mt7615d_dbdc \
  	CONFIG_PACKAGE_kmod-cfg80211
  
- include $(INCLUDE_DIR)/package.mk
-@@ -75,6 +76,7 @@ IWINFO_BACKENDS := \
+ IWINFO_ABI_VERSION:=20210106
+@@ -77,6 +78,7 @@ IWINFO_BACKENDS := \
  	$(if $(CONFIG_PACKAGE_kmod-brcm-wl),wl) \
  	$(if $(CONFIG_PACKAGE_kmod-brcm-wl-mini),wl) \
  	$(if $(CONFIG_PACKAGE_kmod-brcm-wl-mimo),wl) \
