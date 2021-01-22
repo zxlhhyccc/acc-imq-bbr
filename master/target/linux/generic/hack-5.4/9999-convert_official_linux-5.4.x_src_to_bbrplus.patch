@@ -1,0 +1,55 @@
+diff -ruaN a/include/net/inet_connection_sock.h b/include/net/inet_connection_sock.h
+--- a/include/net/inet_connection_sock.h	2020-12-21 20:27:07.000000000 +0800
++++ b/include/net/inet_connection_sock.h	2021-01-01 01:58:22.742234049 +0800
+@@ -135,8 +135,8 @@
+ 	} icsk_mtup;
+ 	u32			  icsk_user_timeout;
+ 
+-	u64			  icsk_ca_priv[104 / sizeof(u64)];
+-#define ICSK_CA_PRIV_SIZE      (13 * sizeof(u64))
++	u64			  icsk_ca_priv[112 / sizeof(u64)];
++#define ICSK_CA_PRIV_SIZE      (14 * sizeof(u64))
+ };
+ 
+ #define ICSK_TIME_RETRANS	1	/* Retransmit timer */
+diff -ruaN a/include/net/tcp.h b/include/net/tcp.h
+--- a/include/net/tcp.h	2020-12-21 20:27:07.000000000 +0800
++++ b/include/net/tcp.h	2021-01-01 01:58:22.742234049 +0800
+@@ -565,6 +565,8 @@
+ #endif
+ /* tcp_output.c */
+ 
++u32 tcp_tso_autosize(const struct sock *sk, unsigned int mss_now,
++		     int min_tso_segs);
+ void __tcp_push_pending_frames(struct sock *sk, unsigned int cur_mss,
+ 			       int nonagle);
+ int __tcp_retransmit_skb(struct sock *sk, struct sk_buff *skb, int segs);
+@@ -1060,6 +1062,8 @@
+ 	void (*pkts_acked)(struct sock *sk, const struct ack_sample *sample);
+ 	/* override sysctl_tcp_min_tso_segs */
+ 	u32 (*min_tso_segs)(struct sock *sk);
++	/* suggest number of segments for each skb to transmit (optional) */
++	u32 (*tso_segs_goal)(struct sock *sk);
+ 	/* returns the multiplier used in tcp_sndbuf_expand (optional) */
+ 	u32 (*sndbuf_expand)(struct sock *sk);
+ 	/* call when packets are delivered to update cwnd and pacing rate,
+diff -ruaN a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+--- a/net/ipv4/tcp_output.c	2020-12-21 20:27:07.000000000 +0800
++++ b/net/ipv4/tcp_output.c	2021-01-01 01:58:22.742234049 +0800
+@@ -1729,7 +1729,7 @@
+ /* Return how many segs we'd like on a TSO packet,
+  * to send one TSO packet per ms
+  */
+-static u32 tcp_tso_autosize(const struct sock *sk, unsigned int mss_now,
++u32 tcp_tso_autosize(const struct sock *sk, unsigned int mss_now,
+ 			    int min_tso_segs)
+ {
+ 	u32 bytes, segs;
+@@ -1747,6 +1747,7 @@
+ 
+ 	return segs;
+ }
++EXPORT_SYMBOL(tcp_tso_autosize);
+ 
+ /* Return the number of segments we want in the skb we are transmitting.
+  * See if congestion control module wants to decide; otherwise, autosize.

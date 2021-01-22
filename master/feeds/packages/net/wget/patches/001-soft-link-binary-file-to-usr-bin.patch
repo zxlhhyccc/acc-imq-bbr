@@ -1,5 +1,5 @@
 diff --git a/Makefile b/Makefile
-index 1f2e965..d0be20e 100644
+index 5a82e63..605fab3 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -46,7 +46,9 @@ $(call Package/wget/Default)
@@ -12,7 +12,7 @@ index 1f2e965..d0be20e 100644
 +    300:/usr/bin/wget-ssl:/usr/libexec/wget-ssl
  endef
  
- define Package/wget/description
+ define Package/wget-ssl/description
 @@ -58,7 +60,9 @@ define Package/wget-nossl
  $(call Package/wget/Default)
    TITLE+= (without SSL support)

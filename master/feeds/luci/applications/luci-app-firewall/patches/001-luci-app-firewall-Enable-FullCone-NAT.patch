@@ -21,6 +21,6 @@ index 6ab67e1..f320484 100644
 +msgid "Enable FullCone NAT"
 +msgstr "启用FullCone-NAT"
 +
- #: applications/luci-app-firewall/htdocs/luci-static/resources/view/firewall/zones.js:251
+ #: applications/luci-app-firewall/htdocs/luci-static/resources/view/firewall/zones.js:259
  msgid "Enable logging on this zone"
  msgstr "启用此区域的日志记录"
