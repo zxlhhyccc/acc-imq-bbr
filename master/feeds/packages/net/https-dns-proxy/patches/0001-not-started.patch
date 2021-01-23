@@ -13,7 +13,7 @@ diff --git a/files/https-dns-proxy.init b/files/https-dns-proxy.init
 index 662fe40..64219fe 100755
 --- a/files/https-dns-proxy.init
 +++ b/files/https-dns-proxy.init
-@@ -95,7 +95,7 @@ start_instance() {
+@@ -94,7 +94,7 @@ start_instance() {
  start_service() {
  	local p=5053
  	config_load 'https-dns-proxy'
@@ -22,7 +22,7 @@ index 662fe40..64219fe 100755
  	dhcp_backup 'create'
  	config_load 'https-dns-proxy'
  	config_foreach start_instance 'https-dns-proxy'
-@@ -107,7 +107,7 @@ start_service() {
+@@ -106,7 +106,7 @@ start_service() {
  
  stop_service() {
  	config_load 'https-dns-proxy'
