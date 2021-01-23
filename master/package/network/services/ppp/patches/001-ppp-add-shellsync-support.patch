@@ -1,16 +1,7 @@
 diff --git a/Makefile b/Makefile
-index 48d7120..97ec391 100644
+index 48d7120..c8e3a12 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
- include $(INCLUDE_DIR)/kernel.mk
- 
- PKG_NAME:=ppp
--PKG_RELEASE:=3
-+PKG_RELEASE:=6
- 
- PKG_SOURCE_PROTO:=git
- PKG_SOURCE_URL:=https://github.com/paulusmack/ppp
 @@ -39,7 +39,7 @@ endef
  
  define Package/ppp
@@ -21,46 +12,13 @@ index 48d7120..97ec391 100644
    VARIANT:=default
  endef
 diff --git a/files/ppp.sh b/files/ppp.sh
-index b553eff..78e8c32 100755
+index b553eff..773f974 100755
 --- a/files/ppp.sh
 +++ b/files/ppp.sh
-@@ -74,7 +74,7 @@ ppp_generic_init_config() {
- 	proto_config_add_string pppd_options
- 	proto_config_add_string 'connect:file'
- 	proto_config_add_string 'disconnect:file'
--	[ -e /proc/sys/net/ipv6 ] && proto_config_add_string ipv6
-+	proto_config_add_string ipv6
- 	proto_config_add_boolean authfail
- 	proto_config_add_int mtu
- 	proto_config_add_string pppname
-@@ -88,9 +88,7 @@ ppp_generic_setup() {
- 	local config="$1"; shift
- 	local localip
- 
--	json_get_vars ip6table demand keepalive keepalive_adaptive username password pppd_options pppname unnumbered persist maxfail holdoff peerdns
--
--	[ ! -e /proc/sys/net/ipv6 ] && ipv6=0 || json_get_var ipv6 ipv6
-+	json_get_vars ipv6 ip6table demand keepalive keepalive_adaptive username password pppd_options pppname unnumbered persist maxfail holdoff peerdns
- 
- 	if [ "$ipv6" = 0 ]; then
- 		ipv6=""
-@@ -151,9 +149,9 @@ ppp_generic_setup() {
- 		${connect:+connect "$connect"} \
- 		${disconnect:+disconnect "$disconnect"} \
- 		ip-up-script /lib/netifd/ppp-up \
--		${ipv6:+ipv6-up-script /lib/netifd/ppp6-up} \
-+		ipv6-up-script /lib/netifd/ppp6-up \
- 		ip-down-script /lib/netifd/ppp-down \
--		${ipv6:+ipv6-down-script /lib/netifd/ppp-down} \
-+		ipv6-down-script /lib/netifd/ppp-down \
- 		${mtu:+mtu $mtu mru $mtu} \
- 		"$@" $pppd_options
- }
-@@ -233,7 +231,16 @@ proto_pppoe_setup() {
+@@ -233,7 +233,15 @@ proto_pppoe_setup() {
  	json_get_var padi_attempts padi_attempts
  	json_get_var padi_timeout padi_timeout
  
-+#By 蝈蝈：并发拨号同步的前期准备
 +	syncppp_option=""
 +	[ "$(uci get syncdial.config.enabled)" -eq "1" ] && {
 +		ppp_if_cnt=$(uci show network | grep -c "\.proto=\'pppoe\'$")
@@ -75,10 +33,10 @@ index b553eff..78e8c32 100755
  		${service:+rp_pppoe_service "$service"} \
 diff --git a/patches/512-syncppp.patch b/patches/512-syncppp.patch
 new file mode 100644
-index 0000000..cbd91af
+index 0000000..2d51548
 --- /dev/null
 +++ b/patches/512-syncppp.patch
-@@ -0,0 +1,204 @@
+@@ -0,0 +1,206 @@
 +--- a/pppd/chap-new.c
 ++++ b/pppd/chap-new.c
 +@@ -37,6 +37,8 @@
@@ -90,21 +48,22 @@ index 0000000..cbd91af
 + #ifdef CHAPMS
 + #include "chap_ms.h"
 + #define MDTYPE_ALL (MDTYPE_MICROSOFT_V2 | MDTYPE_MICROSOFT | MDTYPE_MD5)
-+@@ -492,6 +494,19 @@ chap_respond(struct chap_client_state *cs, int id,
++@@ -492,6 +494,19 @@ chap_respond(struct chap_client_state *c
 + 	p[2] = len >> 8;
 + 	p[3] = len;
 + 
-++	if (npppd > 1) {
-++		if (syncppp(npppd) < 0) {
-++			error("syncppp sync fail");
-++			sem_unlink(SEM_COUNT_NAME);
-++			sem_unlink(SEM_BLOCK_NAME);
-++		} else {
-++			info("syncppp sync succeeded");
-++		}
-++	} else {
-++		info("syncppp not active");
-++	}
+++    if (npppd > 1) {
+++        if (syncppp(npppd) < 0) {
+++            error("syncppp sync fail");
+++            sem_unlink(SEM_COUNT_NAME);
+++            sem_unlink(SEM_BLOCK_NAME);
+++        } else {
+++            info("syncppp sync succeeded");
+++        }   
+++    } else {
+++        info("syncppp not active");
+++    }
+++
 ++
 + 	output(0, response, PPP_HDRLEN + len);
 + }
@@ -136,37 +95,38 @@ index 0000000..cbd91af
 + #
 + COPTS = -O2 -pipe -Wall -g
 +-LIBS = -lrt
-++LIBS = -lpthread
+++LIBS = -lrt -lpthread
 + 
 + # Uncomment the next line to include support for Microsoft's
 + # MS-CHAP authentication protocol.  Also, edit plugins/radius/Makefile.linux.
 +--- a/pppd/options.c
 ++++ b/pppd/options.c
-+@@ -128,6 +128,7 @@ bool	dump_options;		/* print out option values */
++@@ -128,6 +128,7 @@ bool	dump_options;		/* print out option
 + bool	dryrun;			/* print out option values and exit */
 + char	*domain;		/* domain name set by domain option */
 + int	child_wait = 5;		/* # seconds to wait for children at exit */
-++int	npppd = 0;		/* synchronize between multiple pppd */
+++int	npppd = 0;      /* synchronize between multiple pppd */
 + struct userenv *userenv_list;	/* user environment variables */
 + int	dfl_route_metric = -1;	/* metric of the default route to set over the PPP link */
 + 
 +@@ -342,6 +343,10 @@ option_t general_options[] = {
-+       "Unset user environment variable",
-+       OPT_A2PRINTER | OPT_NOPRINT, (void *)user_unsetprint },
++       "Set pathname of ipv6-down script",
++       OPT_PRIV|OPT_STATIC, NULL, MAXPATHLEN },
 + 
 ++    { "syncppp", o_int, &npppd,
 ++      "sync among multiple pppd when sending chap/pap respond", OPT_PRIO },
 ++
-+     { "defaultroute-metric", o_int, &dfl_route_metric,
-+       "Metric to use for the default route (Linux only; -1 for default behavior)",
-+       OPT_PRIV|OPT_LLIMIT|OPT_INITONLY, NULL, 0, -1 },
+++
++ #ifdef HAVE_MULTILINK
++     { "multilink", o_bool, &multilink,
++       "Enable multilink operation", OPT_PRIO | 1 },
 +--- a/pppd/pppd.h
 ++++ b/pppd/pppd.h
-+@@ -344,6 +344,7 @@ extern char	*bundle_name;	/* bundle name for multilink */
++@@ -344,6 +344,7 @@ extern char	*bundle_name;	/* bundle name
 + extern bool	dump_options;	/* print out option values */
 + extern bool	dryrun;		/* check everything, print options, exit */
 + extern int	child_wait;	/* # seconds to wait for children at end */
-++extern int	npppd;		/* synchronize between multiple pppd */
+++extern int npppd;  /* synchronize between multiple pppd */
 + 
 + #ifdef MAXOCTETS
 + extern unsigned int maxoctets;	     /* Maximum octetes per session (in bytes) */
@@ -278,13 +238,13 @@ index 0000000..cbd91af
 ++        }
 ++    } else {
 ++        info("syncppp not active");
-++    }
+++    }   
 ++
 +     output(u->us_unit, outpacket_buf, outlen + PPP_HDRLEN);
 + 
 +     TIMEOUT(upap_timeout, u, u->us_timeouttime);
 diff --git a/patches/600-Revert-pppd-Use-openssl-for-the-DES-instead-of-the-l.patch b/patches/600-Revert-pppd-Use-openssl-for-the-DES-instead-of-the-l.patch
-index 5802d61..49bdb28 100644
+index 5802d61..6de8764 100644
 --- a/patches/600-Revert-pppd-Use-openssl-for-the-DES-instead-of-the-l.patch
 +++ b/patches/600-Revert-pppd-Use-openssl-for-the-DES-instead-of-the-l.patch
 @@ -17,7 +17,7 @@ This reverts commit 3c7b86229f7bd2600d74db14b1fe5b3896be3875.
@@ -292,7 +252,7 @@ index 5802d61..49bdb28 100644
  @@ -35,10 +35,10 @@ endif
   COPTS = -O2 -pipe -Wall -g
 - LIBS = -lrt
-+ LIBS = -lpthread
++ LIBS = -lrt -lpthread
   
  -# Uncomment the next line to include support for Microsoft's
  +# Uncomment the next 2 lines to include support for Microsoft's
