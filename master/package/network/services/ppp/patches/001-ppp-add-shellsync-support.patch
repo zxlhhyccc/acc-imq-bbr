@@ -73,11 +73,11 @@ index b553eff..78e8c32 100755
  		plugin rp-pppoe.so \
  		${ac:+rp_pppoe_ac "$ac"} \
  		${service:+rp_pppoe_service "$service"} \
-diff --git a/patches/511-syncppp.patch b/patches/511-syncppp.patch
+diff --git a/patches/512-syncppp.patch b/patches/512-syncppp.patch
 new file mode 100644
 index 0000000..cbd91af
 --- /dev/null
-+++ b/patches/511-syncppp.patch
++++ b/patches/512-syncppp.patch
 @@ -0,0 +1,204 @@
 +--- a/pppd/chap-new.c
 ++++ b/pppd/chap-new.c
@@ -90,7 +90,7 @@ index 0000000..cbd91af
 + #ifdef CHAPMS
 + #include "chap_ms.h"
 + #define MDTYPE_ALL (MDTYPE_MICROSOFT_V2 | MDTYPE_MICROSOFT | MDTYPE_MD5)
-+@@ -492,6 +494,18 @@ chap_respond(struct chap_client_state *cs, int id,
++@@ -492,6 +494,19 @@ chap_respond(struct chap_client_state *cs, int id,
 + 	p[2] = len >> 8;
 + 	p[3] = len;
 + 
@@ -150,7 +150,7 @@ index 0000000..cbd91af
 + struct userenv *userenv_list;	/* user environment variables */
 + int	dfl_route_metric = -1;	/* metric of the default route to set over the PPP link */
 + 
-+@@ -324,6 +325,9 @@ option_t general_options[] = {
++@@ -342,6 +343,10 @@ option_t general_options[] = {
 +       "Unset user environment variable",
 +       OPT_A2PRINTER | OPT_NOPRINT, (void *)user_unsetprint },
 + 
