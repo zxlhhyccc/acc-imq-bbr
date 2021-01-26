@@ -1252,7 +1252,7 @@ diff -Naupr linux-5.4.10_orig/include/linux/skbuff.h linux-5.4.10/include/linux/
  extern struct kmem_cache *skbuff_head_cache;
  
  void kfree_skb_partial(struct sk_buff *skb, bool head_stolen);
-@@ -4231,6 +4247,10 @@ static inline void __nf_copy(struct sk_b
+@@ -4236,6 +4252,10 @@ static inline void __nf_copy(struct sk_b
  	dst->_nfct = src->_nfct;
  	nf_conntrack_get(skb_nfct(src));
  #endif
@@ -1417,7 +1417,7 @@ diff -Naupr linux-5.4.10_orig/net/core/skbuff.c linux-5.4.10/net/core/skbuff.c
  /**
   *	skb_panic - private function for out-of-line support
   *	@skb:	buffer
-@@ -651,6 +701,28 @@ void skb_release_head_state(struct sk_bu
+@@ -656,6 +706,28 @@ void skb_release_head_state(struct sk_bu
  		WARN_ON(in_irq());
  		skb->destructor(skb);
  	}
@@ -1446,7 +1446,7 @@ diff -Naupr linux-5.4.10_orig/net/core/skbuff.c linux-5.4.10/net/core/skbuff.c
  #if IS_ENABLED(CONFIG_NF_CONNTRACK)
  	nf_conntrack_put(skb_nfct(skb));
  #endif
-@@ -935,6 +1007,9 @@ static void __copy_skb_header(struct sk_
+@@ -940,6 +1012,9 @@ static void __copy_skb_header(struct sk_
  	skb_dst_copy(new, old);
  	__skb_ext_copy(new, old);
  	__nf_copy(new, old, false);
@@ -1456,7 +1456,7 @@ diff -Naupr linux-5.4.10_orig/net/core/skbuff.c linux-5.4.10/net/core/skbuff.c
  
  	/* Note : this field could be in headers_start/headers_end section
  	 * It is not yet because we do not want to have a 16 bit hole
-@@ -4161,6 +4236,13 @@ void __init skb_init(void)
+@@ -4166,6 +4241,13 @@ void __init skb_init(void)
  						0,
  						SLAB_HWCACHE_ALIGN|SLAB_PANIC,
  						NULL);
