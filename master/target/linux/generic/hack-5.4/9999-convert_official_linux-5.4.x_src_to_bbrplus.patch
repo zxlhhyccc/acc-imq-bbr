@@ -1,8 +1,8 @@
 diff -ruaN a/include/net/inet_connection_sock.h b/include/net/inet_connection_sock.h
 --- a/include/net/inet_connection_sock.h	2020-12-21 20:27:07.000000000 +0800
 +++ b/include/net/inet_connection_sock.h	2021-01-01 01:58:22.742234049 +0800
-@@ -135,8 +135,8 @@
- 	} icsk_mtup;
+@@ -138,8 +138,8 @@ struct inet_connection_sock {
+ 	u32			  icsk_probes_tstamp;
  	u32			  icsk_user_timeout;
  
 -	u64			  icsk_ca_priv[104 / sizeof(u64)];

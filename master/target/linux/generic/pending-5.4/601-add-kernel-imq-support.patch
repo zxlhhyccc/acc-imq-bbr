@@ -1417,7 +1417,7 @@ diff -Naupr linux-5.4.10_orig/net/core/skbuff.c linux-5.4.10/net/core/skbuff.c
  /**
   *	skb_panic - private function for out-of-line support
   *	@skb:	buffer
-@@ -656,6 +706,28 @@ void skb_release_head_state(struct sk_bu
+@@ -660,6 +710,28 @@ void skb_release_head_state(struct sk_bu
  		WARN_ON(in_irq());
  		skb->destructor(skb);
  	}
@@ -1446,7 +1446,7 @@ diff -Naupr linux-5.4.10_orig/net/core/skbuff.c linux-5.4.10/net/core/skbuff.c
  #if IS_ENABLED(CONFIG_NF_CONNTRACK)
  	nf_conntrack_put(skb_nfct(skb));
  #endif
-@@ -940,6 +1012,9 @@ static void __copy_skb_header(struct sk_
+@@ -944,6 +1016,9 @@ static void __copy_skb_header(struct sk_
  	skb_dst_copy(new, old);
  	__skb_ext_copy(new, old);
  	__nf_copy(new, old, false);
@@ -1456,7 +1456,7 @@ diff -Naupr linux-5.4.10_orig/net/core/skbuff.c linux-5.4.10/net/core/skbuff.c
  
  	/* Note : this field could be in headers_start/headers_end section
  	 * It is not yet because we do not want to have a 16 bit hole
-@@ -4166,6 +4241,13 @@ void __init skb_init(void)
+@@ -4170,6 +4245,13 @@ void __init skb_init(void)
  						0,
  						SLAB_HWCACHE_ALIGN|SLAB_PANIC,
  						NULL);
