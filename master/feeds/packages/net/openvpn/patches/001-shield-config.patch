@@ -20,3 +20,15 @@ index 5c8a0a4..ff00032 100644
  	$(INSTALL_DATA) \
  		files/openvpn.upgrade \
  		$(1)/lib/upgrade/keep.d/openvpn
+diff --git a/files/openvpn.options b/files/openvpn.options
+index 7c641f7..35e4fd6 100644
+--- a/files/openvpn.options
++++ b/files/openvpn.options
+@@ -114,6 +114,7 @@ socks_proxy
+ status
+ status_version
+ syslog
++scramble
+ tcp_queue_limit
+ tls_auth
+ tls_crypt
