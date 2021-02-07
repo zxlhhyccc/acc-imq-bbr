@@ -1,10 +1,7 @@
+# SPDX-License-Identifier: GPL-2.0-only
 #
 # Copyright (C) 2007-2008 OpenWrt.org
 # Copyright (C) 2016 LEDE Project
-#
-# This is free software, licensed under the GNU General Public License v2.
-# See /LICENSE for more information.
-#
 
 ifneq ($(__target_inc),1)
 __target_inc=1
@@ -35,7 +32,7 @@ DEFAULT_PACKAGES:=\
 	kmod-nf-nathelper \
 	kmod-nf-nathelper-extra \
 	kmod-ipt-raw \
-	wget \
+	wget-ssl \
 	ca-certificates \
 	default-settings \
 	luci \
