@@ -1,0 +1,13 @@
+diff --git a/Makefile b/Makefile
+index 1b1c306..7878969 100644
+--- a/Makefile
++++ b/Makefile
+@@ -27,7 +27,7 @@ KERNELNAME:=zImage dtbs
+ 
+ include $(INCLUDE_DIR)/target.mk
+ 
+-DEFAULT_PACKAGES += uboot-envtools
++DEFAULT_PACKAGES += autocore-arm uboot-envtools
+ DEFAULT_PACKAGES += partx-utils mkf2fs e2fsprogs
+ 
+ $(eval $(call BuildTarget))
