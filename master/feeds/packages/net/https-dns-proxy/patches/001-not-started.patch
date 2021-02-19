@@ -1,0 +1,11 @@
+diff --git a/files/https-dns-proxy.config b/files/https-dns-proxy.config
+index 6b09301..e3a12b6 100644
+--- a/files/https-dns-proxy.config
++++ b/files/https-dns-proxy.config
+@@ -1,5 +1,5 @@
+ config main 'config'
+-	option update_dnsmasq_config '*'
++	option update_dnsmasq_config '-'
+ 	option force_dns '1'
+ 
+ config https-dns-proxy
