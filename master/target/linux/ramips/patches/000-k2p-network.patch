@@ -1,5 +1,5 @@
 diff --git a/image/mt7621.mk b/image/mt7621.mk
-index 720d435..83562cb 100644
+index 396b112..3ac441e 100644
 --- a/image/mt7621.mk
 +++ b/image/mt7621.mk
 @@ -350,8 +350,8 @@ define Device/d-team_newifi-d2
@@ -26,7 +26,7 @@ index 720d435..83562cb 100644
  TARGET_DEVICES += phicomm_k2p
  
 diff --git a/mt7621/base-files/etc/board.d/01_leds b/mt7621/base-files/etc/board.d/01_leds
-index 8d91b36..16de405 100755
+index 5fa9ad3..75f9c72 100755
 --- a/mt7621/base-files/etc/board.d/01_leds
 +++ b/mt7621/base-files/etc/board.d/01_leds
 @@ -14,8 +14,8 @@ asus,rt-n56u-b1)
@@ -41,7 +41,7 @@ index 8d91b36..16de405 100755
  d-team,pbr-m1|\
  gehua,ghl-r-001|\
 diff --git a/mt7621/base-files/etc/board.d/02_network b/mt7621/base-files/etc/board.d/02_network
-index 83c4162..f92376a 100755
+index 89e679b..7d159ea 100755
 --- a/mt7621/base-files/etc/board.d/02_network
 +++ b/mt7621/base-files/etc/board.d/02_network
 @@ -13,6 +13,9 @@ ramips_setup_interfaces()
@@ -70,6 +70,6 @@ index 83c4162..f92376a 100755
 +	phicomm,k2p)
 +		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4 ra0 rax0" "wan"
 +		;;
- 	ubnt,edgerouter-x)
- 		ucidef_set_interfaces_lan_wan "eth1 eth2 eth3 eth4" "eth0"
+ 	tplink,eap235-wall-v1)
+ 		ucidef_set_interface_lan "lan0 lan1 lan2 lan3"
  		;;
