@@ -1,0 +1,21 @@
+diff --git a/config-5.4 b/config-5.4
+index 0279484..1025fbb 100644
+--- a/config-5.4
++++ b/config-5.4
+@@ -4881,6 +4881,7 @@ CONFIG_SERIAL_EARLYCON=y
+ # CONFIG_SG_POOL is not set
+ # CONFIG_SG_SPLIT is not set
+ CONFIG_SHMEM=y
++# CONFIG_SHORTCUT_FE is not set
+ # CONFIG_SHUFFLE_PAGE_ALLOCATOR is not set
+ # CONFIG_SH_ETH is not set
+ # CONFIG_SH_TIMER_CMT is not set
+@@ -6509,3 +6510,8 @@ CONFIG_ZONE_DMA=y
+ # CONFIG_ZRAM_MEMORY_TRACKING is not set
+ # CONFIG_ZSMALLOC is not set
+ # CONFIG_ZX_TDM is not set
++CONFIG_IMQ_NUM_DEVS=2
++# CONFIG_IMQ_BEHAVIOR_AA is not set
++# CONFIG_IMQ_BEHAVIOR_AB is not set
++CONFIG_IMQ_BEHAVIOR_BA=y
++# CONFIG_IMQ_BEHAVIOR_BB is not set
