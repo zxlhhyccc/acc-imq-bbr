@@ -28,7 +28,7 @@ index b553eff..773f974 100755
 +
  	ppp_generic_setup "$config" \
 +		$syncppp_option \
- 		plugin rp-pppoe.so \
+ 		plugin pppoe.so \
  		${ac:+rp_pppoe_ac "$ac"} \
  		${service:+rp_pppoe_service "$service"} \
 diff --git a/patches/512-syncppp.patch b/patches/512-syncppp.patch
@@ -249,8 +249,8 @@ index 5802d61..6de8764 100644
 +++ b/patches/600-Revert-pppd-Use-openssl-for-the-DES-instead-of-the-l.patch
 @@ -17,7 +17,7 @@ This reverts commit 3c7b86229f7bd2600d74db14b1fe5b3896be3875.
  +++ b/pppd/Makefile.linux
- @@ -35,10 +35,10 @@ endif
-  COPTS = -O2 -pipe -Wall -g
+ @@ -36,10 +36,10 @@ endif
+  
 - LIBS = -lrt
 + LIBS = -lrt -lpthread
   

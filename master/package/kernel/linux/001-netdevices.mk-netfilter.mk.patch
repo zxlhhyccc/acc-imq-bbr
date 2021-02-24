@@ -2,7 +2,7 @@ diff --git a/modules/netdevices.mk b/modules/netdevices.mk
 index bf43bcb..fe0a22a 100644
 --- a/modules/netdevices.mk
 +++ b/modules/netdevices.mk
-@@ -758,6 +758,21 @@ endef
+@@ -746,6 +746,21 @@ endef
  $(eval $(call KernelPackage,iavf))
  
  
@@ -24,33 +24,6 @@ index bf43bcb..fe0a22a 100644
  define KernelPackage/b44
    TITLE:=Broadcom 44xx driver
    KCONFIG:=CONFIG_B44
-@@ -1203,3 +1218,26 @@ define KernelPackage/igc/description
- endef
- 
- $(eval $(call KernelPackage,igc))
-+
-+
-+define KernelPackage/sfc
-+  SUBMENU:=$(NETWORK_DEVICES_MENU)
-+  TITLE:=Solarflare SFC9000/SFC9100-family 10Gbps NIC support
-+  DEPENDS:=@PCI_SUPPORT +kmod-mdio +kmod-i2c-core +kmod-i2c-algo-bit +kmod-hwmon-core +kmod-ptp +kmod-lib-crc32c
-+# add PCI_IOV
-+  KCONFIG:= \
-+    CONFIG_NET_VENDOR_SOLARFLARE=y \
-+    CONFIG_SFC=y \
-+    CONFIG_MTD=y \
-+    CONFIG_MCDI_MON=y \
-+    CONFIG_SRIOV=n \
-+    CONFIG_MCDI_LOGGING=n \
-+  FILES:=$(LINUX_DIR)/drivers/net/ethernet/sfc/sfc.ko
-+  AUTOLOAD:=$(call AutoProbe, sfc)
-+endef
-+
-+define KernelPackage/sfc/description
-+  Solarflare SFC9000/SFC9100-family 10Gbps NIC support
-+endef
-+
-+$(eval $(call KernelPackage,sfc))
 diff --git a/modules/netfilter.mk b/modules/netfilter.mk
 index 22a9f8e..b7ac08f 100644
 --- a/modules/netfilter.mk
