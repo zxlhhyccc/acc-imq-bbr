@@ -1,5 +1,5 @@
 diff --git a/Makefile b/Makefile
-index 48d7120..c8e3a12 100644
+index 10e9bdf..8a033e7 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -39,7 +39,7 @@ endef
@@ -12,7 +12,7 @@ index 48d7120..c8e3a12 100644
    VARIANT:=default
  endef
 diff --git a/files/ppp.sh b/files/ppp.sh
-index b553eff..773f974 100755
+index 7bbc497..67ae953 100755
 --- a/files/ppp.sh
 +++ b/files/ppp.sh
 @@ -233,7 +233,15 @@ proto_pppoe_setup() {
@@ -33,10 +33,10 @@ index b553eff..773f974 100755
  		${service:+rp_pppoe_service "$service"} \
 diff --git a/patches/512-syncppp.patch b/patches/512-syncppp.patch
 new file mode 100644
-index 0000000..2d51548
+index 0000000..39ff520
 --- /dev/null
 +++ b/patches/512-syncppp.patch
-@@ -0,0 +1,206 @@
+@@ -0,0 +1,204 @@
 +--- a/pppd/chap-new.c
 ++++ b/pppd/chap-new.c
 +@@ -37,6 +37,8 @@
@@ -48,29 +48,28 @@ index 0000000..2d51548
 + #ifdef CHAPMS
 + #include "chap_ms.h"
 + #define MDTYPE_ALL (MDTYPE_MICROSOFT_V2 | MDTYPE_MICROSOFT | MDTYPE_MD5)
-+@@ -492,6 +494,19 @@ chap_respond(struct chap_client_state *c
++@@ -523,6 +525,18 @@ chap_respond(struct chap_client_state *cs, int id,
 + 	p[2] = len >> 8;
 + 	p[3] = len;
 + 
-++    if (npppd > 1) {
-++        if (syncppp(npppd) < 0) {
-++            error("syncppp sync fail");
-++            sem_unlink(SEM_COUNT_NAME);
-++            sem_unlink(SEM_BLOCK_NAME);
-++        } else {
-++            info("syncppp sync succeeded");
-++        }   
-++    } else {
-++        info("syncppp not active");
-++    }
-++
+++	if (npppd > 1) {
+++		if (syncppp(npppd) < 0) {
+++			error("syncppp sync fail");
+++			sem_unlink(SEM_COUNT_NAME);
+++			sem_unlink(SEM_BLOCK_NAME);
+++		} else {
+++			info("syncppp sync succeeded");
+++		}
+++	} else {
+++		info("syncppp not active");
+++	}
 ++
 + 	output(0, response, PPP_HDRLEN + len);
 + }
 + 
 +--- a/pppd/Makefile.linux
 ++++ b/pppd/Makefile.linux
-+@@ -13,16 +13,16 @@ TARGETS = pppd
++@@ -17,16 +17,16 @@ TARGETS = pppd
 + 
 + PPPDSRCS = main.c magic.c fsm.c lcp.c ipcp.c upap.c chap-new.c md5.c ccp.c \
 + 	   ecp.c ipxcp.c auth.c options.c sys-linux.c md4.c chap_ms.c \
@@ -90,46 +89,45 @@ index 0000000..2d51548
 + 
 + #
 + # include dependencies if present
-+@@ -33,7 +33,7 @@ endif
-+ # CC = gcc
-+ #
-+ COPTS = -O2 -pipe -Wall -g
++@@ -34,7 +34,7 @@ ifeq (.depend,$(wildcard .depend))
++ include .depend
++ endif
++ 
 +-LIBS = -lrt
-++LIBS = -lrt -lpthread
+++LIBS = -lpthread
 + 
 + # Uncomment the next line to include support for Microsoft's
 + # MS-CHAP authentication protocol.  Also, edit plugins/radius/Makefile.linux.
 +--- a/pppd/options.c
 ++++ b/pppd/options.c
-+@@ -128,6 +128,7 @@ bool	dump_options;		/* print out option
++@@ -127,6 +127,7 @@ bool	dump_options;		/* print out option values */
 + bool	dryrun;			/* print out option values and exit */
 + char	*domain;		/* domain name set by domain option */
 + int	child_wait = 5;		/* # seconds to wait for children at exit */
-++int	npppd = 0;      /* synchronize between multiple pppd */
+++int	npppd = 0;		/* synchronize between multiple pppd */
 + struct userenv *userenv_list;	/* user environment variables */
 + int	dfl_route_metric = -1;	/* metric of the default route to set over the PPP link */
 + 
-+@@ -342,6 +343,10 @@ option_t general_options[] = {
-+       "Set pathname of ipv6-down script",
-+       OPT_PRIV|OPT_STATIC, NULL, MAXPATHLEN },
++@@ -323,6 +324,9 @@ option_t general_options[] = {
++       "Unset user environment variable",
++       OPT_A2PRINTER | OPT_NOPRINT, (void *)user_unsetprint },
 + 
 ++    { "syncppp", o_int, &npppd,
 ++      "sync among multiple pppd when sending chap/pap respond", OPT_PRIO },
 ++
-++
-+ #ifdef HAVE_MULTILINK
-+     { "multilink", o_bool, &multilink,
-+       "Enable multilink operation", OPT_PRIO | 1 },
++     { "defaultroute-metric", o_int, &dfl_route_metric,
++       "Metric to use for the default route (Linux only; -1 for default behavior)",
++       OPT_PRIV|OPT_LLIMIT|OPT_INITONLY, NULL, 0, -1 },
 +--- a/pppd/pppd.h
 ++++ b/pppd/pppd.h
-+@@ -344,6 +344,7 @@ extern char	*bundle_name;	/* bundle name
++@@ -335,6 +335,7 @@ extern char	*bundle_name;	/* bundle name for multilink */
 + extern bool	dump_options;	/* print out option values */
 + extern bool	dryrun;		/* check everything, print options, exit */
 + extern int	child_wait;	/* # seconds to wait for children at end */
-++extern int npppd;  /* synchronize between multiple pppd */
+++extern int	npppd;		/* synchronize between multiple pppd */
 + 
-+ #ifdef MAXOCTETS
-+ extern unsigned int maxoctets;	     /* Maximum octetes per session (in bytes) */
++ #ifdef USE_EAPTLS
++ extern char	*crl_dir;
 +--- /dev/null
 ++++ b/pppd/syncppp.c
 +@@ -0,0 +1,75 @@
@@ -216,7 +214,7 @@ index 0000000..2d51548
 ++#define SYNCPPP_TIMEOUT 5
 +--- a/pppd/upap.c
 ++++ b/pppd/upap.c
-+@@ -52,6 +52,7 @@
++@@ -50,6 +50,7 @@
 + #include "pppd.h"
 + #include "upap.h"
 + 
@@ -224,7 +222,7 @@ index 0000000..2d51548
 + 
 + static bool hide_password = 1;
 + 
-+@@ -567,6 +568,18 @@ upap_sauthreq(u)
++@@ -540,6 +541,18 @@ upap_sauthreq(upap_state *u)
 +     PUTCHAR(u->us_passwdlen, outp);
 +     BCOPY(u->us_passwd, outp, u->us_passwdlen);
 + 
@@ -238,13 +236,13 @@ index 0000000..2d51548
 ++        }
 ++    } else {
 ++        info("syncppp not active");
-++    }   
+++    }
 ++
 +     output(u->us_unit, outpacket_buf, outlen + PPP_HDRLEN);
 + 
 +     TIMEOUT(upap_timeout, u, u->us_timeouttime);
 diff --git a/patches/600-Revert-pppd-Use-openssl-for-the-DES-instead-of-the-l.patch b/patches/600-Revert-pppd-Use-openssl-for-the-DES-instead-of-the-l.patch
-index 5802d61..6de8764 100644
+index dc18156..a3042af 100644
 --- a/patches/600-Revert-pppd-Use-openssl-for-the-DES-instead-of-the-l.patch
 +++ b/patches/600-Revert-pppd-Use-openssl-for-the-DES-instead-of-the-l.patch
 @@ -17,7 +17,7 @@ This reverts commit 3c7b86229f7bd2600d74db14b1fe5b3896be3875.
@@ -252,7 +250,7 @@ index 5802d61..6de8764 100644
  @@ -36,10 +36,10 @@ endif
   
 - LIBS = -lrt
-+ LIBS = -lrt -lpthread
++ LIBS = -lpthread
   
  -# Uncomment the next line to include support for Microsoft's
  +# Uncomment the next 2 lines to include support for Microsoft's
