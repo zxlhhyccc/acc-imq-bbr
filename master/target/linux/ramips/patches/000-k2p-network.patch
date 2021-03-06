@@ -29,7 +29,7 @@ diff --git a/mt7621/base-files/etc/board.d/01_leds b/mt7621/base-files/etc/board
 index 5fa9ad3..75f9c72 100755
 --- a/mt7621/base-files/etc/board.d/01_leds
 +++ b/mt7621/base-files/etc/board.d/01_leds
-@@ -14,8 +14,8 @@ asus,rt-n56u-b1)
+@@ -13,8 +13,8 @@ asus,rt-n56u-b1)
  	;;
  d-team,newifi-d2)
  	ucidef_set_led_netdev "internet" "internet" "amber:internet" "wan"
@@ -44,7 +44,7 @@ diff --git a/mt7621/base-files/etc/board.d/02_network b/mt7621/base-files/etc/bo
 index 89e679b..7d159ea 100755
 --- a/mt7621/base-files/etc/board.d/02_network
 +++ b/mt7621/base-files/etc/board.d/02_network
-@@ -13,6 +13,9 @@ ramips_setup_interfaces()
+@@ -12,6 +12,9 @@ ramips_setup_interfaces()
  	winstars,ws-wn583a6)
  		ucidef_set_interfaces_lan_wan "lan" "wan"
  		;;
@@ -54,7 +54,7 @@ index 89e679b..7d159ea 100755
  	asiarf,ap7621-nv1|\
  	glinet,gl-mt1300|\
  	lenovo,newifi-d1|\
-@@ -39,7 +42,7 @@ ramips_setup_interfaces()
+@@ -38,7 +41,7 @@ ramips_setup_interfaces()
  	xiaomi,mi-router-3-pro|\
  	xiaomi,mi-router-ac2100|\
  	xiaomi,redmi-router-ac2100)
@@ -63,7 +63,7 @@ index 89e679b..7d159ea 100755
  		;;
  	gnubee,gb-pc1|\
  	gnubee,gb-pc2)
-@@ -55,6 +58,9 @@ ramips_setup_interfaces()
+@@ -54,6 +57,9 @@ ramips_setup_interfaces()
  	mikrotik,routerboard-760igs)
  		ucidef_set_interfaces_lan_wan "lan2 lan3 lan4 lan5" "wan sfp"
  		;;
