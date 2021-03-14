@@ -1137,7 +1137,7 @@ diff -Naupr linux-5.4.10_orig/include/linux/netdevice.h linux-5.4.10/include/lin
  	/* Interface address info used in eth_type_trans() */
  	unsigned char		*dev_addr;
  
-@@ -4037,6 +4042,19 @@ static inline void netif_tx_unlock_bh(st
+@@ -4040,6 +4045,19 @@ static inline void netif_tx_unlock_bh(st
  	}						\
  }
  
@@ -1456,7 +1456,7 @@ diff -Naupr linux-5.4.10_orig/net/core/skbuff.c linux-5.4.10/net/core/skbuff.c
  
  	/* Note : this field could be in headers_start/headers_end section
  	 * It is not yet because we do not want to have a 16 bit hole
-@@ -4170,6 +4245,13 @@ void __init skb_init(void)
+@@ -4182,6 +4257,13 @@ void __init skb_init(void)
  						0,
  						SLAB_HWCACHE_ALIGN|SLAB_PANIC,
  						NULL);
