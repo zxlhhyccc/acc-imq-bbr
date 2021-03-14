@@ -2,7 +2,7 @@ diff --git a/modules/netdevices.mk b/modules/netdevices.mk
 index bf43bcb..fe0a22a 100644
 --- a/modules/netdevices.mk
 +++ b/modules/netdevices.mk
-@@ -746,6 +746,21 @@ endef
+@@ -764,6 +764,22 @@ endef
  $(eval $(call KernelPackage,iavf))
  
  
@@ -20,6 +20,7 @@ index bf43bcb..fe0a22a 100644
 +endef
 +
 +$(eval $(call KernelPackage,i40evf))
++
 +
  define KernelPackage/b44
    TITLE:=Broadcom 44xx driver
