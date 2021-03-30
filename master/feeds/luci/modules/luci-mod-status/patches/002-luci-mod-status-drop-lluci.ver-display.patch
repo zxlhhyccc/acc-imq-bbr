@@ -1,5 +1,5 @@
 diff --git a/htdocs/luci-static/resources/view/status/include/10_system.js b/htdocs/luci-static/resources/view/status/include/10_system.js
-index ea8f2bb..4cd9bbe 100644
+index ea8f2bb..62c14ef 100644
 --- a/htdocs/luci-static/resources/view/status/include/10_system.js
 +++ b/htdocs/luci-static/resources/view/status/include/10_system.js
 @@ -13,6 +13,16 @@ var callSystemInfo = rpc.declare({
@@ -39,8 +39,26 @@ index ea8f2bb..4cd9bbe 100644
  
  		luciversion = luciversion.filter(function(l) {
  			return l.match(/^\s*(luciname|luciversion)\s*=/);
-@@ -52,7 +66,7 @@ return baseclass.extend({
+@@ -50,9 +64,25 @@ return baseclass.extend({
+ 			);
+ 		}
  
++		// TODO: This is ugly
++		var projectlink = document.createElement('a');
++		projectlink.append('Project ImmortalWrt');
++		projectlink.href = 'https://github.com/immortalwrt';
++		projectlink.target = '_blank';
++
++		var corelink = document.createElement('a');
++		corelink.append('ImmortalWrt Core');
++		corelink.href = 'https://github.com/immortalwrt/immortalwrt';
++		corelink.target = '_blank';
++
++		var sourcelink = document.createElement('placeholder');
++		sourcelink.append(projectlink);
++		sourcelink.append(' / ');
++		sourcelink.append(corelink);
++
  		var fields = [
  			_('Hostname'),         boardinfo.hostname,
 -			_('Model'),            boardinfo.model,
@@ -48,13 +66,14 @@ index ea8f2bb..4cd9bbe 100644
  			_('Architecture'),     boardinfo.system,
  			_('Firmware Version'), (L.isObject(boardinfo.release) ? boardinfo.release.description + ' / ' : '') + (luciversion || ''),
  			_('Kernel Version'),   boardinfo.kernel,
-@@ -62,7 +76,8 @@ return baseclass.extend({
+@@ -62,7 +92,9 @@ return baseclass.extend({
  				systeminfo.load[0] / 65535.0,
  				systeminfo.load[1] / 65535.0,
  				systeminfo.load[2] / 65535.0
 -			) : null
 +			) : null,
-+			_('CPU usage (%)'),    cpuusage.cpuusage
++			_('CPU usage (%)'),    cpuusage.cpuusage,
++			_('Source Code'),      sourcelink
  		];
  
  		var table = E('table', { 'class': 'table' });
