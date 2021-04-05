@@ -1,5 +1,5 @@
---- a/package/kernel/linux/modules/crypto.mk
-+++ b/package/kernel/linux/modules/crypto.mk
+--- a/modules/crypto.mk
++++ b/modules/crypto.mk
 @@ -999,3 +999,18 @@ endef
  
  $(eval $(call KernelPackage,crypto-xts))
@@ -20,8 +20,8 @@
 +
 +$(eval $(call KernelPackage,crypto-zstd))
 
---- a/package/kernel/linux/modules/lib.mk
-+++ b/package/kernel/linux/modules/lib.mk
+--- a/modules/lib.mk
++++ b/modules/lib.mk
 @@ -167,6 +167,27 @@ endef
  $(eval $(call KernelPackage,lib-lz4))
  
@@ -50,8 +50,8 @@
  define KernelPackage/lib-raid6
    SUBMENU:=$(LIB_MENU)
    TITLE:=RAID6 algorithm support
---- a/package/kernel/linux/modules/other.mk
-+++ b/package/kernel/linux/modules/other.mk
+--- a/modules/other.mk
++++ b/modules/other.mk
 @@ -934,6 +934,85 @@ endef
  $(eval $(call KernelPackage,zram))
  
