@@ -1,0 +1,73 @@
+diff --git a/luasrc/model/cbi/mwan/interfaceconfig.lua b/luasrc/model/cbi/mwan/interfaceconfig.lua
+index ea07bd4..7bdd325 100644
+--- a/luasrc/model/cbi/mwan/interfaceconfig.lua
++++ b/luasrc/model/cbi/mwan/interfaceconfig.lua
+@@ -30,13 +30,16 @@ initial_state:value("online", translate("Online"))
+ initial_state:value("offline", translate("Offline"))
+ 
+ family = mwan_interface:option(ListValue, "family", translate("Internet Protocol"))
+-family.default = "ipv4"
++family.default = ""
++family:value("", translate("IPv4 IPv6"))
+ family:value("ipv4", translate("IPv4"))
+ family:value("ipv6", translate("IPv6"))
+ 
+ track_ip = mwan_interface:option(DynamicList, "track_ip", translate("Tracking hostname or IP address"),
+ 	translate("This hostname or IP address will be pinged to determine if the link is up or down. Leave blank to assume interface is always online"))
+ track_ip.datatype = "host"
++track_ip.default = "gateway"
++track_ip.placeholder = "gateway"
+ 
+ track_method = mwan_interface:option(ListValue, "track_method", translate("Tracking method"))
+ track_method.default = "ping"
+diff --git a/luasrc/view/mwan/overview_status_interface.htm b/luasrc/view/mwan/overview_status_interface.htm
+index 468aa12..ed5b0eb 100644
+--- a/luasrc/view/mwan/overview_status_interface.htm
++++ b/luasrc/view/mwan/overview_status_interface.htm
+@@ -25,16 +25,18 @@ XHR.poll(-1, '<%=luci.dispatcher.build_url("admin", "status", "mwan", "interface
+ 				var statusview = '';
+ 				for ( var iface in status.interfaces)
+ 				{
++					for (var family in status.interfaces[iface])
++					{
+ 					var state = '';
+ 					var css = '';
+ 					var time = '';
+-					switch (status.interfaces[iface].status)
++					switch (status.interfaces[iface][family].status)
+ 					{
+ 						case 'online':
+ 							state = '<%:Online%>';
+ 							time = String.format(
+ 								'<div><strong>Uptime:&nbsp;</strong>%s</div>',
+-								secondsToString(status.interfaces[iface].online)
++								secondsToString(status.interfaces[iface][family].online)
+ 							);
+ 							css = 'success';
+ 							break;
+@@ -42,7 +44,7 @@ XHR.poll(-1, '<%=luci.dispatcher.build_url("admin", "status", "mwan", "interface
+ 							state = '<%:Offline%>';
+ 							time = String.format(
+ 								'<div><strong>Downtime:&nbsp;</strong>%s</div>',
+-								secondsToString(status.interfaces[iface].offline)
++								secondsToString(status.interfaces[iface][family].offline)
+ 							);
+ 							css = 'danger';
+ 							break;
+@@ -58,7 +60,7 @@ XHR.poll(-1, '<%=luci.dispatcher.build_url("admin", "status", "mwan", "interface
+ 					);
+ 					statusview += String.format(
+ 						'<div><strong>Interface:&nbsp;</strong>%s</div>',
+-						iface
++						iface + "(" + family + ")"
+ 					);
+ 					statusview += String.format(
+ 						'<div><strong>Status:&nbsp;</strong>%s</div>',
+@@ -69,6 +71,7 @@ XHR.poll(-1, '<%=luci.dispatcher.build_url("admin", "status", "mwan", "interface
+ 						statusview += time;
+ 					}
+ 					statusview += '</div>'
++					}
+ 				}
+ 				statusDiv.innerHTML = statusview;
+ 			}
