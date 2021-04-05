@@ -1,7 +1,7 @@
-diff --git a/ocserv/Makefile b/ocserv/Makefile
+diff --git a/Makefile b/Makefile
 index ed05a3a..c9c4d65 100644
---- a/ocserv/Makefile
-+++ b/ocserv/Makefile
+--- a/Makefile
++++ b/Makefile
 @@ -39,7 +39,7 @@ define Package/ocserv
    TITLE:=OpenConnect VPN server
    URL:=http://www.infradead.org/ocserv/
