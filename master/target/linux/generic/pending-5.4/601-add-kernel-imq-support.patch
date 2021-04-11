@@ -1125,7 +1125,7 @@ diff -Naupr linux-5.4.10_orig/include/linux/imq.h linux-5.4.10/include/linux/imq
 diff -Naupr linux-5.4.10_orig/include/linux/netdevice.h linux-5.4.10/include/linux/netdevice.h
 --- linux-5.4.10_orig/include/linux/netdevice.h	2020-01-09 11:25:53.000000000 +0200
 +++ linux-5.4.10/include/linux/netdevice.h	2020-01-10 15:16:47.223143243 +0200
-@@ -1938,6 +1938,11 @@ struct net_device {
+@@ -1945,6 +1945,11 @@ struct net_device {
  /*
   * Cache lines mostly used on receive path (including eth_type_trans())
   */
@@ -1137,7 +1137,7 @@ diff -Naupr linux-5.4.10_orig/include/linux/netdevice.h linux-5.4.10/include/lin
  	/* Interface address info used in eth_type_trans() */
  	unsigned char		*dev_addr;
  
-@@ -4040,6 +4045,19 @@ static inline void netif_tx_unlock_bh(st
+@@ -4072,6 +4077,19 @@ static inline void netif_tx_unlock_bh(st
  	}						\
  }
  
