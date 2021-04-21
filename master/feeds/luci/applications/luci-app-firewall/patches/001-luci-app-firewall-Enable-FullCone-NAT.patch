@@ -14,7 +14,7 @@ diff --git a/po/zh_Hans/firewall.po b/po/zh_Hans/firewall.po
 index 6ab67e1..f320484 100644
 --- a/po/zh_Hans/firewall.po
 +++ b/po/zh_Hans/firewall.po
-@@ -305,6 +305,9 @@ msgstr "启用 NAT 环回"
+@@ -301,6 +301,9 @@ msgstr "启用 NAT 环回"
  msgid "Enable SYN-flood protection"
  msgstr "启用 SYN-flood 防御"
  
