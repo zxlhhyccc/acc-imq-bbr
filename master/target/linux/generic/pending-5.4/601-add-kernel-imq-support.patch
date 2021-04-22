@@ -1473,7 +1473,7 @@ diff -Naupr linux-5.4.10_orig/net/core/skbuff.c linux-5.4.10/net/core/skbuff.c
 diff -Naupr linux-5.4.10_orig/net/netfilter/Kconfig linux-5.4.10/net/netfilter/Kconfig
 --- linux-5.4.10_orig/net/netfilter/Kconfig	2020-01-09 11:25:53.000000000 +0200
 +++ linux-5.4.10/net/netfilter/Kconfig	2020-01-10 15:16:47.229143243 +0200
-@@ -941,6 +941,18 @@ config NETFILTER_XT_TARGET_LOG
+@@ -929,6 +929,18 @@ config NETFILTER_XT_TARGET_LOG
  
  	  To compile it as a module, choose M here.  If unsure, say N.
  
@@ -1495,7 +1495,7 @@ diff -Naupr linux-5.4.10_orig/net/netfilter/Kconfig linux-5.4.10/net/netfilter/K
 diff -Naupr linux-5.4.10_orig/net/netfilter/Makefile linux-5.4.10/net/netfilter/Makefile
 --- linux-5.4.10_orig/net/netfilter/Makefile	2020-01-09 11:25:53.000000000 +0200
 +++ linux-5.4.10/net/netfilter/Makefile	2020-01-10 15:16:47.229143243 +0200
-@@ -145,6 +145,7 @@ obj-$(CONFIG_NETFILTER_XT_TARGET_CT) +=
+@@ -142,6 +142,7 @@ obj-$(CONFIG_NETFILTER_XT_TARGET_CT) +=
  obj-$(CONFIG_NETFILTER_XT_TARGET_DSCP) += xt_DSCP.o
  obj-$(CONFIG_NETFILTER_XT_TARGET_HL) += xt_HL.o
  obj-$(CONFIG_NETFILTER_XT_TARGET_HMARK) += xt_HMARK.o
