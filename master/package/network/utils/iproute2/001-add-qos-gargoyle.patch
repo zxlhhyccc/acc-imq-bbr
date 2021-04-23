@@ -2,7 +2,7 @@ diff --git a/Makefile b/Makefile
 index b1a137c..7ebdb4d 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -172,6 +172,10 @@ define Build/InstallDev
+@@ -173,6 +173,10 @@ define Build/InstallDev
  	$(CP) $(PKG_BUILD_DIR)/include/{libgenl,libnetlink}.h $(1)/usr/include/
  	$(INSTALL_DIR) $(1)/usr/lib
  	$(CP) $(PKG_BUILD_DIR)/lib/libnetlink.a $(1)/usr/lib/
