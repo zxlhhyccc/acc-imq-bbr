@@ -1,0 +1,42 @@
+diff --git a/Config-lib.in b/Config-lib.in
+index bcf024a..641fc73 100644
+--- a/Config-lib.in
++++ b/Config-lib.in
+@@ -13,6 +13,14 @@ config SQLITE3_DYNAMIC_EXTENSIONS
+ 	help
+ 	  Enable loadable extensions.
+ 
++config SQLITE3_ENABLE_COLUMN_METADATA
++	bool "Enable convenient access to meta-data about tables and queries"
++	default y
++	help
++	  When this option is defined there are some additional APIs
++	  enabled to acces meta-data about tables and queries (see
++	  https://sqlite.org/compile.html).
++
+ config SQLITE3_FTS3
+ 	bool "FTS3 support"
+ 	default y
+diff --git a/Makefile b/Makefile
+index 274101a..66a0fd2 100644
+--- a/Makefile
++++ b/Makefile
+@@ -33,6 +33,7 @@ PKG_INSTALL:=1
+ PKG_CONFIG_DEPENDS := \
+ 	CONFIG_SQLITE3_BATCH_ATOMIC_WRITE \
+ 	CONFIG_SQLITE3_DYNAMIC_EXTENSIONS \
++	CONFIG_SQLITE3_ENABLE_COLUMN_METADATA \
+ 	CONFIG_SQLITE3_FTS3 \
+ 	CONFIG_SQLITE3_FTS4 \
+ 	CONFIG_SQLITE3_FTS5 \
+@@ -125,6 +126,10 @@ else
+ CONFIGURE_ARGS+=--disable-editline --disable-readline
+ endif
+ 
++ifeq ($(CONFIG_SQLITE3_ENABLE_COLUMN_METADATA),y)
++EXTRA_CFLAGS+=-DSQLITE_ENABLE_COLUMN_METADATA
++endif
++
+ define Build/InstallDev
+ 	$(INSTALL_DIR) $(1)/usr/include
+ 	$(INSTALL_DIR) $(1)/usr/lib/pkgconfig
