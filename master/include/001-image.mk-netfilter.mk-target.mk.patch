@@ -13,9 +13,9 @@ index de08d04..bc64e60 100644
  ifeq ($(CONFIG_TARGET_ROOTFS_SECURITY_LABELS),y)
 diff --git a/include/netfilter.mk b/include/netfilter.mk
 index 77b4c6c..aa97165 100644
---- a/include/netfilter.mk
-+++ b/include/netfilter.mk
-@@ -110,6 +110,18 @@ $(eval $(call nf_add,IPT_FILTER,CONFIG_NETFILTER_XT_MATCH_STRING, $(P_XT)xt_stri
+--- a/netfilter.mk
++++ b/netfilter.mk
+@@ -106,6 +106,18 @@ $(eval $(call nf_add,IPT_FILTER,CONFIG_NETFILTER_XT_MATCH_STRING, $(P_XT)xt_stri
  $(eval $(call nf_add,IPT_FILTER,CONFIG_NETFILTER_XT_MATCH_BPF, $(P_XT)xt_bpf))
  
  
