@@ -12,10 +12,10 @@ index de08d04..bc64e60 100644
  
  ifeq ($(CONFIG_TARGET_ROOTFS_SECURITY_LABELS),y)
 diff --git a/netfilter.mk b/netfilter.mk
-index 77b4c6c..600a15c 100644
+index 803749d..6b58776 100644
 --- a/netfilter.mk
 +++ b/netfilter.mk
-@@ -110,6 +110,18 @@ $(eval $(call nf_add,IPT_FILTER,CONFIG_NETFILTER_XT_MATCH_STRING, $(P_XT)xt_stri
+@@ -106,6 +106,18 @@ $(eval $(call nf_add,IPT_FILTER,CONFIG_NETFILTER_XT_MATCH_STRING, $(P_XT)xt_stri
  $(eval $(call nf_add,IPT_FILTER,CONFIG_NETFILTER_XT_MATCH_BPF, $(P_XT)xt_bpf))
  
  
@@ -34,14 +34,6 @@ index 77b4c6c..600a15c 100644
  # ipopt
  
  $(eval $(call nf_add,IPT_IPOPT,CONFIG_NETFILTER_XT_MATCH_DSCP, $(P_XT)xt_dscp))
-@@ -188,6 +200,7 @@ $(eval $(if $(NF_KMOD),$(call nf_add,NF_NAT,CONFIG_NF_NAT, $(P_XT)nf_nat),))
- $(eval $(if $(NF_KMOD),$(call nf_add,IPT_NAT,CONFIG_NETFILTER_XT_NAT, $(P_XT)xt_nat),))
- $(eval $(if $(NF_KMOD),$(call nf_add,IPT_NAT,CONFIG_IP_NF_NAT, $(P_V4)iptable_nat),))
- $(eval $(if $(NF_KMOD),$(call nf_add,IPT_NAT6,CONFIG_IP6_NF_NAT, $(P_V6)ip6table_nat),))
-+$(eval $(if $(NF_KMOD),$(call nf_add,IPT_NAT6,CONFIG_IP6_NF_TARGET_MASQUERADE, $(P_V6)ip6t_MASQUERADE, lt 5.2),))
- $(eval $(if $(NF_KMOD),$(call nf_add,IPT_NAT6,CONFIG_IP6_NF_TARGET_NPT, $(P_V6)ip6t_NPT),))
- 
- # userland only
 diff --git a/target.mk b/target.mk
 index a2e76f8..8451582 100644
 --- a/target.mk
