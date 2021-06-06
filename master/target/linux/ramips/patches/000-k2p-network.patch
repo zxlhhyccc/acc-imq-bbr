@@ -1,8 +1,8 @@
 diff --git a/image/mt7621.mk b/image/mt7621.mk
-index 20433f7..1d04e7b 100644
+index 96a66b2..96081a3 100644
 --- a/image/mt7621.mk
 +++ b/image/mt7621.mk
-@@ -368,8 +368,8 @@ define Device/d-team_newifi-d2
+@@ -399,8 +399,8 @@ define Device/d-team_newifi-d2
    IMAGE_SIZE := 32448k
    DEVICE_VENDOR := Newifi
    DEVICE_MODEL := D2
@@ -13,7 +13,7 @@ index 20433f7..1d04e7b 100644
  endef
  TARGET_DEVICES += d-team_newifi-d2
  
-@@ -1080,10 +1080,8 @@ define Device/phicomm_k2p
+@@ -1138,10 +1138,8 @@ define Device/phicomm_k2p
    IMAGE_SIZE := 15744k
    DEVICE_VENDOR := Phicomm
    DEVICE_MODEL := K2P
@@ -26,7 +26,7 @@ index 20433f7..1d04e7b 100644
  TARGET_DEVICES += phicomm_k2p
  
 diff --git a/mt7621/base-files/etc/board.d/01_leds b/mt7621/base-files/etc/board.d/01_leds
-index 427983e..98c2e93 100644
+index 5322bc9..6389276 100644
 --- a/mt7621/base-files/etc/board.d/01_leds
 +++ b/mt7621/base-files/etc/board.d/01_leds
 @@ -20,8 +20,8 @@ cudy,wr2100)
@@ -41,10 +41,17 @@ index 427983e..98c2e93 100644
  d-team,pbr-m1|\
  gehua,ghl-r-001|\
 diff --git a/mt7621/base-files/etc/board.d/02_network b/mt7621/base-files/etc/board.d/02_network
-index 9c946fa..2374e08 100644
+index d84d3e3..e812a45 100644
 --- a/mt7621/base-files/etc/board.d/02_network
 +++ b/mt7621/base-files/etc/board.d/02_network
-@@ -12,6 +12,9 @@ ramips_setup_interfaces()
+@@ -26,12 +26,15 @@ ramips_setup_interfaces()
+ 	xiaomi,mi-router-3-pro|\
+ 	xiaomi,mi-router-ac2100|\
+ 	xiaomi,redmi-router-ac2100)
+-		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" "wan"
++		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 ra0 rai0" "wan"
+ 		;;
+ 	asiarf,ap7621-001|\
  	winstars,ws-wn583a6)
  		ucidef_set_interfaces_lan_wan "lan" "wan"
  		;;
@@ -54,16 +61,7 @@ index 9c946fa..2374e08 100644
  	asiarf,ap7621-nv1|\
  	glinet,gl-mt1300|\
  	jcg,q20|\
-@@ -39,7 +42,7 @@ ramips_setup_interfaces()
- 	xiaomi,mi-router-3-pro|\
- 	xiaomi,mi-router-ac2100|\
- 	xiaomi,redmi-router-ac2100)
--		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" "wan"
-+		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 ra0 rai0" "wan"
- 		;;
- 	gnubee,gb-pc1|\
- 	gnubee,gb-pc2)
-@@ -55,6 +58,9 @@ ramips_setup_interfaces()
+@@ -57,6 +60,9 @@ ramips_setup_interfaces()
  	mikrotik,routerboard-760igs)
  		ucidef_set_interfaces_lan_wan "lan2 lan3 lan4 lan5" "wan sfp"
  		;;
