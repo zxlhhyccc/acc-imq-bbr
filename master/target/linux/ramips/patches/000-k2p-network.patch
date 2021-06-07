@@ -44,7 +44,7 @@ diff --git a/mt7621/base-files/etc/board.d/02_network b/mt7621/base-files/etc/bo
 index d84d3e3..e812a45 100644
 --- a/mt7621/base-files/etc/board.d/02_network
 +++ b/mt7621/base-files/etc/board.d/02_network
-@@ -26,12 +26,15 @@ ramips_setup_interfaces()
+@@ -27,12 +27,15 @@ ramips_setup_interfaces()
  	xiaomi,mi-router-3-pro|\
  	xiaomi,mi-router-ac2100|\
  	xiaomi,redmi-router-ac2100)
@@ -61,7 +61,7 @@ index d84d3e3..e812a45 100644
  	asiarf,ap7621-nv1|\
  	glinet,gl-mt1300|\
  	jcg,q20|\
-@@ -57,6 +60,9 @@ ramips_setup_interfaces()
+@@ -58,6 +61,9 @@ ramips_setup_interfaces()
  	mikrotik,routerboard-760igs)
  		ucidef_set_interfaces_lan_wan "lan2 lan3 lan4 lan5" "wan sfp"
  		;;
