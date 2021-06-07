@@ -1294,7 +1294,7 @@ diff -Naupr linux-5.4.10_orig/include/net/pkt_sched.h linux-5.4.10/include/net/p
 diff -Naupr linux-5.4.10_orig/include/net/sch_generic.h linux-5.4.10/include/net/sch_generic.h
 --- linux-5.4.10_orig/include/net/sch_generic.h	2020-01-09 11:25:53.000000000 +0200
 +++ linux-5.4.10/include/net/sch_generic.h	2020-01-10 15:16:47.226143243 +0200
-@@ -796,6 +796,13 @@ static inline int qdisc_enqueue(struct s
+@@ -829,6 +829,13 @@ static inline int qdisc_enqueue(struct s
  	return sch->enqueue(skb, sch, to_free);
  }
  
@@ -1681,7 +1681,7 @@ diff -Naupr linux-5.4.10_orig/net/netfilter/xt_IMQ.c linux-5.4.10/net/netfilter/
 diff -Naupr linux-5.4.10_orig/net/sched/sch_generic.c linux-5.4.10/net/sched/sch_generic.c
 --- linux-5.4.10_orig/net/sched/sch_generic.c	2020-01-09 11:25:53.000000000 +0200
 +++ linux-5.4.10/net/sched/sch_generic.c	2020-01-10 15:16:47.230143243 +0200
-@@ -273,6 +273,14 @@ trace:
+@@ -296,6 +296,14 @@ trace:
  	return skb;
  }
  
