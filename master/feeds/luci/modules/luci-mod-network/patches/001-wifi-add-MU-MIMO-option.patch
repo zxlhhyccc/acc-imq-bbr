@@ -1,8 +1,8 @@
 diff --git a/htdocs/luci-static/resources/view/network/wireless.js b/htdocs/luci-static/resources/view/network/wireless.js
-index e9707e8..d1f4217 100644
+index 8f3f7a2..e1d2a33 100644
 --- a/htdocs/luci-static/resources/view/network/wireless.js
 +++ b/htdocs/luci-static/resources/view/network/wireless.js
-@@ -922,6 +922,10 @@ return view.extend({
+@@ -953,6 +953,10 @@ return view.extend({
  					o.value('2', _('High'));
  					o.value('3', _('Very High'));
  
@@ -13,7 +13,7 @@ index e9707e8..d1f4217 100644
  					o = ss.taboption('advanced', form.Value, 'distance', _('Distance Optimization'), _('Distance to farthest network member in meters.'));
  					o.datatype = 'or(range(0,114750),"auto")';
  					o.placeholder = 'auto';
-@@ -941,6 +945,9 @@ return view.extend({
+@@ -972,6 +976,9 @@ return view.extend({
  					o.datatype = 'range(15,65535)';
  					o.placeholder = 100;
  					o.rmempty = true;
@@ -23,7 +23,7 @@ index e9707e8..d1f4217 100644
  				}
  
  
-@@ -1464,6 +1471,68 @@ return view.extend({
+@@ -1495,6 +1502,68 @@ return view.extend({
  
  
  				if (hwtype == 'mac80211') {
