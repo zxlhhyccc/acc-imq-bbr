@@ -2,7 +2,7 @@ diff --git a/files/lib/wifi/mac80211.sh b/files/lib/wifi/mac80211.sh
 index c0fbfbe..b9524fa 100644
 --- a/files/lib/wifi/mac80211.sh
 +++ b/files/lib/wifi/mac80211.sh
-@@ -175,8 +175,9 @@ detect_mac80211() {
+@@ -174,8 +174,9 @@ detect_mac80211() {
  			set wireless.radio${devidx}.channel=${channel}
  			set wireless.radio${devidx}.band=${mode_band}
  			set wireless.radio${devidx}.htmode=$htmode
