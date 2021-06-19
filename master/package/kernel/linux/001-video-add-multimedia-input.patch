@@ -1,14 +1,15 @@
 diff --git a/modules/video.mk b/modules/video.mk
-index c71f076..14d1afc 100644
+index 394dff6..ab69417 100644
 --- a/modules/video.mk
 +++ b/modules/video.mk
-@@ -221,6 +221,24 @@ endef
+@@ -221,6 +221,25 @@ endef
  $(eval $(call KernelPackage,fb-tft-ili9486))
  
  
 +define KernelPackage/multimedia-input
 +  SUBMENU:=$(VIDEO_MENU)
 +  TITLE:=Multimedia input support
++  DEPENDS:=+kmod-input-core
 +  KCONFIG:=CONFIG_RC_CORE \
 +	CONFIG_LIRC=y \
 +	CONFIG_RC_DECODERS=y \
