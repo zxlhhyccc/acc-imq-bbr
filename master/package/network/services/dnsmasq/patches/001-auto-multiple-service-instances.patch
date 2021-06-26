@@ -1,8 +1,8 @@
 diff --git a/files/dnsmasq.init b/files/dnsmasq.init
-index 3f5a7c9..7aac3c8 100644
+index a4e8c82..019dba8 100644
 --- a/files/dnsmasq.init
 +++ b/files/dnsmasq.init
-@@ -1108,8 +1108,11 @@ dnsmasq_start()
+@@ -1119,8 +1119,11 @@ dnsmasq_start()
  		done
  	}
  
@@ -16,7 +16,7 @@ index 3f5a7c9..7aac3c8 100644
  	procd_set_param file $CONFIGFILE
  	[ -n "$user_dhcpscript" ] && procd_set_param env USER_DHCPSCRIPT="$user_dhcpscript"
  	procd_set_param respawn
-@@ -1119,6 +1122,7 @@ dnsmasq_start()
+@@ -1130,6 +1133,7 @@ dnsmasq_start()
  	procd_add_jail_mount_rw /var/run/dnsmasq/ $leasefile
  
  	procd_close_instance
