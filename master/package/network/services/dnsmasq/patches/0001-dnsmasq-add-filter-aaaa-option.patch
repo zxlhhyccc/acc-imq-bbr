@@ -14,7 +14,7 @@ diff --git a/files/dnsmasq.init b/files/dnsmasq.init
 index 44e7d2d..7bb1367 100644
 --- a/files/dnsmasq.init
 +++ b/files/dnsmasq.init
-@@ -896,8 +896,12 @@ dnsmasq_start()
+@@ -904,8 +904,12 @@ dnsmasq_start()
  	append_bool "$cfg" rapidcommit "--dhcp-rapid-commit"
  	append_bool "$cfg" scriptarp "--script-arp"
  
@@ -27,7 +27,7 @@ index 44e7d2d..7bb1367 100644
  	append_parm "$cfg" cachesize "--cache-size"
  	append_parm "$cfg" dnsforwardmax "--dns-forward-max"
  	append_parm "$cfg" port "--port"
-@@ -1098,7 +1102,6 @@ dnsmasq_start()
+@@ -1106,7 +1110,6 @@ dnsmasq_start()
  			echo "search $DOMAIN" >> /tmp/resolv.conf
  		}
  		DNS_SERVERS="$DNS_SERVERS 127.0.0.1"
@@ -35,7 +35,7 @@ index 44e7d2d..7bb1367 100644
  		for DNS_SERVER in $DNS_SERVERS ; do
  			echo "nameserver $DNS_SERVER" >> /tmp/resolv.conf
  		done
-@@ -1115,6 +1118,15 @@ dnsmasq_start()
+@@ -1123,6 +1126,15 @@ dnsmasq_start()
  	procd_add_jail_mount_rw /var/run/dnsmasq/ $leasefile
  
  	procd_close_instance
@@ -51,7 +51,7 @@ index 44e7d2d..7bb1367 100644
  }
  
  dnsmasq_stop()
-@@ -1132,6 +1144,15 @@ dnsmasq_stop()
+@@ -1140,6 +1152,15 @@ dnsmasq_stop()
  	rm -f ${BASEDHCPSTAMPFILE}.${cfg}.*.dhcp
  }
  
@@ -67,7 +67,7 @@ index 44e7d2d..7bb1367 100644
  add_interface_trigger()
  {
  	local interface ignore
-@@ -1184,6 +1205,7 @@ start_service() {
+@@ -1210,6 +1231,7 @@ start_service() {
  }
  
  reload_service() {
@@ -75,7 +75,7 @@ index 44e7d2d..7bb1367 100644
  	rc_procd start_service "$@"
  	procd_send_signal dnsmasq "$@"
  }
-@@ -1210,4 +1232,5 @@ stop_service() {
+@@ -1236,4 +1258,5 @@ stop_service() {
  	else
  		config_foreach dnsmasq_stop dnsmasq
  	fi
