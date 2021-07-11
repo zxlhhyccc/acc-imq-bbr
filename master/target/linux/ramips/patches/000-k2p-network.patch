@@ -2,7 +2,7 @@ diff --git a/image/mt7621.mk b/image/mt7621.mk
 index 96a66b2..96081a3 100644
 --- a/image/mt7621.mk
 +++ b/image/mt7621.mk
-@@ -285,7 +285,7 @@ define Device/dlink_dir-8xx-a1
+@@ -285,11 +285,11 @@ define Device/dlink_dir-8xx-a1
    $(Device/dsa-migration)
    IMAGE_SIZE := 16000k
    DEVICE_VENDOR := D-Link
@@ -11,6 +11,11 @@ index 96a66b2..96081a3 100644
    KERNEL_INITRAMFS := $$(KERNEL) | uimage-padhdr 96
    IMAGES += factory.bin
    IMAGE/sysupgrade.bin := append-kernel | append-rootfs | uimage-padhdr 96 |\
+-	pad-rootfs | check-size | append-metadata
++	pad-rootfs | append-metadata | check-size
+   IMAGE/factory.bin := append-kernel | append-rootfs | uimage-padhdr 96 |\
+ 	check-size
+ endef
 @@ -298,7 +298,7 @@ define Device/dlink_dir-8xx-r1
    $(Device/dsa-migration)
    IMAGE_SIZE := 16064k
@@ -20,7 +25,7 @@ index 96a66b2..96081a3 100644
    KERNEL_INITRAMFS := $$(KERNEL)
    IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | \
  	check-size | append-metadata
-@@ -399,8 +399,8 @@ define Device/d-team_newifi-d2
+@@ -407,8 +407,8 @@ define Device/d-team_newifi-d2
    IMAGE_SIZE := 32448k
    DEVICE_VENDOR := Newifi
    DEVICE_MODEL := D2
@@ -31,7 +36,16 @@ index 96a66b2..96081a3 100644
  endef
  TARGET_DEVICES += d-team_newifi-d2
  
-@@ -578,8 +578,8 @@ define Device/gehua_ghl-r-001
+@@ -448,7 +448,7 @@ define Device/edimax_re23s
+   DEVICE_ALT0_MODEL := Gemini RE23S
+   IMAGE/sysupgrade.bin := append-kernel | append-rootfs | \
+ 	edimax-header -s CSYS -m RN76 -f 0x70000 -S 0x01100000 | pad-rootfs | \
+-	check-size | append-metadata
++	append-metadata | check-size
+   IMAGES += factory.bin
+   IMAGE/factory.bin := append-kernel | append-rootfs | \
+ 	edimax-header -s CSYS -m RN76 -f 0x70000 -S 0x01100000 | pad-rootfs | \
+@@ -586,8 +586,8 @@ define Device/gehua_ghl-r-001
    IMAGE_SIZE := 32448k
    DEVICE_VENDOR := GeHua
    DEVICE_MODEL := GHL-R-001
@@ -42,7 +56,7 @@ index 96a66b2..96081a3 100644
  endef
  TARGET_DEVICES += gehua_ghl-r-001
  
-@@ -588,7 +588,7 @@ define Device/glinet_gl-mt1300
+@@ -596,7 +596,7 @@ define Device/glinet_gl-mt1300
    IMAGE_SIZE := 32448k
    DEVICE_VENDOR := GL.iNet
    DEVICE_MODEL := GL-MT1300
@@ -51,7 +65,7 @@ index 96a66b2..96081a3 100644
  endef
  TARGET_DEVICES += glinet_gl-mt1300
  
-@@ -777,7 +777,7 @@ define Device/jcg_y2
+@@ -785,7 +785,7 @@ define Device/jcg_y2
    JCG_MAXSIZE := 16064k
    DEVICE_VENDOR := JCG
    DEVICE_MODEL := Y2
@@ -60,7 +74,27 @@ index 96a66b2..96081a3 100644
  endef
  TARGET_DEVICES += jcg_y2
  
-@@ -1138,10 +1138,8 @@ define Device/phicomm_k2p
+@@ -832,7 +832,7 @@ define Device/linksys_ea7xxx
+ 	uboot-envtools
+   UBINIZE_OPTS := -E 5
+   IMAGES := sysupgrade.bin factory.bin
+-  IMAGE/sysupgrade.bin := sysupgrade-tar | check-size | append-metadata
++  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata | check-size
+   IMAGE/factory.bin := append-kernel | pad-to $$$$(KERNEL_SIZE) | \
+ 	append-ubi | check-size | linksys-image type=$$$$(LINKSYS_HWNAME)
+ endef
+@@ -909,8 +909,8 @@ define Device/MikroTik
+   KERNEL_NAME := vmlinuz
+   KERNEL := kernel-bin | append-dtb-elf
+   IMAGE/sysupgrade.bin := append-kernel | kernel2minor -s 1024 | \
+-	pad-to $$$$(BLOCKSIZE) | append-rootfs | pad-rootfs | check-size | \
+-	append-metadata
++	pad-to $$$$(BLOCKSIZE) | append-rootfs | pad-rootfs | append-metadata | \
++	check-size
+ endef
+ 
+ define Device/mikrotik_routerboard-750gr3
+@@ -1146,10 +1146,8 @@ define Device/phicomm_k2p
    IMAGE_SIZE := 15744k
    DEVICE_VENDOR := Phicomm
    DEVICE_MODEL := K2P
@@ -73,7 +107,7 @@ index 96a66b2..96081a3 100644
  TARGET_DEVICES += phicomm_k2p
  
 diff --git a/mt7621/base-files/etc/board.d/01_leds b/mt7621/base-files/etc/board.d/01_leds
-index 5322bc9..6389276 100644
+index cb889de..b2b06eb 100644
 --- a/mt7621/base-files/etc/board.d/01_leds
 +++ b/mt7621/base-files/etc/board.d/01_leds
 @@ -20,8 +20,8 @@ cudy,wr2100)
@@ -85,8 +119,8 @@ index 5322bc9..6389276 100644
 +	ucidef_set_led_netdev "wlan2g" "WiFi 2.4GHz" "$boardname:blue:wlan2g" "ra0"
 +	ucidef_set_led_netdev "wlan5g" "WiFi 5GHz" "$boardname:blue:wlan5g" "rai0"
  	;;
- d-team,pbr-m1|\
- gehua,ghl-r-001|\
+ dlink,dir-853-r1)
+ 	ucidef_set_led_netdev "internet" "internet" "blue:net" "wan"
 diff --git a/mt7621/base-files/etc/board.d/02_network b/mt7621/base-files/etc/board.d/02_network
 index d84d3e3..e812a45 100644
 --- a/mt7621/base-files/etc/board.d/02_network
