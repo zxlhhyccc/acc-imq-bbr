@@ -1,100 +1,106 @@
 diff --git a/image/mt7621.mk b/image/mt7621.mk
-index 96a66b2..96081a3 100644
+index ea0c3fc..9f13637 100644
 --- a/image/mt7621.mk
 +++ b/image/mt7621.mk
-@@ -285,11 +285,11 @@ define Device/dlink_dir-8xx-a1
-   $(Device/dsa-migration)
+@@ -121,7 +121,7 @@ define Device/alfa-network_quad-e4g
+   DEVICE_VENDOR := ALFA Network
+   DEVICE_MODEL := Quad-E4G
+   DEVICE_PACKAGES := kmod-ata-ahci kmod-sdhci-mt7620 kmod-usb3 uboot-envtools \
+-	-wpad-basic-wolfssl
++	-wpad-openssl
+   SUPPORTED_DEVICES += quad-e4g
+ endef
+ TARGET_DEVICES += alfa-network_quad-e4g
+@@ -158,7 +158,7 @@ define Device/asiarf_ap7621-001
    IMAGE_SIZE := 16000k
-   DEVICE_VENDOR := D-Link
--  DEVICE_PACKAGES := kmod-mt7615e kmod-mt7615-firmware
-+  DEVICE_PACKAGES := kmod-mt7615d luci-app-mtwifi uboot-envtools -wpad-openssl
-   KERNEL_INITRAMFS := $$(KERNEL) | uimage-padhdr 96
-   IMAGES += factory.bin
-   IMAGE/sysupgrade.bin := append-kernel | append-rootfs | uimage-padhdr 96 |\
--	pad-rootfs | check-size | append-metadata
-+	pad-rootfs | append-metadata | check-size
-   IMAGE/factory.bin := append-kernel | append-rootfs | uimage-padhdr 96 |\
- 	check-size
+   DEVICE_VENDOR := AsiaRF
+   DEVICE_MODEL := AP7621-001
+-  DEVICE_PACKAGES := kmod-sdhci-mt7620 kmod-mt76x2 kmod-usb3 -wpad-basic-wolfssl
++  DEVICE_PACKAGES := kmod-sdhci-mt7620 kmod-mt76x2 kmod-usb3 -wpad-openssl
  endef
-@@ -298,7 +298,7 @@ define Device/dlink_dir-8xx-r1
+ TARGET_DEVICES += asiarf_ap7621-001
+ 
+@@ -167,7 +167,7 @@ define Device/asiarf_ap7621-nv1
+   IMAGE_SIZE := 16000k
+   DEVICE_VENDOR := AsiaRF
+   DEVICE_MODEL := AP7621-NV1
+-  DEVICE_PACKAGES := kmod-sdhci-mt7620 kmod-mt76x2 kmod-usb3 -wpad-basic-wolfssl
++  DEVICE_PACKAGES := kmod-sdhci-mt7620 kmod-mt76x2 kmod-usb3 -wpad-openssl
+ endef
+ TARGET_DEVICES += asiarf_ap7621-nv1
+ 
+@@ -611,7 +611,7 @@ define Device/gnubee_gb-pc1
    $(Device/dsa-migration)
-   IMAGE_SIZE := 16064k
-   DEVICE_VENDOR := D-Link
--  DEVICE_PACKAGES := kmod-mt7615e kmod-mt7615-firmware
-+  DEVICE_PACKAGES := kmod-mt7615d luci-app-mtwifi -wpad-openssl
-   KERNEL_INITRAMFS := $$(KERNEL)
-   IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | \
- 	check-size | append-metadata
-@@ -407,8 +407,8 @@ define Device/d-team_newifi-d2
+   DEVICE_VENDOR := GnuBee
+   DEVICE_MODEL := Personal Cloud One
+-  DEVICE_PACKAGES := kmod-ata-ahci kmod-usb3 kmod-sdhci-mt7620 -wpad-basic-wolfssl
++  DEVICE_PACKAGES := kmod-ata-ahci kmod-usb3 kmod-sdhci-mt7620 -wpad-openssl
    IMAGE_SIZE := 32448k
-   DEVICE_VENDOR := Newifi
-   DEVICE_MODEL := D2
--  DEVICE_PACKAGES := kmod-mt7603 kmod-mt76x2 kmod-usb3 \
--	kmod-usb-ledtrig-usbport
-+  DEVICE_PACKAGES := kmod-mt7603e kmod-mt76x2e kmod-usb3 \
-+	kmod-usb-ledtrig-usbport luci-app-mtwifi -wpad-openssl
  endef
- TARGET_DEVICES += d-team_newifi-d2
- 
-@@ -448,7 +448,7 @@ define Device/edimax_re23s
-   DEVICE_ALT0_MODEL := Gemini RE23S
-   IMAGE/sysupgrade.bin := append-kernel | append-rootfs | \
- 	edimax-header -s CSYS -m RN76 -f 0x70000 -S 0x01100000 | pad-rootfs | \
--	check-size | append-metadata
-+	append-metadata | check-size
-   IMAGES += factory.bin
-   IMAGE/factory.bin := append-kernel | append-rootfs | \
- 	edimax-header -s CSYS -m RN76 -f 0x70000 -S 0x01100000 | pad-rootfs | \
-@@ -586,8 +586,8 @@ define Device/gehua_ghl-r-001
+ TARGET_DEVICES += gnubee_gb-pc1
+@@ -620,7 +620,7 @@ define Device/gnubee_gb-pc2
+   $(Device/dsa-migration)
+   DEVICE_VENDOR := GnuBee
+   DEVICE_MODEL := Personal Cloud Two
+-  DEVICE_PACKAGES := kmod-ata-ahci kmod-usb3 kmod-sdhci-mt7620 -wpad-basic-wolfssl
++  DEVICE_PACKAGES := kmod-ata-ahci kmod-usb3 kmod-sdhci-mt7620 -wpad-openssl
    IMAGE_SIZE := 32448k
-   DEVICE_VENDOR := GeHua
-   DEVICE_MODEL := GHL-R-001
--  DEVICE_PACKAGES := kmod-mt7603 kmod-mt76x2 kmod-usb3 \
--	kmod-usb-ledtrig-usbport
-+  DEVICE_PACKAGES := kmod-mt7603e kmod-mt76x2e kmod-usb3 \
-+	kmod-usb-ledtrig-usbport luci-app-mtwifi -wpad-openssl
  endef
- TARGET_DEVICES += gehua_ghl-r-001
+ TARGET_DEVICES += gnubee_gb-pc2
+@@ -900,7 +900,7 @@ define Device/mediatek_ap-mt7621a-v60
+   IMAGE_SIZE := 7872k
+   DEVICE_VENDOR := Mediatek
+   DEVICE_MODEL := AP-MT7621A-V60 EVB
+-  DEVICE_PACKAGES := kmod-usb3 kmod-sdhci-mt7620 kmod-sound-mt7620 -wpad-basic-wolfssl
++  DEVICE_PACKAGES := kmod-usb3 kmod-sdhci-mt7620 kmod-sound-mt7620 -wpad-openssl
+ endef
+ TARGET_DEVICES += mediatek_ap-mt7621a-v60
  
-@@ -596,7 +596,7 @@ define Device/glinet_gl-mt1300
-   IMAGE_SIZE := 32448k
-   DEVICE_VENDOR := GL.iNet
-   DEVICE_MODEL := GL-MT1300
--  DEVICE_PACKAGES := kmod-mt7615e kmod-mt7615-firmware kmod-usb3
-+  DEVICE_PACKAGES := kmod-mt7615d kmod-usb3 luci-app-mtwifi -wpad-openssl
+@@ -910,7 +910,7 @@ define Device/mediatek_mt7621-eval-board
+   IMAGE_SIZE := 15104k
+   DEVICE_VENDOR := MediaTek
+   DEVICE_MODEL := MT7621 EVB
+-  DEVICE_PACKAGES := -wpad-basic-wolfssl
++  DEVICE_PACKAGES := -wpad-openssl
+   SUPPORTED_DEVICES += mt7621
  endef
- TARGET_DEVICES += glinet_gl-mt1300
- 
-@@ -785,7 +785,7 @@ define Device/jcg_y2
-   JCG_MAXSIZE := 16064k
-   DEVICE_VENDOR := JCG
-   DEVICE_MODEL := Y2
--  DEVICE_PACKAGES := kmod-mt7615e kmod-mt7615-firmware kmod-usb3
-+  DEVICE_PACKAGES := kmod-mt7615d kmod-usb3 luci-app-mtwifi -wpad-openssl
- endef
- TARGET_DEVICES += jcg_y2
- 
-@@ -832,7 +832,7 @@ define Device/linksys_ea7xxx
- 	uboot-envtools
-   UBINIZE_OPTS := -E 5
-   IMAGES := sysupgrade.bin factory.bin
--  IMAGE/sysupgrade.bin := sysupgrade-tar | check-size | append-metadata
-+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata | check-size
-   IMAGE/factory.bin := append-kernel | pad-to $$$$(KERNEL_SIZE) | \
- 	append-ubi | check-size | linksys-image type=$$$$(LINKSYS_HWNAME)
- endef
-@@ -909,8 +909,8 @@ define Device/MikroTik
-   KERNEL_NAME := vmlinuz
-   KERNEL := kernel-bin | append-dtb-elf
-   IMAGE/sysupgrade.bin := append-kernel | kernel2minor -s 1024 | \
--	pad-to $$$$(BLOCKSIZE) | append-rootfs | pad-rootfs | check-size | \
--	append-metadata
-+	pad-to $$$$(BLOCKSIZE) | append-rootfs | pad-rootfs | append-metadata | \
-+	check-size
- endef
- 
+ TARGET_DEVICES += mediatek_mt7621-eval-board
+@@ -931,7 +931,7 @@ endef
  define Device/mikrotik_routerboard-750gr3
-@@ -1146,10 +1146,8 @@ define Device/phicomm_k2p
+   $(Device/MikroTik)
+   DEVICE_MODEL := RouterBOARD 750Gr3
+-  DEVICE_PACKAGES += -wpad-basic-wolfssl
++  DEVICE_PACKAGES += -wpad-openssl
+   SUPPORTED_DEVICES += mikrotik,rb750gr3
+ endef
+ TARGET_DEVICES += mikrotik_routerboard-750gr3
+@@ -939,14 +939,14 @@ TARGET_DEVICES += mikrotik_routerboard-750gr3
+ define Device/mikrotik_routerboard-760igs
+   $(Device/MikroTik)
+   DEVICE_MODEL := RouterBOARD 760iGS
+-  DEVICE_PACKAGES += kmod-sfp -wpad-basic-wolfssl
++  DEVICE_PACKAGES += kmod-sfp -wpad-openssl
+ endef
+ TARGET_DEVICES += mikrotik_routerboard-760igs
+ 
+ define Device/mikrotik_routerboard-m11g
+   $(Device/MikroTik)
+   DEVICE_MODEL := RouterBOARD M11G
+-  DEVICE_PACKAGES := -wpad-basic-wolfssl
++  DEVICE_PACKAGES := -wpad-openssl
+   SUPPORTED_DEVICES += mikrotik,rbm11g
+ endef
+ TARGET_DEVICES += mikrotik_routerboard-m11g
+@@ -954,7 +954,7 @@ TARGET_DEVICES += mikrotik_routerboard-m11g
+ define Device/mikrotik_routerboard-m33g
+   $(Device/MikroTik)
+   DEVICE_MODEL := RouterBOARD M33G
+-  DEVICE_PACKAGES := -wpad-basic-wolfssl
++  DEVICE_PACKAGES := -wpad-openssl
+   SUPPORTED_DEVICES += mikrotik,rbm33g
+ endef
+ TARGET_DEVICES += mikrotik_routerboard-m33g
+@@ -1161,10 +1161,8 @@ define Device/phicomm_k2p
    IMAGE_SIZE := 15744k
    DEVICE_VENDOR := Phicomm
    DEVICE_MODEL := K2P
@@ -102,53 +108,70 @@ index 96a66b2..96081a3 100644
 -  DEVICE_ALT0_MODEL := KE 2P
    SUPPORTED_DEVICES += k2p
 -  DEVICE_PACKAGES := kmod-mt7615e kmod-mt7615-firmware
-+  DEVICE_PACKAGES := kmod-mt7615d luci-app-mtwifi -wpad-openssl
++  DEVICE_PACKAGES := -luci-newapi -wpad-openssl kmod-mt7615d_dbdc
  endef
  TARGET_DEVICES += phicomm_k2p
  
-diff --git a/mt7621/base-files/etc/board.d/01_leds b/mt7621/base-files/etc/board.d/01_leds
-index cb889de..b2b06eb 100644
---- a/mt7621/base-files/etc/board.d/01_leds
-+++ b/mt7621/base-files/etc/board.d/01_leds
-@@ -20,8 +20,8 @@ cudy,wr2100)
- 	;;
- d-team,newifi-d2)
- 	ucidef_set_led_netdev "internet" "internet" "amber:internet" "wan"
--	ucidef_set_led_netdev "wlan2g" "WiFi 2.4GHz" "blue:wlan2g" "wlan0"
--	ucidef_set_led_netdev "wlan5g" "WiFi 5GHz" "blue:wlan5g" "wlan1"
-+	ucidef_set_led_netdev "wlan2g" "WiFi 2.4GHz" "$boardname:blue:wlan2g" "ra0"
-+	ucidef_set_led_netdev "wlan5g" "WiFi 5GHz" "$boardname:blue:wlan5g" "rai0"
- 	;;
- dlink,dir-853-r1)
- 	ucidef_set_led_netdev "internet" "internet" "blue:net" "wan"
-diff --git a/mt7621/base-files/etc/board.d/02_network b/mt7621/base-files/etc/board.d/02_network
-index d84d3e3..e812a45 100644
---- a/mt7621/base-files/etc/board.d/02_network
-+++ b/mt7621/base-files/etc/board.d/02_network
-@@ -27,12 +27,15 @@ ramips_setup_interfaces()
- 	xiaomi,mi-router-3-pro|\
- 	xiaomi,mi-router-ac2100|\
- 	xiaomi,redmi-router-ac2100)
--		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" "wan"
-+		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 ra0 rai0" "wan"
- 		;;
- 	asiarf,ap7621-001|\
- 	winstars,ws-wn583a6)
- 		ucidef_set_interfaces_lan_wan "lan" "wan"
- 		;;
-+	d-team,newifi-d2)
-+		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4 ra0 rai0" "wan"
-+		;;
- 	asiarf,ap7621-nv1|\
- 	glinet,gl-mt1300|\
- 	jcg,q20|\
-@@ -58,6 +61,9 @@ ramips_setup_interfaces()
- 	mikrotik,routerboard-760igs)
- 		ucidef_set_interfaces_lan_wan "lan2 lan3 lan4 lan5" "wan sfp"
- 		;;
-+	phicomm,k2p)
-+		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4 ra0 rax0" "wan"
-+		;;
- 	tplink,eap235-wall-v1)
- 		ucidef_set_interface_lan "lan0 lan1 lan2 lan3"
- 		;;
+@@ -1174,7 +1172,7 @@ define Device/planex_vr500
+   IMAGE_SIZE := 65216k
+   DEVICE_VENDOR := Planex
+   DEVICE_MODEL := VR500
+-  DEVICE_PACKAGES := kmod-usb3 -wpad-basic-wolfssl
++  DEVICE_PACKAGES := kmod-usb3 -wpad-openssl
+   SUPPORTED_DEVICES += vr500
+ endef
+ TARGET_DEVICES += planex_vr500
+@@ -1241,7 +1239,7 @@ define Device/thunder_timecloud
+   IMAGE_SIZE := 16064k
+   DEVICE_VENDOR := Thunder
+   DEVICE_MODEL := Timecloud
+-  DEVICE_PACKAGES := kmod-usb3 -wpad-basic-wolfssl
++  DEVICE_PACKAGES := kmod-usb3 -wpad-openssl
+   SUPPORTED_DEVICES += timecloud
+ endef
+ TARGET_DEVICES += thunder_timecloud
+@@ -1363,7 +1361,7 @@ define Device/ubnt_edgerouter_common
+   KERNEL_INITRAMFS := $$(KERNEL) | \
+ 	ubnt-erx-factory-image $(KDIR)/tmp/$$(KERNEL_INITRAMFS_PREFIX)-factory.tar
+   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+-  DEVICE_PACKAGES += -wpad-basic-wolfssl
++  DEVICE_PACKAGES += -wpad-openssl
+ endef
+ 
+ define Device/ubnt_edgerouter-x
+@@ -1419,7 +1417,7 @@ define Device/unielec_u7621-06-16m
+   DEVICE_VENDOR := UniElec
+   DEVICE_MODEL := U7621-06
+   DEVICE_VARIANT := 16M
+-  DEVICE_PACKAGES := kmod-ata-ahci kmod-sdhci-mt7620 kmod-usb3 -wpad-basic-wolfssl
++  DEVICE_PACKAGES := kmod-ata-ahci kmod-sdhci-mt7620 kmod-usb3 -wpad-openssl
+   SUPPORTED_DEVICES += u7621-06-256M-16M unielec,u7621-06-256m-16m
+ endef
+ TARGET_DEVICES += unielec_u7621-06-16m
+@@ -1431,7 +1429,7 @@ define Device/unielec_u7621-06-64m
+   DEVICE_VENDOR := UniElec
+   DEVICE_MODEL := U7621-06
+   DEVICE_VARIANT := 64M
+-  DEVICE_PACKAGES := kmod-ata-ahci kmod-sdhci-mt7620 kmod-usb3 -wpad-basic-wolfssl
++  DEVICE_PACKAGES := kmod-ata-ahci kmod-sdhci-mt7620 kmod-usb3 -wpad-openssl
+   SUPPORTED_DEVICES += unielec,u7621-06-512m-64m
+ endef
+ TARGET_DEVICES += unielec_u7621-06-64m
+@@ -1582,7 +1580,7 @@ define Device/xiaoyu_xy-c5
+   IMAGE_SIZE := 32448k
+   DEVICE_VENDOR := XiaoYu
+   DEVICE_MODEL := XY-C5
+-  DEVICE_PACKAGES := kmod-ata-ahci kmod-usb3 -wpad-basic-wolfssl
++  DEVICE_PACKAGES := kmod-ata-ahci kmod-usb3 -wpad-openssl
+ endef
+ TARGET_DEVICES += xiaoyu_xy-c5
+ 
+@@ -1592,7 +1590,7 @@ define Device/xzwifi_creativebox-v1
+   DEVICE_VENDOR := CreativeBox
+   DEVICE_MODEL := v1
+   DEVICE_PACKAGES := kmod-ata-ahci kmod-mt7603 kmod-mt76x2 kmod-sdhci-mt7620 \
+-	kmod-usb3 -wpad-basic-wolfssl
++	kmod-usb3 -wpad-openssl
+ endef
+ TARGET_DEVICES += xzwifi_creativebox-v1
+ 
