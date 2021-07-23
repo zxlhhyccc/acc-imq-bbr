@@ -1,8 +1,8 @@
 diff -ruaN a/include/net/inet_connection_sock.h b/include/net/inet_connection_sock.h
 --- a/include/net/inet_connection_sock.h	2020-12-21 20:27:07.000000000 +0800
 +++ b/include/net/inet_connection_sock.h	2021-01-01 01:58:22.742234049 +0800
-@@ -135,8 +135,8 @@
- 	} icsk_mtup;
+@@ -138,8 +138,8 @@ struct inet_connection_sock {
+ 	u32			  icsk_probes_tstamp;
  	u32			  icsk_user_timeout;
  
 -	u64			  icsk_ca_priv[104 / sizeof(u64)];
@@ -15,16 +15,16 @@ diff -ruaN a/include/net/inet_connection_sock.h b/include/net/inet_connection_so
 diff -ruaN a/include/net/tcp.h b/include/net/tcp.h
 --- a/include/net/tcp.h	2020-12-21 20:27:07.000000000 +0800
 +++ b/include/net/tcp.h	2021-01-01 01:58:22.742234049 +0800
-@@ -565,6 +565,8 @@
+@@ -565,6 +565,8 @@ __u32 cookie_v6_init_sequence(const struct sk_buff *skb, __u16 *mss);
  #endif
  /* tcp_output.c */
  
 +u32 tcp_tso_autosize(const struct sock *sk, unsigned int mss_now,
-+		     int min_tso_segs);
++			       int min_tso_segs);
  void __tcp_push_pending_frames(struct sock *sk, unsigned int cur_mss,
  			       int nonagle);
  int __tcp_retransmit_skb(struct sock *sk, struct sk_buff *skb, int segs);
-@@ -1060,6 +1062,8 @@
+@@ -1061,6 +1063,8 @@ struct tcp_congestion_ops {
  	void (*pkts_acked)(struct sock *sk, const struct ack_sample *sample);
  	/* override sysctl_tcp_min_tso_segs */
  	u32 (*min_tso_segs)(struct sock *sk);
@@ -36,7 +36,7 @@ diff -ruaN a/include/net/tcp.h b/include/net/tcp.h
 diff -ruaN a/net/ipv4/Kconfig b/net/ipv4/Kconfig
 --- a/net/ipv4/Kconfig	2020-12-21 20:27:07.000000000 +0800
 +++ b/net/ipv4/Kconfig	2021-01-01 01:59:50.362681282 +0800
-@@ -655,9 +655,18 @@
+@@ -655,9 +655,18 @@ config TCP_CONG_BBR
  	bufferbloat, policers, or AQM schemes that do not provide a delay
  	signal. It requires the fq ("Fair Queue") pacing packet scheduler.
  
@@ -56,22 +56,22 @@ diff -ruaN a/net/ipv4/Kconfig b/net/ipv4/Kconfig
  	help
  	  Select the TCP congestion control that will be used by default
  	  for all connections.
-@@ -692,6 +701,9 @@
+@@ -691,6 +700,9 @@ choice
+ 
  	config DEFAULT_BBR
  		bool "BBR" if TCP_CONG_BBR=y
++		
++	config DEFAULT_BBRPLUS
++		bool "BBRPLUS" if TCP_CONG_BBRPLUS=y
  
-+        config DEFAULT_BBRPLUS
-+                bool "BBRPLUS" if TCP_CONG_BBRPLUS=y
-+
  	config DEFAULT_RENO
  		bool "Reno"
- endchoice
-@@ -716,7 +728,8 @@
+@@ -716,7 +728,8 @@ config DEFAULT_TCP_CONG
  	default "dctcp" if DEFAULT_DCTCP
  	default "cdg" if DEFAULT_CDG
  	default "bbr" if DEFAULT_BBR
 -	default "cubic"
-+   default "cubic" if DEFAULT_CUBIC
++	default "cubic" if DEFAULT_CUBIC
 +	default "bbrplus"
  
  config TCP_MD5SIG
@@ -79,7 +79,7 @@ diff -ruaN a/net/ipv4/Kconfig b/net/ipv4/Kconfig
 diff -ruaN a/net/ipv4/Makefile b/net/ipv4/Makefile
 --- a/net/ipv4/Makefile	2020-12-21 20:27:07.000000000 +0800
 +++ b/net/ipv4/Makefile	2021-01-01 01:58:22.742234049 +0800
-@@ -45,6 +45,7 @@
+@@ -45,6 +45,7 @@ obj-$(CONFIG_INET_TCP_DIAG) += tcp_diag.o
  obj-$(CONFIG_INET_UDP_DIAG) += udp_diag.o
  obj-$(CONFIG_INET_RAW_DIAG) += raw_diag.o
  obj-$(CONFIG_TCP_CONG_BBR) += tcp_bbr.o
@@ -1281,7 +1281,7 @@ diff -ruaN a/net/ipv4/tcp_bbrplus.c b/net/ipv4/tcp_bbrplus.c
 diff -ruaN a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
 --- a/net/ipv4/tcp_output.c	2020-12-21 20:27:07.000000000 +0800
 +++ b/net/ipv4/tcp_output.c	2021-01-01 01:58:22.742234049 +0800
-@@ -1729,7 +1729,7 @@
+@@ -1729,7 +1729,7 @@ static bool tcp_nagle_check(bool partial, const struct tcp_sock *tp,
  /* Return how many segs we'd like on a TSO packet,
   * to send one TSO packet per ms
   */
@@ -1290,7 +1290,7 @@ diff -ruaN a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
  			    int min_tso_segs)
  {
  	u32 bytes, segs;
-@@ -1747,6 +1747,7 @@
+@@ -1747,6 +1747,7 @@ static u32 tcp_tso_autosize(const struct sock *sk, unsigned int mss_now,
  
  	return segs;
  }
@@ -1301,28 +1301,28 @@ diff -ruaN a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
 diff -ruaN a/net/sched/Kconfig b/net/sched/Kconfig
 --- a/net/sched/Kconfig	2020-12-21 20:27:07.000000000 +0800
 +++ b/net/sched/Kconfig	2021-01-01 01:58:22.746234069 +0800
-@ -332,7 +332,8 @@
+@@ -332,7 +332,8 @@ config NET_SCH_CAKE
  	  If unsure, say N.
  
  config NET_SCH_FQ
 -	tristate "Fair Queue"
-+        bool "Fair Queue"
-+        default y
++	bool "Fair Queue"
++	default y
  	help
  	  Say Y here if you want to use the FQ packet scheduling algorithm.
  
-@@ -409,8 +410,9 @@
+@@ -409,8 +410,9 @@ config NET_SCH_PLUG
  	  To compile this code as a module, choose M here: the
  	  module will be called sch_plug.
  
 -menuconfig NET_SCH_DEFAULT
 +menuconfig NET_SCH_DEFAULT_BBRP
  	bool "Allow override default queue discipline"
-+        default y
++	default y
  	---help---
  	  Support for selection of default queuing discipline.
  
-@@ -420,11 +422,15 @@
+@@ -420,11 +422,15 @@ menuconfig NET_SCH_DEFAULT
  
  	  If unsure, say N.
  
@@ -1330,8 +1330,8 @@ diff -ruaN a/net/sched/Kconfig b/net/sched/Kconfig
 +if NET_SCH_DEFAULT_BBRP
 +
 +config NET_SCH_DEFAULT
-+        bool
-+        default NET_SCH_DEFAULT_BBRP
++	bool
++	default NET_SCH_DEFAULT_BBRP
  
  choice
  	prompt "Default queuing discipline"
@@ -1340,10 +1340,10 @@ diff -ruaN a/net/sched/Kconfig b/net/sched/Kconfig
  	help
  	  Select the queueing discipline that will be used by default
  	  for all network devices.
-@@ -455,7 +461,7 @@
+@@ -451,7 +457,7 @@ config DEFAULT_NET_SCH
+ 	default "fq" if DEFAULT_FQ
  	default "fq_codel" if DEFAULT_FQ_CODEL
  	default "sfq" if DEFAULT_SFQ
- 	default "cake" if DEFAULT_CAKE
 -	default "pfifo_fast"
 +	default "fq"
  endif
