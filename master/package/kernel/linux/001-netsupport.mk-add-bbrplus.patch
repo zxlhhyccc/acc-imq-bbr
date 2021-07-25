@@ -20,7 +20,7 @@ index 1eec9f9..61b13fe 100644
 +  AUTOLOAD:=$(call AutoProbe,tcp_bbrplus)
 +endef
 +
-+define KernelPackage/tcp-bbr/description
++define KernelPackage/tcp-bbrplus/description
 + BBRplus is an enhanced version of BBR (Bottleneck Bandwidth and RTT).
 + Originally introduced by dog250 & cx9208.
 + Same as BBR, requires the fq ("Fair Queue") pacing packet scheduler.
@@ -38,3 +38,14 @@ index 1eec9f9..61b13fe 100644
  
  define KernelPackage/tcp-hybla
    SUBMENU:=$(NETWORK_SUPPORT_MENU)
+diff --git a/files/sysctl-tcp-bbrplus.conf b/files/sysctl-tcp-bbrplus.conf
+new file mode 100644
+index 0000000..e1c3cd2
+--- a/files/sysctl-tcp-bbrplus.conf
++++ b/files/sysctl-tcp-bbrplus.conf
+@@ -0,0 +1,5 @@
++# Do not edit, changes to this file will be lost on upgrades
++# /etc/sysctl.conf can be used to customize sysctl settings
++
++net.core.default_qdisc=fq_codel
++net.ipv4.tcp_congestion_control=bbrplus
