@@ -1,17 +1,148 @@
+diff --git a/files/sysctl-tcp-bbrplus.conf b/files/sysctl-tcp-bbrplus.conf
+new file mode 100644
+index 0000000..e1c3cd2
+--- a/files/sysctl-tcp-bbrplus.conf
++++ b/files/sysctl-tcp-bbrplus.conf
+@@ -0,0 +1,5 @@
++# Do not edit, changes to this file will be lost on upgrades
++# /etc/sysctl.conf can be used to customize sysctl settings
++
++net.core.default_qdisc=fq_codel
++net.ipv4.tcp_congestion_control=bbrplus
+diff --git a/files/sysctl-tcp-nanqinlang.conf b/files/sysctl-tcp-nanqinlang.conf
+new file mode 100644
+index 0000000..107dd37
+--- a/files/sysctl-tcp-nanqinlang.conf
++++ b/files/sysctl-tcp-nanqinlang.conf
+@@ -0,0 +1,5 @@
++# Do not edit, changes to this file will be lost on upgrades
++# /etc/sysctl.conf can be used to customize sysctl settings
++
++net.core.default_qdisc=fq_codel
++net.ipv4.tcp_congestion_control=nanqinlang
+diff --git a/files/sysctl-tcp-tsunami.conf b/files/sysctl-tcp-tsunami.conf
+new file mode 100644
+index 0000000..58932aa
+--- a/files/sysctl-tcp-tsunami.conf
++++ b/files/sysctl-tcp-tsunami.conf
+@@ -0,0 +1,5 @@
++# Do not edit, changes to this file will be lost on upgrades
++# /etc/sysctl.conf can be used to customize sysctl settings
++
++net.core.default_qdisc=fq_codel
++net.ipv4.tcp_congestion_control=tsunami
+diff --git a/files/sysctl-tcp-tsunamio.conf b/files/sysctl-tcp-tsunamio.conf
+new file mode 100644
+index 0000000..b0a793d
+--- a/files/sysctl-tcp-tsunamio.conf
++++ b/files/sysctl-tcp-tsunamio.conf
+@@ -0,0 +1,5 @@
++# Do not edit, changes to this file will be lost on upgrades
++# /etc/sysctl.conf can be used to customize sysctl settings
++
++net.core.default_qdisc=fq_codel
++net.ipv4.tcp_congestion_control=tsunamio
 diff --git a/modules/netsupport.mk b/modules/netsupport.mk
-index 1eec9f9..61b13fe 100644
+index 1eec9f9..3462e2d 100644
 --- a/modules/netsupport.mk
 +++ b/modules/netsupport.mk
-@@ -949,6 +949,35 @@ endef
+@@ -949,6 +949,122 @@ endef
  
  $(eval $(call KernelPackage,tcp-bbr))
  
++define KernelPackage/tcp-nanqinlang
++  SUBMENU:=$(NETWORK_SUPPORT_MENU)
++  TITLE:=NANQINLANG TCP congestion control
++  KCONFIG:= \
++            CONFIG_TCP_CONG_NANQINLANG \
++            CONFIG_NET_SCH_DEFAULT_BBRP=y \
++            CONFIG_NET_SCH_DEFAULT=y \
++            CONFIG_DEFAULT_FQ_CODEL=y \
++            CONFIG_DEFAULT_NET_SCH="fq_codel"
++  FILES:=$(LINUX_DIR)/net/ipv4/tcp_nanqinlang.ko
++  AUTOLOAD:=$(call AutoProbe,tcp_nanqinlang)
++endef
++
++define KernelPackage/tcp-nanqinlang/description
++ NANQINLANG is an enhanced version of BBR (Bottleneck Bandwidth and RTT).
++ Originally introduced by dog250 & cx9208.
++ Same as BBR, requires the fq ("Fair Queue") pacing packet scheduler.
++endef
++
++TCP_NANQINLANG_SYSCTL_CONF:=sysctl-tcp-nanqinlang.conf
++
++define KernelPackage/tcp-nanqinlang/install
++	$(INSTALL_DIR) $(1)/etc/sysctl.d
++	$(INSTALL_DATA) ./files/$(TCP_NANQINLANG_SYSCTL_CONF) $(1)/etc/sysctl.d/12-tcp-nanqinlang.conf
++endef
++
++$(eval $(call KernelPackage,tcp-nanqinlang))
++
++
++define KernelPackage/tcp-tsunami
++  SUBMENU:=$(NETWORK_SUPPORT_MENU)
++  TITLE:=TSUNAMI TCP congestion control
++  KCONFIG:= \
++            CONFIG_TCP_CONG_TSUNAMI \
++            CONFIG_NET_SCH_DEFAULT_BBRP=y \
++            CONFIG_NET_SCH_DEFAULT=y \
++            CONFIG_DEFAULT_FQ_CODEL=y \
++            CONFIG_DEFAULT_NET_SCH="fq_codel"
++  FILES:=$(LINUX_DIR)/net/ipv4/tcp_tsunami.ko
++  AUTOLOAD:=$(call AutoProbe,tcp_tsunami)
++endef
++
++define KernelPackage/tcp-tsunami/description
++ TSUNAMI is an enhanced version of BBR (Bottleneck Bandwidth and RTT).
++ Originally introduced by dog250 & cx9208.
++ Same as BBR, requires the fq ("Fair Queue") pacing packet scheduler.
++endef
++
++TCP_TSUNAMI_SYSCTL_CONF:=sysctl-tcp-tsunami.conf
++
++define KernelPackage/tcp-tsunami/install
++	$(INSTALL_DIR) $(1)/etc/sysctl.d
++	$(INSTALL_DATA) ./files/$(TCP_TSUNAMI_SYSCTL_CONF) $(1)/etc/sysctl.d/12-tcp-tsunami.conf
++endef
++
++$(eval $(call KernelPackage,tcp-tsunami))
++
++
++define KernelPackage/tcp-tsunamio
++  SUBMENU:=$(NETWORK_SUPPORT_MENU)
++  DEPENDS:=@LINUX_5_4
++  TITLE:=TSUNAMIO TCP congestion control
++  KCONFIG:= \
++            CONFIG_TCP_CONG_TSUNAMIO \
++            CONFIG_NET_SCH_DEFAULT_BBRP=y \
++            CONFIG_NET_SCH_DEFAULT=y \
++            CONFIG_DEFAULT_FQ_CODEL=y \
++            CONFIG_DEFAULT_NET_SCH="fq_codel"
++  FILES:=$(LINUX_DIR)/net/ipv4/tcp_tsunamio.ko
++  AUTOLOAD:=$(call AutoProbe,tcp_tsunamio)
++endef
++
++define KernelPackage/tcp-tsunamio/description
++ TSUNAMIO is an enhanced version of BBR (Bottleneck Bandwidth and RTT).
++ Originally introduced by dog250 & cx9208.
++ Same as BBR, requires the fq ("Fair Queue") pacing packet scheduler.
++endef
++
++TCP_TSUNAMIO_SYSCTL_CONF:=sysctl-tcp-tsunamio.conf
++
++define KernelPackage/tcp-tsunamio/install
++	$(INSTALL_DIR) $(1)/etc/sysctl.d
++	$(INSTALL_DATA) ./files/$(TCP_TSUNAMIO_SYSCTL_CONF) $(1)/etc/sysctl.d/12-tcp-tsunamio.conf
++endef
++
++$(eval $(call KernelPackage,tcp-tsunamio))
++
++
 +define KernelPackage/tcp-bbrplus
 +  SUBMENU:=$(NETWORK_SUPPORT_MENU)
 +  TITLE:=BBRPLUS TCP congestion control
 +  KCONFIG:= \
 +            CONFIG_TCP_CONG_BBRPLUS \
-+            CONFIG_DEFAULT_BBRPLUS=y \
 +            CONFIG_NET_SCH_DEFAULT_BBRP=y \
 +            CONFIG_NET_SCH_DEFAULT=y \
 +            CONFIG_DEFAULT_FQ_CODEL=y \
@@ -38,14 +169,3 @@ index 1eec9f9..61b13fe 100644
  
  define KernelPackage/tcp-hybla
    SUBMENU:=$(NETWORK_SUPPORT_MENU)
-diff --git a/files/sysctl-tcp-bbrplus.conf b/files/sysctl-tcp-bbrplus.conf
-new file mode 100644
-index 0000000..e1c3cd2
---- a/files/sysctl-tcp-bbrplus.conf
-+++ b/files/sysctl-tcp-bbrplus.conf
-@@ -0,0 +1,5 @@
-+# Do not edit, changes to this file will be lost on upgrades
-+# /etc/sysctl.conf can be used to customize sysctl settings
-+
-+net.core.default_qdisc=fq_codel
-+net.ipv4.tcp_congestion_control=bbrplus
