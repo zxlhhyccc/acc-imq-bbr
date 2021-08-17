@@ -17,7 +17,7 @@ DEFAULT_PACKAGES:=\
 	fstools \
 	libc \
 	libgcc \
-	libustream-wolfssl \
+	libustream-openssl \
 	logd \
 	mtd \
 	netifd \
@@ -44,15 +44,13 @@ DEFAULT_PACKAGES:=\
 	luci-app-ddns \
 	luci-app-sqm \
 	luci-app-upnp \
-	luci-app-adbyby-plus \
-	luci-app-autoreboot \
+	luci-app-autorebootschedule \
 	luci-app-vsftpd \
 	luci-app-ssr-plus \
 	luci-app-arpbind \
-	luci-app-vlmcsd \
+	luci-app-control-vlmcsd \
 	luci-app-wol \
 	luci-app-ramfree \
-	luci-app-flowoffload \
 	luci-app-nlbwmon \
 	luci-app-accesscontrol \
 	ddns-scripts_aliyun \
