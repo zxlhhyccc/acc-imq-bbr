@@ -20,7 +20,7 @@ ifdef CONFIG_PACKAGE_MAC80211_DEBUGFS
 	ATH9K_DEBUGFS \
 	ATH9K_HTC_DEBUGFS \
 	ATH10K_DEBUGFS \
-  ATH11K_DEBUGFS \
+	ATH11K_DEBUGFS \
 	CARL9170_DEBUGFS \
 	ATH5K_DEBUG \
 	ATH6KL_DEBUG \
@@ -30,7 +30,7 @@ endif
 ifdef CONFIG_PACKAGE_MAC80211_TRACING
   config-y += \
 	ATH10K_TRACING \
-  ATH11K_TRACING \
+	ATH11K_TRACING \
 	ATH6KL_TRACING \
 	ATH_TRACEPOINTS \
 	ATH5K_TRACER \
@@ -314,7 +314,7 @@ define KernelPackage/ath11k/config
        config ATH11K_MEM_PROFILE_512M
                bool "Enable 512MB profile"
                depends on PACKAGE_kmod-ath11k
-               default y if TARGET_ipq807x_generic_DEVICE_redmi_ax6 || TARGET_ipq807x_generic_DEVICE_xiaomi_ax3600
+               default y if TARGET_ipq807x_generic_DEVICE_redmi_ax6 || TARGET_ipq807x_generic_DEVICE_xiaomi_ax3600|| TARGET_ipq807x_generic_DEVICE_zte_mf269
 
 endef
 
