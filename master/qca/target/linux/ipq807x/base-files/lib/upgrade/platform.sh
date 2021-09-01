@@ -10,6 +10,9 @@ platform_check_image() {
 
 platform_do_upgrade() {
 	case "$(board_name)" in
+	edimax,cax1800)
+		nand_do_upgrade "$1"
+		;;
 	redmi,ax6|\
 	xiaomi,ax3600|\
 	xiaomi,ax9000)
@@ -36,10 +39,6 @@ platform_do_upgrade() {
 		# Reset success flag
 		fw_setenv flag_boot_success 0
 
-		nand_do_upgrade "$1"
-		;;
-	zte,mf269)
-		CI_UBIPART="rootfs"
 		nand_do_upgrade "$1"
 		;;
 	*)

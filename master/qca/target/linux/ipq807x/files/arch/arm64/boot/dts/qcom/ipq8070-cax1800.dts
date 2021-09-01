@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-/* Copyright (c) 2021, Robert Marko <robimarko@gmail.com> */
+/* Copyright (c) 2021, Dirk Buchwalder <buchwalder@posteo.de> */
+
+/dts-v1/;
 
 #include "ipq8074.dtsi"
 #include "ipq8074-ac-cpu.dtsi"
 #include "ipq8074-ac-nss.dtsi"
-#include "ipq8074-memory-512m.dtsi"
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
 
@@ -12,20 +13,19 @@
 	#address-cells = <2>;
 	#size-cells = <2>;
 
+	model = "Edimax CAX1800";
+	compatible = "edimax,cax1800", "qcom,ipq8074";
 	interrupt-parent = <&intc>;
 
 	aliases {
 		serial0 = &blsp1_uart5;
-		led-boot = &led_system_yellow;
-		led-failsafe = &led_system_yellow;
-		led-running = &led_system_blue;
-		led-upgrade = &led_system_yellow;
+		led-boot = &led_system_red;
+		led-failsafe = &led_system_red;
+		led-running = &led_system_green;
+		led-upgrade = &led_system_red;
 		/* Aliases as required by u-boot to patch MAC addresses */
-		ethernet1 = &dp2;
-		ethernet2 = &dp3;
-		ethernet3 = &dp4;
 		ethernet4 = &dp5;
-		label-mac-device = &dp2;
+		label-mac-device = &dp5;
 	};
 
 	chosen {
@@ -38,14 +38,28 @@
 
 		reset {
 			label = "reset";
-			gpios = <&tlmm 34 GPIO_ACTIVE_LOW>;
+			gpios = <&tlmm 32 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_RESTART>;
 		};
 	};
 
-	reserved-memory {
-		/delete-node/ q6_etr_dump@50f00000;
-		/delete-node/ m3_dump@51000000;
+	leds {
+		compatible = "gpio-leds";
+
+		led_system_red: system-red {
+			label = "red:system";
+			gpios = <&tlmm 25 GPIO_ACTIVE_HIGH>;
+		};
+
+		led_system_green: system-green {
+			label = "green:system";
+			gpios = <&tlmm 26 GPIO_ACTIVE_HIGH>;
+		};
+
+		led_system_blue: system-blue {
+			label = "blue:system";
+			gpios = <&tlmm 27 GPIO_ACTIVE_HIGH>;
+		};
 	};
 };
 
@@ -97,7 +111,149 @@
 		nand-bus-width = <8>;
 
 		partitions {
-			compatible = "qcom,smem-part";
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			partition@0 {
+				label = "rootfs";
+				reg = <0x0000000 0x3400000>;
+			};
+		};
+	};
+};
+
+&blsp1_spi1 {
+	pinctrl-0 = <&spi_0_pins>;
+	pinctrl-names = "default";
+	cs-select = <0>;
+	status = "ok";
+
+	m25p80@0 {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		reg = <0>;
+		compatible = "jedec,spi-nor";
+		spi-max-frequency = <50000000>;
+		use-default-sizes;
+
+		partitions {
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			partition@0 {
+				label = "0:sbl1";
+				reg = <0x0 0x50000>;
+				read-only;
+			};
+
+			partition@50000 {
+				label = "0:mibib";
+				reg = <0x50000 0x10000>;
+				read-only;
+			};
+
+			partition@60000 {
+				label = "0:bootconfig";
+				reg = <0x60000 0x20000>;
+				read-only;
+			};
+
+			partition@80000 {
+				label = "0:bootconfig1";
+				reg = <0x80000 0x20000>;
+				read-only;
+			};
+
+			partition@a0000 {
+				label = "0:qsee";
+				reg = <0xa0000 0x180000>;
+				read-only;
+			};
+
+			partition@220000 {
+				label = "0:qsee_1";
+				reg = <0x220000 0x180000>;
+				read-only;
+			};
+
+			partition@3a0000 {
+				label = "0:devcfg";
+				reg = <0x3a0000 0x10000>;
+				read-only;
+			};
+
+			partition@3b0000 {
+				label = "0:devcfg_1";
+				reg = <0x3b0000 0x10000>;
+				read-only;
+			};
+
+			partition@3c0000 {
+				label = "0:apdp";
+				reg = <0x3c0000 0x10000>;
+				read-only;
+			};
+
+			partition@3d0000 {
+				label = "0:apdp_1";
+				reg = <0x3d0000 0x10000>;
+				read-only;
+			};
+
+			partition@3e0000 {
+				label = "0:rpm";
+				reg = <0x3e0000 0x40000>;
+				read-only;
+			};
+
+			partition@420000 {
+				label = "0:rpm_1";
+				reg = <0x420000 0x40000>;
+				read-only;
+			};
+
+			partition@460000 {
+				label = "0:cdt";
+				reg = <0x460000 0x10000>;
+				read-only;
+			};
+
+			partition@470000 {
+				label = "0:cdt_1";
+				reg = <0x470000 0x10000>;
+				read-only;
+			};
+
+			partition@480000 {
+				label = "0:appsblenv";
+				reg = <0x480000 0x10000>;
+			};
+
+			partition@490000 {
+				label = "0:appsbl";
+				reg = <0x490000 0xa0000>;
+				read-only;
+			};
+
+			partition@530000 {
+				label = "0:appsbl_1";
+				reg = <0x530000 0xa0000>;
+				read-only;
+			};
+
+			partition@5d0000 {
+				label = "0:art";
+				reg = <0x5d0000 0x40000>;
+				read-only;
+			};
+
+			partition@610000 {
+				label = "0:ethphyfw";
+				reg = <0x610000 0x80000>;
+				read-only;
+			};
 		};
 	};
 };
@@ -107,24 +263,8 @@
 
 	pinctrl-0 = <&mdio_pins>;
 	pinctrl-names = "default";
-	/*
-	 * Disable the reset GPIO temporarely as it
-	 * resets the 100Mbit LED configuration which
-	 * the bootloader writes.
-	 */
-	//reset-gpios = <&tlmm 37 GPIO_ACTIVE_LOW>;
 
-	ethernet-phy@1 {
-		reg = <1>;
-	};
-
-	ethernet-phy@2 {
-		reg = <2>;
-	};
-
-	ethernet-phy@3 {
-		reg = <3>;
-	};
+	reset-gpios = <&tlmm 37 GPIO_ACTIVE_LOW>;
 
 	ethernet-phy@4 {
 		reg = <4>;
@@ -437,44 +577,6 @@
 };
 
 &soc {
-	dp2: dp2 {
-		device_type = "network";
-		compatible = "qcom,nss-dp";
-		qcom,id = <2>;
-		reg = <0x3a001200 0x200>;
-		qcom,mactype = <0>;
-		local-mac-address = [000000000000];
-		qcom,link-poll = <1>;
-		qcom,phy-mdio-addr = <1>;
-		phy-mode = "sgmii";
-		mdio-bus = <&mdio>;
-	};
-
-	dp3: dp3 {
-		device_type = "network";
-		compatible = "qcom,nss-dp";
-		qcom,id = <3>;
-		reg = <0x3a001400 0x200>;
-		qcom,mactype = <0>;
-		local-mac-address = [000000000000];
-		qcom,link-poll = <1>;
-		qcom,phy-mdio-addr = <2>;
-		phy-mode = "sgmii";
-		mdio-bus = <&mdio>;
-	};
-
-	dp4: dp4 {
-		device_type = "network";
-		compatible = "qcom,nss-dp";
-		qcom,id = <4>;
-		reg = <0x3a001600 0x200>;
-		qcom,mactype = <0>;
-		local-mac-address = [000000000000];
-		qcom,link-poll = <1>;
-		qcom,phy-mdio-addr = <3>;
-		phy-mode = "sgmii";
-		mdio-bus = <&mdio>;
-	};
 
 	dp5: dp5 {
 		device_type = "network";
@@ -493,5 +595,6 @@
 &wifi {
 	status = "okay";
 
-	qcom,board_id = <658>;
+	qcom,board_id = <657>;
+	qcom,ath11k-calibration-variant = "Edimax-CAX1800";
 };
