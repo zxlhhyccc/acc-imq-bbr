@@ -2,6 +2,8 @@
 
 START=99
 
+. /lib/functions/system.sh
+
 boot() {
 	case $(board_name) in
 	redmi,ax6|\
