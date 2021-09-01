@@ -10,6 +10,7 @@ case "$FIRMWARE" in
 "ath11k/IPQ8074/hw2.0/caldata.bin")
 	case "$board" in
 	edimax,cax1800|\
+	netgear,sxr80|\
 	redmi,ax6|\
 	xiaomi,ax3600|\
 	xiaomi,ax9000)
@@ -21,6 +22,9 @@ case "$FIRMWARE" in
 	case "$board" in
 	xiaomi,ax9000)
 		caldata_extract "0:art" 0x26800 0x20000
+		;;
+	zte,mf269)
+		caldata_extract "0:ART" 0x1000 0x20000
 		;;
 	esac
 	;;

@@ -36,6 +36,19 @@ define Device/edimax_cax1800
 endef
 TARGET_DEVICES += edimax_cax1800
 
+define Device/netgear_sxr80
+	$(call Device/FitImage)
+	$(call Device/UbiFit)
+	DEVICE_VENDOR := Netgear
+	DEVICE_MODEL := SXR80
+	BLOCKSIZE := 128k
+	PAGESIZE := 2048
+	DEVICE_DTS_CONFIG := config@hk01
+	SOC := ipq8074
+	DEVICE_PACKAGES := ipq-wifi-netgear_sxr80 uboot-envtools
+endef
+TARGET_DEVICES += netgear_sxr80
+
 define Device/redmi_ax6
 	$(call Device/xiaomi_ax3600)
 	DEVICE_VENDOR := Redmi
@@ -71,3 +84,16 @@ define Device/xiaomi_ax9000
 	uboot-envtools
 endef
 TARGET_DEVICES += xiaomi_ax9000
+
+define Device/zte_mf269
+        $(call Device/FitImage)
+        $(call Device/UbiFit)
+        DEVICE_VENDOR := ZTE
+        DEVICE_MODEL := MF269
+        BLOCKSIZE := 128k
+        PAGESIZE := 2048
+        DEVICE_DTS_CONFIG := config@ac04
+        SOC := ipq8071
+        DEVICE_PACKAGES := ipq-wifi-zte_mf269 uboot-envtools
+endef
+TARGET_DEVICES += zte_mf269
