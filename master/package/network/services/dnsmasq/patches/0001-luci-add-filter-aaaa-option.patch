@@ -2,7 +2,7 @@ diff --git a/htdocs/luci-static/resources/view/network/dhcp.js b/htdocs/luci-sta
 index 7f46740..394bc1d 100644
 --- a/htdocs/luci-static/resources/view/network/dhcp.js
 +++ b/htdocs/luci-static/resources/view/network/dhcp.js
-@@ -253,6 +253,29 @@ return view.extend({
+@@ -254,6 +254,29 @@ return view.extend({
  		s.tab('advanced', _('Advanced Settings'));
  		s.tab('leases', _('Static Leases'));
  		s.tab('hosts', _('Hostnames'));
@@ -28,13 +28,13 @@ index 7f46740..394bc1d 100644
 +
 +		s.taboption('general', form.Flag, 'dns_redirect',
 +			_('DNS Redirect'),
-+			_('Redirect client DNS to dnsmasq'));
++			_('Redirect client DNS to dnsmasq'));		
  
  		s.taboption('general', form.Flag, 'domainneeded',
  			_('Domain required'),
-@@ -289,6 +312,11 @@ return view.extend({
- 		s.taboption('files', form.DynamicList, 'addnhosts',
- 			_('Additional Hosts files')).optional = true;
+@@ -360,6 +383,11 @@ return view.extend({
+ 		o.optional = true;
+ 		o.placeholder = '/etc/dnsmasq.hosts';
  
 +		o = s.taboption('advanced', form.Flag, 'filteraaaa',
 +			_('Filter IPv6 Records'),
@@ -43,8 +43,8 @@ index 7f46740..394bc1d 100644
 +
  		o = s.taboption('advanced', form.Flag, 'quietdhcp',
  			_('Suppress logging'),
- 			_('Suppress logging of the routine operation of these protocols'));
-@@ -454,6 +482,13 @@ return view.extend({
+ 			_('Suppress logging of the routine operation for the DHCP protocol.'));
+@@ -467,6 +495,13 @@ return view.extend({
  		o.datatype = 'range(0,10000)';
  		o.placeholder = 150;
  
@@ -55,6 +55,6 @@ index 7f46740..394bc1d 100644
 +		o.datatype = 'range(0,86400)';
 +		o.placeholder = 0;
 +
- 		s.taboption('tftp', form.Flag, 'enable_tftp',
- 			_('Enable TFTP server')).optional = true;
- 
+ 		o = s.taboption('tftp', form.Flag, 'enable_tftp',
+ 			_('Enable TFTP server'));
+ 		o.optional = true;
