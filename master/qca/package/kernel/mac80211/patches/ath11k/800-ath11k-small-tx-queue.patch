@@ -1,6 +1,6 @@
 --- a/drivers/net/wireless/ath/ath11k/hw.h
 +++ b/drivers/net/wireless/ath/ath11k/hw.h
-@@ -64,7 +64,7 @@
+@@ -80,7 +80,7 @@
  #define TARGET_RX_BATCHMODE		1
  
  #define ATH11K_HW_MAX_QUEUES		4

@@ -126,7 +126,7 @@ index b9d4e8914482..4dcc1b377642 100644
  static u8 ath11k_parse_mpdudensity(u8 mpdudensity)
  {
  /* 802.11n D2.0 defined values for "Minimum MPDU Start Spacing":
-@@ -1391,6 +1403,14 @@ static void ath11k_peer_assoc_h_ht(struct ath11k *ar,
+@@ -1049,6 +1061,14 @@ static void ath11k_peer_assoc_h_ht(struct ath11k *ar,
  		arg->peer_rate_caps |= WMI_HOST_RC_CW40_FLAG;
  	}
  
@@ -141,7 +141,7 @@ index b9d4e8914482..4dcc1b377642 100644
  	if (arvif->bitrate_mask.control[band].gi != NL80211_TXRATE_FORCE_LGI) {
  		if (ht_cap->cap & (IEEE80211_HT_CAP_SGI_20 |
  		    IEEE80211_HT_CAP_SGI_40))
-@@ -1514,10 +1534,11 @@ static void ath11k_peer_assoc_h_vht(struct ath11k *ar,
+@@ -1172,10 +1192,11 @@ static void ath11k_peer_assoc_h_vht(struct ath11k *ar,
  	struct ath11k_vif *arvif = (void *)vif->drv_priv;
  	struct cfg80211_chan_def def;
  	enum nl80211_band band;
@@ -155,7 +155,7 @@ index b9d4e8914482..4dcc1b377642 100644
  
  	if (WARN_ON(ath11k_mac_vif_chan(vif, &def)))
  		return;
-@@ -1560,6 +1581,24 @@ static void ath11k_peer_assoc_h_vht(struct ath11k *ar,
+@@ -1218,6 +1239,24 @@ static void ath11k_peer_assoc_h_vht(struct ath11k *ar,
  	if (sta->bandwidth == IEEE80211_STA_RX_BW_160)
  		arg->bw_160 = true;
  
@@ -180,7 +180,7 @@ index b9d4e8914482..4dcc1b377642 100644
  	/* Calculate peer NSS capability from VHT capabilities if STA
  	 * supports VHT.
  	 */
-@@ -1598,18 +1637,100 @@ static void ath11k_peer_assoc_h_vht(struct ath11k *ar,
+@@ -1256,18 +1295,100 @@ static void ath11k_peer_assoc_h_vht(struct ath11k *ar,
  	/* TODO: rxnss_override */
  }
  
@@ -282,7 +282,7 @@ index b9d4e8914482..4dcc1b377642 100644
  	arg->he_flag = true;
  
  	memcpy_and_pad(&arg->peer_he_cap_macinfo,
-@@ -1686,25 +1807,48 @@ static void ath11k_peer_assoc_h_he(struct ath11k *ar,
+@@ -1345,25 +1466,48 @@ static void ath11k_peer_assoc_h_he(struct ath11k *ar,
  	if (he_cap->he_cap_elem.mac_cap_info[0] & IEEE80211_HE_MAC_CAP0_TWT_REQ)
  		arg->twt_requester = true;
  
@@ -331,7 +331,7 @@ index b9d4e8914482..4dcc1b377642 100644
  		fallthrough;
  
  	default:
-@@ -1712,11 +1856,34 @@ static void ath11k_peer_assoc_h_he(struct ath11k *ar,
+@@ -1371,11 +1515,34 @@ static void ath11k_peer_assoc_h_he(struct ath11k *ar,
  		arg->peer_he_rx_mcs_set[WMI_HECAP_TXRX_MCS_NSS_IDX_80] = v;
  
  		v = le16_to_cpu(he_cap->he_mcs_nss_supp.tx_mcs_80);
@@ -366,7 +366,7 @@ index b9d4e8914482..4dcc1b377642 100644
  }
  
  static void ath11k_peer_assoc_h_smps(struct ieee80211_sta *sta,
-@@ -1919,6 +2086,7 @@ static void ath11k_peer_assoc_h_phymode(struct ath11k *ar,
+@@ -1578,6 +1745,7 @@ static void ath11k_peer_assoc_h_phymode(struct ath11k *ar,
  	enum nl80211_band band;
  	const u8 *ht_mcs_mask;
  	const u16 *vht_mcs_mask;
@@ -374,7 +374,7 @@ index b9d4e8914482..4dcc1b377642 100644
  	enum wmi_phy_mode phymode = MODE_UNKNOWN;
  
  	if (WARN_ON(ath11k_mac_vif_chan(vif, &def)))
-@@ -1927,10 +2095,12 @@ static void ath11k_peer_assoc_h_phymode(struct ath11k *ar,
+@@ -1586,10 +1754,12 @@ static void ath11k_peer_assoc_h_phymode(struct ath11k *ar,
  	band = def.chan->band;
  	ht_mcs_mask = arvif->bitrate_mask.control[band].ht_mcs;
  	vht_mcs_mask = arvif->bitrate_mask.control[band].vht_mcs;
@@ -388,7 +388,7 @@ index b9d4e8914482..4dcc1b377642 100644
  			if (sta->bandwidth == IEEE80211_STA_RX_BW_80)
  				phymode = MODE_11AX_HE80_2G;
  			else if (sta->bandwidth == IEEE80211_STA_RX_BW_40)
-@@ -1958,7 +2128,8 @@ static void ath11k_peer_assoc_h_phymode(struct ath11k *ar,
+@@ -1617,7 +1787,8 @@ static void ath11k_peer_assoc_h_phymode(struct ath11k *ar,
  	case NL80211_BAND_5GHZ:
  	case NL80211_BAND_6GHZ:
  		/* Check HE first */
@@ -398,7 +398,7 @@ index b9d4e8914482..4dcc1b377642 100644
  			phymode = ath11k_mac_get_phymode_he(ar, sta);
  		} else if (sta->vht_cap.vht_supported &&
  		    !ath11k_peer_assoc_h_vht_masked(vht_mcs_mask)) {
-@@ -3184,6 +3355,20 @@ ath11k_mac_bitrate_mask_num_vht_rates(struct ath11k *ar,
+@@ -2632,6 +2803,20 @@ ath11k_mac_bitrate_mask_num_vht_rates(struct ath11k *ar,
  	return num_rates;
  }
  
@@ -419,7 +419,7 @@ index b9d4e8914482..4dcc1b377642 100644
  static int
  ath11k_mac_set_peer_vht_fixed_rate(struct ath11k_vif *arvif,
  				   struct ieee80211_sta *sta,
-@@ -3212,6 +3397,10 @@ ath11k_mac_set_peer_vht_fixed_rate(struct ath11k_vif *arvif,
+@@ -2660,6 +2845,10 @@ ath11k_mac_set_peer_vht_fixed_rate(struct ath11k_vif *arvif,
  		return -EINVAL;
  	}
  
@@ -430,7 +430,7 @@ index b9d4e8914482..4dcc1b377642 100644
  	ath11k_dbg(ar->ab, ATH11K_DBG_MAC,
  		   "Setting Fixed VHT Rate for peer %pM. Device will not switch to any other selected rates",
  		   sta->addr);
-@@ -3230,6 +3419,57 @@ ath11k_mac_set_peer_vht_fixed_rate(struct ath11k_vif *arvif,
+@@ -2678,6 +2867,57 @@ ath11k_mac_set_peer_vht_fixed_rate(struct ath11k_vif *arvif,
  	return ret;
  }
  
@@ -488,7 +488,7 @@ index b9d4e8914482..4dcc1b377642 100644
  static int ath11k_station_assoc(struct ath11k *ar,
  				struct ieee80211_vif *vif,
  				struct ieee80211_sta *sta,
-@@ -3241,7 +3481,7 @@ static int ath11k_station_assoc(struct ath11k *ar,
+@@ -2689,7 +2929,7 @@ static int ath11k_station_assoc(struct ath11k *ar,
  	struct cfg80211_chan_def def;
  	enum nl80211_band band;
  	struct cfg80211_bitrate_mask *mask;
@@ -497,7 +497,7 @@ index b9d4e8914482..4dcc1b377642 100644
  
  	lockdep_assert_held(&ar->conf_mutex);
  
-@@ -3267,9 +3507,10 @@ static int ath11k_station_assoc(struct ath11k *ar,
+@@ -2715,9 +2955,10 @@ static int ath11k_station_assoc(struct ath11k *ar,
  	}
  
  	num_vht_rates = ath11k_mac_bitrate_mask_num_vht_rates(ar, band, mask);
@@ -510,7 +510,7 @@ index b9d4e8914482..4dcc1b377642 100644
  	 * fixed param.
  	 * Note that all other rates and NSS will be disabled for this peer.
  	 */
-@@ -3278,6 +3519,11 @@ static int ath11k_station_assoc(struct ath11k *ar,
+@@ -2726,6 +2967,11 @@ static int ath11k_station_assoc(struct ath11k *ar,
  							 band);
  		if (ret)
  			return ret;
@@ -522,7 +522,7 @@ index b9d4e8914482..4dcc1b377642 100644
  	}
  
  	/* Re-assoc is run only to update supported rates for given station. It
-@@ -3348,8 +3594,9 @@ static void ath11k_sta_rc_update_wk(struct work_struct *wk)
+@@ -2796,8 +3042,9 @@ static void ath11k_sta_rc_update_wk(struct work_struct *wk)
  	enum nl80211_band band;
  	const u8 *ht_mcs_mask;
  	const u16 *vht_mcs_mask;
@@ -533,7 +533,7 @@ index b9d4e8914482..4dcc1b377642 100644
  	const struct cfg80211_bitrate_mask *mask;
  	struct peer_assoc_params peer_arg;
  
-@@ -3364,6 +3611,7 @@ static void ath11k_sta_rc_update_wk(struct work_struct *wk)
+@@ -2812,6 +3059,7 @@ static void ath11k_sta_rc_update_wk(struct work_struct *wk)
  	band = def.chan->band;
  	ht_mcs_mask = arvif->bitrate_mask.control[band].ht_mcs;
  	vht_mcs_mask = arvif->bitrate_mask.control[band].vht_mcs;
@@ -541,7 +541,7 @@ index b9d4e8914482..4dcc1b377642 100644
  
  	spin_lock_bh(&ar->data_lock);
  
-@@ -3379,8 +3627,9 @@ static void ath11k_sta_rc_update_wk(struct work_struct *wk)
+@@ -2827,8 +3075,9 @@ static void ath11k_sta_rc_update_wk(struct work_struct *wk)
  	mutex_lock(&ar->conf_mutex);
  
  	nss = max_t(u32, 1, nss);
@@ -553,7 +553,7 @@ index b9d4e8914482..4dcc1b377642 100644
  
  	if (changed & IEEE80211_RC_BW_CHANGED) {
  		err = ath11k_wmi_set_peer_param(ar, sta->addr, arvif->vdev_id,
-@@ -3416,6 +3665,8 @@ static void ath11k_sta_rc_update_wk(struct work_struct *wk)
+@@ -2864,6 +3113,8 @@ static void ath11k_sta_rc_update_wk(struct work_struct *wk)
  		mask = &arvif->bitrate_mask;
  		num_vht_rates = ath11k_mac_bitrate_mask_num_vht_rates(ar, band,
  								      mask);
@@ -562,7 +562,7 @@ index b9d4e8914482..4dcc1b377642 100644
  
  		/* Peer_assoc_prepare will reject vht rates in
  		 * bitrate_mask if its not available in range format and
-@@ -3431,11 +3682,25 @@ static void ath11k_sta_rc_update_wk(struct work_struct *wk)
+@@ -2879,11 +3130,25 @@ static void ath11k_sta_rc_update_wk(struct work_struct *wk)
  		if (sta->vht_cap.vht_supported && num_vht_rates == 1) {
  			ath11k_mac_set_peer_vht_fixed_rate(arvif, sta, mask,
  							   band);
@@ -590,7 +590,7 @@ index b9d4e8914482..4dcc1b377642 100644
  			ath11k_peer_assoc_prepare(ar, arvif->vif, sta,
  						  &peer_arg, true);
  
-@@ -5045,10 +5310,13 @@ static int ath11k_mac_op_add_interface(struct ieee80211_hw *hw,
+@@ -4496,10 +4761,13 @@ static int ath11k_mac_op_add_interface(struct ieee80211_hw *hw,
  
  	for (i = 0; i < ARRAY_SIZE(arvif->bitrate_mask.control); i++) {
  		arvif->bitrate_mask.control[i].legacy = 0xffffffff;
@@ -604,7 +604,7 @@ index b9d4e8914482..4dcc1b377642 100644
  	}
  
  	bit = __ffs64(ab->free_vdev_map);
-@@ -6086,9 +6354,26 @@ ath11k_mac_has_single_legacy_rate(struct ath11k *ar,
+@@ -5509,9 +5777,26 @@ ath11k_mac_has_single_legacy_rate(struct ath11k *ar,
  	if (ath11k_mac_bitrate_mask_num_vht_rates(ar, band, mask))
  		return false;
  
@@ -631,7 +631,7 @@ index b9d4e8914482..4dcc1b377642 100644
  static bool
  ath11k_mac_bitrate_mask_get_single_nss(struct ath11k *ar,
  				       enum nl80211_band band,
-@@ -6097,8 +6382,10 @@ ath11k_mac_bitrate_mask_get_single_nss(struct ath11k *ar,
+@@ -5520,8 +5805,10 @@ ath11k_mac_bitrate_mask_get_single_nss(struct ath11k *ar,
  {
  	struct ieee80211_supported_band *sband = &ar->mac.sbands[band];
  	u16 vht_mcs_map = le16_to_cpu(sband->vht_cap.vht_mcs.tx_mcs_map);
@@ -642,7 +642,7 @@ index b9d4e8914482..4dcc1b377642 100644
  	int i;
  
  	/* No need to consider legacy here. Basic rates are always present
-@@ -6125,7 +6412,20 @@ ath11k_mac_bitrate_mask_get_single_nss(struct ath11k *ar,
+@@ -5548,7 +5835,20 @@ ath11k_mac_bitrate_mask_get_single_nss(struct ath11k *ar,
  			return false;
  	}
  
@@ -664,7 +664,7 @@ index b9d4e8914482..4dcc1b377642 100644
  		return false;
  
  	if (ht_nss_mask == 0)
-@@ -6172,42 +6472,128 @@ ath11k_mac_get_single_legacy_rate(struct ath11k *ar,
+@@ -5595,42 +5895,128 @@ ath11k_mac_get_single_legacy_rate(struct ath11k *ar,
  	return 0;
  }
  
@@ -811,7 +811,7 @@ index b9d4e8914482..4dcc1b377642 100644
  		return ret;
  	}
  
-@@ -6220,6 +6606,27 @@ static int ath11k_mac_set_fixed_rate_params(struct ath11k_vif *arvif,
+@@ -5643,6 +6029,27 @@ static int ath11k_mac_set_fixed_rate_params(struct ath11k_vif *arvif,
  		return ret;
  	}
  
@@ -839,7 +839,7 @@ index b9d4e8914482..4dcc1b377642 100644
  	return 0;
  }
  
-@@ -6248,6 +6655,31 @@ ath11k_mac_vht_mcs_range_present(struct ath11k *ar,
+@@ -5671,6 +6078,31 @@ ath11k_mac_vht_mcs_range_present(struct ath11k *ar,
  	return true;
  }
  
@@ -871,7 +871,7 @@ index b9d4e8914482..4dcc1b377642 100644
  static void ath11k_mac_set_bitrate_mask_iter(void *data,
  					     struct ieee80211_sta *sta)
  {
-@@ -6279,6 +6711,53 @@ static void ath11k_mac_disable_peer_fixed_rate(void *data,
+@@ -5702,6 +6134,53 @@ static void ath11k_mac_disable_peer_fixed_rate(void *data,
  			    sta->addr, ret);
  }
  
@@ -925,7 +925,7 @@ index b9d4e8914482..4dcc1b377642 100644
  static int
  ath11k_mac_op_set_bitrate_mask(struct ieee80211_hw *hw,
  			       struct ieee80211_vif *vif,
-@@ -6290,6 +6769,9 @@ ath11k_mac_op_set_bitrate_mask(struct ieee80211_hw *hw,
+@@ -5713,6 +6192,9 @@ ath11k_mac_op_set_bitrate_mask(struct ieee80211_hw *hw,
  	enum nl80211_band band;
  	const u8 *ht_mcs_mask;
  	const u16 *vht_mcs_mask;
@@ -935,7 +935,7 @@ index b9d4e8914482..4dcc1b377642 100644
  	u32 rate;
  	u8 nss;
  	u8 sgi;
-@@ -6297,6 +6779,7 @@ ath11k_mac_op_set_bitrate_mask(struct ieee80211_hw *hw,
+@@ -5720,6 +6202,7 @@ ath11k_mac_op_set_bitrate_mask(struct ieee80211_hw *hw,
  	int single_nss;
  	int ret;
  	int num_rates;
@@ -943,7 +943,7 @@ index b9d4e8914482..4dcc1b377642 100644
  
  	if (ath11k_mac_vif_chan(vif, &def))
  		return -EPERM;
-@@ -6304,12 +6787,16 @@ ath11k_mac_op_set_bitrate_mask(struct ieee80211_hw *hw,
+@@ -5727,12 +6210,16 @@ ath11k_mac_op_set_bitrate_mask(struct ieee80211_hw *hw,
  	band = def.chan->band;
  	ht_mcs_mask = mask->control[band].ht_mcs;
  	vht_mcs_mask = mask->control[band].vht_mcs;
@@ -960,7 +960,7 @@ index b9d4e8914482..4dcc1b377642 100644
  	/* mac80211 doesn't support sending a fixed HT/VHT MCS alone, rather it
  	 * requires passing atleast one of used basic rates along with them.
  	 * Fixed rate setting across different preambles(legacy, HT, VHT) is
-@@ -6333,11 +6820,22 @@ ath11k_mac_op_set_bitrate_mask(struct ieee80211_hw *hw,
+@@ -5756,11 +6243,22 @@ ath11k_mac_op_set_bitrate_mask(struct ieee80211_hw *hw,
  							  &single_nss)) {
  		rate = WMI_FIXED_RATE_NONE;
  		nss = single_nss;
@@ -985,7 +985,7 @@ index b9d4e8914482..4dcc1b377642 100644
  
  		/* If multiple rates across different preambles are given
  		 * we can reconfigure this info with all peers using PEER_ASSOC
-@@ -6372,12 +6870,23 @@ ath11k_mac_op_set_bitrate_mask(struct ieee80211_hw *hw,
+@@ -5795,12 +6293,23 @@ ath11k_mac_op_set_bitrate_mask(struct ieee80211_hw *hw,
  			return -EINVAL;
  		}
  
@@ -1011,7 +1011,7 @@ index b9d4e8914482..4dcc1b377642 100644
  		arvif->bitrate_mask = *mask;
  		ieee80211_iterate_stations_atomic(ar->hw,
  						  ath11k_mac_set_bitrate_mask_iter,
-@@ -6388,9 +6897,10 @@ ath11k_mac_op_set_bitrate_mask(struct ieee80211_hw *hw,
+@@ -5811,9 +6320,10 @@ ath11k_mac_op_set_bitrate_mask(struct ieee80211_hw *hw,
  
  	mutex_lock(&ar->conf_mutex);
  
@@ -1028,7 +1028,7 @@ diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/at
 index e3d11a0a7b7c..330b435e0ed3 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -1904,8 +1904,8 @@ int ath11k_wmi_send_peer_assoc_cmd(struct ath11k *ar,
+@@ -1893,8 +1893,8 @@ int ath11k_wmi_send_peer_assoc_cmd(struct ath11k *ar,
  				     FIELD_PREP(WMI_TLV_LEN,
  						sizeof(*he_mcs) - TLV_HDR_SIZE);
  
@@ -1066,7 +1066,7 @@ index 799b3bd96a27..097023a94e06 100644
  /*
   * wmi command groups.
   */
-@@ -1044,7 +1060,9 @@ enum wmi_tlv_vdev_param {
+@@ -1026,7 +1042,9 @@ enum wmi_tlv_vdev_param {
  	WMI_VDEV_PARAM_HE_RANGE_EXT,
  	WMI_VDEV_PARAM_ENABLE_BCAST_PROBE_RESPONSE,
  	WMI_VDEV_PARAM_FILS_MAX_CHANNEL_GUARD_TIME,
@@ -1076,7 +1076,7 @@ index 799b3bd96a27..097023a94e06 100644
  	WMI_VDEV_PARAM_SET_HE_SOUNDING_MODE = 0x87,
  	WMI_VDEV_PARAM_6GHZ_PARAMS = 0x99,
  	WMI_VDEV_PARAM_PROTOTYPE = 0x8000,
-@@ -3920,7 +3938,9 @@ struct wmi_vht_rate_set {
+@@ -3893,7 +3911,9 @@ struct wmi_vht_rate_set {
  
  struct wmi_he_rate_set {
  	u32 tlv_header;
@@ -1205,7 +1205,7 @@ diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/a
 index 0ad5a935b52b..c73001014795 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
-@@ -593,6 +593,8 @@ struct ath11k_pdev_cap {
+@@ -587,6 +587,8 @@ struct ath11k_pdev_cap {
  	u32 tx_chain_mask_shift;
  	u32 rx_chain_mask_shift;
  	struct ath11k_band_cap band[NUM_NL80211_BANDS];
@@ -1218,7 +1218,7 @@ diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/at
 index 4dcc1b377642..11d919d3c23e 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -1525,6 +1525,33 @@ ath11k_peer_assoc_h_vht_limit(u16 tx_mcs_set,
+@@ -1183,6 +1183,33 @@ ath11k_peer_assoc_h_vht_limit(u16 tx_mcs_set,
  	return tx_mcs_set;
  }
  
@@ -1252,7 +1252,7 @@ index 4dcc1b377642..11d919d3c23e 100644
  static void ath11k_peer_assoc_h_vht(struct ath11k *ar,
  				    struct ieee80211_vif *vif,
  				    struct ieee80211_sta *sta,
-@@ -1539,6 +1566,7 @@ static void ath11k_peer_assoc_h_vht(struct ath11k *ar,
+@@ -1197,6 +1224,7 @@ static void ath11k_peer_assoc_h_vht(struct ath11k *ar,
  	u8 max_nss, vht_mcs;
  	int i, vht_nss, nss_idx;
  	bool user_rate_valid = true;
@@ -1260,7 +1260,7 @@ index 4dcc1b377642..11d919d3c23e 100644
  
  	if (WARN_ON(ath11k_mac_vif_chan(vif, &def)))
  		return;
-@@ -1631,10 +1659,29 @@ static void ath11k_peer_assoc_h_vht(struct ath11k *ar,
+@@ -1289,10 +1317,29 @@ static void ath11k_peer_assoc_h_vht(struct ath11k *ar,
  	/* TODO:  Check */
  	arg->tx_max_mcs_nss = 0xFF;
  
@@ -1293,7 +1293,7 @@ index 4dcc1b377642..11d919d3c23e 100644
  }
  
  static int ath11k_mac_get_max_he_mcs_map(u16 mcs_map, int nss)
-@@ -1718,6 +1765,7 @@ static void ath11k_peer_assoc_h_he(struct ath11k *ar,
+@@ -1376,6 +1423,7 @@ static void ath11k_peer_assoc_h_he(struct ath11k *ar,
  	u16 he_tx_mcs = 0, v = 0;
  	int i, he_nss, nss_idx;
  	bool user_rate_valid = true;
@@ -1301,7 +1301,7 @@ index 4dcc1b377642..11d919d3c23e 100644
  
  	if (WARN_ON(ath11k_mac_vif_chan(vif, &def)))
  		return;
-@@ -1881,9 +1929,30 @@ static void ath11k_peer_assoc_h_he(struct ath11k *ar,
+@@ -1540,9 +1588,30 @@ static void ath11k_peer_assoc_h_he(struct ath11k *ar,
  	}
  	arg->peer_nss = min(sta->rx_nss, max_nss);
  
@@ -1334,7 +1334,7 @@ index 4dcc1b377642..11d919d3c23e 100644
  }
  
  static void ath11k_peer_assoc_h_smps(struct ieee80211_sta *sta,
-@@ -2171,11 +2240,11 @@ static void ath11k_peer_assoc_prepare(struct ath11k *ar,
+@@ -1830,11 +1899,11 @@ static void ath11k_peer_assoc_prepare(struct ath11k *ar,
  	ath11k_peer_assoc_h_basic(ar, vif, sta, arg);
  	ath11k_peer_assoc_h_crypto(ar, vif, sta, arg);
  	ath11k_peer_assoc_h_rates(ar, vif, sta, arg);
@@ -1347,7 +1347,7 @@ index 4dcc1b377642..11d919d3c23e 100644
  	ath11k_peer_assoc_h_smps(sta, arg);
  
  	/* TODO: amsdu_disable req? */
-@@ -4371,11 +4440,6 @@ ath11k_create_vht_cap(struct ath11k *ar, u32 rate_cap_tx_chainmask,
+@@ -3819,11 +3888,6 @@ ath11k_create_vht_cap(struct ath11k *ar, u32 rate_cap_tx_chainmask,
  
  	ath11k_set_vht_txbf_cap(ar, &vht_cap.cap);
  
@@ -1359,7 +1359,7 @@ index 4dcc1b377642..11d919d3c23e 100644
  	rxmcs_map = 0;
  	txmcs_map = 0;
  	for (i = 0; i < 8; i++) {
-@@ -7244,7 +7308,9 @@ static int ath11k_mac_setup_iface_combinations(struct ath11k *ar)
+@@ -6667,7 +6731,9 @@ static int ath11k_mac_setup_iface_combinations(struct ath11k *ar)
  	combinations[0].radar_detect_widths = BIT(NL80211_CHAN_WIDTH_20_NOHT) |
  						BIT(NL80211_CHAN_WIDTH_20) |
  						BIT(NL80211_CHAN_WIDTH_40) |
@@ -1370,7 +1370,7 @@ index 4dcc1b377642..11d919d3c23e 100644
  
  	ar->hw->wiphy->iface_combinations = combinations;
  	ar->hw->wiphy->n_iface_combinations = 1;
-@@ -7383,6 +7449,10 @@ static int __ath11k_mac_register(struct ath11k *ar)
+@@ -6806,6 +6782,10 @@ static int __ath11k_mac_register(struct ath11k *ar)
  	ieee80211_hw_set(ar->hw, SUPPORTS_TX_FRAG);
  	ieee80211_hw_set(ar->hw, REPORTS_LOW_ACK);
  	ieee80211_hw_set(ar->hw, SUPPORTS_TX_ENCAP_OFFLOAD);
@@ -1393,13 +1393,13 @@ index 4bc59bdaf244..254ca4acc8e8 100644
 +#define ATH11K_PEER_RX_NSS_160MHZ		GENMASK(2, 0)
 +#define ATH11K_PEER_RX_NSS_80_80MHZ		GENMASK(5, 3)
  
- #define ATH11K_OBSS_PD_MAX_THRESHOLD			-82
- #define ATH11K_OBSS_PD_NON_SRG_MAX_THRESHOLD		-62
+ extern const struct htt_rx_ring_tlv_filter ath11k_mac_mon_status_filter_default;
+ 
 diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
 index 330b435e0ed3..7ac84ac86aab 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -360,6 +360,10 @@ ath11k_pull_mac_phy_cap_svc_ready_ext(struct ath11k_pdev_wmi *wmi_handle,
+@@ -354,6 +354,10 @@ ath11k_pull_mac_phy_cap_svc_ready_ext(struct ath11k_pdev_wmi *wmi_handle,
  		pdev_cap->he_mcs = mac_phy_caps->he_supp_mcs_5g;
  		pdev_cap->tx_chain_mask = mac_phy_caps->tx_chain_mask_5g;
  		pdev_cap->rx_chain_mask = mac_phy_caps->rx_chain_mask_5g;
@@ -1410,7 +1410,7 @@ index 330b435e0ed3..7ac84ac86aab 100644
  	} else {
  		return -EINVAL;
  	}
-@@ -783,14 +787,26 @@ int ath11k_wmi_vdev_down(struct ath11k *ar, u8 vdev_id)
+@@ -777,14 +781,26 @@ int ath11k_wmi_vdev_down(struct ath11k *ar, u8 vdev_id)
  static void ath11k_wmi_put_wmi_channel(struct wmi_channel *chan,
  				       struct wmi_vdev_start_req_arg *arg)
  {
@@ -1443,7 +1443,7 @@ diff --git a/drivers/net/wireless/ath/ath11k/wmi.h b/drivers/net/wireless/ath/at
 index 097023a94e06..fb27a8d0f0fd 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.h
 +++ b/drivers/net/wireless/ath/ath11k/wmi.h
-@@ -2146,6 +2146,24 @@ enum wmi_direct_buffer_module {
+@@ -2121,6 +2121,24 @@ enum wmi_direct_buffer_module {
  	WMI_DIRECT_BUF_MAX
  };
  
@@ -1468,7 +1468,7 @@ index 097023a94e06..fb27a8d0f0fd 100644
  struct wmi_host_pdev_band_to_mac {
  	u32 pdev_id;
  	u32 start_freq;
-@@ -2390,6 +2408,12 @@ struct wmi_hw_mode_capabilities {
+@@ -2363,6 +2381,12 @@ struct wmi_hw_mode_capabilities {
  } __packed;
  
  #define WMI_MAX_HECAP_PHY_SIZE                 (3)
@@ -1481,7 +1481,7 @@ index 097023a94e06..fb27a8d0f0fd 100644
  
  struct wmi_mac_phy_capabilities {
  	u32 hw_mode_id;
-@@ -2423,6 +2447,12 @@ struct wmi_mac_phy_capabilities {
+@@ -2396,6 +2420,12 @@ struct wmi_mac_phy_capabilities {
  	u32 he_cap_info_2g_ext;
  	u32 he_cap_info_5g_ext;
  	u32 he_cap_info_internal;

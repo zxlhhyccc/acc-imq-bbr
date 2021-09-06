@@ -16,7 +16,7 @@ diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/at
 index b391169..a650d95 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -5096,13 +5096,15 @@ ath11k_mac_vdev_start_restart(struct ath11k_vif *arvif,
+@@ -5286,13 +5286,15 @@ ath11k_mac_vdev_start_restart(struct ath11k_vif *arvif,
  		arg.channel.chan_radar =
  			!!(chandef->chan->flags & IEEE80211_CHAN_RADAR);
  

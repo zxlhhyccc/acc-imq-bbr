@@ -20,7 +20,7 @@ Link: https://lore.kernel.org/r/1613460136-7170-1-git-send-email-lavaks@codeauro
 
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -3744,8 +3744,6 @@ static int ath11k_mac_copy_he_cap(struct
+@@ -3793,8 +3793,6 @@ static int ath11k_mac_copy_he_cap(struct
  
  		he_cap_elem->phy_cap_info[5] &=
  			~IEEE80211_HE_PHY_CAP5_BEAMFORMEE_NUM_SND_DIM_UNDER_80MHZ_MASK;

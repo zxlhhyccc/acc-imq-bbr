@@ -29,7 +29,7 @@ diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/at
 index 9d0ff150ec30f..eb52332dbe3f1 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -5379,11 +5379,6 @@ ath11k_mac_update_vif_chan(struct ath11k *ar,
+@@ -5508,11 +5508,6 @@ ath11k_mac_update_vif_chan(struct ath11k *ar,
  		if (WARN_ON(!arvif->is_up))
  			continue;
  
@@ -41,7 +41,7 @@ index 9d0ff150ec30f..eb52332dbe3f1 100644
  		ret = ath11k_mac_vdev_restart(arvif, &vifs[i].new_ctx->def);
  		if (ret) {
  			ath11k_warn(ab, "failed to restart vdev %d: %d\n",
-@@ -5391,6 +5386,11 @@ ath11k_mac_update_vif_chan(struct ath11k *ar,
+@@ -5520,6 +5515,11 @@ ath11k_mac_update_vif_chan(struct ath11k *ar,
  			continue;
  		}
  
