@@ -49,7 +49,7 @@
  	int (*fcn)(unsigned int events, struct nf_ct_event *item);
 --- a/net/bridge/br_if.c
 +++ b/net/bridge/br_if.c
-@@ -763,6 +763,28 @@ void br_port_flags_change(struct net_bri
+@@ -761,6 +761,28 @@ void br_port_flags_change(struct net_bri
  		br_recalculate_neigh_suppress_enabled(br);
  }
  
@@ -78,10 +78,11 @@
  bool br_port_flag_is_set(const struct net_device *dev, unsigned long flag)
  {
  	struct net_bridge_port *p;
+ 
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -3199,9 +3199,17 @@ static int xmit_one(struct sk_buff *skb,
- 	if (!list_empty(&ptype_all) || !list_empty(&dev->ptype_all))
+@@ -3199,8 +3199,17 @@ static int xmit_one(struct sk_buff *skb, struct net_device *dev,
+	if (!list_empty(&ptype_all) || !list_empty(&dev->ptype_all))
  #endif
  
 +#ifdef CONFIG_SHORTCUT_FE
@@ -92,13 +93,12 @@
 +#endif
  	if (dev_nit_active(dev))
  		dev_queue_xmit_nit(skb, dev);
--
 +#ifdef CONFIG_SHORTCUT_FE
 +	}
 +#endif
+ 
  #ifdef CONFIG_ETHERNET_PACKET_MANGLE
  	if (!dev->eth_mangle_tx ||
- 	    (skb = dev->eth_mangle_tx(dev, skb)) != NULL)
 @@ -4714,6 +4722,11 @@ void netdev_rx_handler_unregister(struct
  }
  EXPORT_SYMBOL_GPL(netdev_rx_handler_unregister);
@@ -172,7 +172,7 @@
  static int nf_ct_tcp_loose __read_mostly = 1;
 --- a/net/netfilter/nf_conntrack_ecache.c
 +++ b/net/netfilter/nf_conntrack_ecache.c
-@@ -162,7 +162,11 @@ int nf_conntrack_eventmask_report(unsign
+@@ -162,7 +162,11 @@ int nf_conntrack_eventmask_report(unsigned int eventmask, struct nf_conn *ct,
  
  	rcu_read_lock();
  	notify = rcu_dereference(net->ct.nf_conntrack_event_cb);
@@ -184,7 +184,7 @@
  		goto out_unlock;
  
  	e = nf_ct_ecache_find(ct);
-@@ -181,7 +185,14 @@ int nf_conntrack_eventmask_report(unsign
+@@ -181,7 +185,14 @@ int nf_conntrack_eventmask_report(unsigned int eventmask, struct nf_conn *ct,
  		if (!((eventmask | missed) & e->ctmask))
  			goto out_unlock;
  
@@ -199,7 +199,7 @@
  		if (unlikely(ret < 0 || missed)) {
  			spin_lock_bh(&ct->lock);
  			if (ret < 0) {
-@@ -263,7 +274,11 @@ void nf_ct_deliver_cached_events(struct
+@@ -263,7 +274,11 @@ void nf_ct_deliver_cached_events(struct nf_conn *ct)
  
  	rcu_read_lock();
  	notify = rcu_dereference(net->ct.nf_conntrack_event_cb);
@@ -211,7 +211,7 @@
  		goto out_unlock;
  
  	e = nf_ct_ecache_find(ct);
-@@ -287,7 +302,15 @@ void nf_ct_deliver_cached_events(struct
+@@ -287,7 +302,15 @@ void nf_ct_deliver_cached_events(struct nf_conn *ct)
  	item.portid = 0;
  	item.report = 0;
  
@@ -229,7 +229,7 @@
  		goto out_unlock;
 @@ -340,6 +363,11 @@ int nf_conntrack_register_notifier(struct net *net, struct notifier_block *nb)
  {
- 	return atomic_notifier_chain_register(&net->ct.nf_conntrack_chain, nb);
+	return atomic_notifier_chain_register(&net->ct.nf_conntrack_chain, nb);
  }
 +int nf_conntrack_register_chain_notifier(struct net *net, struct notifier_block *nb)
 +{
@@ -239,7 +239,7 @@
  #else
  int nf_conntrack_register_notifier(struct net *net,
  				   struct nf_ct_event_notifier *new)
-@@ -369,6 +397,11 @@ int nf_conntrack_unregister_notifier(str
+@@ -369,6 +397,11 @@ int nf_conntrack_unregister_notifier(struct net *net, struct notifier_block *nb)
  {
  	return atomic_notifier_chain_unregister(&net->ct.nf_conntrack_chain, nb);
  }
