@@ -20,7 +20,7 @@ diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/a
 index 4a1051418f33a..969bf1a590d99 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -532,7 +532,8 @@ static int ath11k_core_fetch_board_data_api_n(struct ath11k_base *ab,
+@@ -360,7 +360,8 @@ static int ath11k_core_fetch_board_data_api_n(struct ath11k_base *ab,
  		if (len < ALIGN(ie_len, 4)) {
  			ath11k_err(ab, "invalid length for board ie_id %d ie_len %zu len %zu\n",
  				   ie_id, ie_len, len);

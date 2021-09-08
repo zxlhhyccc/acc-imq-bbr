@@ -24,7 +24,7 @@ diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/at
 index 40032c2b497551..bca66c1d47ad57 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -1950,6 +1950,11 @@ void ath11k_wmi_start_scan_init(struct ath11k *ar,
+@@ -1946,6 +1946,11 @@ void ath11k_wmi_start_scan_init(struct ath11k *ar,
  				  WMI_SCAN_EVENT_DEQUEUED;
  	arg->scan_flags |= WMI_SCAN_CHAN_STAT_EVENT;
  	arg->num_bssid = 1;

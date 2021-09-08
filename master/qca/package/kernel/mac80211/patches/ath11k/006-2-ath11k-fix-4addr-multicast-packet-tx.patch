@@ -90,7 +90,7 @@ diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/a
 index 11c8dffd0236..6a6cabdd3e30 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
-@@ -377,6 +377,7 @@ struct ath11k_sta {
+@@ -366,6 +366,7 @@ struct ath11k_sta {
  #endif
  
  	bool use_4addr_set;
@@ -145,7 +145,7 @@ diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/at
 index d42637ecbf1e..e8da4af82221 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -4356,6 +4356,7 @@ static void ath11k_mac_op_tx(struct ieee80211_hw *hw,
+@@ -4103,6 +4103,7 @@ static void ath11k_mac_op_tx(struct ieee80211_hw *hw,
  	struct ath11k_vif *arvif = ath11k_vif_to_arvif(vif);
  	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)skb->data;
  	struct ieee80211_key_conf *key = info->control.hw_key;
@@ -153,7 +153,7 @@ index d42637ecbf1e..e8da4af82221 100644
  	u32 info_flags = info->flags;
  	bool is_prb_rsp;
  	int ret;
-@@ -4381,7 +4382,10 @@ static void ath11k_mac_op_tx(struct ieee80211_hw *hw,
+@@ -4128,7 +4129,10 @@ static void ath11k_mac_op_tx(struct ieee80211_hw *hw,
  		return;
  	}
  

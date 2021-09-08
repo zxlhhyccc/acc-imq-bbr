@@ -28,7 +28,7 @@ index 7f46740..394bc1d 100644
 +
 +		s.taboption('general', form.Flag, 'dns_redirect',
 +			_('DNS Redirect'),
-+			_('Redirect client DNS to dnsmasq'));		
++			_('Redirect client DNS to dnsmasq'));
  
  		s.taboption('general', form.Flag, 'domainneeded',
  			_('Domain required'),

@@ -22,7 +22,7 @@ diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/at
 index 3c1f35a204ba..32c7687d9ac2 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -6082,6 +6082,7 @@ static void ath11k_mac_op_sta_statistics(struct ieee80211_hw *hw,
+@@ -5900,6 +5900,7 @@ static void ath11k_mac_op_sta_statistics(struct ieee80211_hw *hw,
  
  	/* TODO: Use real NF instead of default one. */
  	sinfo->signal = arsta->rssi_comb + ATH11K_DEFAULT_NOISE_FLOOR;
