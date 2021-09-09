@@ -42,7 +42,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
  	if (netif_elide_gro(skb->dev))
  		goto normal;
  
-@@ -8042,6 +8042,48 @@ static void __netdev_adjacent_dev_unlink
+@@ -8039,6 +8042,48 @@ static void __netdev_adjacent_dev_unlink
  					   &upper_dev->adj_list.lower);
  }
  

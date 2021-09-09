@@ -1297,16 +1297,6 @@ diff -ruaN a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
 diff -ruaN a/net/sched/Kconfig b/net/sched/Kconfig
 --- a/net/sched/Kconfig	2020-12-26 23:02:46.000000000 +0800
 +++ b/net/sched/Kconfig	2020-12-27 10:15:42.310392124 +0800
-@@ -332,7 +332,8 @@
- 	  If unsure, say N.
- 
- config NET_SCH_FQ
--	tristate "Fair Queue"
-+        bool "Fair Queue"
-+        default y
- 	help
- 	  Say Y here if you want to use the FQ packet scheduling algorithm.
- 
 @@ -439,8 +440,9 @@
  
  	  If unsure, say N.
