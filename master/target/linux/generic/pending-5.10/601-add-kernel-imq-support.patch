@@ -428,7 +428,7 @@ diff -Naupr linux-5.4.10_orig/drivers/net/imq.c linux-5.4.10/drivers/net/imq.c
 +	skb->nf_queue_entry = NULL;
 +
 +	if (entry) {
-+		nf_queue_entry_release_refs(entry);
++		nf_queue_entry_free(entry);
 +		kfree(entry);
 +	}
 +
@@ -566,7 +566,7 @@ diff -Naupr linux-5.4.10_orig/drivers/net/imq.c linux-5.4.10/drivers/net/imq.c
 +
 +static void free_entry(struct nf_queue_entry *entry)
 +{
-+	nf_queue_entry_release_refs(entry);
++	nf_queue_entry_free(entry);
 +	kfree(entry);
 +}
 +
@@ -596,7 +596,7 @@ diff -Naupr linux-5.4.10_orig/drivers/net/imq.c linux-5.4.10/drivers/net/imq.c
 +		entry_seg->skb = skb;
 +		ret = __imq_nf_queue(entry_seg, dev);
 +		if (ret)
-+			free_entry(entry_seg);
++			nf_queue_entry_free(entry_seg);
 +	}
 +	return ret;
 +}
@@ -681,7 +681,7 @@ diff -Naupr linux-5.4.10_orig/drivers/net/imq.c linux-5.4.10/drivers/net/imq.c
 +
 +	if (queued) {
 +		if (err) /* some segments are already queued */
-+			free_entry(entry);
++			nf_queue_entry_free(entry);
 +		kfree_skb(skb);
 +		return 0;
 +	}
@@ -1137,7 +1137,7 @@ diff -Naupr linux-5.4.10_orig/include/linux/netdevice.h linux-5.4.10/include/lin
  	/* Interface address info used in eth_type_trans() */
  	unsigned char		*dev_addr;
  
-@@ -4401,6 +4406,19 @@ static inline void netif_tx_unlock_bh(st
+@@ -4399,6 +4402,19 @@ static inline void netif_tx_unlock_bh(st
  	}						\
  }
  
