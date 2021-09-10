@@ -1235,8 +1235,8 @@ diff -purN linux-5.8_org/include/linux/skbuff.h linux-5.8/include/linux/skbuff.h
  #ifdef CONFIG_NET_CLS_ACT
  	__u8			tc_skip_classify:1;
  	__u8			tc_at_ingress:1;
-@@ -1068,6 +1080,10 @@ void skb_tx_error(struct sk_buff *skb);
- void consume_skb(struct sk_buff *skb);
+@@ -1068,6 +1080,10 @@ static inline void consume_skb(struct sk_buff *skb)
+ 
  void __consume_stateless_skb(struct sk_buff *skb);
  void  __kfree_skb(struct sk_buff *skb);
 +#if defined(CONFIG_IMQ) || defined(CONFIG_IMQ_MODULE)
