@@ -4,13 +4,13 @@ Date: Sat, 10 Jul 2021 22:24:52 +0800
 Subject: [PATCH] fuck firewall do some unlock
 
 ---
- .../config/firewall/files/firewall.init       | 25 +++++++++++++++++--
+ .../files/firewall.init       | 25 +++++++++++++++++--
  1 file changed, 23 insertions(+), 2 deletions(-)
 
-diff --git a/package/network/config/firewall/files/firewall.init b/package/network/config/firewall/files/firewall.init
+diff --git a/files/firewall.init b/files/firewall.init
 index ee3ed1a283..25aec0ff93 100755
---- a/package/network/config/firewall/files/firewall.init
-+++ b/package/network/config/firewall/files/firewall.init
+--- a/files/firewall.init
++++ b/files/firewall.init
 @@ -4,6 +4,17 @@ START=19
  USE_PROCD=1
  QUIET=""
