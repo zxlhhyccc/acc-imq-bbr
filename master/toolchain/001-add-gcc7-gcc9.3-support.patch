@@ -1,7 +1,7 @@
-diff --git a/Config.in b/Config.in
+diff --git a/toolchain/gcc/Config.in b/toolchain/gcc/Config.in
 index 357589e..9c203b5 100644
---- a/Config.in
-+++ b/Config.in
+--- a/toolchain/gcc/Config.in
++++ b/toolchain/gcc/Config.in
 @@ -6,9 +6,16 @@ choice
  	help
  	  Select the version of gcc you wish to use.
@@ -19,10 +19,10 @@ index 357589e..9c203b5 100644
  	config GCC_USE_VERSION_10
  		bool "gcc 10.x"
  
-diff --git a/Config.version b/Config.version
+diff --git a/toolchain/gcc/Config.version b/toolchain/gcc/Config.version
 index 61506b6..610f8e0 100644
---- a/Config.version
-+++ b/Config.version
+--- a/toolchain/gcc/Config.version
++++ b/toolchain/gcc/Config.version
 @@ -1,13 +1,28 @@
 +config GCC_VERSION_7
 +	default y if GCC_USE_VERSION_7
