@@ -172,8 +172,8 @@
  #if LINUX_VERSION_IS_GEQ(5,2,0)
  static u16 ieee80211_netdev_select_queue(struct net_device *dev,
  					 struct sk_buff *skb,
-@@ -742,7 +839,12 @@
- static const struct net_device_ops ieee80211_dataif_ops = {
+@@ -755,7 +852,12 @@
+ 
  	.ndo_open		= ieee80211_open,
  	.ndo_stop		= ieee80211_stop,
 +#ifdef CPTCFG_MAC80211_NSS_SUPPORT
@@ -198,7 +198,7 @@
  static inline void ieee80211_rx_stats(struct net_device *dev, u32 len)
  {
  	struct pcpu_sw_netstats *tstats = this_cpu_ptr(netdev_tstats(dev));
-@@ -2600,6 +2604,21 @@
+@@ -2597,6 +2601,21 @@
  			ether_addr_copy(ehdr->h_dest, sdata->vif.addr);
  
  		/* deliver to local stack */
@@ -220,7 +220,7 @@
  		if (rx->list)
  #if LINUX_VERSION_IS_GEQ(4,19,0)
  			list_add_tail(&skb->list, rx->list);
-@@ -2608,6 +2627,7 @@
+@@ -2605,6 +2624,7 @@
  #endif
  		else
  			netif_receive_skb(skb);
@@ -228,7 +228,7 @@
  	}
  }
  
-@@ -4457,6 +4477,21 @@
+@@ -4454,6 +4474,21 @@
  	/* deliver to local stack */
  	skb->protocol = eth_type_trans(skb, fast_rx->dev);
  	memset(skb->cb, 0, sizeof(skb->cb));
@@ -250,7 +250,7 @@
  	if (rx->list)
  #if LINUX_VERSION_IS_GEQ(4,19,0)
  		list_add_tail(&skb->list, rx->list);
-@@ -4465,7 +4500,7 @@
+@@ -4462,7 +4497,7 @@
  #endif
  	else
  		netif_receive_skb(skb);
