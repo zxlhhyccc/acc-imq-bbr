@@ -11,16 +11,3 @@ index d0fddbe..1644755 100644
  
  include ../../luci.mk
  
-diff --git a/root/usr/share/rpcd/acl.d/luci-app-transmission.json b/root/usr/share/rpcd/acl.d/luci-app-transmission.json
-index e2fc75d..83bc9ee 100644
---- a/root/usr/share/rpcd/acl.d/luci-app-transmission.json
-+++ b/root/usr/share/rpcd/acl.d/luci-app-transmission.json
-@@ -3,6 +3,8 @@
- 		"description": "Grant UCI access for luci-app-transmission",
- 		"read": {
- 			"file": {
-+				"/etc/passwd": [ "read" ],
-+				"/etc/group": [ "read" ],
- 				"/usr/share/transmission/web/index.html": [ "list" ]
- 			},
- 			"ubus": {
