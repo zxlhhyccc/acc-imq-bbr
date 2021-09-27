@@ -37,7 +37,7 @@
  struct ieee80211_local;
  
  /* Maximum number of broadcast/multicast frames to buffer when some of the
-@@ -998,6 +1002,14 @@ struct ieee80211_sub_if_data {
+@@ -1006,6 +1010,14 @@ struct ieee80211_sub_if_data {
  	} debugfs;
  #endif
  
@@ -75,7 +75,7 @@
  /**
   * DOC: Interface list locking
   *
-@@ -695,6 +702,96 @@
+@@ -696,6 +703,96 @@
  	ieee80211_teardown_sdata(IEEE80211_DEV_TO_SUB_IF(dev));
  }
  
@@ -172,7 +172,7 @@
  #if LINUX_VERSION_IS_GEQ(5,2,0)
  static u16 ieee80211_netdev_select_queue(struct net_device *dev,
  					 struct sk_buff *skb,
-@@ -755,7 +852,12 @@
+@@ -756,7 +853,12 @@
  
  	.ndo_open		= ieee80211_open,
  	.ndo_stop		= ieee80211_stop,
