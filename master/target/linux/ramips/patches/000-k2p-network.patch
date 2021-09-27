@@ -91,6 +91,15 @@ index ea0c3fc..9f13637 100644
    SUPPORTED_DEVICES += mikrotik,rbm11g
  endef
  TARGET_DEVICES += mikrotik_routerboard-m11g
+@@ -961,7 +961,7 @@ TARGET_DEVICES += mikrotik_routerboard-m11g
+ define Device/mikrotik_routerboard-m33g
+   $(Device/MikroTik)
+   DEVICE_MODEL := RouterBOARD M33G
+-  DEVICE_PACKAGES := -wpad-basic-wolfssl
++  DEVICE_PACKAGES := -wpad-openssl
+   SUPPORTED_DEVICES += mikrotik,rbm33g
+ endef
+ TARGET_DEVICES += mikrotik_routerboard-m33g
 @@ -1205,10 +1205,8 @@ define Device/phicomm_k2p
    IMAGE_SIZE := 15744k
    DEVICE_VENDOR := Phicomm
@@ -148,6 +157,15 @@ index ea0c3fc..9f13637 100644
    SUPPORTED_DEVICES += unielec,u7621-06-512m-64m
  endef
  TARGET_DEVICES += unielec_u7621-06-64m
+@@ -1636,7 +1634,7 @@ define Device/xiaoyu_xy-c5
+   IMAGE_SIZE := 32448k
+   DEVICE_VENDOR := XiaoYu
+   DEVICE_MODEL := XY-C5
+-  DEVICE_PACKAGES := kmod-ata-ahci kmod-usb3 -wpad-basic-wolfssl
++  DEVICE_PACKAGES := kmod-ata-ahci kmod-usb3 -wpad-openssl
+ endef
+ TARGET_DEVICES += xiaoyu_xy-c5
+ 
 @@ -1646,7 +1644,7 @@ define Device/xzwifi_creativebox-v1
    DEVICE_VENDOR := CreativeBox
    DEVICE_MODEL := v1
