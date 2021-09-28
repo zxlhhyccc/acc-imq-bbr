@@ -66,13 +66,13 @@
  	      GETLONG(attl, p1);
  	      
  	      if ((daemon->max_ttl != 0) && (attl > daemon->max_ttl) && !is_sign)
-+		{
-+		  mttl = daemon->max_ttl;
-+		}
++	        {
++	          mttl = daemon->max_ttl;
++	        }
 +	      if ((daemon->min_ttl != 0) && (attl < daemon->min_ttl) && !is_sign)
-+		{
-+		  mttl = daemon->min_ttl;
-+		}
++	        {
++	           mttl = daemon->min_ttl;
++	        }
 +	      if (mttl != 0)
  		{
  		  (p1) -= 4;
@@ -89,14 +89,14 @@
  	  GETSHORT(aqclass, p1);
  	  GETLONG(attl, p1);
  	  if ((daemon->max_ttl != 0) && (attl > daemon->max_ttl) && !is_sign)
-+	    {
-+	      mttl = daemon->max_ttl;
-+	    }
++	  {
++	    mttl = daemon->max_ttl;
++	  }
 +	  if ((daemon->min_ttl != 0) && (attl < daemon->min_ttl) && !is_sign)
-+	    {
-+	      mttl = daemon->min_ttl;
-+	    }
-+	  if (mttl != 0)
++	  {
++	    mttl = daemon->min_ttl;
++	  }
++	    if (mttl != 0)
  	    {
  	      (p1) -= 4;
  	      PUTLONG(daemon->max_ttl, p1);

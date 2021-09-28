@@ -27,15 +27,7 @@ index 44e7d2d..7bb1367 100644
  	append_parm "$cfg" cachesize "--cache-size"
  	append_parm "$cfg" dnsforwardmax "--dns-forward-max"
  	append_parm "$cfg" port "--port"
-@@ -1137,7 +1141,6 @@ dnsmasq_start()
- 			echo "search $DOMAIN" >> /tmp/resolv.conf
- 		}
- 		DNS_SERVERS="$DNS_SERVERS 127.0.0.1"
--		[ -e /proc/sys/net/ipv6 ] && DNS_SERVERS="$DNS_SERVERS ::1"
- 		for DNS_SERVER in $DNS_SERVERS ; do
- 			echo "nameserver $DNS_SERVER" >> /tmp/resolv.conf
- 		done
-@@ -1157,6 +1160,15 @@ dnsmasq_start()
+@@ -1157,6 +1161,15 @@ dnsmasq_start()
  	procd_add_jail_mount_rw /var/run/dnsmasq/ $leasefile
  
  	procd_close_instance
@@ -51,7 +43,7 @@ index 44e7d2d..7bb1367 100644
  }
  
  dnsmasq_stop()
-@@ -1174,6 +1186,15 @@ dnsmasq_stop()
+@@ -1174,6 +1187,15 @@ dnsmasq_stop()
  	rm -f ${BASEDHCPSTAMPFILE}.${cfg}.*.dhcp
  }
  
@@ -67,7 +59,7 @@ index 44e7d2d..7bb1367 100644
  add_interface_trigger()
  {
  	local interface ignore
-@@ -1244,6 +1265,7 @@ start_service() {
+@@ -1244,6 +1266,7 @@ start_service() {
  }
  
  reload_service() {
@@ -75,7 +67,7 @@ index 44e7d2d..7bb1367 100644
  	rc_procd start_service "$@"
  	procd_send_signal dnsmasq "$@"
  }
-@@ -1270,4 +1292,5 @@ stop_service() {
+@@ -1270,4 +1293,5 @@ stop_service() {
  	else
  		config_foreach dnsmasq_stop dnsmasq
  	fi
