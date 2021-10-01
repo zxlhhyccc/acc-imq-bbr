@@ -164,7 +164,7 @@ define KernelPackage/mac80211/config
 	if PACKAGE_kmod-qca-nss-drv
 		config PACKAGE_MAC80211_NSS_SUPPORT
 			bool "Enable NSS support for IPQ platform"
-			default y
+			default n
 			help
 			  This option enables support for NSS in boards.
 	endif
