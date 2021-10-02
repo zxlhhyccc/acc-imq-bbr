@@ -32,7 +32,7 @@ index 7f46740..394bc1d 100644
  
  		s.taboption('general', form.Flag, 'domainneeded',
  			_('Domain required'),
-@@ -360,6 +383,11 @@ return view.extend({
+@@ -366,6 +389,11 @@ return view.extend({
  		o.optional = true;
  		o.placeholder = '/etc/dnsmasq.hosts';
  
@@ -44,7 +44,7 @@ index 7f46740..394bc1d 100644
  		o = s.taboption('advanced', form.Flag, 'quietdhcp',
  			_('Suppress logging'),
  			_('Suppress logging of the routine operation for the DHCP protocol.'));
-@@ -467,6 +495,13 @@ return view.extend({
+@@ -473,6 +501,13 @@ return view.extend({
  		o.datatype = 'range(0,10000)';
  		o.placeholder = 150;
  
