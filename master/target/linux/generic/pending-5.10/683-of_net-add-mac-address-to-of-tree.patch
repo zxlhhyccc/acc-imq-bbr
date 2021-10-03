@@ -31,7 +31,7 @@
  
  /**
   * Search the device tree for the best MAC address to use.  'mac-address' is
-@@ -213,6 +240,7 @@ found:
+@@ -216,6 +240,7 @@ found:
  	if (!of_property_read_u32(np, "mac-address-increment", &mac_inc))
  		addr[inc_idx] += mac_inc;
  
