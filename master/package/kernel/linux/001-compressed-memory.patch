@@ -52,7 +52,7 @@
    TITLE:=RAID6 algorithm support
 --- a/modules/other.mk
 +++ b/modules/other.mk
-@@ -934,6 +934,85 @@ endef
+@@ -918,6 +918,85 @@ endef
  $(eval $(call KernelPackage,zram))
  
  
