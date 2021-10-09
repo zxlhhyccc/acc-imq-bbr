@@ -22,7 +22,7 @@ index 2ab2bbd..f6c7c6f 100644
 +
 +PKG_VERSION:=$(PKG_BASE_VERSION)-$(PKG_SOURCE_DATE)-$(call version_abbrev,$(PKG_SOURCE_VERSION))
  
- PKG_MAINTAINER:=Damiano Renfer <damiano.renfer@gmail.com>
+ PKG_MAINTAINER:=Damiano Renfer <x9w2n7xnu@relay.firefox.com>
  PKG_LICENSE:=ISC
 diff --git a/patches/001-revert-f5076db5f8ef27.patch b/patches/001-revert-f5076db5f8ef27.patch
 index 76fd5cf..cfb7cc7 100644
