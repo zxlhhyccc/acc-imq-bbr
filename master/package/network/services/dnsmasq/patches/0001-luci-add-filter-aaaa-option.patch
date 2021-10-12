@@ -2,10 +2,10 @@ diff --git a/htdocs/luci-static/resources/view/network/dhcp.js b/htdocs/luci-sta
 index 7f46740..394bc1d 100644
 --- a/htdocs/luci-static/resources/view/network/dhcp.js
 +++ b/htdocs/luci-static/resources/view/network/dhcp.js
-@@ -254,6 +254,29 @@ return view.extend({
- 		s.tab('advanced', _('Advanced Settings'));
+@@ -255,6 +255,29 @@ return view.extend({
  		s.tab('leases', _('Static Leases'));
  		s.tab('hosts', _('Hostnames'));
+ 		s.tab('ipsets', _('IP Sets'));
 +		s.tab('custom_domain', _('Custom Redirect Domain'));
 +
 +		o = s.taboption('custom_domain', form.SectionValue, 'domain', form.GridSection, 'domain', null,
@@ -32,7 +32,7 @@ index 7f46740..394bc1d 100644
  
  		s.taboption('general', form.Flag, 'domainneeded',
  			_('Domain required'),
-@@ -366,6 +389,11 @@ return view.extend({
+@@ -367,6 +390,11 @@ return view.extend({
  		o.optional = true;
  		o.placeholder = '/etc/dnsmasq.hosts';
  
@@ -44,7 +44,7 @@ index 7f46740..394bc1d 100644
  		o = s.taboption('advanced', form.Flag, 'quietdhcp',
  			_('Suppress logging'),
  			_('Suppress logging of the routine operation for the DHCP protocol.'));
-@@ -473,6 +501,13 @@ return view.extend({
+@@ -474,6 +502,13 @@ return view.extend({
  		o.datatype = 'range(0,10000)';
  		o.placeholder = 150;
  
