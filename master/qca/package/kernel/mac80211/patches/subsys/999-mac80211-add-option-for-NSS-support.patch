@@ -37,7 +37,7 @@
  struct ieee80211_local;
  
  /* Maximum number of broadcast/multicast frames to buffer when some of the
-@@ -1006,6 +1010,14 @@ struct ieee80211_sub_if_data {
+@@ -1007,6 +1011,14 @@ struct ieee80211_sub_if_data {
  	} debugfs;
  #endif
  
@@ -75,7 +75,7 @@
  /**
   * DOC: Interface list locking
   *
-@@ -696,6 +703,96 @@
+@@ -697,6 +704,96 @@
  	ieee80211_teardown_sdata(IEEE80211_DEV_TO_SUB_IF(dev));
  }
  
@@ -172,7 +172,7 @@
  #if LINUX_VERSION_IS_GEQ(5,2,0)
  static u16 ieee80211_netdev_select_queue(struct net_device *dev,
  					 struct sk_buff *skb,
-@@ -756,7 +853,12 @@
+@@ -757,7 +854,12 @@
  
  	.ndo_open		= ieee80211_open,
  	.ndo_stop		= ieee80211_stop,
@@ -228,7 +228,7 @@
  	}
  }
  
-@@ -4454,6 +4474,21 @@
+@@ -4527,6 +4547,21 @@
  	/* deliver to local stack */
  	skb->protocol = eth_type_trans(skb, fast_rx->dev);
  	memset(skb->cb, 0, sizeof(skb->cb));
@@ -250,7 +250,7 @@
  	if (rx->list)
  #if LINUX_VERSION_IS_GEQ(4,19,0)
  		list_add_tail(&skb->list, rx->list);
-@@ -4462,7 +4497,7 @@
+@@ -4535,7 +4570,7 @@
  #endif
  	else
  		netif_receive_skb(skb);
