@@ -15,7 +15,7 @@ DEFAULT_PACKAGES += \
 	kmod-usb3 kmod-usb-dwc3 kmod-usb-dwc3-qcom \
 	kmod-leds-gpio kmod-gpio-button-hotplug \
 	ath11k-firmware-ipq8074 kmod-ath11k-ahb \
-	wpad-openssl kmod-qca-nss-dp \
+	wpad-basic-wolfssl kmod-qca-nss-dp \
 	autocore-arm zram-swap
 
 $(eval $(call BuildTarget))
