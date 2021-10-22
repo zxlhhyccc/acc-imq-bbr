@@ -1,17 +1,17 @@
 diff --git a/files/dhcp.conf b/files/dhcp.conf
-index 19052e2..03bdd9b 100644
+index 8c42ef7..6d929a9 100644
 --- a/files/dhcp.conf
 +++ b/files/dhcp.conf
 @@ -21,6 +21,7 @@ config dnsmasq
  	#list bogusnxdomain     '64.94.110.11'
  	option localservice	1  # disable to allow DNS requests from non-local subnets
-	option ednspacket_max	1232
+ 	option ednspacket_max	1232
 +	option filteraaaa	1
  
  config dhcp lan
  	option interface	lan
 diff --git a/files/dnsmasq.init b/files/dnsmasq.init
-index 44e7d2d..7bb1367 100644
+index 3250b21..f4a4856 100644
 --- a/files/dnsmasq.init
 +++ b/files/dnsmasq.init
 @@ -925,8 +925,12 @@ dnsmasq_start()
@@ -27,7 +27,7 @@ index 44e7d2d..7bb1367 100644
  	append_parm "$cfg" cachesize "--cache-size"
  	append_parm "$cfg" dnsforwardmax "--dns-forward-max"
  	append_parm "$cfg" port "--port"
-@@ -1157,6 +1161,15 @@ dnsmasq_start()
+@@ -1157,6 +1161,13 @@ dnsmasq_start()
  	procd_add_jail_mount_rw /var/run/dnsmasq/ $leasefile
  
  	procd_close_instance
@@ -36,14 +36,12 @@ index 44e7d2d..7bb1367 100644
 +	config_get dns_port "$cfg" port 53
 +	if [ "$dns_redirect" = 1 ]; then
 +		iptables -t nat -A PREROUTING -m comment --comment "DNSMASQ" -p udp --dport 53 -j REDIRECT --to-ports $dns_port
-+		iptables -t nat -A PREROUTING -m comment --comment "DNSMASQ" -p tcp --dport 53 -j REDIRECT --to-ports $dns_port
 +		[ -n "$(command -v ip6tables)" ] && ip6tables -t nat -A PREROUTING -m comment --comment "DNSMASQ" -p udp --dport 53 -j REDIRECT --to-ports $dns_port
-+		[ -n "$(command -v ip6tables)" ] && ip6tables -t nat -A PREROUTING -m comment --comment "DNSMASQ" -p tcp --dport 53 -j REDIRECT --to-ports $dns_port
 +	fi
  }
  
  dnsmasq_stop()
-@@ -1174,6 +1187,15 @@ dnsmasq_stop()
+@@ -1174,6 +1185,13 @@ dnsmasq_stop()
  	rm -f ${BASEDHCPSTAMPFILE}.${cfg}.*.dhcp
  }
  
@@ -51,15 +49,13 @@ index 44e7d2d..7bb1367 100644
 +{
 +	config_get dns_port "$cfg" port 53
 +	iptables -t nat -D PREROUTING -m comment --comment "DNSMASQ" -p udp --dport 53 -j REDIRECT --to-ports $dns_port 2>"/dev/null"
-+	iptables -t nat -D PREROUTING -m comment --comment "DNSMASQ" -p tcp --dport 53 -j REDIRECT --to-ports $dns_port 2>"/dev/null"
 +	[ -n "$(command -v ip6tables)" ] && ip6tables -t nat -D PREROUTING -m comment --comment "DNSMASQ" -p udp --dport 53 -j REDIRECT --to-ports $dns_port 2>"/dev/null"
-+	[ -n "$(command -v ip6tables)" ] && ip6tables -t nat -D PREROUTING -m comment --comment "DNSMASQ" -p tcp --dport 53 -j REDIRECT --to-ports $dns_port 2>"/dev/null"
 +}
 +
  add_interface_trigger()
  {
  	local interface ignore
-@@ -1244,6 +1266,7 @@ start_service() {
+@@ -1244,6 +1262,7 @@ start_service() {
  }
  
  reload_service() {
@@ -67,7 +63,7 @@ index 44e7d2d..7bb1367 100644
  	rc_procd start_service "$@"
  	procd_send_signal dnsmasq "$@"
  }
-@@ -1270,4 +1293,5 @@ stop_service() {
+@@ -1270,4 +1289,5 @@ stop_service() {
  	else
  		config_foreach dnsmasq_stop dnsmasq
  	fi
