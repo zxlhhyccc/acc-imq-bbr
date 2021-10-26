@@ -2,7 +2,7 @@ diff --git a/htdocs/luci-static/resources/view/network/dhcp.js b/htdocs/luci-sta
 index 7f46740..394bc1d 100644
 --- a/htdocs/luci-static/resources/view/network/dhcp.js
 +++ b/htdocs/luci-static/resources/view/network/dhcp.js
-@@ -255,6 +255,29 @@ return view.extend({
+@@ -256,6 +256,29 @@ return view.extend({
  		s.tab('leases', _('Static Leases'));
  		s.tab('hosts', _('Hostnames'));
  		s.tab('ipsets', _('IP Sets'));
@@ -32,7 +32,7 @@ index 7f46740..394bc1d 100644
  
  		s.taboption('general', form.Flag, 'domainneeded',
  			_('Domain required'),
-@@ -367,6 +390,11 @@ return view.extend({
+@@ -368,6 +391,11 @@ return view.extend({
  		o.optional = true;
  		o.placeholder = '/etc/dnsmasq.hosts';
  
@@ -44,7 +44,7 @@ index 7f46740..394bc1d 100644
  		o = s.taboption('advanced', form.Flag, 'quietdhcp',
  			_('Suppress logging'),
  			_('Suppress logging of the routine operation for the DHCP protocol.'));
-@@ -474,6 +502,13 @@ return view.extend({
+@@ -475,6 +503,13 @@ return view.extend({
  		o.datatype = 'range(0,10000)';
  		o.placeholder = 150;
  
@@ -55,6 +55,6 @@ index 7f46740..394bc1d 100644
 +		o.datatype = 'range(0,86400)';
 +		o.placeholder = 0;
 +
- 		o = s.taboption('tftp', form.Flag, 'enable_tftp',
- 			_('Enable TFTP server'));
- 		o.optional = true;
+ 		o = s.taboption('pxe_tftp', form.Flag, 'enable_tftp',
+ 			_('Enable TFTP server'),
+ 			_('Enable the built-in single-instance TFTP server.'));
