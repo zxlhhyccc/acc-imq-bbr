@@ -41,7 +41,7 @@ index 6ee5221..fa8a0de 100644
    endif
    ifeq ($(CONFIG_NGINX_HTTP_SUB),y)
 -	ADDITIONAL_MODULES += --with-http_sub_module
-+	  ADDITIONAL_MODULES += --with-http_sub_module
++	ADDITIONAL_MODULES += --with-http_sub_module
    endif
    ifeq ($(CONFIG_NGINX_STREAM_CORE_MODULE),y)
      ADDITIONAL_MODULES += --with-stream
