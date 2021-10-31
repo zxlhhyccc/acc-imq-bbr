@@ -15,11 +15,11 @@ index 1c53dab..9a7c59c 100644
 +
  endmenu
 diff --git a/Makefile b/Makefile
-index 6ee5221..fa8a0de 100644
+index 886c55d..1256755 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -16,7 +16,8 @@ PKG_SOURCE_URL:=https://nginx.org/download/
- PKG_HASH:=68ba0311342115163a0354cad34f90c05a7e8bf689dc498abf07899eda155560
+ PKG_HASH:=14774aae0d151da350417efc4afda5cce5035056e71894836797e1f6e2d1175a
  
  PKG_MAINTAINER:=Thomas Heil <heil@terminal-consulting.de> \
 -				Ansuel Smith <ansuelsmth@gmail.com>
@@ -36,16 +36,16 @@ index 6ee5221..fa8a0de 100644
  	CONFIG_OPENSSL_ENGINE \
  	CONFIG_OPENSSL_WITH_NPN
  
-@@ -259,7 +261,7 @@ ifneq ($(BUILD_VARIANT),all-module)
+@@ -261,7 +263,7 @@ ifneq ($(BUILD_VARIANT),all-module)
      ADDITIONAL_MODULES += --with-http_secure_link_module
    endif
    ifeq ($(CONFIG_NGINX_HTTP_SUB),y)
 -	ADDITIONAL_MODULES += --with-http_sub_module
-+	ADDITIONAL_MODULES += --with-http_sub_module
++    ADDITIONAL_MODULES += --with-http_sub_module
    endif
    ifeq ($(CONFIG_NGINX_STREAM_CORE_MODULE),y)
      ADDITIONAL_MODULES += --with-stream
-@@ -282,6 +284,10 @@ ifneq ($(BUILD_VARIANT),all-module)
+@@ -284,6 +286,10 @@ ifneq ($(BUILD_VARIANT),all-module)
    ifeq ($(CONFIG_NGINX_TS_MODULE),y)
      ADDITIONAL_MODULES += --add-module=$(PKG_BUILD_DIR)/nginx-ts
    endif
@@ -56,7 +56,7 @@ index 6ee5221..fa8a0de 100644
  else
    CONFIG_NGINX_HEADERS_MORE:=y
    CONFIG_NGINX_HTTP_BROTLI:=y
-@@ -321,6 +327,21 @@ define Package/nginx-mod-luci/description
+@@ -323,6 +329,21 @@ define Package/nginx-mod-luci/description
   Support file for LuCI in nginx. Include custom nginx configuration, autostart script for uwsgi.
  endef
  
@@ -78,7 +78,7 @@ index 6ee5221..fa8a0de 100644
  
  TARGET_CFLAGS += -fvisibility=hidden -ffunction-sections -fdata-sections -DNGX_LUA_NO_BY_LUA_BLOCK
  TARGET_LDFLAGS += -Wl,--gc-sections
-@@ -443,6 +464,20 @@ define Prepare/nginx-ts
+@@ -445,6 +466,20 @@ define Prepare/nginx-ts
  	xzcat $(DL_DIR)/$(FILE) | tar -C $(PKG_BUILD_DIR) $(TAR_OPTIONS)
  endef
  
@@ -99,7 +99,7 @@ index 6ee5221..fa8a0de 100644
  define Download/nginx-naxsi
    VERSION:=951123ad456bdf5ac94e8d8819342fe3d49bc002
    SUBDIR:=nginx-naxsi
-@@ -556,6 +591,11 @@ ifeq ($(CONFIG_NGINX_TS_MODULE),y)
+@@ -558,6 +593,11 @@ ifeq ($(CONFIG_NGINX_TS_MODULE),y)
    $(Prepare/nginx-ts)
  endif
  
@@ -111,7 +111,7 @@ index 6ee5221..fa8a0de 100644
  ifneq "$(or $(CONFIG_NGINX_DAV),$(QUILT))" ""
    $(eval $(call Download,nginx-dav-ext-module))
    $(Prepare/nginx-dav-ext-module)
-@@ -572,6 +612,7 @@ endef
+@@ -574,6 +614,7 @@ endef
  $(eval $(call BuildPackage,nginx-ssl))
  $(eval $(call BuildPackage,nginx-all-module))
  $(eval $(call BuildPackage,nginx-mod-luci))
