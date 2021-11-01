@@ -14,7 +14,7 @@ diff --git a/files/dnsmasq.init b/files/dnsmasq.init
 index 3250b21..f4a4856 100644
 --- a/files/dnsmasq.init
 +++ b/files/dnsmasq.init
-@@ -925,8 +925,12 @@ dnsmasq_start()
+@@ -927,8 +927,12 @@ dnsmasq_start()
  	append_bool "$cfg" rapidcommit "--dhcp-rapid-commit"
  	append_bool "$cfg" scriptarp "--script-arp"
  
@@ -27,7 +27,7 @@ index 3250b21..f4a4856 100644
  	append_parm "$cfg" cachesize "--cache-size"
  	append_parm "$cfg" dnsforwardmax "--dns-forward-max"
  	append_parm "$cfg" port "--port"
-@@ -1157,6 +1161,13 @@ dnsmasq_start()
+@@ -1160,6 +1164,13 @@ dnsmasq_start()
  	procd_add_jail_mount_rw /var/run/dnsmasq/ $leasefile
  
  	procd_close_instance
@@ -41,7 +41,7 @@ index 3250b21..f4a4856 100644
  }
  
  dnsmasq_stop()
-@@ -1174,6 +1185,13 @@ dnsmasq_stop()
+@@ -1177,6 +1188,13 @@ dnsmasq_stop()
  	rm -f ${BASEDHCPSTAMPFILE}.${cfg}.*.dhcp
  }
  
@@ -55,7 +55,7 @@ index 3250b21..f4a4856 100644
  add_interface_trigger()
  {
  	local interface ignore
-@@ -1244,6 +1262,7 @@ start_service() {
+@@ -1247,6 +1265,7 @@ start_service() {
  }
  
  reload_service() {
@@ -63,7 +63,7 @@ index 3250b21..f4a4856 100644
  	rc_procd start_service "$@"
  	procd_send_signal dnsmasq "$@"
  }
-@@ -1270,4 +1289,5 @@ stop_service() {
+@@ -1273,4 +1292,5 @@ stop_service() {
  	else
  		config_foreach dnsmasq_stop dnsmasq
  	fi
