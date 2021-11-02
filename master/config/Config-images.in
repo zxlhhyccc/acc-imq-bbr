@@ -1,8 +1,6 @@
+# SPDX-License-Identifier: GPL-2.0-only
+#
 # Copyright (C) 2006-2013 OpenWrt.org
-#
-# This is free software, licensed under the GNU General Public License v2.
-# See /LICENSE for more information.
-#
 
 menu "Target Images"
 
@@ -15,10 +13,11 @@ menu "Target Images"
 		choice
 			prompt "Compression"
 			default TARGET_INITRAMFS_COMPRESSION_LZMA if TARGET_apm821xx
-			default TARGET_INITRAMFS_COMPRESSION_LZMA if TARGET_ar71xx
+			default TARGET_INITRAMFS_COMPRESSION_LZMA if TARGET_ath79_mikrotik
 			default TARGET_INITRAMFS_COMPRESSION_LZMA if TARGET_lantiq
 			default TARGET_INITRAMFS_COMPRESSION_LZMA if TARGET_mpc85xx
 			default TARGET_INITRAMFS_COMPRESSION_LZMA if TARGET_ramips
+			default TARGET_INITRAMFS_COMPRESSION_XZ if USES_SEPARATE_INITRAMFS
 			default TARGET_INITRAMFS_COMPRESSION_NONE
 			depends on TARGET_ROOTFS_INITRAMFS
 			help
@@ -37,13 +36,19 @@ menu "Target Images"
 				bool "lzma"
 
 			config TARGET_INITRAMFS_COMPRESSION_LZO
+				depends on !TARGET_ROOTFS_INITRAMFS_SEPARATE
 				bool "lzo"
 
 			config TARGET_INITRAMFS_COMPRESSION_LZ4
+				depends on !TARGET_ROOTFS_INITRAMFS_SEPARATE
 				bool "lz4"
 
 			config TARGET_INITRAMFS_COMPRESSION_XZ
 				bool "xz"
+
+			config TARGET_INITRAMFS_COMPRESSION_ZSTD
+				depends on !LINUX_5_4 && !LINUX_4_19
+				bool "zstd"
 		endchoice
 
 		config EXTERNAL_CPIO
@@ -54,11 +59,20 @@ menu "Target Images"
 			  Kernel uses specified external cpio as INITRAMFS_SOURCE.
 
 		config TARGET_INITRAMFS_FORCE
-                        bool "Force"
-                        depends on TARGET_ROOTFS_INITRAMFS
-                        default n
-                        help
-                          Ignore the initramfs passed by the bootloader.
+			bool "Force"
+			depends on TARGET_ROOTFS_INITRAMFS
+			default n
+			help
+			  Ignore the initramfs passed by the bootloader.
+
+		config TARGET_ROOTFS_INITRAMFS_SEPARATE
+			bool "separate ramdisk"
+			depends on USES_SEPARATE_INITRAMFS && TARGET_ROOTFS_INITRAMFS && !TARGET_INITRAMFS_FORCE
+			default y if USES_SEPARATE_INITRAMFS
+			help
+			  Generate separate initrd.cpio instead of embedding it.
+			  This is useful for generating images with a dedicated
+			  ramdisk e.g. in U-Boot's uImage and uImage.FIT formats.
 
 	comment "Root filesystem archives"
 
@@ -70,7 +84,7 @@ menu "Target Images"
 
 	config TARGET_ROOTFS_TARGZ
 		bool "tar.gz"
-		default n if USES_TARGZ
+		default y if USES_TARGZ
 		help
 		  Build a compressed tar archive of the root filesystem.
 
@@ -78,7 +92,7 @@ menu "Target Images"
 
 	menuconfig TARGET_ROOTFS_EXT4FS
 		bool "ext4"
-		default n if USES_EXT4
+		default y if USES_EXT4
 		help
 		  Build an ext4 root filesystem.
 
@@ -119,13 +133,6 @@ menu "Target Images"
 			default n
 			help
 			  Create an ext4 filesystem with a journal.
-
-	config TARGET_ROOTFS_ISO
-		bool "iso"
-		default n
-		depends on TARGET_x86_generic
-		help
-		  Create a bootable ISO image.
 
 	config TARGET_ROOTFS_JFFS2
 		bool "jffs2"
@@ -191,23 +198,34 @@ menu "Target Images"
 	config GRUB_IMAGES
 		bool "Build GRUB images (Linux x86 or x86_64 host only)"
 		depends on TARGET_x86
-		depends on TARGET_ROOTFS_EXT4FS || TARGET_ROOTFS_ISO || TARGET_ROOTFS_JFFS2 || TARGET_ROOTFS_SQUASHFS
+		depends on TARGET_ROOTFS_EXT4FS || TARGET_ROOTFS_JFFS2 || TARGET_ROOTFS_SQUASHFS
 		select PACKAGE_grub2
+		select PACKAGE_grub2-bios-setup
+		default y
+
+	config GRUB_EFI_IMAGES
+		bool "Build GRUB EFI images (Linux x86 or x86_64 host only)"
+		depends on TARGET_x86
+		depends on TARGET_ROOTFS_EXT4FS || TARGET_ROOTFS_JFFS2 || TARGET_ROOTFS_SQUASHFS
+		select PACKAGE_grub2
+		select PACKAGE_grub2-efi
+		select PACKAGE_grub2-bios-setup
+		select PACKAGE_kmod-fs-vfat
 		default y
 
 	config GRUB_CONSOLE
 		bool "Use Console Terminal (in addition to Serial)"
-		depends on GRUB_IMAGES
+		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
 		default y
 
 	config GRUB_SERIAL
 		string "Serial port device"
-		depends on GRUB_IMAGES
+		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
 		default "ttyS0"
 
 	config GRUB_BAUDRATE
 		int "Serial port baud rate"
-		depends on GRUB_IMAGES
+		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
 		default 38400 if TARGET_x86_generic
 		default 115200
 
@@ -218,20 +236,20 @@ menu "Target Images"
 
 	config GRUB_BOOTOPTS
 		string "Extra kernel boot options"
-		depends on GRUB_IMAGES
+		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
 		help
 		  If you don't know, just leave it blank.
 
 	config GRUB_TIMEOUT
 		string "Seconds to wait before booting the default entry"
-		depends on GRUB_IMAGES
-		default "0"
+		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
+		default "5"
 		help
 		  If you don't know, 5 seconds is a reasonable default.
 
 	config GRUB_TITLE
 		string "Title for the menu entry in GRUB"
-		depends on GRUB_IMAGES
+		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
 		default "OpenWrt"
 		help
 		  This is the title of the GRUB menu entry.
@@ -240,18 +258,18 @@ menu "Target Images"
 	config ISO_IMAGES
 		bool "Build LiveCD image (ISO)"
 		depends on TARGET_x86
-		select GRUB_IMAGES
+		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
 
 	config VDI_IMAGES
 		bool "Build VirtualBox image files (VDI)"
 		depends on TARGET_x86
-		select GRUB_IMAGES
+		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
 		select PACKAGE_kmod-e1000
 
 	config VMDK_IMAGES
 		bool "Build VMware image files (VMDK)"
 		depends on TARGET_x86
-		select GRUB_IMAGES
+		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
 		select PACKAGE_kmod-e1000
 
 	config TARGET_IMAGES_GZIP
@@ -264,25 +282,33 @@ menu "Target Images"
 	source "target/linux/*/image/Config.in"
 
 	config TARGET_KERNEL_PARTSIZE
-		int "Kernel partition size (in MB)"
-		depends on GRUB_IMAGES || USES_BOOT_PART
+		int "Kernel partition size (in MiB)"
+		depends on USES_BOOT_PART
 		default 8 if TARGET_apm821xx_sata
 		default 64 if TARGET_bcm27xx
 		default 16
 
 	config TARGET_ROOTFS_PARTSIZE
-		int "Root filesystem partition size (in MB)"
-		depends on GRUB_IMAGES || USES_ROOTFS_PART || TARGET_ROOTFS_EXT4FS || TARGET_omap || TARGET_rb532 || TARGET_sunxi || TARGET_uml
+		int "Root filesystem partition size (in MiB)"
+		depends on USES_ROOTFS_PART || TARGET_ROOTFS_EXT4FS || TARGET_omap || TARGET_sunxi || TARGET_uml
 		default 104
 		help
 		  Select the root filesystem partition size.
 
 	config TARGET_ROOTFS_PARTNAME
 		string "Root partition on target device"
-		depends on GRUB_IMAGES
+		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
 		help
 		  Override the root partition on the final device. If left empty,
 		  it will be mounted by PARTUUID which makes the kernel find the
 		  appropriate disk automatically.
+
+	config TARGET_ROOTFS_PERSIST_VAR
+		bool "Make /var persistent"
+		default n
+		help
+		  Do not symlink /var to /tmp, so that its content will persist
+		  across reboots. When enabled, /var/run will still be linked
+		  to /tmp/run.
 
 endmenu
