@@ -1123,7 +1123,6 @@ endef
 
 define KernelPackage/usb-net-aqc111
   TITLE:=Support for USB-to-Ethernet Aquantia AQtion 5/2.5GbE
-  DEPENDS:=+kmod-libphy
   KCONFIG:=CONFIG_USB_NET_AQC111
   FILES:=$(LINUX_DIR)/drivers/$(USBNET_DIR)/aqc111.ko
   AUTOLOAD:=$(call AutoProbe,aqc111)
@@ -1342,7 +1341,6 @@ $(eval $(call KernelPackage,usb-net-rtl8150))
 define KernelPackage/usb-net-rtl8152
   TITLE:=Kernel module for USB-to-Ethernet Realtek convertors
   KCONFIG:=CONFIG_USB_RTL8152
-  DEPENDS:=+!LINUX_5_4:kmod-crypto-sha256 +!LINUX_5_4:r8152-firmware
   FILES:=$(LINUX_DIR)/drivers/$(USBNET_DIR)/r8152.ko
   AUTOLOAD:=$(call AutoProbe,r8152)
   $(call AddDepends/usb-net, +LINUX_5_10:kmod-crypto-hash)
