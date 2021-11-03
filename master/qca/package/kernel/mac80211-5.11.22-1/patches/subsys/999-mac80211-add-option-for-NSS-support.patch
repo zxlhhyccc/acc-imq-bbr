@@ -7,7 +7,7 @@
 +config MAC80211_NSS_SUPPORT
 +	bool "Enable NSS support for IPQ platform"
 +	default n
-+	---help---
++	help
 +	This option enables support for NSS in boards
 +	like AP148.
 +
@@ -16,7 +16,7 @@
  
 --- a/local-symbols	2019-01-03 21:24:00.087001000 +0800
 +++ b/local-symbols	2019-01-03 21:24:56.535001000 +0800
-@@ -47,6 +47,7 @@ LIB80211_CRYPT_CCMP=
+@@ -39,6 +39,7 @@ LIB80211_CRYPT_CCMP=
  LIB80211_CRYPT_TKIP=
  LIB80211_DEBUG=
  MAC80211=
@@ -37,7 +37,7 @@
  struct ieee80211_local;
  
  /* Maximum number of broadcast/multicast frames to buffer when some of the
-@@ -1007,6 +1011,14 @@ struct ieee80211_sub_if_data {
+@@ -1014,6 +1018,14 @@
  	} debugfs;
  #endif
  
@@ -75,7 +75,7 @@
  /**
   * DOC: Interface list locking
   *
-@@ -697,6 +704,96 @@
+@@ -693,6 +700,96 @@
  	ieee80211_teardown_sdata(IEEE80211_DEV_TO_SUB_IF(dev));
  }
  
@@ -172,8 +172,8 @@
  #if LINUX_VERSION_IS_GEQ(5,2,0)
  static u16 ieee80211_netdev_select_queue(struct net_device *dev,
  					 struct sk_buff *skb,
-@@ -757,7 +854,12 @@
- 
+@@ -732,7 +829,12 @@
+ static const struct net_device_ops ieee80211_dataif_ops = {
  	.ndo_open		= ieee80211_open,
  	.ndo_stop		= ieee80211_stop,
 +#ifdef CPTCFG_MAC80211_NSS_SUPPORT
@@ -195,11 +195,11 @@
 +extern bool is_nss_enable;
 +#endif
 +
- static inline void ieee80211_rx_stats(struct net_device *dev, u32 len)
- {
- 	struct pcpu_sw_netstats *tstats = this_cpu_ptr(netdev_tstats(dev));
-@@ -2597,6 +2601,21 @@
- 			ether_addr_copy(ehdr->h_dest, sdata->vif.addr);
+ /*
+  * monitor mode reception
+  *
+@@ -2523,6 +2527,21 @@
+ 		memset(skb->cb, 0, sizeof(skb->cb));
  
  		/* deliver to local stack */
 +#ifdef CPTCFG_MAC80211_NSS_SUPPORT
@@ -220,7 +220,7 @@
  		if (rx->list)
  #if LINUX_VERSION_IS_GEQ(4,19,0)
  			list_add_tail(&skb->list, rx->list);
-@@ -2605,6 +2624,7 @@
+@@ -2531,6 +2550,7 @@
  #endif
  		else
  			netif_receive_skb(skb);
@@ -228,7 +228,7 @@
  	}
  }
  
-@@ -4527,6 +4547,21 @@
+@@ -4431,6 +4451,21 @@
  	/* deliver to local stack */
  	skb->protocol = eth_type_trans(skb, fast_rx->dev);
  	memset(skb->cb, 0, sizeof(skb->cb));
@@ -250,7 +250,7 @@
  	if (rx->list)
  #if LINUX_VERSION_IS_GEQ(4,19,0)
  		list_add_tail(&skb->list, rx->list);
-@@ -4535,7 +4570,7 @@
+@@ -4439,7 +4474,7 @@
  #endif
  	else
  		netif_receive_skb(skb);
