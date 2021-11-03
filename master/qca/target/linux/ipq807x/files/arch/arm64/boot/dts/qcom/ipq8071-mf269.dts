@@ -3,10 +3,10 @@
 
 /dts-v1/;
 
+#include "ipq8074-512m.dtsi"
 #include "ipq8074.dtsi"
 #include "ipq8074-ac-cpu.dtsi"
 #include "ipq8074-ac-nss.dtsi"
-#include "ipq8074-memory-512m.dtsi"
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
 
@@ -29,12 +29,6 @@
 	chosen {
 		stdout-path = "serial0:115200n8";
 		bootargs-append = " root=/dev/ubiblock0_1";
-	};
-
-	reserved-memory {
-		/delete-node/ tzapp@4a400000;
-		/delete-node/ q6_etr_dump@50f00000;
-		/delete-node/ m3_dump@51000000;
 	};
 
 	keys {
