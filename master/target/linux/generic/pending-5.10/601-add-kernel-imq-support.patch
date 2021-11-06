@@ -1327,7 +1327,7 @@ diff -purN linux-5.8_org/net/core/dev.c linux-5.8/net/core/dev.c
  #include <linux/sctp.h>
  #include <net/udp_tunnel.h>
  #include <linux/net_namespace.h>
-@@ -3635,6 +3638,13 @@ static int xmit_one(struct sk_buff *skb,
+@@ -3641,6 +3644,13 @@ static int xmit_one(struct sk_buff *skb,
  	unsigned int len;
  	int rc;
  
@@ -1341,7 +1341,7 @@ diff -purN linux-5.8_org/net/core/dev.c linux-5.8/net/core/dev.c
  	if (dev_nit_active(dev))
  		dev_queue_xmit_nit(skb, dev);
  
-@@ -3675,6 +3685,8 @@ out:
+@@ -3681,6 +3691,8 @@ out:
  	return skb;
  }
  
