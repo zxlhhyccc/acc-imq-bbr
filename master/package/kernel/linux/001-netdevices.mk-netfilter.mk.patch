@@ -1,5 +1,5 @@
 diff --git a/modules/netdevices.mk b/modules/netdevices.mk
-index bf43bcb..fe0a22a 100644
+index 6bbaf21..8efedd2 100644
 --- a/modules/netdevices.mk
 +++ b/modules/netdevices.mk
 @@ -764,6 +764,22 @@ endef
@@ -26,7 +26,7 @@ index bf43bcb..fe0a22a 100644
    TITLE:=Broadcom 44xx driver
    KCONFIG:=CONFIG_B44
 diff --git a/modules/netfilter.mk b/modules/netfilter.mk
-index 22a9f8e..b7ac08f 100644
+index e2bb1d0..001eaf4 100644
 --- a/modules/netfilter.mk
 +++ b/modules/netfilter.mk
 @@ -458,6 +458,24 @@ endef
