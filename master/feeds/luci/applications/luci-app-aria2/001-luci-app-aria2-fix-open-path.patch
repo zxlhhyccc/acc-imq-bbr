@@ -1,12 +1,13 @@
-diff --git a/luasrc/view/aria2/settings_header.htm b/luasrc/view/aria2/settings_header.htm
-index 7e71e8e..2fc79ff 100644
---- a/luasrc/view/aria2/settings_header.htm
-+++ b/luasrc/view/aria2/settings_header.htm
-@@ -111,6 +111,6 @@ function showRPCURL() {
+diff --git a/htdocs/luci-static/resources/view/aria2/config.js b/htdocs/luci-static/resources/view/aria2/config.js
+index 84b5075..01e3b0e 100644
+--- a/htdocs/luci-static/resources/view/aria2/config.js
++++ b/htdocs/luci-static/resources/view/aria2/config.js
+@@ -128,7 +128,7 @@ function getWebFrontInstalled() {
  function openWebInterface(path) {
  	var host = window.location.host;
  	var protocol = window.location.protocol;
 -	window.open(protocol + '//' + host + '/' + path);
 +	window.open(protocol + '//' + host + '/' + path + '/');
  };
- //]]></script>
+ 
+ function showRPCURL(section_id, useWS, inputEl) {
