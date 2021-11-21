@@ -1,8 +1,8 @@
 diff --git a/modules/crypto.mk b/modules/crypto.mk
-index 4097957..ccea31c 100644
+index 4097957..3fb1896 100644
 --- a/modules/crypto.mk
 +++ b/modules/crypto.mk
-@@ -985,3 +985,18 @@ endef
+@@ -985,3 +985,19 @@ endef
  
  $(eval $(call KernelPackage,crypto-xts))
  
@@ -21,8 +21,9 @@ index 4097957..ccea31c 100644
 +endef
 +
 +$(eval $(call KernelPackage,crypto-zstd))
++
 diff --git a/modules/lib.mk b/modules/lib.mk
-index 9a34193..c671d7d 100644
+index 9a34193..eadb215 100644
 --- a/modules/lib.mk
 +++ b/modules/lib.mk
 @@ -167,6 +167,27 @@ endef
@@ -44,7 +45,7 @@ index 9a34193..c671d7d 100644
 +endef
 +
 +define KernelPackage/lib-lz4hc/description
-+  Kernel module for LZ4HC compression/decompression support
++ Kernel module for LZ4HC compression/decompression support
 +endef
 +
 +$(eval $(call KernelPackage,lib-lz4hc))
