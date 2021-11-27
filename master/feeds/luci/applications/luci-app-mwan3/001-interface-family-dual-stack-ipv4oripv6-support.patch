@@ -1,73 +1,178 @@
-diff --git a/luasrc/model/cbi/mwan/interfaceconfig.lua b/luasrc/model/cbi/mwan/interfaceconfig.lua
-index ea07bd4..7bdd325 100644
---- a/luasrc/model/cbi/mwan/interfaceconfig.lua
-+++ b/luasrc/model/cbi/mwan/interfaceconfig.lua
-@@ -30,13 +30,16 @@ initial_state:value("online", translate("Online"))
- initial_state:value("offline", translate("Offline"))
+diff --git a/htdocs/luci-static/resources/view/mwan3/network/interface.js b/htdocs/luci-static/resources/view/mwan3/network/interface.js
+index dacb4d3..62319d9 100644
+--- a/htdocs/luci-static/resources/view/mwan3/network/interface.js
++++ b/htdocs/luci-static/resources/view/mwan3/network/interface.js
+@@ -39,7 +39,8 @@ return view.extend({
+ 		o.modalonly = true;
  
- family = mwan_interface:option(ListValue, "family", translate("Internet Protocol"))
--family.default = "ipv4"
-+family.default = ""
-+family:value("", translate("IPv4 IPv6"))
- family:value("ipv4", translate("IPv4"))
- family:value("ipv6", translate("IPv6"))
+ 		o = s.option(form.ListValue, 'family', _('Internet Protocol'));
+-		o.default = 'ipv4';
++		o.default = '';
++		o.value('', _('IPv4 and IPv6'));
+ 		o.value('ipv4', _('IPv4'));
+ 		o.value('ipv6', _('IPv6'));
+ 		o.modalonly = true;
+@@ -48,6 +49,8 @@ return view.extend({
+ 			_('This hostname or IP address will be pinged to determine if the link is up or down. Leave blank to assume interface is always online'));
+ 		o.datatype = 'host';
+ 		o.modalonly = true;
++		o.default = "gateway";
++		o.placeholder = "gateway";
  
- track_ip = mwan_interface:option(DynamicList, "track_ip", translate("Tracking hostname or IP address"),
- 	translate("This hostname or IP address will be pinged to determine if the link is up or down. Leave blank to assume interface is always online"))
- track_ip.datatype = "host"
-+track_ip.default = "gateway"
-+track_ip.placeholder = "gateway"
+ 		o = s.option(form.ListValue, 'track_method', _('Tracking method'));
+ 		o.default = 'ping';
+@@ -254,6 +257,8 @@ return view.extend({
  
- track_method = mwan_interface:option(ListValue, "track_method", translate("Tracking method"))
- track_method.default = "ping"
-diff --git a/luasrc/view/mwan/overview_status_interface.htm b/luasrc/view/mwan/overview_status_interface.htm
-index 468aa12..ed5b0eb 100644
---- a/luasrc/view/mwan/overview_status_interface.htm
-+++ b/luasrc/view/mwan/overview_status_interface.htm
-@@ -25,16 +25,18 @@ XHR.poll(-1, '<%=luci.dispatcher.build_url("admin", "status", "mwan", "interface
- 				var statusview = '';
- 				for ( var iface in status.interfaces)
- 				{
-+					for (var family in status.interfaces[iface])
-+					{
- 					var state = '';
- 					var css = '';
- 					var time = '';
--					switch (status.interfaces[iface].status)
-+					switch (status.interfaces[iface][family].status)
- 					{
- 						case 'online':
- 							state = '<%:Online%>';
- 							time = String.format(
- 								'<div><strong>Uptime:&nbsp;</strong>%s</div>',
--								secondsToString(status.interfaces[iface].online)
-+								secondsToString(status.interfaces[iface][family].online)
- 							);
- 							css = 'success';
- 							break;
-@@ -42,7 +44,7 @@ XHR.poll(-1, '<%=luci.dispatcher.build_url("admin", "status", "mwan", "interface
- 							state = '<%:Offline%>';
- 							time = String.format(
- 								'<div><strong>Downtime:&nbsp;</strong>%s</div>',
--								secondsToString(status.interfaces[iface].offline)
-+								secondsToString(status.interfaces[iface][family].offline)
- 							);
- 							css = 'danger';
- 							break;
-@@ -58,7 +60,7 @@ XHR.poll(-1, '<%=luci.dispatcher.build_url("admin", "status", "mwan", "interface
- 					);
- 					statusview += String.format(
- 						'<div><strong>Interface:&nbsp;</strong>%s</div>',
--						iface
-+						iface + "(" + family + ")"
- 					);
- 					statusview += String.format(
- 						'<div><strong>Status:&nbsp;</strong>%s</div>',
-@@ -69,6 +71,7 @@ XHR.poll(-1, '<%=luci.dispatcher.build_url("admin", "status", "mwan", "interface
- 						statusview += time;
- 					}
- 					statusview += '</div>'
-+					}
+ 		o = s.option(form.DynamicList, 'flush_conntrack', _('Flush conntrack table'),
+ 			_('Flush global firewall conntrack table on interface events'));
++		o.default='';
++		o.value('', _('Disabled'));
+ 		o.value('ifup', _('ifup (netifd)'));
+ 		o.value('ifdown', _('ifdown (netifd)'));
+ 		o.value('connected', _('connected (mwan3)'));
+diff --git a/htdocs/luci-static/resources/view/mwan3/status/overview.js b/htdocs/luci-static/resources/view/mwan3/status/overview.js
+index c60ac7a..fef62f1 100644
+--- a/htdocs/luci-static/resources/view/mwan3/status/overview.js
++++ b/htdocs/luci-static/resources/view/mwan3/status/overview.js
+@@ -21,29 +21,30 @@ function renderMwan3Status(status) {
+ 
+ 	var statusview = '';
+ 	for ( var iface in status.interfaces) {
++	for ( var family in status.interfaces[iface]) {
+ 		var state = '';
+ 		var css = '';
+ 		var time = '';
+ 		var tname = '';
+-		switch (status.interfaces[iface].status) {
++		switch (status.interfaces[iface][family].status) {
+ 			case 'online':
+ 				state = _('Online');
+ 				css = 'success';
+-				time = '%t'.format(status.interfaces[iface].online);
++				time = '%t'.format(status.interfaces[iface][family].online);
+ 				tname = _('Uptime');
+ 				css = 'success';
+ 				break;
+ 			case 'offline':
+ 				state = _('Offline');
+ 				css = 'danger';
+-				time = '%t'.format(status.interfaces[iface].offline);
++				time = '%t'.format(status.interfaces[iface][family].offline);
+ 				tname = _('Downtime');
+ 				break;
+ 			case 'notracking':
+ 				state = _('No Tracking');
+-				if ((status.interfaces[iface].uptime) > 0) {
++				if ((status.interfaces[iface][family].uptime) > 0) {
+ 					css = 'success';
+-					time = '%t'.format(status.interfaces[iface].uptime);
++					time = '%t'.format(status.interfaces[iface][family].uptime);
+ 					tname = _('Uptime');
  				}
- 				statusDiv.innerHTML = statusview;
+ 				else {
+@@ -61,7 +62,7 @@ function renderMwan3Status(status) {
+ 		}
+ 
+ 		statusview += '<div class="alert-message %h">'.format(css);
+-		statusview += '<div><strong>%h:&#160;</strong>%h</div>'.format(_('Interface'), iface);
++		statusview += '<div><strong>%h:&#160;</strong>%h</div>'.format(_('Interface'), iface + '(' + family + ')');
+ 		statusview += '<div><strong>%h:&#160;</strong>%h</div>'.format(_('Status'), state);
+ 
+ 		if (time)
+@@ -69,6 +70,7 @@ function renderMwan3Status(status) {
+ 
+ 		statusview += '</div>';
+ 	}
++	}
+ 
+ 	return statusview;
+ }
+diff --git a/htdocs/luci-static/resources/view/status/include/90_mwan3.js b/htdocs/luci-static/resources/view/status/include/90_mwan3.js
+index 0fc1155..0abdfd8 100644
+--- a/htdocs/luci-static/resources/view/status/include/90_mwan3.js
++++ b/htdocs/luci-static/resources/view/status/include/90_mwan3.js
+@@ -29,29 +29,31 @@ return baseclass.extend({
+ 
+ 		var container = E('div', { 'id': 'mwan3-service-status' });
+ 		var iface;
++		var family;
+ 		for ( iface in result[0].interfaces) {
++		for ( family in result[0].interfaces[iface]) {
+ 			var state = '';
+ 			var css = '';
+ 			var time = '';
+ 			var tname = '';
+-			switch (result[0].interfaces[iface].status) {
++			switch (result[0].interfaces[iface][family].status) {
+ 				case 'online':
+ 					state = _('Online');
+ 					css = 'alert-message success';
+-					time = '%t'.format(result[0].interfaces[iface].online);
++					time = '%t'.format(result[0].interfaces[iface][family].online);
+ 					tname = _('Uptime');
+ 					break;
+ 				case 'offline':
+ 					state = _('Offline');
+ 					css = 'alert-message danger';
+-					time = '%t'.format(result[0].interfaces[iface].offline);
++					time = '%t'.format(result[0].interfaces[iface][family].offline);
+ 					tname = _('Downtime');
+ 					break;
+ 				case 'notracking':
+ 					state = _('No Tracking');
+-					if ((result[0].interfaces[iface].uptime) > 0) {
++					if ((result[0].interfaces[iface][family].uptime) > 0) {
+ 						css = 'alert-message success';
+-						time = '%t'.format(result[0].interfaces[iface].uptime);
++						time = '%t'.format(result[0].interfaces[iface][family].uptime);
+ 						tname = _('Uptime');
+ 					}
+ 					else {
+@@ -75,7 +77,7 @@ return baseclass.extend({
+ 							E('strong', {}, [
+ 								_('Interface'), ':', ' '
+ 							]),
+-							iface
++							iface + '(' + family + ')'
+ 						]),
+ 						E('div', {}, [
+ 							E('strong', {}, [
+@@ -99,7 +101,7 @@ return baseclass.extend({
+ 							E('strong', {}, [
+ 								_('Interface'), ':', ' '
+ 							]),
+-							iface
++							iface + '(' + family + ')'
+ 						]),
+ 						E('div', {}, [
+ 							E('strong', {}, [
+@@ -111,6 +113,7 @@ return baseclass.extend({
+ 				);
  			}
+ 		}
++		}
+ 
+ 		return container;
+ 	}
+diff --git a/root/usr/libexec/luci-mwan3 b/root/usr/libexec/luci-mwan3
+index 8db3e47..28d47e0 100755
+--- a/root/usr/libexec/luci-mwan3
++++ b/root/usr/libexec/luci-mwan3
+@@ -53,7 +53,7 @@ diag_gateway() {
+ 		exit 2
+ 	}
+ 
+-	mwan3 use "$iface" "ping" "-c" "5" "-W" "1" "$gw"
++	mwan3 use "$iface" ipv4 "ping" "-c" "5" "-W" "1" "$gw"
+ }
+ 
+ diag_tracking() {
+@@ -63,7 +63,7 @@ diag_tracking() {
+ 		local ip="$1"
+ 		local iface="$2"
+ 
+-		mwan3 use "$iface" "ping" "-c" "5" "-W" "1" "$ip"
++		mwan3 use "$iface" ipv4 "ping" "-c" "5" "-W" "1" "$ip"
+ 	}
+ 
+ 	config_load mwan3
