@@ -1,0 +1,25 @@
+diff --git a/luasrc/sys.lua b/luasrc/sys.lua
+index 5b58c84..b0f5ee3 100644
+--- a/luasrc/sys.lua
++++ b/luasrc/sys.lua
+@@ -279,7 +279,7 @@ function net.host_hints(callback)
+ end
+ 
+ function net.conntrack(callback)
+-	local ok, nfct = pcall(io.lines, "/proc/net/nf_conntrack")
++	local ok, nfct = pcall(io.lines, "/tmp/nf_conntrack_link")
+ 	if not ok or not nfct then
+ 		return nil
+ 	end
+diff --git a/root/etc/init.d/ucitrack b/root/etc/init.d/ucitrack
+index c7ceb32..f94430a 100755
+--- a/root/etc/init.d/ucitrack
++++ b/root/etc/init.d/ucitrack
+@@ -49,6 +49,7 @@ register_trigger() {
+ }
+ 
+ service_triggers() {
++	test -e /dev/conntrackinfo_ctl && ln -s /dev/conntrackinfo_ctl /tmp/nf_conntrack_link || ln -s /proc/net/nf_conntrack /tmp/nf_conntrack_link
+ 	config_foreach register_trigger
+ }
+ 
