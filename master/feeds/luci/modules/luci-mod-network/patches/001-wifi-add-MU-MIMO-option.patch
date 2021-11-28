@@ -18,8 +18,8 @@ index 8f3f7a2..e1d2a33 100644
  					o.placeholder = 100;
  					o.rmempty = true;
 +
-+					o = ss.taboption('advanced', form.Flag, 'vendor_vht', _('Enable 256-QAM'), _('802.11n 2.4Ghz Only'));
-+					o.default = o.disabled;
++					o = ss.taboption('advanced', form.Flag, 'vendor_vht', _('Enable 256-QAM'), _('Enable 256QAM modulation. May not supported by some hardware!'));
++					o.rmempty = true;
  				}
  
  
