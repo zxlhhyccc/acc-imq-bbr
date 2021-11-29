@@ -1,0 +1,82 @@
+diff --git a/Makefile b/Makefile
+index a0d1fa8..2eefde6 100644
+--- a/Makefile
++++ b/Makefile
+@@ -225,6 +225,26 @@ $(subst $(space),$(newline),$(MARIADB_CLIENT))
+ 
+ endef
+ 
++define Package/mariadb-client-base
++  $(call Package/mariadb/Default)
++  TITLE:=MariaDB database client base
++  DEPENDS:= \
++	  $(MARIADB_COMMON_DEPENDS) \
++	  +libedit
++endef
++
++define Package/mariadb-client-base/conffiles
++$(CONF_DIR)/conf.d/50-mysql-clients.cnf
++endef
++
++define Package/mariadb-client-base/description
++$(call Package/mariadb/description/Default)
++
++This package provides the foundation for mariadb-client. It installs the
++configuration and the dependencies.
++
++endef
++
+ define Package/mariadb-client-extra
+   $(call Package/mariadb/Default)
+   TITLE:=MariaDB database client extra
+@@ -462,6 +482,11 @@ define Package/mariadb-client/install
+ 	cd $(1)/usr/bin; $(LN) mysqlcheck mysqloptimize
+ endef
+ 
++define Package/mariadb-client-base/install
++	$(INSTALL_DIR) $(1)$(CONF_DIR)/conf.d
++	$(INSTALL_DATA) conf/50-mysql-clients.cnf $(1)$(CONF_DIR)/conf.d
++endef
++
+ define Package/mariadb-client-extra/install
+ 	$(INSTALL_DIR) $(1)/usr/bin
+ 	$(foreach b,$(MARIADB_CLIENT_EXTRA),$(call Package/mariadb/install/bin,$(1),$(b));)
+@@ -538,6 +563,7 @@ endef
+ 
+ $(eval $(call HostBuild))
+ $(eval $(call BuildPackage,mariadb-client))
++$(eval $(call BuildPackage,mariadb-client-base))
+ $(eval $(call BuildPackage,mariadb-client-extra))
+ $(eval $(call BuildPackage,mariadb-server))
+ $(eval $(call BuildPackage,mariadb-server-base))
+diff --git a/conf/50-mysql-clients.cnf b/conf/50-mysql-clients.cnf
+new file mode 100644
+index 0000000..b762a76
+--- /dev/null
++++ b/conf/50-mysql-clients.cnf
+@@ -0,0 +1,25 @@
++#
++# These groups are read by MariaDB command-line tools
++# Use it for options that affect only one utility
++#
++
++[mysql]
++# Default is Latin1, if you need UTF-8 set this (also in server section)
++default-character-set = utf8mb4
++
++[mysql_upgrade]
++
++[mysqladmin]
++
++[mysqlbinlog]
++
++[mysqlcheck]
++
++[mysqldump]
++
++[mysqlimport]
++
++[mysqlshow]
++
++[mysqlslap]
++
