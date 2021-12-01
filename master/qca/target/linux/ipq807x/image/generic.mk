@@ -36,18 +36,20 @@ define Device/edimax_cax1800
 endef
 TARGET_DEVICES += edimax_cax1800
 
-define Device/netgear_sxr80
+define Device/qnap_301w
 	$(call Device/FitImage)
-	$(call Device/UbiFit)
-	DEVICE_VENDOR := Netgear
-	DEVICE_MODEL := SXR80
-	BLOCKSIZE := 128k
-	PAGESIZE := 2048
+	DEVICE_VENDOR := QNAP
+	DEVICE_MODEL := 301w
 	DEVICE_DTS_CONFIG := config@hk01
-	SOC := ipq8074
-	DEVICE_PACKAGES := ipq-wifi-netgear_sxr80 uboot-envtools
+	KERNEL_SIZE := 16384k
+	BLOCKSIZE := 512k
+	SOC := ipq8072
+	IMAGES += factory.bin sysupgrade.bin
+	IMAGE/factory.bin := append-rootfs | pad-rootfs | pad-to 64k
+	IMAGE/sysupgrade.bin/squashfs := append-rootfs | pad-to 64k | sysupgrade-tar rootfs=$$$$@ | append-metadata
+	DEVICE_PACKAGES := ipq-wifi-qnap_301w e2fsprogs kmod-fs-ext4 losetup uboot-envtools
 endef
-TARGET_DEVICES += netgear_sxr80
+TARGET_DEVICES += qnap_301w
 
 define Device/redmi_ax6
 	$(call Device/xiaomi_ax3600)
