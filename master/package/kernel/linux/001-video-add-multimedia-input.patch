@@ -1,5 +1,5 @@
 diff --git a/modules/video.mk b/modules/video.mk
-index d665cd4..84f5922 100644
+index 431f077..c51f967 100644
 --- a/modules/video.mk
 +++ b/modules/video.mk
 @@ -221,6 +221,25 @@ endef
