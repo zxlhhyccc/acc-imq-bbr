@@ -34,7 +34,7 @@ DEFAULT_PACKAGES:=\
 	kmod-ipt-raw \
 	wget-ssl \
 	ca-certificates \
-	default-settings \
+	default-settings-chn \
 	luci \
 	luci-lib-base \
 	luci-compat \
