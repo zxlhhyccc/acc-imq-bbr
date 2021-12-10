@@ -1,8 +1,8 @@
 diff --git a/files/hostapd.sh b/files/hostapd.sh
-index b4aa5e4..be4ae9e 100644
+index d9d5f34..af5e6fe 100644
 --- a/files/hostapd.sh
 +++ b/files/hostapd.sh
-@@ -104,6 +104,7 @@ hostapd_common_add_device_config() {
+@@ -113,6 +113,7 @@ hostapd_common_add_device_config() {
  	config_add_int rssi_reject_assoc_rssi
  	config_add_int rssi_ignore_probe_request
  	config_add_int maxassoc
@@ -10,7 +10,7 @@ index b4aa5e4..be4ae9e 100644
  
  	config_add_string acs_chan_bias
  	config_add_array hostapd_options
-@@ -121,7 +122,8 @@ hostapd_prepare_device_config() {
+@@ -130,7 +131,8 @@ hostapd_prepare_device_config() {
  
  	json_get_vars country country3 country_ie beacon_int:100 dtim_period:2 doth require_mode legacy_rates \
  		acs_chan_bias local_pwr_constraint spectrum_mgmt_required airtime_mode cell_density \
@@ -20,7 +20,7 @@ index b4aa5e4..be4ae9e 100644
  
  	hostapd_set_log_options base_cfg
  
-@@ -190,6 +192,7 @@ hostapd_prepare_device_config() {
+@@ -199,6 +201,7 @@ hostapd_prepare_device_config() {
  				set_default rate_list "24000 36000 48000 54000"
  				set_default basic_rate_list "24000"
  			fi
