@@ -1,0 +1,12 @@
+--- a/net/netfilter/nf_flow_table_ip.c
++++ b/net/netfilter/nf_flow_table_ip.c
+@@ -218,6 +218,9 @@
+ 
+ static int nf_flow_offload_dst_check(struct dst_entry *dst)
+ {
++	if (unlikely(dst->dev->ifindex == 0))
++		return -1;
++
+ 	if (unlikely(dst_xfrm(dst)))
+ 		return dst_check(dst, 0) ? 0 : -1;
+ 
