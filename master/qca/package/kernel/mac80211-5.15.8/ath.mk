@@ -310,7 +310,7 @@ define KernelPackage/ath11k/config
        config ATH11K_THERMAL
                bool "Enable thermal sensors and throttling support"
                depends on PACKAGE_kmod-ath11k
-               default y if TARGET_ipq807x
+               default y if TARGET_ipq807x_generic_DEVICE_redmi_ax6 || TARGET_ipq807x_generic_DEVICE_xiaomi_ax3600 || TARGET_ipq807x_generic_DEVICE_zte_mf269
 
        if PACKAGE_kmod-ath11k
 
@@ -322,8 +322,6 @@ define KernelPackage/ath11k/config
 
        config ATH11K_MEM_PROFILE_512MB
                bool "Use limits for the 512MB memory size"
-               depends on PACKAGE_kmod-ath11k
-               default y if TARGET_ipq807x_generic_DEVICE_redmi_ax6 || TARGET_ipq807x_generic_DEVICE_xiaomi_ax3600 || TARGET_ipq807x_generic_DEVICE_zte_mf269
 
        config ATH11K_MEM_PROFILE_1GB
                bool "Use limits for the 1GB memory size"
