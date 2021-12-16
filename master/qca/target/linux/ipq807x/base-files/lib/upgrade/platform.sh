@@ -22,7 +22,7 @@ platform_do_upgrade() {
 	xiaomi,ax3600|\
 	xiaomi,ax9000)
 		part_num="$(fw_printenv -n flag_boot_rootfs)"
-		if [ "$part_num" -eq "1" ]; then
+		if [ "$part_num" -eq "0" ]; then
 			CI_UBIPART="rootfs_1"
 			target_num=1
 			# Reset fail flag for the current partition
@@ -44,10 +44,6 @@ platform_do_upgrade() {
 		# Reset success flag
 		fw_setenv flag_boot_success 0
 
-		nand_do_upgrade "$1"
-		;;
-	zte,mf269)
-		CI_UBIPART="rootfs"
 		nand_do_upgrade "$1"
 		;;
 	*)
