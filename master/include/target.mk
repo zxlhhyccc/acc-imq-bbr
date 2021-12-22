@@ -34,7 +34,7 @@ DEFAULT_PACKAGES:=\
 	kmod-ipt-raw \
 	wget-ssl \
 	ca-certificates \
-	default-settings-chn \
+	default-settings \
 	luci \
 	luci-lib-base \
 	luci-compat \
@@ -265,6 +265,7 @@ ifeq ($(DUMP),1)
   endif
   ifeq ($(ARCH),powerpc64)
     CPU_TYPE ?= powerpc64
+    CPU_CFLAGS_e5500:=-mcpu=e5500
     CPU_CFLAGS_powerpc64:=-mcpu=powerpc64
   endif
   ifeq ($(ARCH),sparc)
