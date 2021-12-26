@@ -147,7 +147,7 @@
  	bool
 +
 +config SHORTCUT_FE
-+	bool "Enables kernel network stack path for Shortcut  Forwarding Engine
++	bool "Enables kernel network stack path for Shortcut  Forwarding Engine"
 --- a/net/netfilter/nf_conntrack_proto_tcp.c
 +++ b/net/netfilter/nf_conntrack_proto_tcp.c
 @@ -34,11 +34,19 @@
