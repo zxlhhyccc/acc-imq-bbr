@@ -1,5 +1,5 @@
 diff --git a/htdocs/luci-static/resources/view/firewall/zones.js b/htdocs/luci-static/resources/view/firewall/zones.js
-index b24521e..71131e2 100644
+index 58cd2a7..aa85bd4 100644
 --- a/htdocs/luci-static/resources/view/firewall/zones.js
 +++ b/htdocs/luci-static/resources/view/firewall/zones.js
 @@ -56,6 +56,7 @@ return view.extend({
