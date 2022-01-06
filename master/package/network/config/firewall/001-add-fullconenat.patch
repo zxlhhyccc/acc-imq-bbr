@@ -8,9 +8,9 @@ index 2c0ae5b..9ad2006 100644
    TITLE:=OpenWrt C Firewall
 -  DEPENDS:=+libubox +libubus +libuci +libip4tc +IPV6:libip6tc +libxtables +kmod-ipt-core +kmod-ipt-conntrack +IPV6:kmod-nf-conntrack6 +kmod-ipt-nat
 +  DEPENDS:=+libubox +libubus +libuci +libip4tc +IPV6:libip6tc +libxtables +kmod-ipt-core +kmod-ipt-conntrack +IPV6:kmod-nf-conntrack6 +kmod-ipt-nat +iptables-mod-fullconenat
+   PROVIDES:=uci-firewall
+   CONFLICTS:=firewall4
  endef
- 
- define Package/firewall/description
 diff --git a/files/firewall.config b/files/firewall.config
 index 5e22f98..8d9462f 100644
 --- a/files/firewall.config
