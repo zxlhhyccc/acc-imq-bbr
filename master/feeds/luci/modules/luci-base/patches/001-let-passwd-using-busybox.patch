@@ -15,7 +15,7 @@ diff --git a/root/usr/libexec/rpcd/luci b/root/usr/libexec/rpcd/luci
 index 17fb391..1e57426 100755
 --- a/root/usr/libexec/rpcd/luci
 +++ b/root/usr/libexec/rpcd/luci
-@@ -442,7 +442,7 @@ local methods = {
+@@ -443,7 +443,7 @@ local methods = {
  		call = function(args)
  			local util = require "luci.util"
  			return {
@@ -24,7 +24,7 @@ index 17fb391..1e57426 100755
  					luci.util.shellquote(args.password),
  					luci.util.shellquote(args.password),
  					luci.util.shellquote(args.username)
-@@ -613,6 +613,37 @@ local methods = {
+@@ -614,6 +614,37 @@ local methods = {
  			end
  			return { result = res }
  		end
