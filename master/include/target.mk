@@ -46,7 +46,7 @@ DEFAULT_PACKAGES:=\
 	luci-app-upnp \
 	luci-app-autorebootschedule \
 	luci-app-vsftpd \
-	luci-app-ssr-plus \
+	luci-app-ssr-plus-mosdns \
 	luci-app-arpbind \
 	luci-app-control-vlmcsd \
 	luci-app-wol \
