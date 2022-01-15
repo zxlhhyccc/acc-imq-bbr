@@ -1,0 +1,21 @@
+From 8f30a0bd3957d6b9669d747beb5d5039ee2e3e54 Mon Sep 17 00:00:00 2001
+From: Ailick <277498654@qq.com>
+Date: Mon, 11 Oct 2021 13:47:52 +0800
+Subject: [PATCH] firewall: add reload config for triggers
+
+---
+ .../files/firewall.init | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/files/firewall.init b/files/firewall.init
+index ee3ed1a2835..bcec949af58 100755
+--- a/files/firewall.init
++++ b/files/firewall.init
+@@ -50,6 +50,7 @@ stop_service() {
+ }
+ 
+ reload_service() {
++	reload_config firewall
+ 	fw3 reload
+ }
+ 
