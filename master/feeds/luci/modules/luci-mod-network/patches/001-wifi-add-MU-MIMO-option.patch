@@ -23,7 +23,7 @@ index 8f3f7a2..e1d2a33 100644
  				}
  
  
-@@ -1499,6 +1506,68 @@ return view.extend({
+@@ -1502,6 +1509,68 @@ return view.extend({
  
  
  				if (hwtype == 'mac80211') {
