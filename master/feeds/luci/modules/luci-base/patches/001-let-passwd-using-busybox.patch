@@ -7,7 +7,7 @@ index aa00766..5b58c84 100644
  
  function user.setpasswd(username, password)
 -	return os.execute("(echo %s; sleep 1; echo %s) | passwd %s >/dev/null 2>&1" %{
-+	return os.execute("(echo %s; sleep 1; echo %s) | busybox passwd %s >/dev/null 2>&1" %{
++	return os.execute("(echo %s; sleep 1; echo %s) | /bin/busybox passwd %s >/dev/null 2>&1" %{
  		luci.util.shellquote(password),
  		luci.util.shellquote(password),
  		luci.util.shellquote(username)
@@ -15,15 +15,6 @@ diff --git a/root/usr/libexec/rpcd/luci b/root/usr/libexec/rpcd/luci
 index 17fb391..1e57426 100755
 --- a/root/usr/libexec/rpcd/luci
 +++ b/root/usr/libexec/rpcd/luci
-@@ -447,7 +447,7 @@ local methods = {
- 		call = function(args)
- 			local util = require "luci.util"
- 			return {
--				result = (os.execute("(echo %s; sleep 1; echo %s) | passwd %s >/dev/null 2>&1" %{
-+				result = (os.execute("(echo %s; sleep 1; echo %s) | busybox passwd %s >/dev/null 2>&1" %{
- 					luci.util.shellquote(args.password),
- 					luci.util.shellquote(args.password),
- 					luci.util.shellquote(args.username)
 @@ -618,6 +618,37 @@ local methods = {
  			end
  			return { result = res }
