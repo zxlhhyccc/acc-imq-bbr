@@ -65,7 +65,7 @@ index b089433..844a28a 100644
  o.default = def_unit_ul or "kbytes"
  o:depends("limit_type","static")
  o:value("bytes", "Bytes/s")
-@@ -74,47 +72,45 @@ o:value("mbytes", "MBytes/s")
+@@ -74,54 +72,52 @@ o:value("mbytes", "MBytes/s")
  --
  -- Dynamic
  --
@@ -100,6 +100,15 @@ index b089433..844a28a 100644
  o:depends("limit_enable","1")
  
  --
+ -- limit speed by mac address
+ --
+-o = s:taboption("limitmac", Flag, "limit_mac_enable", translate("Limit Enable"), translate("Enable Limit Rate Feature"))
+-o.default = limit_mac_enable or o.enabled
++o = s:taboption("limitopt", Flag, "limit_mac_enable", translate("Limit Rate by Mac Address"), translate("Enable Limit Rate Feature"))
++o.default = limit_mac_enable or o.disabled
+ o.rmempty = false
+ 
+ --
  -- Priority
  --
 -o = s:taboption("priority", Flag, "priority_enable", translate("Enable Traffic Priority"), translate("Enable this feature"))
@@ -121,7 +130,7 @@ index b089433..844a28a 100644
  	x = m:section(TypedSection, "download", translate("Static QoS-Download Rate"))
  	x.anonymous = true
  	x.addremove = true
-@@ -182,19 +178,15 @@ if limit_enable == "1" and limit_type == "static" then
+@@ -189,19 +185,15 @@ if limit_enable == "1" and limit_type == "static" then
  	o:value("kbytes", "KBytes/s")
  	o:value("mbytes", "MBytes/s")
  
@@ -146,7 +155,7 @@ index b089433..844a28a 100644
  	o.default = "tcp"
  	o:value("tcp", "TCP")
  	o:value("udp", "UDP")
-@@ -202,7 +194,7 @@ if enable_priority == "1" then
+@@ -209,7 +201,7 @@ if enable_priority == "1" then
  	o:value("sctp", "SCTP")
  	o:value("dccp", "DCCP")
  
@@ -155,7 +164,7 @@ index b089433..844a28a 100644
  	o.default = "1"
  	o:value("-400", "1")
  	o:value("-300", "2")
-@@ -216,26 +208,22 @@ if enable_priority == "1" then
+@@ -223,19 +215,15 @@ if enable_priority == "1" then
  	o:value("225", "10")
  	o:value("300", "11")
  
@@ -170,15 +179,6 @@ index b089433..844a28a 100644
 -end
 -
  --
- -- limit speed by mac address
- --
--o = s:taboption("limitmac", Flag, "limit_mac_enable", translate("Limit Enable"), translate("Enable Limit Rate Feature"))
--o.default = limit_mac_enable or o.enabled
-+o = s:taboption("limitopt", Flag, "limit_mac_enable", translate("Limit Rate by Mac Address"), translate("Enable Limit Rate Feature"))
-+o.default = limit_mac_enable or o.disabled
- o.rmempty = false
- 
- --
  -- Static By Mac Address
  --
 -if limit_mac_enable == "1" then
@@ -192,7 +192,9 @@ index b089433..844a28a 100644
  
 -end
 -
- return m
+-return m
+\ No newline at end of file
++return m
 diff --git a/po/zh_Hans/nft-qos.po b/po/zh_Hans/nft-qos.po
 index b422238..0997e56 100644
 --- a/po/zh_Hans/nft-qos.po
