@@ -157,6 +157,9 @@ $(eval $(call nf_add,IPT_IPSEC,CONFIG_NETFILTER_XT_MATCH_POLICY, $(P_XT)xt_polic
 # flow offload support
 $(eval $(call nf_add,IPT_FLOW,CONFIG_NETFILTER_XT_TARGET_FLOWOFFLOAD, $(P_XT)xt_FLOWOFFLOAD))
 
+# cgroup
+$(eval $(call nf_add,IPT_CGROUP,CONFIG_NETFILTER_XT_MATCH_CGROUP, $(P_XT)xt_cgroup))
+
 # IPv6
 
 # kernel only
@@ -344,6 +347,7 @@ $(eval $(if $(NF_KMOD),$(call nf_add,NFT_CORE,CONFIG_NFT_REJECT_INET, $(P_XT)nft
 
 $(eval $(if $(NF_KMOD),$(call nf_add,NFT_BRIDGE,CONFIG_NFT_BRIDGE_META, $(P_EBT)nft_meta_bridge),))
 $(eval $(if $(NF_KMOD),$(call nf_add,NFT_BRIDGE,CONFIG_NFT_BRIDGE_REJECT, $(P_EBT)nft_reject_bridge),))
+$(eval $(if $(NF_KMOD),$(call nf_add,NFT_BRIDGE,CONFIG_NF_CONNTRACK_BRIDGE, $(P_EBT)nf_conntrack_bridge),))
 
 $(eval $(if $(NF_KMOD),$(call nf_add,NFT_NAT,CONFIG_NFT_NAT, $(P_XT)nft_nat),))
 $(eval $(if $(NF_KMOD),$(call nf_add,NFT_NAT,CONFIG_NFT_NAT, $(P_XT)nft_chain_nat),))
