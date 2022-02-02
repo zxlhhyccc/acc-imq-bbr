@@ -1131,7 +1131,7 @@ diff -purN linux-5.8_org/include/linux/netdevice.h linux-5.8/include/linux/netde
  	/* Interface address info used in eth_type_trans() */
  	unsigned char		*dev_addr;
  
-@@ -4408,6 +4413,19 @@ static inline void netif_tx_unlock_bh(st
+@@ -4409,6 +4414,19 @@ static inline void netif_tx_unlock_bh(st
  	}						\
  }
  
