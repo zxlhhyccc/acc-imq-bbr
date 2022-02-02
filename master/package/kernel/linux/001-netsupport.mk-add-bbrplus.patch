@@ -46,7 +46,7 @@ diff --git a/modules/netsupport.mk b/modules/netsupport.mk
 index 166172d..3e84da7 100644
 --- a/modules/netsupport.mk
 +++ b/modules/netsupport.mk
-@@ -950,6 +950,122 @@ endef
+@@ -967,6 +967,122 @@ endef
  
  $(eval $(call KernelPackage,tcp-bbr))
  
