@@ -2,7 +2,7 @@ diff --git a/Makefile b/Makefile
 index 6aee5c6..2e68909 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -169,6 +169,39 @@ Includes support for:
+@@ -177,6 +177,39 @@ Includes support for:
  
  endef
  
@@ -42,7 +42,7 @@ index 6aee5c6..2e68909 100644
  define Package/iptables-mod-ipopt
  $(call Package/iptables/Module, +kmod-ipt-ipopt)
    TITLE:=IP/Packet option extensions
-@@ -668,6 +701,11 @@ $(eval $(call BuildPlugin,iptables-mod-conntrack-label,$(IPT_CONNTRACK_LABEL-m))
+@@ -684,6 +717,11 @@ $(eval $(call BuildPlugin,iptables-mod-conntrack-label,$(IPT_CONNTRACK_LABEL-m))
  $(eval $(call BuildPlugin,iptables-mod-extra,$(IPT_EXTRA-m)))
  $(eval $(call BuildPlugin,iptables-mod-physdev,$(IPT_PHYSDEV-m)))
  $(eval $(call BuildPlugin,iptables-mod-filter,$(IPT_FILTER-m)))
