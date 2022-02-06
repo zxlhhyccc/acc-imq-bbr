@@ -1,7 +1,33 @@
 diff --git a/Makefile b/Makefile
-index 6aee5c6..2e68909 100644
+index e936a57..bbe3732 100644
 --- a/Makefile
 +++ b/Makefile
+@@ -50,9 +50,9 @@ $(call Package/iptables/Default)
+   MENU:=1
+   DEPENDS+= +kmod-ipt-core +libip4tc +IPV6:libip6tc +libxtables
+   ALTERNATIVES:=\
+-    200:/usr/sbin/iptables:/usr/sbin/xtables-legacy-multi \
+-    200:/usr/sbin/iptables-restore:/usr/sbin/xtables-legacy-multi \
+-    200:/usr/sbin/iptables-save:/usr/sbin/xtables-legacy-multi
++    300:/usr/sbin/iptables:/usr/sbin/xtables-legacy-multi \
++    300:/usr/sbin/iptables-restore:/usr/sbin/xtables-legacy-multi \
++    300:/usr/sbin/iptables-save:/usr/sbin/xtables-legacy-multi
+ endef
+ 
+ define Package/iptables/config
+@@ -114,9 +114,9 @@ $(call Package/iptables/Default)
+   TITLE:=IP firewall administration tool nft
+   DEPENDS:=@IPTABLES_NFTABLES +libxtables-nft +libip4tc +IPV6:libip6tc +kmod-ipt-core +kmod-nft-compat
+   ALTERNATIVES:=\
+-    300:/usr/sbin/iptables:/usr/sbin/xtables-nft-multi \
+-    300:/usr/sbin/iptables-restore:/usr/sbin/xtables-nft-multi \
+-    300:/usr/sbin/iptables-save:/usr/sbin/xtables-nft-multi
++    200:/usr/sbin/iptables:/usr/sbin/xtables-nft-multi \
++    200:/usr/sbin/iptables-restore:/usr/sbin/xtables-nft-multi \
++    200:/usr/sbin/iptables-save:/usr/sbin/xtables-nft-multi
+ endef
+ 
+ define Package/iptables-nft/description
 @@ -177,6 +177,39 @@ Includes support for:
  
  endef
@@ -42,6 +68,32 @@ index 6aee5c6..2e68909 100644
  define Package/iptables-mod-ipopt
  $(call Package/iptables/Module, +kmod-ipt-ipopt)
    TITLE:=IP/Packet option extensions
+@@ -459,9 +492,9 @@ $(call Package/iptables/Default)
+   TITLE:=IPv6 firewall administration tool
+   MENU:=1
+   ALTERNATIVES:=\
+-    200:/usr/sbin/ip6tables:/usr/sbin/xtables-legacy-multi \
+-    200:/usr/sbin/ip6tables-restore:/usr/sbin/xtables-legacy-multi \
+-    200:/usr/sbin/ip6tables-save:/usr/sbin/xtables-legacy-multi
++    300:/usr/sbin/ip6tables:/usr/sbin/xtables-legacy-multi \
++    300:/usr/sbin/ip6tables-restore:/usr/sbin/xtables-legacy-multi \
++    300:/usr/sbin/ip6tables-save:/usr/sbin/xtables-legacy-multi
+ endef
+ 
+ define Package/ip6tables-nft
+@@ -469,9 +502,9 @@ $(call Package/iptables/Default)
+   DEPENDS:=@IPV6 +kmod-ip6tables +iptables-nft
+   TITLE:=IP firewall administration tool nft
+   ALTERNATIVES:=\
+-    300:/usr/sbin/ip6tables:/usr/sbin/xtables-nft-multi \
+-    300:/usr/sbin/ip6tables-restore:/usr/sbin/xtables-nft-multi \
+-    300:/usr/sbin/ip6tables-save:/usr/sbin/xtables-nft-multi
++    200:/usr/sbin/ip6tables:/usr/sbin/xtables-nft-multi \
++    200:/usr/sbin/ip6tables-restore:/usr/sbin/xtables-nft-multi \
++    200:/usr/sbin/ip6tables-save:/usr/sbin/xtables-nft-multi
+ endef
+ 
+ define Package/ip6tables-nft/description
 @@ -684,6 +717,11 @@ $(eval $(call BuildPlugin,iptables-mod-conntrack-label,$(IPT_CONNTRACK_LABEL-m))
  $(eval $(call BuildPlugin,iptables-mod-extra,$(IPT_EXTRA-m)))
  $(eval $(call BuildPlugin,iptables-mod-physdev,$(IPT_PHYSDEV-m)))
