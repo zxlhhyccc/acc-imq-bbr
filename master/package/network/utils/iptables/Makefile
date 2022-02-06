@@ -50,9 +50,9 @@ $(call Package/iptables/Default)
   MENU:=1
   DEPENDS+= +kmod-ipt-core +libip4tc +IPV6:libip6tc +libxtables
   ALTERNATIVES:=\
-    300:/usr/sbin/iptables:/usr/sbin/xtables-legacy-multi \
-    300:/usr/sbin/iptables-restore:/usr/sbin/xtables-legacy-multi \
-    300:/usr/sbin/iptables-save:/usr/sbin/xtables-legacy-multi
+    200:/usr/sbin/iptables:/usr/sbin/xtables-legacy-multi \
+    200:/usr/sbin/iptables-restore:/usr/sbin/xtables-legacy-multi \
+    200:/usr/sbin/iptables-save:/usr/sbin/xtables-legacy-multi
 endef
 
 define Package/iptables/config
@@ -114,9 +114,9 @@ $(call Package/iptables/Default)
   TITLE:=IP firewall administration tool nft
   DEPENDS:=@IPTABLES_NFTABLES +libxtables-nft +libip4tc +IPV6:libip6tc +kmod-ipt-core +kmod-nft-compat
   ALTERNATIVES:=\
-    200:/usr/sbin/iptables:/usr/sbin/xtables-nft-multi \
-    200:/usr/sbin/iptables-restore:/usr/sbin/xtables-nft-multi \
-    200:/usr/sbin/iptables-save:/usr/sbin/xtables-nft-multi
+    300:/usr/sbin/iptables:/usr/sbin/xtables-nft-multi \
+    300:/usr/sbin/iptables-restore:/usr/sbin/xtables-nft-multi \
+    300:/usr/sbin/iptables-save:/usr/sbin/xtables-nft-multi
 endef
 
 define Package/iptables-nft/description
@@ -492,9 +492,9 @@ $(call Package/iptables/Default)
   TITLE:=IPv6 firewall administration tool
   MENU:=1
   ALTERNATIVES:=\
-    300:/usr/sbin/ip6tables:/usr/sbin/xtables-legacy-multi \
-    300:/usr/sbin/ip6tables-restore:/usr/sbin/xtables-legacy-multi \
-    300:/usr/sbin/ip6tables-save:/usr/sbin/xtables-legacy-multi
+    200:/usr/sbin/ip6tables:/usr/sbin/xtables-legacy-multi \
+    200:/usr/sbin/ip6tables-restore:/usr/sbin/xtables-legacy-multi \
+    200:/usr/sbin/ip6tables-save:/usr/sbin/xtables-legacy-multi
 endef
 
 define Package/ip6tables-nft
@@ -502,9 +502,9 @@ $(call Package/iptables/Default)
   DEPENDS:=@IPV6 +kmod-ip6tables +iptables-nft
   TITLE:=IP firewall administration tool nft
   ALTERNATIVES:=\
-    200:/usr/sbin/ip6tables:/usr/sbin/xtables-nft-multi \
-    200:/usr/sbin/ip6tables-restore:/usr/sbin/xtables-nft-multi \
-    200:/usr/sbin/ip6tables-save:/usr/sbin/xtables-nft-multi
+    300:/usr/sbin/ip6tables:/usr/sbin/xtables-nft-multi \
+    300:/usr/sbin/ip6tables-restore:/usr/sbin/xtables-nft-multi \
+    300:/usr/sbin/ip6tables-save:/usr/sbin/xtables-nft-multi
 endef
 
 define Package/ip6tables-nft/description
