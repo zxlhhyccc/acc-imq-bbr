@@ -139,16 +139,10 @@
 	pinctrl-0 = <&i2c_pins>;
 	pinctrl-names = "default";
 
+	/* Driver missing, justa placeholder */
 	emc2301@2f {
 		compatible = "smsc,emc2301";
 		reg = <0x2f>;
-		#address-cells = <1>;
-		#size-cells = <0>;
-
-		fan@0 {
-			reg = <0>;
-			pwm-output-mode = <1>;
-		};
 	};
 };
 
@@ -241,29 +235,13 @@
 };
 
 &qmp_pcie_phy1 {
-	status = "okay";
+	status = "disabled";
 };
 
 &pcie1 {
-	status = "okay";
+	status = "disabled";
 
 	perst-gpio = <&tlmm 62 GPIO_ACTIVE_HIGH>;
-
-	bridge@0,0 {
-		reg = <0x00000000 0 0 0 0>;
-		#address-cells = <3>;
-		#size-cells = <2>;
-		ranges;
-
-		wifi@1,0 {
-			status = "okay";
-
-			compatible = "qcom,ath10k";
-			reg = <0x00010000 0 0 0 0>;
-
-			qcom,ath10k-calibration-variant = "Xiaomi-AX9000";
-		};
-	};
 };
 
 &ess_switch {
