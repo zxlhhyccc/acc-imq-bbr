@@ -14,7 +14,7 @@ Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 
 --- a/Makefile
 +++ b/Makefile
-@@ -82,10 +82,18 @@ ccflags-$(ECM_INTERFACE_BOND_ENABLE) +=
+@@ -89,10 +89,18 @@ ccflags-$(ECM_INTERFACE_BOND_ENABLE) +=
  # Define ECM_INTERFACE_PPPOE_ENABLE=y in order
  # to enable support for PPPoE acceleration.
  # #############################################################################
@@ -34,8 +34,8 @@ Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
  # Define ECM_INTERFACE_L2TPV2_ENABLE=y in order
  # to enable support for l2tpv2 acceleration.
  # #############################################################################
-@@ -118,6 +126,12 @@ ccflags-$(ECM_INTERFACE_PPP_ENABLE) += -
- ccflags-$(ECM_INTERFACE_MAP_T_ENABLE) += -DECM_INTERFACE_MAP_T_ENABLE
+@@ -119,6 +127,12 @@ endif
+ ccflags-$(ECM_INTERFACE_PPP_ENABLE) += -DECM_INTERFACE_PPP_ENABLE
  
  # #############################################################################
 +# Define ECM_INTERFACE_GRE_ENABLE=y in order
@@ -47,7 +47,7 @@ Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
  # Define ECM_INTERFACE_GRE_TAP_ENABLE=y in order
  # to enable support for GRE TAP interface.
  # #############################################################################
-@@ -186,7 +200,9 @@ ccflags-$(ECM_INTERFACE_OVS_BRIDGE_ENABL
+@@ -192,7 +206,9 @@ ccflags-$(ECM_INTERFACE_OVS_BRIDGE_ENABL
  # #############################################################################
  # Define ECM_INTERFACE_VLAN_ENABLE=y in order to enable support for VLAN
  # #############################################################################
@@ -58,7 +58,7 @@ Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
  ccflags-$(ECM_INTERFACE_VLAN_ENABLE) += -DECM_INTERFACE_VLAN_ENABLE
  
  # #############################################################################
-@@ -228,7 +244,9 @@ ccflags-$(ECM_CLASSIFIER_OVS_ENABLE) +=
+@@ -229,7 +245,9 @@ ccflags-$(ECM_CLASSIFIER_OVS_ENABLE) +=
  # #############################################################################
  # Define ECM_CLASSIFIER_MARK_ENABLE=y in order to enable mark classifier.
  # #############################################################################
@@ -69,7 +69,7 @@ Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
  ecm-$(ECM_CLASSIFIER_MARK_ENABLE) += ecm_classifier_mark.o
  ccflags-$(ECM_CLASSIFIER_MARK_ENABLE) += -DECM_CLASSIFIER_MARK_ENABLE
  
-@@ -247,7 +265,9 @@ ccflags-$(ECM_CLASSIFIER_NL_ENABLE) += -
+@@ -248,7 +266,9 @@ ccflags-$(ECM_CLASSIFIER_NL_ENABLE) += -
  # #############################################################################
  # Define ECM_CLASSIFIER_DSCP_ENABLE=y in order to enable DSCP classifier.
  # #############################################################################
@@ -80,7 +80,7 @@ Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
  ecm-$(ECM_CLASSIFIER_DSCP_ENABLE) += ecm_classifier_dscp.o
  ccflags-$(ECM_CLASSIFIER_DSCP_ENABLE) += -DECM_CLASSIFIER_DSCP_ENABLE
  ccflags-$(ECM_CLASSIFIER_DSCP_IGS) += -DECM_CLASSIFIER_DSCP_IGS
-@@ -274,7 +294,9 @@ endif
+@@ -267,7 +287,9 @@ ccflags-$(ECM_CLASSIFIER_HYFI_ENABLE) +=
  # the Parental Controls subsystem classifier in ECM. Currently disabled until
  # customers require it / if they need to integrate their Parental Controls with it.
  # #############################################################################
@@ -91,7 +91,7 @@ Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
  ecm-$(ECM_CLASSIFIER_PCC_ENABLE) += ecm_classifier_pcc.o
  ccflags-$(ECM_CLASSIFIER_PCC_ENABLE) += -DECM_CLASSIFIER_PCC_ENABLE
  
-@@ -301,28 +323,36 @@ ccflags-$(ECM_NON_PORTED_SUPPORT_ENABLE)
+@@ -297,28 +319,36 @@ ccflags-$(ECM_NON_PORTED_SUPPORT_ENABLE)
  # #############################################################################
  # Define ECM_STATE_OUTPUT_ENABLE=y to support XML state output
  # #############################################################################
@@ -132,7 +132,7 @@ Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
  ccflags-$(ECM_TRACKER_DPI_SUPPORT_ENABLE) += -DECM_TRACKER_DPI_SUPPORT_ENABLE
  
  # #############################################################################
-@@ -330,14 +360,18 @@ ccflags-$(ECM_TRACKER_DPI_SUPPORT_ENABLE
+@@ -326,14 +356,18 @@ ccflags-$(ECM_TRACKER_DPI_SUPPORT_ENABLE
  # support for the database keeping lists of connections that are assigned
  # on a per TYPE of classifier basis.
  # #############################################################################
@@ -283,7 +283,7 @@ Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
  	return false;
  }
  
-@@ -6630,6 +6636,7 @@ static void ecm_interface_regenerate_con
+@@ -6635,6 +6641,7 @@ static void ecm_interface_regenerate_con
  		return;
  	}
  
@@ -291,7 +291,7 @@ Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
  	for (dir = 0; dir < ECM_DB_OBJ_DIR_MAX; dir++) {
  		/*
  		 * Re-generate all connections associated with this interface
-@@ -6645,6 +6652,7 @@ static void ecm_interface_regenerate_con
+@@ -6650,6 +6657,7 @@ static void ecm_interface_regenerate_con
  			ci[dir] = cin;
  		}
  	}
@@ -301,7 +301,7 @@ Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
  	/*
 --- a/frontends/ecm_front_end_common.c
 +++ b/frontends/ecm_front_end_common.c
-@@ -106,6 +106,7 @@ bool ecm_front_end_gre_proto_is_accel_al
+@@ -119,6 +119,7 @@ bool ecm_front_end_gre_proto_is_accel_al
  							     struct nf_conntrack_tuple *tuple,
  							     int ip_version)
  {
@@ -309,7 +309,7 @@ Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
  	struct net_device *dev;
  	struct gre_base_hdr *greh;
  
-@@ -117,10 +118,12 @@ bool ecm_front_end_gre_proto_is_accel_al
+@@ -130,10 +131,12 @@ bool ecm_front_end_gre_proto_is_accel_al
  		/*
  		 * Case 1: PPTP locally terminated
  		 */
@@ -322,7 +322,7 @@ Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
  
  		/*
  		 * Case 2: PPTP pass through
-@@ -223,6 +226,10 @@ bool ecm_front_end_gre_proto_is_accel_al
+@@ -241,6 +244,10 @@ bool ecm_front_end_gre_proto_is_accel_al
  	 */
  	DEBUG_TRACE("%px: GRE IPv%d pass through - allow acceleration\n", skb, ip_version);
  	return true;

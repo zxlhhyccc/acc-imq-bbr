@@ -29,7 +29,7 @@ index 5580b13..28df280 100644
  
  	dp_priv = netdev_priv(netdev);
  
-@@ -475,14 +476,8 @@ static int32_t nss_dp_of_get_pdata(struct device_node *np,
+@@ -479,14 +480,8 @@ static int32_t nss_dp_of_get_pdata(struct device_node *np,
  	of_property_read_u32(np, "qcom,forced-speed", &dp_priv->forced_speed);
  	of_property_read_u32(np, "qcom,forced-duplex", &dp_priv->forced_duplex);
  
