@@ -32,7 +32,7 @@ define KernelPackage/qca-nss-crypto
   SECTION:=kernel
   CATEGORY:=Kernel modules
   SUBMENU:=Network Devices
-  DEPENDS:=@(TARGET_ipq807x||TARGET_ipq60xx) +kmod-qca-nss-drv
+  DEPENDS:=@(TARGET_ipq807x||TARGET_ipq60xx) +kmod-qca-nss-drv +nss-eip-firmware
   TITLE:=Kernel driver for NSS crypto driver
   FILES:=$(PKG_BUILD_DIR)/$(NSS_CRYPTO_DIR)/src/qca-nss-crypto.ko \
 	 $(PKG_BUILD_DIR)/$(NSS_CRYPTO_DIR)/tool/qca-nss-crypto-tool.ko
