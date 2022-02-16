@@ -35,6 +35,7 @@ ALLWIFIBOARDS:= \
 	dlink_dap2610 \
 	edgecore_ecw5410 \
 	edgecore_oap100 \
+	edimax_cax1800 \
 	engenius_eap2200 \
 	engenius_emd1 \
 	engenius_emr3500 \
@@ -52,8 +53,8 @@ ALLWIFIBOARDS:= \
 	mikrotik_sxtsq-5-ac \
 	mobipromo_cm520-79f \
 	nec_wg2600hp3 \
-	netgear_sxr80 \
 	p2w_r619ac \
+	netgear_sxr80 \
 	plasmacloud_pa1200 \
 	plasmacloud_pa2200 \
 	qnap_301w \
@@ -143,6 +144,7 @@ $(eval $(call generate-ipq-wifi-package,devolo_magic-2-wifi-next,devolo Magic 2 
 $(eval $(call generate-ipq-wifi-package,dlink_dap2610,D-Link DAP-2610))
 $(eval $(call generate-ipq-wifi-package,edgecore_ecw5410,Edgecore ECW5410))
 $(eval $(call generate-ipq-wifi-package,edgecore_oap100,Edgecore OAP100))
+$(eval $(call generate-ipq-wifi-package,edimax_cax1800,Edimax CAX1800))
 $(eval $(call generate-ipq-wifi-package,engenius_eap2200,EnGenius EAP2200))
 $(eval $(call generate-ipq-wifi-package,engenius_emd1,EnGenius EMD1))
 $(eval $(call generate-ipq-wifi-package,engenius_emr3500,EnGenius EMR3500))
@@ -160,8 +162,8 @@ $(eval $(call generate-ipq-wifi-package,mikrotik_hap-ac3,Mikrotik hAP ac3))
 $(eval $(call generate-ipq-wifi-package,mikrotik_sxtsq-5-ac,MikroTik SXTsq 5 ac))
 $(eval $(call generate-ipq-wifi-package,mobipromo_cm520-79f,MobiPromo CM520-79F))
 $(eval $(call generate-ipq-wifi-package,nec_wg2600hp3,NEC Platforms WG2600HP3))
-$(eval $(call generate-ipq-wifi-package,netgear_sxr80,Netgear SXR80))
 $(eval $(call generate-ipq-wifi-package,p2w_r619ac,P&W R619AC))
+$(eval $(call generate-ipq-wifi-package,netgear_sxr80,Netgear SXR80))
 $(eval $(call generate-ipq-wifi-package,plasmacloud_pa1200,Plasma Cloud PA1200))
 $(eval $(call generate-ipq-wifi-package,plasmacloud_pa2200,Plasma Cloud PA2200))
 $(eval $(call generate-ipq-wifi-package,qnap_301w,QNAP 301w))

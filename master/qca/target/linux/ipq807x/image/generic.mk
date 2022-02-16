@@ -23,6 +23,19 @@ define Device/UbiFit
 	IMAGE/nand-sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
 
+define Device/edimax_cax1800
+	$(call Device/FitImage)
+	$(call Device/UbiFit)
+	DEVICE_VENDOR := Edimax
+	DEVICE_MODEL := CAX1800
+	BLOCKSIZE := 128k
+	PAGESIZE := 2048
+	DEVICE_DTS_CONFIG := config@ac03
+	SOC := ipq8070
+	DEVICE_PACKAGES := ipq-wifi-edimax_cax1800
+endef
+TARGET_DEVICES += edimax_cax1800
+
 define Device/qnap_301w
 	$(call Device/FitImage)
 	DEVICE_VENDOR := QNAP

@@ -25,10 +25,14 @@
 #define EMC2302_PRODUCT_ID	0x36
 #define EMC2301_PRODUCT_ID	0x37
 
+#define PWM_OUTPUT_CONFIG	0x2b
+
 #define TACH1_HIGH_BYTE		0x3e
 #define TACH1_LOW_BYTE		0x3f
 
+#define FAN1_DRIVE_SETTING	0x30
 #define FAN1_CONFIG		0x32
+#define FAN_CONFIG_ENAG_BIT	BIT(7)
 #define FAN_TACH_RANGE_MASK	GENMASK(6, 5)
 #define FAN_TACH_MULTIPLIER_8	3
 #define FAN_TACH_MULTIPLIER_4	2
@@ -39,22 +43,20 @@
 
 #define TACH1_TARGET_LOW_BYTE	0x3c
 #define TACH1_TARGET_HIGH_BYTE	0x3d
-#define TACH_HIGH_MASK		GENMASK(12,5)
-#define TACH_LOW_MASK		GENMASK(4,0)
+#define TACH_TARGET_HIGH_MASK	GENMASK(12,5)
+#define TACH_TARGET_LOW_MASK	GENMASK(4,0)
 
 #define FANX_OFFSET		0x10
-#define FAN_NUM_MAX		5
+#define FAN_MAX_NUM		5
 
 struct emc2305_fan_data {
-	u32 min_rpm;
-	u32 max_rpm;
-	u32 target_rpm;
+	u32 pwm_output_type;
 };
 
 struct emc2305_data {
 	struct regmap *regmap;
 	struct i2c_client *client;
-	struct emc2305_fan_data fan_data[FAN_NUM_MAX];
+	struct emc2305_fan_data fan_data[FAN_MAX_NUM];
 };
 
 static struct regmap_config emc2305_regmap_config = {
@@ -127,7 +129,7 @@ static int emc2305_read_fan_target(struct emc2305_data *data, int channel,
 	if (ret < 0)
 		return ret;
 
-	*val = regval;
+	*val = FIELD_GET(FAN_TACH_READING_MASK, regval);
 
 	return 0;
 }
@@ -139,15 +141,83 @@ static int emc2305_set_fan_target(struct emc2305_data *data, int channel,
 
 	ret = regmap_write(data->regmap,
 			   TACH1_TARGET_LOW_BYTE + channel * FANX_OFFSET,
-			   val & TACH_LOW_MASK);
+			   val & TACH_TARGET_LOW_MASK);
 	if (ret < 0)
 		return ret;
 
 	ret = regmap_write(data->regmap,
 			   TACH1_TARGET_HIGH_BYTE + channel * FANX_OFFSET,
-			   (val & TACH_HIGH_MASK) >> 5);
+			   (val & TACH_TARGET_HIGH_MASK) >> 5);
 	if (ret < 0)
 		return ret;
+
+	return 0;
+}
+
+static int emc2305_get_pwm_enable(struct emc2305_data *data, int channel,
+				  long *val)
+{
+	unsigned int regval;
+	int ret;
+
+	ret = regmap_read(data->regmap,
+			  FAN1_CONFIG + channel * FANX_OFFSET,
+			  &regval);
+	if (ret < 0)
+		return ret;
+
+	switch (FIELD_GET(FAN_CONFIG_ENAG_BIT, regval)) {
+	case 0:
+		*val = 1;
+		break;
+	case 1:
+		*val = 2;
+		break;
+	default:
+		return -EINVAL;
+	}
+
+	return 0;
+}
+
+static int emc2305_set_pwm_enable(struct emc2305_data *data, int channel,
+				  long val)
+{
+	int ret;
+
+	switch (val) {
+	case 1:
+		ret = regmap_update_bits(data->regmap,
+					 FAN1_CONFIG + channel * FANX_OFFSET,
+					 FAN_CONFIG_ENAG_BIT,
+					 0);
+		break;
+	case 2:
+		ret = regmap_update_bits(data->regmap,
+					 FAN1_CONFIG + channel * FANX_OFFSET,
+					 FAN_CONFIG_ENAG_BIT,
+					 FAN_CONFIG_ENAG_BIT);
+		break;
+	default:
+		return -EINVAL;
+	}
+
+	return ret;
+}
+
+static int emc2305_get_pwm_input(struct emc2305_data *data, int channel,
+				 long *val)
+{
+	unsigned int regval;
+	int ret;
+
+	ret = regmap_read(data->regmap,
+			  FAN1_DRIVE_SETTING + channel * FANX_OFFSET,
+			  &regval);
+	if (ret < 0)
+		return ret;
+
+	*val = regval;
 
 	return 0;
 }
@@ -163,6 +233,24 @@ static int emc2305_write(struct device *dev, enum hwmon_sensor_types type,
 		switch (attr) {
 		case hwmon_fan_target:
 			err = emc2305_set_fan_target(data, channel, val);
+			break;
+		default:
+			return -EOPNOTSUPP;
+		}
+		break;
+	case hwmon_pwm:
+		switch (attr) {
+		case hwmon_pwm_enable:
+			err = emc2305_set_pwm_enable(data, channel, val);
+			break;
+		case hwmon_pwm_input:
+			if (val < 0 || val > 255) {
+				err = -EINVAL;
+				break;
+			}
+			err = regmap_write(data->regmap,
+					   FAN1_DRIVE_SETTING + channel * FANX_OFFSET,
+					   val);
 			break;
 		default:
 			return -EOPNOTSUPP;
@@ -194,34 +282,23 @@ static int emc2305_read(struct device *dev, enum hwmon_sensor_types type,
 			return -EOPNOTSUPP;
 		}
 		break;
-	default:
-		return -EOPNOTSUPP;
-	}
-
-	return err;
-}
-
-static const char * const emc2305_fan_label[] = {
-	"Fan1",
-	"Fan2",
-	"Fan3",
-	"Fan4",
-	"Fan5",
-};
-
-static int emc2305_read_string(struct device *dev,
-			       enum hwmon_sensor_types type,
-			       u32 attr, int channel, const char **str)
-{
-	switch (type) {
-	case hwmon_fan:
-		*str = emc2305_fan_label[channel];
+	case hwmon_pwm:
+		switch (attr) {
+		case hwmon_pwm_enable:
+			err = emc2305_get_pwm_enable(data, channel, val);
+			break;
+		case hwmon_pwm_input:
+			err = emc2305_get_pwm_input(data, channel, val);
+			break;
+		default:
+			return -EOPNOTSUPP;
+		}
 		break;
 	default:
 		return -EOPNOTSUPP;
 	}
 
-	return 0;
+	return err;
 }
 
 static umode_t emc2305_is_visible(const void *data, enum hwmon_sensor_types type,
@@ -231,9 +308,16 @@ static umode_t emc2305_is_visible(const void *data, enum hwmon_sensor_types type
 	case hwmon_fan:
 		switch (attr) {
 		case hwmon_fan_input:
-		case hwmon_fan_label:
 			return 0444;
 		case hwmon_fan_target:
+			return 0644;
+		default:
+			return 0;
+		}
+	case hwmon_pwm:
+		switch (attr) {
+		case hwmon_pwm_enable:
+		case hwmon_pwm_input:
 			return 0644;
 		default:
 			return 0;
@@ -245,32 +329,48 @@ static umode_t emc2305_is_visible(const void *data, enum hwmon_sensor_types type
 
 static const struct hwmon_channel_info *emc2301_info[] = {
 	HWMON_CHANNEL_INFO(fan,
-			   HWMON_F_INPUT | HWMON_F_TARGET | HWMON_F_LABEL),
+			   HWMON_F_INPUT | HWMON_F_TARGET),
+	HWMON_CHANNEL_INFO(pwm,
+			   HWMON_PWM_ENABLE | HWMON_PWM_INPUT),
+
 	NULL
 };
 
 static const struct hwmon_channel_info *emc2302_info[] = {
 	HWMON_CHANNEL_INFO(fan,
-			   HWMON_F_INPUT | HWMON_F_TARGET | HWMON_F_LABEL,
-			   HWMON_F_INPUT | HWMON_F_TARGET | HWMON_F_LABEL),
+			   HWMON_F_INPUT | HWMON_F_TARGET,
+			   HWMON_F_INPUT | HWMON_F_TARGET),
+	HWMON_CHANNEL_INFO(pwm,
+			   HWMON_PWM_ENABLE | HWMON_PWM_INPUT,
+			   HWMON_PWM_ENABLE | HWMON_PWM_INPUT),
 	NULL
 };
 
 static const struct hwmon_channel_info *emc2303_info[] = {
 	HWMON_CHANNEL_INFO(fan,
-			   HWMON_F_INPUT | HWMON_F_TARGET | HWMON_F_LABEL,
-			   HWMON_F_INPUT | HWMON_F_TARGET | HWMON_F_LABEL,
-			   HWMON_F_INPUT | HWMON_F_TARGET | HWMON_F_LABEL),
+			   HWMON_F_INPUT | HWMON_F_TARGET,
+			   HWMON_F_INPUT | HWMON_F_TARGET,
+			   HWMON_F_INPUT | HWMON_F_TARGET),
+	HWMON_CHANNEL_INFO(pwm,
+			   HWMON_PWM_ENABLE | HWMON_PWM_INPUT,
+			   HWMON_PWM_ENABLE | HWMON_PWM_INPUT,
+			   HWMON_PWM_ENABLE | HWMON_PWM_INPUT),
 	NULL
 };
 
 static const struct hwmon_channel_info *emc2305_info[] = {
 	HWMON_CHANNEL_INFO(fan,
-			   HWMON_F_INPUT | HWMON_F_TARGET | HWMON_F_LABEL,
-			   HWMON_F_INPUT | HWMON_F_TARGET | HWMON_F_LABEL,
-			   HWMON_F_INPUT | HWMON_F_TARGET | HWMON_F_LABEL,
-			   HWMON_F_INPUT | HWMON_F_TARGET | HWMON_F_LABEL,
-			   HWMON_F_INPUT | HWMON_F_TARGET | HWMON_F_LABEL),
+			   HWMON_F_INPUT | HWMON_F_TARGET,
+			   HWMON_F_INPUT | HWMON_F_TARGET,
+			   HWMON_F_INPUT | HWMON_F_TARGET,
+			   HWMON_F_INPUT | HWMON_F_TARGET,
+			   HWMON_F_INPUT | HWMON_F_TARGET),
+	HWMON_CHANNEL_INFO(pwm,
+			   HWMON_PWM_ENABLE | HWMON_PWM_INPUT,
+			   HWMON_PWM_ENABLE | HWMON_PWM_INPUT,
+			   HWMON_PWM_ENABLE | HWMON_PWM_INPUT,
+			   HWMON_PWM_ENABLE | HWMON_PWM_INPUT,
+			   HWMON_PWM_ENABLE | HWMON_PWM_INPUT),
 	NULL
 };
 
@@ -278,16 +378,55 @@ static const struct hwmon_ops emc2305_hwmon_ops = {
 	.is_visible = emc2305_is_visible,
 	.write = emc2305_write,
 	.read = emc2305_read,
-	.read_string = emc2305_read_string,
 };
 
 static struct hwmon_chip_info emc2305_chip_info = {
 	.ops = &emc2305_hwmon_ops,
 };
 
+static int emc2305_set_pwm_output_type(struct emc2305_data *data, u32 fan_id)
+{
+	int value, ret;
+
+	if (data->fan_data[fan_id].pwm_output_type)
+		value = BIT(fan_id);
+	else
+		value = 0;
+
+	ret = regmap_update_bits(data->regmap,
+				 PWM_OUTPUT_CONFIG,
+				 BIT(fan_id),
+				 value);
+
+	return ret;
+}
+
+static int emc2305_of_parse(struct device *dev, struct device_node *child,
+			    struct emc2305_data *data)
+{
+	u32 fan_id, pwm_output_type;
+	int ret;
+
+	ret = of_property_read_u32(child, "reg", &fan_id);
+	if (ret)
+		return ret;
+
+	ret = of_property_read_u32(child, "pwm-output-mode", &pwm_output_type);
+	if (ret)
+		pwm_output_type = 0;
+
+	if (pwm_output_type < 0 || pwm_output_type > 1)
+		return -EINVAL;
+
+	data->fan_data[fan_id].pwm_output_type = pwm_output_type;
+
+	return emc2305_set_pwm_output_type(data, fan_id);
+}
+
 static int emc2305_probe(struct i2c_client *client)
 {
 	struct device *dev = &client->dev;
+	struct device_node *child;
 	struct emc2305_data *data;
 	struct device *hwmon_dev;
 	const char *model_name;
@@ -343,6 +482,14 @@ static int emc2305_probe(struct i2c_client *client)
 	}
 
 	dev_info(dev, "%s detected\n", model_name);
+
+	for_each_child_of_node(dev->of_node, child) {
+		ret = emc2305_of_parse(dev, child, data);
+		if (ret) {
+			of_node_put(child);
+			return ret;
+		}
+	}
 
 	hwmon_dev = devm_hwmon_device_register_with_info(dev, model_name,
 							 data, &emc2305_chip_info,
