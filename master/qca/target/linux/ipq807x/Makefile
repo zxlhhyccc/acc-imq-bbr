@@ -15,8 +15,11 @@ include $(INCLUDE_DIR)/target.mk
 DEFAULT_PACKAGES += \
 	kmod-usb3 kmod-usb-dwc3 kmod-usb-dwc3-qcom \
 	kmod-leds-gpio kmod-gpio-button-hotplug \
-	ath11k-firmware-ipq8074 kmod-ath11k-ahb ath11k-board-ipq8074 \
-	wpad-openssl kmod-qca-nss-dp kmod-qca-nss-drv kmod-qca-nss-drv-pppoe kmod-qca-nss-ecm  kmod-qca-nss-drv-bridge-mgr qca-nss-gmac nss-firmware-ipq8074 \
-	zram-swap autocore-arm uboot-envtools \
+	ath11k-firmware-ipq8074 kmod-ath11k-ahb \
+	autocore-arm uboot-envtools wpad-openssl zram-swap \
+	kmod-qca-nss-dp kmod-qca-nss-drv \
+	kmod-qca-nss-drv-pppoe kmod-qca-nss-ecm \
+	kmod-qca-nss-drv-bridge-mgr kmod-qca-drv-vlan-mgr nss-eip-firmware \
+	nss-firmware-ipq8074 ath11k-board-ipq8074 qca-ssdk-shell kmod-qca-ssdk-nohnat kmod-qca-nss-crypto
 
 $(eval $(call BuildTarget))

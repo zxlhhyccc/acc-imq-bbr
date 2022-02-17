@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-/* Copyright (c) 2021, Robert Marko <robimarko@gmail.com> */
 
-#include "ipq8074-512m.dtsi"
+/dts-v1/;
+
+#include "ipq8074.dtsi"
 #include "ipq8074-ac-cpu.dtsi"
-#include "ipq8074-ac-nss.dtsi"
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
 
@@ -11,20 +11,22 @@
 	#address-cells = <2>;
 	#size-cells = <2>;
 
+	model = "Netgear SXR80";
+	compatible = "netgear,sxr80", "qcom,ipq8074";
 	interrupt-parent = <&intc>;
 
 	aliases {
 		serial0 = &blsp1_uart5;
-		led-boot = &led_system_yellow;
-		led-failsafe = &led_system_yellow;
-		led-running = &led_system_blue;
-		led-upgrade = &led_system_yellow;
+		led-boot = &led_front_blue;
+		led-failsafe = &led_front_red;
+		led-running = &led_front_green;
+		led-upgrade = &led_front_white;
 		/* Aliases as required by u-boot to patch MAC addresses */
-		ethernet1 = &dp2;
-		ethernet2 = &dp3;
-		ethernet3 = &dp4;
-		ethernet4 = &dp5;
-		label-mac-device = &dp2;
+		ethernet0 = "/soc/dp1";
+		ethernet1 = "/soc/dp2";
+		ethernet2 = "/soc/dp3";
+		ethernet3 = "/soc/dp4";
+		ethernet6 = "/soc/dp5";
 	};
 
 	chosen {
@@ -37,15 +39,52 @@
 
 		reset {
 			label = "reset";
-			gpios = <&tlmm 34 GPIO_ACTIVE_LOW>;
+			gpios = <&tlmm 54 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_RESTART>;
+		};
+
+		wps {
+			label = "wps";
+			gpios = <&tlmm 57 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_WPS_BUTTON>;
 		};
 	};
 
-	reserved-memory {
-		/delete-node/ tzapp@4a400000;
-		/delete-node/ q6_etr_dump@50f00000;
-		/delete-node/ m3_dump@51000000;
+	leds {
+		compatible = "gpio-leds";
+
+		led_front_blue: front-blue {
+			label = "blue:front";
+			gpios = <&tlmm 33 GPIO_ACTIVE_LOW>;
+		};
+
+		led_front_green: front-green {
+			label = "green:front";
+			gpios = <&tlmm 29 GPIO_ACTIVE_LOW>;
+		};
+
+		led_front_red: front-red {
+			label = "red:front";
+			gpios = <&tlmm 31 GPIO_ACTIVE_LOW>;
+		};
+
+		led_front_white: front-white {
+			label = "white:front";
+			gpios = <&tlmm 26 GPIO_ACTIVE_LOW>;
+		};
+
+		led_power_green: power-green {
+			label = "green:power";
+			gpios = <&tlmm 21 GPIO_ACTIVE_LOW>;
+			default-state = "on";
+		};
+
+		led_power_red: power-red {
+			label = "red:power";
+			gpios = <&tlmm 22 GPIO_ACTIVE_LOW>;
+			panic-indicator;
+		};
+
 	};
 };
 
@@ -65,10 +104,96 @@
 			bias-pull-up;
 		};
 	};
+
+	i2c_0_pins: i2c-0-pinmux {
+		mux {
+			pins = "gpio42", "gpio43";
+			function = "blsp1_i2c";
+			drive-strength = <8>;
+			bias-disable;
+		};
+	};
+
+	leds_pins: leds_pinmux {
+		led_power_green {
+			pins = "gpio21";
+			function = "gpio";
+			drive-strength = <8>;
+			bias-pull-down;
+		};
+		led_power_red {
+			pins = "gpio22";
+			function = "gpio";
+			drive-strength = <8>;
+			bias-pull-down;
+		};
+		led_white {
+			pins = "gpio26";
+			function = "gpio";
+			drive-strength = <8>;
+			bias-pull-down;
+		};
+		led_green {
+			pins = "gpio29";
+			function = "gpio";
+			drive-strength = <8>;
+			bias-pull-down;
+		};
+		led_red {
+			pins = "gpio31";
+			function = "gpio";
+			drive-strength = <8>;
+			bias-pull-down;
+		};
+		led_blue {
+			pins = "gpio33";
+			function = "gpio";
+			drive-strength = <8>;
+			bias-pull-down;
+		};
+	};
+
+
 };
 
 &blsp1_uart5 {
 	status = "okay";
+};
+
+&blsp1_i2c2 {
+	pinctrl-0 = <&i2c_0_pins>;
+	pinctrl-names = "default";
+
+	status = "okay";
+	
+	tlc59208f@27 {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		compatible = "ti,tlc59108";
+		reg = <0x27>;
+		
+		led0@0 {
+			label = "orbi:led0:rgb";
+			reg = <0x0>;
+			linux,default_trigger = "default-on";
+		};
+		led1@1 {
+			label = "orbi:led1:rgb";
+			reg = <0x1>;
+			linux,default_trigger = "default-on";
+		};
+		led2@2 {
+			label = "orbi:led2:rgb";
+			reg = <0x2>;
+			linux,default_trigger = "default-on";
+		};
+		led3@3 {
+			label = "orbi:led3:rgb";
+			reg = <0x3>;
+			linux,default_trigger = "default-on";
+
+		};
+	};
 };
 
 &prng {
@@ -107,12 +232,14 @@
 
 	pinctrl-0 = <&mdio_pins>;
 	pinctrl-names = "default";
-	/*
-	 * Disable the reset GPIO temporarely as it
-	 * resets the 100Mbit LED configuration which
-	 * the bootloader writes.
-	 */
-	//reset-gpios = <&tlmm 37 GPIO_ACTIVE_LOW>;
+
+	reset-gpios = <&tlmm 25 1>;
+
+	ethernet-phy@0 {
+		reg = <0>;
+// Disabled to resolve multiple configured reset lines causing issues
+//		reset-gpios = <&tlmm 37 0>;
+	};
 
 	ethernet-phy@1 {
 		reg = <1>;
@@ -127,17 +254,20 @@
 	};
 
 	ethernet-phy@4 {
-		reg = <4>;
+		reg = <28>;
+// Disabled to resolve multiple configured reset lines causing issues
+//		reset-gpios = <&tlmm 25 1>;
 	};
+
 };
 
 &ess_switch {
 	switch_cpu_bmp = <0x1>;  /* cpu port bitmap */
-	switch_lan_bmp = <0x1e>; /* lan port bitmap */
-	switch_wan_bmp = <0x20>; /* wan port bitmap */
+	switch_lan_bmp = <0x3e>; /* lan port bitmap */
+	switch_wan_bmp = <0x40>; /* wan port bitmap */
 	switch_mac_mode = <0x0>; /* mac mode for uniphy instance0*/
 	switch_mac_mode1 = <0xff>; /* mac mode for uniphy instance1*/
-	switch_mac_mode2 = <0xff>; /* mac mode for uniphy instance2*/
+	switch_mac_mode2 = <0xf>; /* mac mode for uniphy instance2*/
 	bm_tick_mode = <0>; /* bm tick mode */
 	tm_tick_mode = <0>; /* tm tick mode */
 	qcom,port_phyinfo {
@@ -157,9 +287,10 @@
 			port_id = <4>;
 			phy_address = <3>;
 		};
-		port@4 {
-			port_id = <5>;
-			phy_address = <4>;
+		port@5 {
+			port_id = <6>;
+			phy_address = <28>;
+			port_mac_sel = "QGMAC_PORT";
 		};
 	};
 	port_scheduler_resource {
@@ -437,6 +568,19 @@
 };
 
 &soc {
+	dp1: dp1 {
+		device_type = "network";
+		compatible = "qcom,nss-dp";
+		qcom,id = <1>;
+		reg = <0x3a001000 0x200>;
+		qcom,mactype = <0>;
+		local-mac-address = [000000000000];
+		qcom,link-poll = <1>;
+		qcom,phy-mdio-addr = <0>;
+		phy-mode = "sgmii";
+		mdio-bus = <&mdio>;
+	};
+
 	dp2: dp2 {
 		device_type = "network";
 		compatible = "qcom,nss-dp";
@@ -484,14 +628,16 @@
 		qcom,mactype = <0>;
 		local-mac-address = [000000000000];
 		qcom,link-poll = <1>;
-		qcom,phy-mdio-addr = <4>;
+		qcom,phy-mdio-addr = <28>;
 		phy-mode = "sgmii";
 		mdio-bus = <&mdio>;
 	};
+
 };
 
 &wifi {
 	status = "okay";
 
-	qcom,board_id = <658>;
+	qcom,ath11k-calibration-variant = "Netgear-SXR80";
 };
+
