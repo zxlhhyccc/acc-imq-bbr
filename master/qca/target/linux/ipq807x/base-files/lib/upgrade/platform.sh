@@ -19,6 +19,7 @@ platform_do_upgrade() {
 		mmc_do_upgrade "$1"
 		;;
 	redmi,ax6|\
+	xiaomi,ax3600-1G|\
 	xiaomi,ax3600|\
 	xiaomi,ax9000)
 		part_num="$(fw_printenv -n flag_boot_rootfs)"
