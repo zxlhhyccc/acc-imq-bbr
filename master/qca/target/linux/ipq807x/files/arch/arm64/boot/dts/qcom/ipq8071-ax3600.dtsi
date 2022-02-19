@@ -41,12 +41,6 @@
 			linux,code = <KEY_RESTART>;
 		};
 	};
-
-	reserved-memory {
-		/delete-node/ tzapp@4a400000;
-		/delete-node/ q6_etr_dump@50f00000;
-		/delete-node/ m3_dump@51000000;
-	};
 };
 
 &tlmm {

@@ -1,15 +1,13 @@
 
-. /lib/functions/leds.sh
 . /lib/functions/uci-defaults.sh
 
 board_config_update
 
 board=$(board_name)
 
-case $board in
-xiaomi,ax3600|\
-xiaomi,ax3600-1G|\
-redmi,ax6)
+case "$board" in
+redmi,ax6|\
+xiaomi,ax3600)
 	ucidef_set_led_netdev "wan" "WAN" "blue:network" "eth0"
 	ucidef_set_led_netdev "lan" "LAN" "blue:aiot" "eth0"
 	;;	
@@ -20,6 +18,7 @@ qnap,301w)
 	ucidef_set_led_netdev "lan4" "LAN4" "green:lan4" "eth3"
 	ucidef_set_led_netdev "10G_1" "10G_1" "green:10g_1" "eth4"
 	ucidef_set_led_netdev "10G_2" "10G_2" "green:10g_2" "eth5"
+	;;
 esac
 
 board_config_flush

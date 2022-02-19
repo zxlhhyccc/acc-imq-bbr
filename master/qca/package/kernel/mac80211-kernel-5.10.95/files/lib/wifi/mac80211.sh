@@ -64,7 +64,6 @@ __get_band_defaults() {
 BEGIN {
         bands = ""
 }
-
 ($1 == "Band" || $1 == "") && band {
         if (channel) {
 		mode="NOHT"
@@ -78,7 +77,6 @@ BEGIN {
         }
         band=""
 }
-
 $1 == "Band" {
         band = $2
         channel = ""
@@ -86,23 +84,18 @@ $1 == "Band" {
 	ht = ""
 	he = ""
 }
-
 $0 ~ "Capabilities:" {
 	ht=1
 }
-
 $0 ~ "VHT Capabilities" {
 	vht=1
 }
-
 $0 ~ "HE Iftypes" {
 	he=1
 }
-
 $1 == "*" && $3 == "MHz" && $0 !~ /disabled/ && band && !channel {
         channel = $4
 }
-
 END {
         print bands
 }'
@@ -174,9 +167,9 @@ detect_mac80211() {
 			set wireless.radio${devidx}.channel=${channel}
 			set wireless.radio${devidx}.band=${mode_band}
 			set wireless.radio${devidx}.htmode=$htmode
-			set wireless.radio${devidx}.country=US
 			set wireless.radio${devidx}.disabled=0
-
+			set wireless.radio${devidx}.country=US
+			
 			set wireless.default_radio${devidx}=wifi-iface
 			set wireless.default_radio${devidx}.device=radio${devidx}
 			set wireless.default_radio${devidx}.network=lan

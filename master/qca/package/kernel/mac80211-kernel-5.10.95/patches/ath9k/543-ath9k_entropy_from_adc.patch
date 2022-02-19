@@ -85,8 +85,8 @@
  		    const struct ath_bus_ops *bus_ops)
  {
 @@ -1039,6 +1052,8 @@ int ath9k_init_device(u16 devid, struct
-
-	wiphy_read_of_freq_limits(hw->wiphy);
+ 
+ 	wiphy_read_of_freq_limits(hw->wiphy);
  
 +	ath_get_initial_entropy(sc);
 +

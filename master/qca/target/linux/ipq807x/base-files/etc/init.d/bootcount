@@ -7,7 +7,6 @@ START=99
 boot() {
 	case $(board_name) in
 	redmi,ax6|\
-	xiaomi,ax3600-1G|\
 	xiaomi,ax3600|\
 	xiaomi,ax9000)
 		# OTA handling should not be used. Reset it just in case.
@@ -22,7 +21,7 @@ boot() {
 		wifi
 		;;
 	esac
-	
+
 	for q in $(ls /sys/class/net/eth*/queues/rx-*/rps_cpus); do echo f > $q; done
 	for q in $(ls /sys/class/net/eth*/queues/rx-*/rps_flow_cnt); do echo 4096 > $q; done
 	for q in $(ls /sys/class/net/eth*/queues/tx-*/xps_cpus); do echo f > $q; done

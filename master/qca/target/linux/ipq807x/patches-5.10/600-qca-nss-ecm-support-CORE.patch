@@ -296,7 +296,7 @@
  			}
  
  			if (unlikely(test_bit(BR_FDB_ADDED_BY_USER, &flags)))
-@@ -734,6 +777,25 @@ static void fdb_notify(struct net_bridge
+@@ -739,6 +782,25 @@ static void fdb_notify(struct net_bridge
  
  	br_offload_fdb_update(fdb);
  
@@ -382,7 +382,7 @@
  /*
   * Determine initial path cost based on speed.
   * using recommendations from 802.1d standard
-@@ -711,6 +717,8 @@ int br_add_if(struct net_bridge *br, str
+@@ -712,6 +718,8 @@ int br_add_if(struct net_bridge *br, str
  
  	kobject_uevent(&p->kobj, KOBJ_ADD);
  
@@ -391,7 +391,7 @@
  	return 0;
  
  err7:
-@@ -747,6 +755,8 @@ int br_del_if(struct net_bridge *br, str
+@@ -748,6 +756,8 @@ int br_del_if(struct net_bridge *br, str
  	if (!p || p->br != br)
  		return -EINVAL;
  
@@ -400,7 +400,7 @@
  	/* Since more than one interface can be attached to a bridge,
  	 * there still maybe an alternate path for netconsole to use;
  	 * therefore there is no reason for a NETDEV_RELEASE event.
-@@ -812,3 +822,74 @@ bool br_port_flag_is_set(const struct ne
+@@ -816,3 +826,74 @@ bool br_port_flag_is_set(const struct ne
  	return p->flags & flag;
  }
  EXPORT_SYMBOL_GPL(br_port_flag_is_set);
@@ -477,7 +477,7 @@
 +/* QCA NSS ECM support - End */
 --- a/net/bridge/br_private.h
 +++ b/net/bridge/br_private.h
-@@ -1591,4 +1591,9 @@ void br_do_proxy_suppress_arp(struct sk_
+@@ -1609,4 +1609,9 @@ void br_do_proxy_suppress_arp(struct sk_
  void br_do_suppress_nd(struct sk_buff *skb, struct net_bridge *br,
  		       u16 vid, struct net_bridge_port *p, struct nd_msg *msg);
  struct nd_msg *br_is_nd_neigh_msg(struct sk_buff *skb, struct nd_msg *m);
