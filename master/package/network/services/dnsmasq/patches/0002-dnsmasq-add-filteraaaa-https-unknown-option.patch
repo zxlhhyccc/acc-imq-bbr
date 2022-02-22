@@ -13,10 +13,10 @@ index 8c42ef7..49ff5fe 100644
  	option ednspacket_max	1232
  
  config dhcp lan
-diff --git a/dnsmasq.init b/dnsmasq.init
+diff --git a/files/dnsmasq.init b/files/dnsmasq.init
 index 09dce0a..a933afb 100644
---- a/dnsmasq.init
-+++ b/dnsmasq.init
+--- a/files/dnsmasq.init
++++ b/files/dnsmasq.init
 @@ -932,8 +932,14 @@ dnsmasq_start()
  	append_bool "$cfg" rapidcommit "--dhcp-rapid-commit"
  	append_bool "$cfg" scriptarp "--script-arp"
