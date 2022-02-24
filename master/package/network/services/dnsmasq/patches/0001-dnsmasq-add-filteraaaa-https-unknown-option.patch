@@ -17,7 +17,37 @@ diff --git a/files/dnsmasq.init b/files/dnsmasq.init
 index 09dce0a..fa5ac8a 100755
 --- a/files/dnsmasq.init
 +++ b/files/dnsmasq.init
-@@ -932,8 +932,14 @@ dnsmasq_start()
+@@ -796,25 +796,23 @@ dhcp_relay_add() {
+ 
+ dnsmasq_ipset_add() {
+ 	local cfg="$1"
+-	local ipsets domains
++	local ipsets
+ 
+ 	add_ipset() {
+ 		ipsets="${ipsets:+$ipsets,}$1"
+ 	}
+ 
+ 	add_domain() {
+-		# leading '/' is expected
+-		domains="$domains/$1"
++		xappend "--ipset=/$1/$ipsets"
+ 	}
+ 
+ 	config_list_foreach "$cfg" "name" add_ipset
+-	config_list_foreach "$cfg" "domain" add_domain
+ 
+-	if [ -z "$ipsets" ] || [ -z "$domains" ]; then
++	if [ -z "$ipsets" ]; then
+ 		return 0
+ 	fi
+ 
+-	xappend "--ipset=$domains/$ipsets"
++	config_list_foreach "$cfg" "domain" add_domain
+ }
+ 
+ dnsmasq_start()
+@@ -932,8 +930,14 @@ dnsmasq_start()
  	append_bool "$cfg" rapidcommit "--dhcp-rapid-commit"
  	append_bool "$cfg" scriptarp "--script-arp"
  
@@ -32,7 +62,7 @@ index 09dce0a..fa5ac8a 100755
  	append_parm "$cfg" cachesize "--cache-size"
  	append_parm "$cfg" dnsforwardmax "--dns-forward-max"
  	append_parm "$cfg" port "--port"
-@@ -1164,6 +1170,13 @@ dnsmasq_start()
+@@ -1164,6 +1168,13 @@ dnsmasq_start()
  	procd_add_jail_mount_rw /var/run/dnsmasq/ $leasefile
  
  	procd_close_instance
@@ -46,7 +76,7 @@ index 09dce0a..fa5ac8a 100755
  }
  
  dnsmasq_stop()
-@@ -1181,6 +1194,13 @@ dnsmasq_stop()
+@@ -1181,6 +1192,13 @@ dnsmasq_stop()
  	rm -f ${BASEDHCPSTAMPFILE}.${cfg}.*.dhcp
  }
  
@@ -60,7 +90,7 @@ index 09dce0a..fa5ac8a 100755
  add_interface_trigger()
  {
  	local interface ignore
-@@ -1251,6 +1271,7 @@ start_service() {
+@@ -1251,6 +1269,7 @@ start_service() {
  }
  
  reload_service() {
@@ -68,7 +98,7 @@ index 09dce0a..fa5ac8a 100755
  	rc_procd start_service "$@"
  	procd_send_signal dnsmasq "$@"
  }
-@@ -1277,4 +1298,5 @@ stop_service() {
+@@ -1277,4 +1296,5 @@ stop_service() {
  	else
  		config_foreach dnsmasq_stop dnsmasq
  	fi
