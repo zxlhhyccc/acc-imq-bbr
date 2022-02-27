@@ -1,5 +1,5 @@
 diff --git a/Makefile b/Makefile
-index d3f7d0c..dfbc2c8 100644
+index 9c6c81d..625a26c 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,8 @@ PKG_CPE_ID:=cpe:/a:arm:mbed_tls
@@ -67,7 +67,7 @@ index d3f7d0c..dfbc2c8 100644
  	     >$(PKG_BUILD_DIR)/include/mbedtls/config.h.new && \
 diff --git a/patches/100-Implements-AES-and-GCM-with-ARMv8-Crypto-Extensions.patch b/patches/100-Implements-AES-and-GCM-with-ARMv8-Crypto-Extensions.patch
 new file mode 100644
-index 0000000..18336b6
+index 0000000..46345d9
 --- /dev/null
 +++ b/patches/100-Implements-AES-and-GCM-with-ARMv8-Crypto-Extensions.patch
 @@ -0,0 +1,390 @@
@@ -173,7 +173,7 @@ index 0000000..18336b6
 ++#endif /* MBEDTLS_ARMV8CE_AES_H */
 +--- a/include/mbedtls/check_config.h
 ++++ b/include/mbedtls/check_config.h
-+@@ -95,6 +95,10 @@
++@@ -72,6 +72,10 @@
 + #error "MBEDTLS_AESNI_C defined, but not all prerequisites"
 + #endif
 + 
@@ -184,14 +184,14 @@ index 0000000..18336b6
 + #if defined(MBEDTLS_CTR_DRBG_C) && !defined(MBEDTLS_AES_C)
 + #error "MBEDTLS_CTR_DRBG_C defined, but not all prerequisites"
 + #endif
-+@@ -768,3 +772,4 @@
++@@ -897,3 +901,4 @@
 + typedef int mbedtls_iso_c_forbids_empty_translation_units;
 + 
 + #endif /* MBEDTLS_CHECK_CONFIG_H */
 ++
 +--- a/include/mbedtls/config.h
 ++++ b/include/mbedtls/config.h
-+@@ -73,6 +73,7 @@
++@@ -46,6 +46,7 @@
 +  * Requires support for asm() in compiler.
 +  *
 +  * Used in:
@@ -199,7 +199,7 @@ index 0000000..18336b6
 +  *      library/aria.c
 +  *      library/timing.c
 +  *      include/mbedtls/bn_mul.h
-+@@ -1905,6 +1906,21 @@
++@@ -2313,6 +2314,21 @@
 + #define MBEDTLS_AESNI_C
 + 
 + /**
@@ -223,7 +223,7 @@ index 0000000..18336b6
 +  * Enable the AES block cipher.
 +--- a/library/aes.c
 ++++ b/library/aes.c
-+@@ -69,7 +69,9 @@
++@@ -39,7 +39,9 @@
 + #if defined(MBEDTLS_AESNI_C)
 + #include "mbedtls/aesni.h"
 + #endif
@@ -234,7 +234,7 @@ index 0000000..18336b6
 + #if defined(MBEDTLS_SELF_TEST)
 + #if defined(MBEDTLS_PLATFORM_C)
 + #include "mbedtls/platform.h"
-+@@ -1052,6 +1054,11 @@
++@@ -999,6 +1001,11 @@
 +         return( mbedtls_aesni_crypt_ecb( ctx, mode, input, output ) );
 + #endif
 + 
@@ -393,7 +393,7 @@ index 0000000..18336b6
 ++#endif /* MBEDTLS_ARMV8CE_AES_C */
 +--- a/library/CMakeLists.txt
 ++++ b/library/CMakeLists.txt
-+@@ -7,6 +7,7 @@
++@@ -15,6 +15,7 @@
 +     aesni.c
 +     arc4.c
 +     aria.c
@@ -403,7 +403,7 @@ index 0000000..18336b6
 +     base64.c
 +--- a/library/gcm.c
 ++++ b/library/gcm.c
-+@@ -71,6 +71,10 @@
++@@ -41,6 +41,10 @@
 + #include "mbedtls/aesni.h"
 + #endif
 + 
@@ -414,7 +414,7 @@ index 0000000..18336b6
 + #if defined(MBEDTLS_SELF_TEST) && defined(MBEDTLS_AES_C)
 + #include "mbedtls/aes.h"
 + #include "mbedtls/platform.h"
-+@@ -154,6 +158,12 @@
++@@ -87,6 +91,12 @@
 +     if( ( ret = mbedtls_cipher_update( &ctx->cipher_ctx, h, 16, h, &olen ) ) != 0 )
 +         return( ret );
 + 
@@ -425,9 +425,9 @@ index 0000000..18336b6
 ++#endif
 ++
 +     /* pack h as two 64-bits ints, big-endian */
-+     GET_UINT32_BE( hi, h,  0  );
-+     GET_UINT32_BE( lo, h,  4  );
-+@@ -262,6 +272,11 @@
++     hi = MBEDTLS_GET_UINT32_BE( h,  0  );
++     lo = MBEDTLS_GET_UINT32_BE( h,  4  );
++@@ -196,6 +206,11 @@
 +     unsigned char lo, hi, rem;
 +     uint64_t zh, zl;
 + 
@@ -441,35 +441,35 @@ index 0000000..18336b6
 +         unsigned char h[16];
 +--- a/library/Makefile
 ++++ b/library/Makefile
-+@@ -65,6 +65,7 @@
-+ 
-+ OBJS_CRYPTO=	aes.o		aesni.o		arc4.o		\
-+ 		aria.o		asn1parse.o	asn1write.o	\
-++		armv8ce_aes.o					\
-+ 		base64.o	bignum.o	blowfish.o	\
-+ 		camellia.o	ccm.o		chacha20.o	\
-+ 		chachapoly.o	cipher.o	cipher_wrap.o	\
++@@ -74,6 +74,7 @@
++ 	     aria.o \
++ 	     asn1parse.o \
++ 	     asn1write.o \
+++	     armv8ce_aes.o \
++ 	     base64.o \
++ 	     bignum.o \
++ 	     blowfish.o \
 +--- a/library/version_features.c
 ++++ b/library/version_features.c
-+@@ -586,6 +586,9 @@
-+ #if defined(MBEDTLS_AESNI_C)
++@@ -625,6 +625,9 @@
 +     "MBEDTLS_AESNI_C",
 + #endif /* MBEDTLS_AESNI_C */
++ #if defined(MBEDTLS_AES_C)
 ++#if defined(MBEDTLS_ARMV8CE_AES_C)
 ++    "MBEDTLS_ARMV8CE_AES_C",
 ++#endif /* MBEDTLS_ARMV8CE_AES_C */
-+ #if defined(MBEDTLS_AES_C)
 +     "MBEDTLS_AES_C",
 + #endif /* MBEDTLS_AES_C */
++ #if defined(MBEDTLS_ARC4_C)
 diff --git a/patches/200-config.patch b/patches/200-config.patch
-index 67f3316..72cf3d4 100644
+index faf5bb5..b8237c7 100644
 --- a/patches/200-config.patch
 +++ b/patches/200-config.patch
 @@ -1,6 +1,6 @@
  --- a/include/mbedtls/config.h
  +++ b/include/mbedtls/config.h
--@@ -692,14 +692,14 @@
-+@@ -693,14 +693,14 @@
+-@@ -665,14 +665,14 @@
++@@ -666,14 +666,14 @@
    *
    * Enable Output Feedback mode (OFB) for symmetric ciphers.
    */
@@ -477,179 +477,179 @@ index 67f3316..72cf3d4 100644
   
   /**
    * \def MBEDTLS_CIPHER_NULL_CIPHER
--@@ -816,19 +816,19 @@
-+@@ -817,19 +817,19 @@
-   *
+-@@ -790,20 +790,20 @@
++@@ -791,20 +791,20 @@
    * Comment macros to disable the curve and functions for it
    */
-@@ -46,7 +46,7 @@
+  /* Short Weierstrass curves (supporting ECP, ECDH, ECDSA) */
+@@ -47,7 +47,7 @@
   
   /**
    * \def MBEDTLS_ECP_NIST_OPTIM
--@@ -952,7 +952,7 @@
-+@@ -953,7 +953,7 @@
+-@@ -956,7 +956,7 @@
++@@ -957,7 +957,7 @@
    *             See dhm.h for more details.
    *
    */
-@@ -55,7 +55,7 @@
+@@ -56,7 +56,7 @@
   
   /**
    * \def MBEDTLS_KEY_EXCHANGE_ECDHE_PSK_ENABLED
--@@ -972,7 +972,7 @@
-+@@ -973,7 +973,7 @@
+-@@ -976,7 +976,7 @@
++@@ -977,7 +977,7 @@
    *      MBEDTLS_TLS_ECDHE_PSK_WITH_3DES_EDE_CBC_SHA
    *      MBEDTLS_TLS_ECDHE_PSK_WITH_RC4_128_SHA
    */
-@@ -64,7 +64,7 @@
+@@ -65,7 +65,7 @@
   
   /**
    * \def MBEDTLS_KEY_EXCHANGE_RSA_PSK_ENABLED
--@@ -997,7 +997,7 @@
-+@@ -998,7 +998,7 @@
+-@@ -1001,7 +1001,7 @@
++@@ -1002,7 +1002,7 @@
    *      MBEDTLS_TLS_RSA_PSK_WITH_3DES_EDE_CBC_SHA
    *      MBEDTLS_TLS_RSA_PSK_WITH_RC4_128_SHA
    */
-@@ -73,7 +73,7 @@
+@@ -74,7 +74,7 @@
   
   /**
    * \def MBEDTLS_KEY_EXCHANGE_RSA_ENABLED
--@@ -1131,7 +1131,7 @@
-+@@ -1132,7 +1132,7 @@
+-@@ -1135,7 +1135,7 @@
++@@ -1136,7 +1136,7 @@
    *      MBEDTLS_TLS_ECDH_ECDSA_WITH_CAMELLIA_128_GCM_SHA256
    *      MBEDTLS_TLS_ECDH_ECDSA_WITH_CAMELLIA_256_GCM_SHA384
    */
-@@ -82,7 +82,7 @@
+@@ -83,7 +83,7 @@
   
   /**
    * \def MBEDTLS_KEY_EXCHANGE_ECDH_RSA_ENABLED
--@@ -1155,7 +1155,7 @@
-+@@ -1156,7 +1156,7 @@
+-@@ -1159,7 +1159,7 @@
++@@ -1160,7 +1160,7 @@
    *      MBEDTLS_TLS_ECDH_RSA_WITH_CAMELLIA_128_GCM_SHA256
    *      MBEDTLS_TLS_ECDH_RSA_WITH_CAMELLIA_256_GCM_SHA384
    */
-@@ -91,7 +91,7 @@
+@@ -92,7 +92,7 @@
   
   /**
    * \def MBEDTLS_KEY_EXCHANGE_ECJPAKE_ENABLED
--@@ -1259,7 +1259,7 @@
-+@@ -1260,7 +1260,7 @@
+-@@ -1263,7 +1263,7 @@
++@@ -1264,7 +1264,7 @@
    * This option is only useful if both MBEDTLS_SHA256_C and
    * MBEDTLS_SHA512_C are defined. Otherwise the available hash module is used.
    */
-@@ -100,7 +100,7 @@
+@@ -101,7 +101,7 @@
   
   /**
    * \def MBEDTLS_ENTROPY_NV_SEED
--@@ -1354,14 +1354,14 @@
-+@@ -1355,14 +1355,14 @@
+-@@ -1478,14 +1478,14 @@
++@@ -1479,14 +1479,14 @@
    * Uncomment this macro to disable the use of CRT in RSA.
    *
    */
-@@ -117,7 +117,7 @@
+@@ -118,7 +118,7 @@
   
   /**
    * \def MBEDTLS_SHA256_SMALLER
--@@ -1515,7 +1515,7 @@
-+@@ -1516,7 +1516,7 @@
+-@@ -1756,7 +1756,7 @@
++@@ -1757,7 +1757,7 @@
    *          configuration of this extension).
    *
    */
-@@ -126,7 +126,7 @@
+@@ -127,7 +127,7 @@
   
   /**
    * \def MBEDTLS_SSL_SRV_SUPPORT_SSLV2_CLIENT_HELLO
--@@ -1720,7 +1720,7 @@
-+@@ -1721,7 +1721,7 @@
+-@@ -2017,7 +2017,7 @@
++@@ -2018,7 +2018,7 @@
    *
    * Comment this macro to disable support for truncated HMAC in SSL
    */
-@@ -135,7 +135,7 @@
+@@ -136,7 +136,7 @@
   
   /**
    * \def MBEDTLS_SSL_TRUNCATED_HMAC_COMPAT
--@@ -1796,7 +1796,7 @@
-+@@ -1797,7 +1797,7 @@
+-@@ -2185,7 +2185,7 @@
++@@ -2186,7 +2186,7 @@
    *
    * Comment this to disable run-time checking and save ROM space
    */
-@@ -144,7 +144,7 @@
+@@ -145,7 +145,7 @@
   
   /**
    * \def MBEDTLS_X509_ALLOW_EXTENSIONS_NON_V3
--@@ -2126,7 +2126,7 @@
-+@@ -2142,7 +2142,7 @@
+-@@ -2534,7 +2534,7 @@
++@@ -2550,7 +2550,7 @@
    *      MBEDTLS_TLS_PSK_WITH_CAMELLIA_128_GCM_SHA256
    *      MBEDTLS_TLS_PSK_WITH_CAMELLIA_128_CBC_SHA256
    */
-@@ -153,7 +153,7 @@
+@@ -154,7 +154,7 @@
   
   /**
    * \def MBEDTLS_ARIA_C
--@@ -2192,7 +2192,7 @@
-+@@ -2208,7 +2208,7 @@
+-@@ -2600,7 +2600,7 @@
++@@ -2616,7 +2616,7 @@
    * This module enables the AES-CCM ciphersuites, if other requisites are
    * enabled as well.
    */
-@@ -162,7 +162,7 @@
+@@ -163,7 +163,7 @@
   
   /**
    * \def MBEDTLS_CERTS_C
--@@ -2204,7 +2204,7 @@
-+@@ -2220,7 +2220,7 @@
+-@@ -2612,7 +2612,7 @@
++@@ -2628,7 +2628,7 @@
    *
    * This module is used for testing (ssl_client/server).
    */
-@@ -171,7 +171,7 @@
+@@ -172,7 +172,7 @@
   
   /**
    * \def MBEDTLS_CHACHA20_C
--@@ -2312,7 +2312,7 @@
-+@@ -2328,7 +2328,7 @@
+-@@ -2725,7 +2725,7 @@
++@@ -2741,7 +2741,7 @@
    * \warning   DES is considered a weak cipher and its use constitutes a
    *            security risk. We recommend considering stronger ciphers instead.
    */
-@@ -180,7 +180,7 @@
+@@ -181,7 +181,7 @@
   
   /**
    * \def MBEDTLS_DHM_C
--@@ -2475,7 +2475,7 @@
-+@@ -2491,7 +2491,7 @@
+-@@ -2890,7 +2890,7 @@
++@@ -2906,7 +2906,7 @@
    * This module adds support for the Hashed Message Authentication Code
    * (HMAC)-based key derivation function (HKDF).
    */
-@@ -189,7 +189,7 @@
+@@ -190,7 +190,7 @@
   
   /**
    * \def MBEDTLS_HMAC_DRBG_C
--@@ -2785,7 +2785,7 @@
-+@@ -2801,7 +2801,7 @@
+-@@ -3203,7 +3203,7 @@
++@@ -3219,7 +3219,7 @@
    *
    * This module enables abstraction of common (libc) functions.
    */
-@@ -198,7 +198,7 @@
+@@ -199,7 +199,7 @@
   
   /**
    * \def MBEDTLS_POLY1305_C
--@@ -2806,7 +2806,7 @@
-+@@ -2822,7 +2822,7 @@
+-@@ -3279,7 +3279,7 @@
++@@ -3295,7 +3295,7 @@
    * Caller:  library/md.c
    *
    */
-@@ -207,7 +207,7 @@
+@@ -208,7 +208,7 @@
   
   /**
    * \def MBEDTLS_RSA_C
--@@ -3013,7 +3013,7 @@
-+@@ -3029,7 +3029,7 @@
+-@@ -3486,7 +3486,7 @@
++@@ -3502,7 +3502,7 @@
    *
    * This module provides run-time version information.
    */
-@@ -216,7 +216,7 @@
+@@ -217,7 +217,7 @@
   
   /**
    * \def MBEDTLS_X509_USE_C
--@@ -3123,7 +3123,7 @@
-+@@ -3139,7 +3139,7 @@
+-@@ -3596,7 +3596,7 @@
++@@ -3612,7 +3612,7 @@
    * Module:  library/xtea.c
    * Caller:
    */
