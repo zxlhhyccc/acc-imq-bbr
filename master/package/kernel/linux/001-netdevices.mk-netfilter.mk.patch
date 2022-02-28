@@ -35,7 +35,7 @@ diff --git a/modules/netfilter.mk b/modules/netfilter.mk
 index e2bb1d0..001eaf4 100644
 --- a/modules/netfilter.mk
 +++ b/modules/netfilter.mk
-@@ -458,6 +458,24 @@ endef
+@@ -480,6 +480,24 @@ endef
  $(eval $(call KernelPackage,ipt-nat))
  
  
@@ -60,7 +60,7 @@ index e2bb1d0..001eaf4 100644
  define KernelPackage/ipt-raw
    TITLE:=Netfilter IPv4 raw table support
    KCONFIG:=CONFIG_IP_NF_RAW
-@@ -469,6 +487,75 @@ endef
+@@ -491,6 +509,75 @@ endef
  $(eval $(call KernelPackage,ipt-raw))
  
  
