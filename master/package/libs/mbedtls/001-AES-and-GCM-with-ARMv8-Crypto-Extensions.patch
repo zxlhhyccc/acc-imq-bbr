@@ -1,8 +1,15 @@
 diff --git a/Makefile b/Makefile
-index 9c6c81d..625a26c 100644
+index 9c6c81d..3dd1e96 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -22,6 +22,8 @@ PKG_CPE_ID:=cpe:/a:arm:mbed_tls
+@@ -16,12 +16,15 @@ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+ PKG_SOURCE_URL:=https://codeload.github.com/ARMmbed/mbedtls/tar.gz/v$(PKG_VERSION)?
+ PKG_HASH:=6519579b836ed78cc549375c7c18b111df5717e86ca0eeff4cb64b2674f424cc
+ 
++PKG_BUILD_PARALLEL:=1
+ PKG_LICENSE:=GPL-2.0-or-later
+ PKG_LICENSE_FILES:=gpl-2.0.txt
+ PKG_CPE_ID:=cpe:/a:arm:mbed_tls
  
  PKG_CONFIG_DEPENDS := \
  	CONFIG_LIBMBEDTLS_DEBUG_C \
@@ -11,7 +18,7 @@ index 9c6c81d..625a26c 100644
  	CONFIG_LIBMBEDTLS_HKDF_C
  
  include $(INCLUDE_DIR)/package.mk
-@@ -59,6 +61,34 @@ config LIBMBEDTLS_DEBUG_C
+@@ -59,6 +62,34 @@ config LIBMBEDTLS_DEBUG_C
  
  	 Usually, you don't need this, so don't select this if you're unsure.
  
@@ -46,8 +53,12 @@ index 9c6c81d..625a26c 100644
  config LIBMBEDTLS_HKDF_C
  	depends on PACKAGE_libmbedtls
  	bool "Enable the HKDF algorithm (RFC 5869)"
-@@ -89,6 +119,9 @@ endef
+@@ -87,8 +118,13 @@ This package contains mbedtls helper programs for private key and
+ CSR generation (gen_key, cert_req)
+ endef
  
++PKG_INSTALL:=1
++
  TARGET_CFLAGS += -ffunction-sections -fdata-sections
  TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS))
 +ifneq ($(CONFIG_LIBMBEDTLS_HAVE_ARMV8CE_AES),)
@@ -56,7 +67,7 @@ index 9c6c81d..625a26c 100644
  
  CMAKE_OPTIONS += \
  	-DUSE_SHARED_MBEDTLS_LIBRARY:Bool=ON \
-@@ -100,6 +133,8 @@ define Build/Configure
+@@ -100,6 +136,8 @@ define Build/Configure
  
  	awk 'BEGIN { rc = 1 } \
  	     /#define MBEDTLS_DEBUG_C/ { $$$$0 = "$(if $(CONFIG_LIBMBEDTLS_DEBUG_C),,// )#define MBEDTLS_DEBUG_C"; rc = 0 } \
@@ -65,12 +76,12 @@ index 9c6c81d..625a26c 100644
  	     { print } \
  	     END { exit(rc) }' $(PKG_BUILD_DIR)/include/mbedtls/config.h \
  	     >$(PKG_BUILD_DIR)/include/mbedtls/config.h.new && \
-diff --git a/patches/100-Implements-AES-and-GCM-with-ARMv8-Crypto-Extensions.patch b/patches/100-Implements-AES-and-GCM-with-ARMv8-Crypto-Extensions.patch
+diff --git a/patches/100-Implements-with-ARMv8-CE.patch b/patches/100-Implements-with-ARMv8-CE.patch
 new file mode 100644
-index 0000000..d490072
+index 0000000..2e61dd3
 --- /dev/null
-+++ b/patches/100-Implements-AES-and-GCM-with-ARMv8-Crypto-Extensions.patch
-@@ -0,0 +1,390 @@
++++ b/patches/100-Implements-with-ARMv8-CE.patch
+@@ -0,0 +1,391 @@
 +From dfb6015ca79a9fee28f7fcb0af7e350a83574b83 Mon Sep 17 00:00:00 2001
 +From: "Markku-Juhani O. Saarinen" <mjos@mjos.fi>
 +Date: Mon, 20 Nov 2017 14:58:41 +0000
@@ -100,12 +111,12 @@ index 0000000..d490072
 +Then run normal make or cmake etc.
 +---
 +
-+--- /dev/null
++--- a/ChangeLog.d/armv8_crypto_extensions.txt
 ++++ b/ChangeLog.d/armv8_crypto_extensions.txt
 +@@ -0,0 +1,2 @@
 ++Features
 ++    * Support ARMv8 Cryptography Extensions for AES and GCM.
-+--- /dev/null
++--- a/include/mbedtls/armv8ce_aes.h
 ++++ b/include/mbedtls/armv8ce_aes.h
 +@@ -0,0 +1,63 @@
 ++/**
@@ -234,7 +245,7 @@ index 0000000..d490072
 + #if defined(MBEDTLS_SELF_TEST)
 + #if defined(MBEDTLS_PLATFORM_C)
 + #include "mbedtls/platform.h"
-+@@ -999,6 +1001,11 @@ int mbedtls_aes_crypt_ecb( mbedtls_aes_c
++@@ -999,6 +1001,11 @@
 +         return( mbedtls_aesni_crypt_ecb( ctx, mode, input, output ) );
 + #endif
 + 
@@ -246,7 +257,7 @@ index 0000000..d490072
 + #if defined(MBEDTLS_PADLOCK_C) && defined(MBEDTLS_HAVE_X86)
 +     if( aes_padlock_ace )
 +     {
-+--- /dev/null
++--- a/library/armv8ce_aes.c
 ++++ b/library/armv8ce_aes.c
 +@@ -0,0 +1,142 @@
 ++/*
@@ -393,7 +404,7 @@ index 0000000..d490072
 ++#endif /* MBEDTLS_ARMV8CE_AES_C */
 +--- a/library/CMakeLists.txt
 ++++ b/library/CMakeLists.txt
-+@@ -15,6 +15,7 @@ set(src_crypto
++@@ -15,6 +15,7 @@
 +     aesni.c
 +     arc4.c
 +     aria.c
@@ -414,7 +425,7 @@ index 0000000..d490072
 + #if defined(MBEDTLS_SELF_TEST) && defined(MBEDTLS_AES_C)
 + #include "mbedtls/aes.h"
 + #include "mbedtls/platform.h"
-+@@ -87,6 +91,12 @@ static int gcm_gen_table( mbedtls_gcm_co
++@@ -87,6 +91,12 @@
 +     if( ( ret = mbedtls_cipher_update( &ctx->cipher_ctx, h, 16, h, &olen ) ) != 0 )
 +         return( ret );
 + 
@@ -427,7 +438,7 @@ index 0000000..d490072
 +     /* pack h as two 64-bits ints, big-endian */
 +     hi = MBEDTLS_GET_UINT32_BE( h,  0  );
 +     lo = MBEDTLS_GET_UINT32_BE( h,  4  );
-+@@ -196,6 +206,11 @@ static void gcm_mult( mbedtls_gcm_contex
++@@ -196,6 +206,11 @@
 +     unsigned char lo, hi, rem;
 +     uint64_t zh, zl;
 + 
@@ -441,17 +452,18 @@ index 0000000..d490072
 +         unsigned char h[16];
 +--- a/library/Makefile
 ++++ b/library/Makefile
-+@@ -74,6 +74,7 @@ OBJS_CRYPTO= \
++@@ -72,6 +72,7 @@
++ 	     aesni.o \
++ 	     arc4.o \
 + 	     aria.o \
+++	     armv8ce_aes.o \
 + 	     asn1parse.o \
 + 	     asn1write.o \
-++	     armv8ce_aes.o \
 + 	     base64.o \
-+ 	     bignum.o \
-+ 	     blowfish.o \
++
 +--- a/library/version_features.c
 ++++ b/library/version_features.c
-+@@ -624,6 +624,9 @@ static const char * const features[] = {
++@@ -624,6 +624,9 @@
 + #if defined(MBEDTLS_AESNI_C)
 +     "MBEDTLS_AESNI_C",
 + #endif /* MBEDTLS_AESNI_C */
