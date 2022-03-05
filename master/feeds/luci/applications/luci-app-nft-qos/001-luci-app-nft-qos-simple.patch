@@ -216,7 +216,7 @@ index b422238..0997e56 100644
 +msgstr "流量控制"
  
  #: applications/luci-app-nft-qos/luasrc/controller/nft-qos.lua:13
- #: applications/luci-app-nft-qos/luasrc/model/cbi/nft-qos/nft-qos.lua:137
+ #: applications/luci-app-nft-qos/luasrc/model/cbi/nft-qos/nft-qos.lua:144
 @@ -261,3 +261,12 @@ msgstr "例如https, 23（用逗号分隔）"
  #: applications/luci-app-nft-qos/luasrc/view/nft-qos/rate.htm:44
  msgid "kB"
