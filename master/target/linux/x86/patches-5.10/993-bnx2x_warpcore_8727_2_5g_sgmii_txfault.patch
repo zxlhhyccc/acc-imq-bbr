@@ -185,7 +185,7 @@ diff -Naur a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.c b/drivers/net/ethe
 diff -Naur a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
 --- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c	2020-09-03 23:21:36.699693373 -0400
 +++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c	2020-09-03 23:29:22.461340175 -0400
-@@ -110,6 +110,10 @@
+@@ -113,6 +113,10 @@
  module_param(disable_tpa, int, 0444);
  MODULE_PARM_DESC(disable_tpa, " Disable the TPA (LRO) feature");
  
@@ -196,7 +196,7 @@ diff -Naur a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c b/drivers/net/ethe
  static int int_mode;
  module_param(int_mode, int, 0444);
  MODULE_PARM_DESC(int_mode, " Force interrupt mode other than MSI-X "
-@@ -12396,6 +12400,8 @@
+@@ -12399,6 +12403,8 @@
  	if (BP_NOMCP(bp) && (func == 0))
  		dev_err(&bp->pdev->dev, "MCP disabled, must load devices in order!\n");
  
