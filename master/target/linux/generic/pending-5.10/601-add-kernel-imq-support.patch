@@ -1568,7 +1568,7 @@ diff -purN linux-5.8_org/net/netfilter/nf_queue.c linux-5.8/net/netfilter/nf_que
  	if (!qh)
  		return -ESRCH;
  
-@@ -247,8 +276,16 @@ int nf_queue(struct sk_buff *skb, struct
+@@ -248,8 +277,16 @@ int nf_queue(struct sk_buff *skb, struct
  {
  	int ret;
  
@@ -1586,7 +1586,7 @@ diff -purN linux-5.8_org/net/netfilter/nf_queue.c linux-5.8/net/netfilter/nf_que
  		if (ret == -ESRCH &&
  		    (verdict & NF_VERDICT_FLAG_QUEUE_BYPASS))
  			return 1;
-@@ -351,6 +388,7 @@ next_hook:
+@@ -352,6 +389,7 @@ next_hook:
  		local_bh_enable();
  		break;
  	case NF_QUEUE:
