@@ -1261,7 +1261,7 @@ diff -purN linux-5.8_org/include/net/netfilter/nf_queue.h linux-5.8/include/net/
 --- linux-5.8_org/include/net/netfilter/nf_queue.h	2020-08-02 23:21:45.000000000 +0200
 +++ linux-5.8/include/net/netfilter/nf_queue.h	2020-08-22 21:09:43.290601818 +0200
 @@ -40,6 +40,11 @@ void nf_reinject(struct nf_queue_entry *
- void nf_queue_entry_get_refs(struct nf_queue_entry *entry);
+ bool nf_queue_entry_get_refs(struct nf_queue_entry *entry);
  void nf_queue_entry_free(struct nf_queue_entry *entry);
  
 +#if defined(CONFIG_IMQ) || defined(CONFIG_IMQ_MODULE)
@@ -1466,7 +1466,7 @@ diff -purN linux-5.8_org/net/core/skbuff.c linux-5.8/net/core/skbuff.c
 diff -purN linux-5.8_org/net/netfilter/core.c linux-5.8/net/netfilter/core.c
 --- linux-5.8_org/net/netfilter/core.c	2020-08-02 23:21:45.000000000 +0200
 +++ linux-5.8/net/netfilter/core.c	2020-08-12 21:08:08.651831016 +0200
-@@ -596,6 +596,11 @@ int nf_hook_slow(struct sk_buff *skb, st
+@@ -597,6 +597,11 @@ int nf_hook_slow(struct sk_buff *skb, st
  			if (ret == 0)
  				ret = -EPERM;
  			return ret;
@@ -1538,7 +1538,7 @@ diff -purN linux-5.8_org/net/netfilter/nf_queue.c linux-5.8/net/netfilter/nf_que
  /* return EBUSY when somebody else is registered, return EEXIST if the
   * same handler is registered, return 0 in case of success. */
  void nf_register_queue_handler(struct net *net, const struct nf_queue_handler *qh)
-@@ -153,16 +170,27 @@ static void nf_ip6_saveroute(const struc
+@@ -164,16 +181,27 @@ static void nf_ip6_saveroute(const struc
  }
  
  static int __nf_queue(struct sk_buff *skb, const struct nf_hook_state *state,
@@ -1568,7 +1568,7 @@ diff -purN linux-5.8_org/net/netfilter/nf_queue.c linux-5.8/net/netfilter/nf_que
  	if (!qh)
  		return -ESRCH;
  
-@@ -222,8 +251,16 @@ int nf_queue(struct sk_buff *skb, struct
+@@ -247,8 +276,16 @@ int nf_queue(struct sk_buff *skb, struct
  {
  	int ret;
  
@@ -1586,7 +1586,7 @@ diff -purN linux-5.8_org/net/netfilter/nf_queue.c linux-5.8/net/netfilter/nf_que
  		if (ret == -ESRCH &&
  		    (verdict & NF_VERDICT_FLAG_QUEUE_BYPASS))
  			return 1;
-@@ -326,6 +363,7 @@ next_hook:
+@@ -351,6 +388,7 @@ next_hook:
  		local_bh_enable();
  		break;
  	case NF_QUEUE:
