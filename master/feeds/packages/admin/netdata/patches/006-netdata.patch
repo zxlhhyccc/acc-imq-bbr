@@ -7,7 +7,7 @@ index d936152..6272b0d 100644
    SECTION:=admin
    CATEGORY:=Administration
 -  DEPENDS:=+zlib +libuuid +libuv +libmnl +libjson-c
-+  DEPENDS:=+zlib +libuuid +libuv +libmnl +libjson-c +libopenssl +liblz4
++  DEPENDS:=+zlib +libuuid +libuv +libmnl +libjson-c +libopenssl
    TITLE:=Real-time performance monitoring tool
    URL:=https://www.netdata.cloud/
  endef
@@ -17,8 +17,8 @@ index d936152..6272b0d 100644
  	--without-libcap \
 -	--disable-https \
  	--disable-dbengine \
+ 	--disable-compression \
  	--disable-plugin-nfacct \
- 	--disable-plugin-freeipmi \
 diff --git a/files/netdata.conf b/files/netdata.conf
 index 4a247da..246d0f0 100644
 --- a/files/netdata.conf
