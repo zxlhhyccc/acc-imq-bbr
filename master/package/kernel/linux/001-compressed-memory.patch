@@ -26,7 +26,7 @@ diff --git a/modules/lib.mk b/modules/lib.mk
 index 9a34193..eadb215 100644
 --- a/modules/lib.mk
 +++ b/modules/lib.mk
-@@ -167,6 +167,27 @@ endef
+@@ -168,6 +168,27 @@ endef
  $(eval $(call KernelPackage,lib-lz4))
  
  
