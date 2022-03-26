@@ -55,10 +55,10 @@ index 9a34193..eadb215 100644
    SUBMENU:=$(LIB_MENU)
    TITLE:=RAID6 algorithm support
 diff --git a/modules/other.mk b/modules/other.mk
-index 5ccc860..ea6d6c8 100644
+index d343ff8..6861923 100644
 --- a/modules/other.mk
 +++ b/modules/other.mk
-@@ -953,6 +953,85 @@ endef
+@@ -979,6 +979,85 @@ endef
  $(eval $(call KernelPackage,zram))
  
  
