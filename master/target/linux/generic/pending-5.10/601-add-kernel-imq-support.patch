@@ -1,6 +1,5 @@
-diff -purN linux-5.8_org/drivers/net/imq.c linux-5.8/drivers/net/imq.c
---- linux-5.8_org/drivers/net/imq.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-5.8/drivers/net/imq.c	2020-08-18 21:52:02.073931596 +0200
+--- /dev/null
++++ b/drivers/net/imq.c
 @@ -0,0 +1,957 @@
 +/*
 + *             Pseudo-driver for the intermediate queue device.
@@ -959,9 +958,8 @@ diff -purN linux-5.8_org/drivers/net/imq.c linux-5.8/drivers/net/imq.c
 +MODULE_DESCRIPTION("Pseudo-driver for the intermediate queue device. See https://github.com/imq/linuximq/wiki for more information.");
 +MODULE_LICENSE("GPL");
 +MODULE_ALIAS_RTNL_LINK("imq");
-diff -purN linux-5.8_org/drivers/net/Kconfig linux-5.8/drivers/net/Kconfig
---- linux-5.8_org/drivers/net/Kconfig	2020-08-02 23:21:45.000000000 +0200
-+++ linux-5.8/drivers/net/Kconfig	2020-08-12 21:08:08.643831110 +0200
+--- a/drivers/net/Kconfig
++++ b/drivers/net/Kconfig
 @@ -339,6 +339,125 @@ config RIONET_RX_SIZE
  	depends on RIONET
  	default "128"
@@ -1088,9 +1086,8 @@ diff -purN linux-5.8_org/drivers/net/Kconfig linux-5.8/drivers/net/Kconfig
  config TUN
  	tristate "Universal TUN/TAP device driver support"
  	depends on INET
-diff -purN linux-5.8_org/drivers/net/Makefile linux-5.8/drivers/net/Makefile
---- linux-5.8_org/drivers/net/Makefile	2020-08-02 23:21:45.000000000 +0200
-+++ linux-5.8/drivers/net/Makefile	2020-08-12 21:08:08.643831110 +0200
+--- a/drivers/net/Makefile
++++ b/drivers/net/Makefile
 @@ -14,6 +14,7 @@ obj-$(CONFIG_WIREGUARD) += wireguard/
  obj-$(CONFIG_EQUALIZER) += eql.o
  obj-$(CONFIG_IFB) += ifb.o
@@ -1099,9 +1096,8 @@ diff -purN linux-5.8_org/drivers/net/Makefile linux-5.8/drivers/net/Makefile
  obj-$(CONFIG_MACVLAN) += macvlan.o
  obj-$(CONFIG_MACVTAP) += macvtap.o
  obj-$(CONFIG_MII) += mii.o
-diff -purN linux-5.8_org/include/linux/imq.h linux-5.8/include/linux/imq.h
---- linux-5.8_org/include/linux/imq.h	1970-01-01 01:00:00.000000000 +0100
-+++ linux-5.8/include/linux/imq.h	2020-08-12 21:08:08.643831110 +0200
+--- /dev/null
++++ b/include/linux/imq.h
 @@ -0,0 +1,13 @@
 +#ifndef _IMQ_H
 +#define _IMQ_H
@@ -1116,9 +1112,8 @@ diff -purN linux-5.8_org/include/linux/imq.h linux-5.8/include/linux/imq.h
 +
 +#endif /* _IMQ_H */
 +
-diff -purN linux-5.8_org/include/linux/netdevice.h linux-5.8/include/linux/netdevice.h
---- linux-5.8_org/include/linux/netdevice.h	2020-08-02 23:21:45.000000000 +0200
-+++ linux-5.8/include/linux/netdevice.h	2020-08-12 21:08:08.647831063 +0200
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
 @@ -2081,6 +2081,11 @@ struct net_device {
  /*
   * Cache lines mostly used on receive path (including eth_type_trans())
@@ -1151,9 +1146,8 @@ diff -purN linux-5.8_org/include/linux/netdevice.h linux-5.8/include/linux/netde
  static inline void netif_tx_disable(struct net_device *dev)
  {
  	unsigned int i;
-diff -purN linux-5.8_org/include/linux/netfilter/xt_IMQ.h linux-5.8/include/linux/netfilter/xt_IMQ.h
---- linux-5.8_org/include/linux/netfilter/xt_IMQ.h	1970-01-01 01:00:00.000000000 +0100
-+++ linux-5.8/include/linux/netfilter/xt_IMQ.h	2020-08-12 21:08:08.647831063 +0200
+--- /dev/null
++++ b/include/linux/netfilter/xt_IMQ.h
 @@ -0,0 +1,9 @@
 +#ifndef _XT_IMQ_H
 +#define _XT_IMQ_H
@@ -1164,9 +1158,8 @@ diff -purN linux-5.8_org/include/linux/netfilter/xt_IMQ.h linux-5.8/include/linu
 +
 +#endif /* _XT_IMQ_H */
 +
-diff -purN linux-5.8_org/include/linux/netfilter_ipv4/ipt_IMQ.h linux-5.8/include/linux/netfilter_ipv4/ipt_IMQ.h
---- linux-5.8_org/include/linux/netfilter_ipv4/ipt_IMQ.h	1970-01-01 01:00:00.000000000 +0100
-+++ linux-5.8/include/linux/netfilter_ipv4/ipt_IMQ.h	2020-08-12 21:08:08.647831063 +0200
+--- /dev/null
++++ b/include/linux/netfilter_ipv4/ipt_IMQ.h
 @@ -0,0 +1,10 @@
 +#ifndef _IPT_IMQ_H
 +#define _IPT_IMQ_H
@@ -1178,9 +1171,8 @@ diff -purN linux-5.8_org/include/linux/netfilter_ipv4/ipt_IMQ.h linux-5.8/includ
 +
 +#endif /* _IPT_IMQ_H */
 +
-diff -purN linux-5.8_org/include/linux/netfilter_ipv6/ip6t_IMQ.h linux-5.8/include/linux/netfilter_ipv6/ip6t_IMQ.h
---- linux-5.8_org/include/linux/netfilter_ipv6/ip6t_IMQ.h	1970-01-01 01:00:00.000000000 +0100
-+++ linux-5.8/include/linux/netfilter_ipv6/ip6t_IMQ.h	2020-08-12 21:08:08.647831063 +0200
+--- /dev/null
++++ b/include/linux/netfilter_ipv6/ip6t_IMQ.h
 @@ -0,0 +1,10 @@
 +#ifndef _IP6T_IMQ_H
 +#define _IP6T_IMQ_H
@@ -1192,9 +1184,8 @@ diff -purN linux-5.8_org/include/linux/netfilter_ipv6/ip6t_IMQ.h linux-5.8/inclu
 +
 +#endif /* _IP6T_IMQ_H */
 +
-diff -purN linux-5.8_org/include/linux/skbuff.h linux-5.8/include/linux/skbuff.h
---- linux-5.8_org/include/linux/skbuff.h	2020-08-02 23:21:45.000000000 +0200
-+++ linux-5.8/include/linux/skbuff.h	2020-08-12 21:08:08.647831063 +0200
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
 @@ -40,6 +40,9 @@
  #if IS_ENABLED(CONFIG_NF_CONNTRACK)
  #include <linux/netfilter/nf_conntrack_common.h>
@@ -1235,7 +1226,7 @@ diff -purN linux-5.8_org/include/linux/skbuff.h linux-5.8/include/linux/skbuff.h
  #ifdef CONFIG_NET_CLS_ACT
  	__u8			tc_skip_classify:1;
  	__u8			tc_at_ingress:1;
-@@ -1068,6 +1080,10 @@ static inline void consume_skb(struct sk_buff *skb)
+@@ -1068,6 +1080,10 @@ static inline void consume_skb(struct sk
  
  void __consume_stateless_skb(struct sk_buff *skb);
  void  __kfree_skb(struct sk_buff *skb);
@@ -1257,9 +1248,8 @@ diff -purN linux-5.8_org/include/linux/skbuff.h linux-5.8/include/linux/skbuff.h
  #if IS_ENABLED(CONFIG_NETFILTER_XT_TARGET_TRACE) || defined(CONFIG_NF_TABLES)
  	if (copy)
  		dst->nf_trace = src->nf_trace;
-diff -purN linux-5.8_org/include/net/netfilter/nf_queue.h linux-5.8/include/net/netfilter/nf_queue.h
---- linux-5.8_org/include/net/netfilter/nf_queue.h	2020-08-02 23:21:45.000000000 +0200
-+++ linux-5.8/include/net/netfilter/nf_queue.h	2020-08-22 21:09:43.290601818 +0200
+--- a/include/net/netfilter/nf_queue.h
++++ b/include/net/netfilter/nf_queue.h
 @@ -40,6 +40,11 @@ void nf_reinject(struct nf_queue_entry *
  bool nf_queue_entry_get_refs(struct nf_queue_entry *entry);
  void nf_queue_entry_free(struct nf_queue_entry *entry);
@@ -1272,9 +1262,8 @@ diff -purN linux-5.8_org/include/net/netfilter/nf_queue.h linux-5.8/include/net/
  static inline void init_hashrandom(u32 *jhash_initval)
  {
  	while (*jhash_initval == 0)
-diff -purN linux-5.8_org/include/net/pkt_sched.h linux-5.8/include/net/pkt_sched.h
---- linux-5.8_org/include/net/pkt_sched.h	2020-08-02 23:21:45.000000000 +0200
-+++ linux-5.8/include/net/pkt_sched.h	2020-08-12 21:08:08.647831063 +0200
+--- a/include/net/pkt_sched.h
++++ b/include/net/pkt_sched.h
 @@ -121,6 +121,8 @@ bool sch_direct_xmit(struct sk_buff *skb
  
  void __qdisc_run(struct Qdisc *q);
@@ -1284,9 +1273,8 @@ diff -purN linux-5.8_org/include/net/pkt_sched.h linux-5.8/include/net/pkt_sched
  static inline void qdisc_run(struct Qdisc *q)
  {
  	if (qdisc_run_begin(q)) {
-diff -purN linux-5.8_org/include/net/sch_generic.h linux-5.8/include/net/sch_generic.h
---- linux-5.8_org/include/net/sch_generic.h	2020-08-02 23:21:45.000000000 +0200
-+++ linux-5.8/include/net/sch_generic.h	2020-08-12 21:08:08.651831016 +0200
+--- a/include/net/sch_generic.h
++++ b/include/net/sch_generic.h
 @@ -848,6 +848,13 @@ static inline int qdisc_enqueue(struct s
  	return sch->enqueue(skb, sch, to_free);
  }
@@ -1301,9 +1289,8 @@ diff -purN linux-5.8_org/include/net/sch_generic.h linux-5.8/include/net/sch_gen
  static inline void _bstats_update(struct gnet_stats_basic_packed *bstats,
  				  __u64 bytes, __u32 packets)
  {
-diff -purN linux-5.8_org/include/uapi/linux/netfilter.h linux-5.8/include/uapi/linux/netfilter.h
---- linux-5.8_org/include/uapi/linux/netfilter.h	2020-08-02 23:21:45.000000000 +0200
-+++ linux-5.8/include/uapi/linux/netfilter.h	2020-08-12 21:08:08.651831016 +0200
+--- a/include/uapi/linux/netfilter.h
++++ b/include/uapi/linux/netfilter.h
 @@ -14,7 +14,8 @@
  #define NF_QUEUE 3
  #define NF_REPEAT 4
@@ -1314,9 +1301,8 @@ diff -purN linux-5.8_org/include/uapi/linux/netfilter.h linux-5.8/include/uapi/l
  
  /* we overload the higher bits for encoding auxiliary data such as the queue
   * number or errno values. Not nice, but better than additional function
-diff -purN linux-5.8_org/net/core/dev.c linux-5.8/net/core/dev.c
---- linux-5.8_org/net/core/dev.c	2020-08-02 23:21:45.000000000 +0200
-+++ linux-5.8/net/core/dev.c	2020-08-12 21:08:08.651831016 +0200
+--- a/net/core/dev.c
++++ b/net/core/dev.c
 @@ -140,6 +140,9 @@
  #include <linux/hrtimer.h>
  #include <linux/netfilter_ingress.h>
@@ -1350,9 +1336,8 @@ diff -purN linux-5.8_org/net/core/dev.c linux-5.8/net/core/dev.c
  static struct sk_buff *validate_xmit_vlan(struct sk_buff *skb,
  					  netdev_features_t features)
  {
-diff -purN linux-5.8_org/net/core/skbuff.c linux-5.8/net/core/skbuff.c
---- linux-5.8_org/net/core/skbuff.c	2020-08-02 23:21:45.000000000 +0200
-+++ linux-5.8/net/core/skbuff.c	2020-08-12 21:08:08.651831016 +0200
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
 @@ -87,6 +87,56 @@ static struct kmem_cache *skbuff_ext_cac
  int sysctl_max_skb_frags __read_mostly = MAX_SKB_FRAGS;
  EXPORT_SYMBOL(sysctl_max_skb_frags);
@@ -1463,9 +1448,8 @@ diff -purN linux-5.8_org/net/core/skbuff.c linux-5.8/net/core/skbuff.c
  	skb_extensions_init();
  }
  
-diff -purN linux-5.8_org/net/netfilter/core.c linux-5.8/net/netfilter/core.c
---- linux-5.8_org/net/netfilter/core.c	2020-08-02 23:21:45.000000000 +0200
-+++ linux-5.8/net/netfilter/core.c	2020-08-12 21:08:08.651831016 +0200
+--- a/net/netfilter/core.c
++++ b/net/netfilter/core.c
 @@ -597,6 +597,11 @@ int nf_hook_slow(struct sk_buff *skb, st
  			if (ret == 0)
  				ret = -EPERM;
@@ -1478,9 +1462,8 @@ diff -purN linux-5.8_org/net/netfilter/core.c linux-5.8/net/netfilter/core.c
  		case NF_QUEUE:
  			ret = nf_queue(skb, state, s, verdict);
  			if (ret == 1)
-diff -purN linux-5.8_org/net/netfilter/Kconfig linux-5.8/net/netfilter/Kconfig
---- linux-5.8_org/net/netfilter/Kconfig	2020-08-02 23:21:45.000000000 +0200
-+++ linux-5.8/net/netfilter/Kconfig	2020-08-12 21:08:08.651831016 +0200
+--- a/net/netfilter/Kconfig
++++ b/net/netfilter/Kconfig
 @@ -922,6 +922,18 @@ config NETFILTER_XT_TARGET_LOG
  
  	  To compile it as a module, choose M here.  If unsure, say N.
@@ -1500,9 +1483,8 @@ diff -purN linux-5.8_org/net/netfilter/Kconfig linux-5.8/net/netfilter/Kconfig
  config NETFILTER_XT_TARGET_MARK
  	tristate '"MARK" target support'
  	depends on NETFILTER_ADVANCED
-diff -purN linux-5.8_org/net/netfilter/Makefile linux-5.8/net/netfilter/Makefile
---- linux-5.8_org/net/netfilter/Makefile	2020-08-02 23:21:45.000000000 +0200
-+++ linux-5.8/net/netfilter/Makefile	2020-08-12 21:08:08.655830969 +0200
+--- a/net/netfilter/Makefile
++++ b/net/netfilter/Makefile
 @@ -147,6 +147,7 @@ obj-$(CONFIG_NETFILTER_XT_TARGET_CT) +=
  obj-$(CONFIG_NETFILTER_XT_TARGET_DSCP) += xt_DSCP.o
  obj-$(CONFIG_NETFILTER_XT_TARGET_HL) += xt_HL.o
@@ -1511,9 +1493,8 @@ diff -purN linux-5.8_org/net/netfilter/Makefile linux-5.8/net/netfilter/Makefile
  obj-$(CONFIG_NETFILTER_XT_TARGET_LED) += xt_LED.o
  obj-$(CONFIG_NETFILTER_XT_TARGET_LOG) += xt_LOG.o
  obj-$(CONFIG_NETFILTER_XT_TARGET_NETMAP) += xt_NETMAP.o
-diff -purN linux-5.8_org/net/netfilter/nf_queue.c linux-5.8/net/netfilter/nf_queue.c
---- linux-5.8_org/net/netfilter/nf_queue.c	2020-08-02 23:21:45.000000000 +0200
-+++ linux-5.8/net/netfilter/nf_queue.c	2020-08-12 21:08:08.655830969 +0200
+--- a/net/netfilter/nf_queue.c
++++ b/net/netfilter/nf_queue.c
 @@ -29,6 +29,23 @@
   * receives, no matter what.
   */
@@ -1568,7 +1549,7 @@ diff -purN linux-5.8_org/net/netfilter/nf_queue.c linux-5.8/net/netfilter/nf_que
  	if (!qh)
  		return -ESRCH;
  
-@@ -248,8 +277,16 @@ int nf_queue(struct sk_buff *skb, struct
+@@ -248,8 +276,16 @@ int nf_queue(struct sk_buff *skb, struct
  {
  	int ret;
  
@@ -1586,7 +1567,7 @@ diff -purN linux-5.8_org/net/netfilter/nf_queue.c linux-5.8/net/netfilter/nf_que
  		if (ret == -ESRCH &&
  		    (verdict & NF_VERDICT_FLAG_QUEUE_BYPASS))
  			return 1;
-@@ -352,6 +389,7 @@ next_hook:
+@@ -352,6 +388,7 @@ next_hook:
  		local_bh_enable();
  		break;
  	case NF_QUEUE:
@@ -1594,9 +1575,8 @@ diff -purN linux-5.8_org/net/netfilter/nf_queue.c linux-5.8/net/netfilter/nf_que
  		err = nf_queue(skb, &entry->state, i, verdict);
  		if (err == 1)
  			goto next_hook;
-diff -purN linux-5.8_org/net/netfilter/xt_IMQ.c linux-5.8/net/netfilter/xt_IMQ.c
---- linux-5.8_org/net/netfilter/xt_IMQ.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-5.8/net/netfilter/xt_IMQ.c	2020-08-12 21:08:08.655830969 +0200
+--- /dev/null
++++ b/net/netfilter/xt_IMQ.c
 @@ -0,0 +1,72 @@
 +/*
 + * This target marks packets to be enqueued to an imq device
@@ -1670,9 +1650,8 @@ diff -purN linux-5.8_org/net/netfilter/xt_IMQ.c linux-5.8/net/netfilter/xt_IMQ.c
 +MODULE_ALIAS("ipt_IMQ");
 +MODULE_ALIAS("ip6t_IMQ");
 +
-diff -purN linux-5.8_org/net/sched/sch_generic.c linux-5.8/net/sched/sch_generic.c
---- linux-5.8_org/net/sched/sch_generic.c	2020-08-02 23:21:45.000000000 +0200
-+++ linux-5.8/net/sched/sch_generic.c	2020-08-12 21:08:08.655830969 +0200
+--- a/net/sched/sch_generic.c
++++ b/net/sched/sch_generic.c
 @@ -296,6 +296,14 @@ trace:
  	return skb;
  }

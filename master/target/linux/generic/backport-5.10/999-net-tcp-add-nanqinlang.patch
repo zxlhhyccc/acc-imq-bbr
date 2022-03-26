@@ -1,7 +1,6 @@
-diff -ruaN a/net/ipv4/Kconfig b/net/ipv4/Kconfig
---- a/net/ipv4/Kconfig	2020-12-26 23:02:46.000000000 +0800
-+++ b/net/ipv4/Kconfig	2020-12-27 10:31:37.509462275 +0800
-@@ -669,6 +669,15 @@
+--- a/net/ipv4/Kconfig
++++ b/net/ipv4/Kconfig
+@@ -669,6 +669,15 @@ config TCP_CONG_BBR
  	  AQM schemes that do not provide a delay signal. It requires the fq
  	  ("Fair Queue") pacing packet scheduler.
  
@@ -17,7 +16,7 @@ diff -ruaN a/net/ipv4/Kconfig b/net/ipv4/Kconfig
  config TCP_CONG_BBRPLUS
          tristate "BBRPLUS TCP"
          default m
-@@ -715,6 +724,9 @@
+@@ -715,6 +724,9 @@ choice
  	config DEFAULT_BBR
  		bool "BBR" if TCP_CONG_BBR=y
  
@@ -27,7 +26,7 @@ diff -ruaN a/net/ipv4/Kconfig b/net/ipv4/Kconfig
          config DEFAULT_BBRPLUS
                  bool "BBRPLUS" if TCP_CONG_BBRPLUS=y
  
-@@ -742,6 +754,7 @@
+@@ -742,6 +754,7 @@ config DEFAULT_TCP_CONG
  	default "dctcp" if DEFAULT_DCTCP
  	default "cdg" if DEFAULT_CDG
  	default "bbr" if DEFAULT_BBR
@@ -35,10 +34,9 @@ diff -ruaN a/net/ipv4/Kconfig b/net/ipv4/Kconfig
  	default "bbrplus" if DEFAULT_BBRPLUS
  	default "cubic"
  
-diff -ruaN a/net/ipv4/Makefile b/net/ipv4/Makefile
---- a/net/ipv4/Makefile	2020-12-26 23:02:46.000000000 +0800
-+++ b/net/ipv4/Makefile	2020-12-27 10:15:42.310392124 +0800
-@@ -46,6 +46,7 @@
+--- a/net/ipv4/Makefile
++++ b/net/ipv4/Makefile
+@@ -46,6 +46,7 @@ obj-$(CONFIG_INET_TCP_DIAG) += tcp_diag.
  obj-$(CONFIG_INET_UDP_DIAG) += udp_diag.o
  obj-$(CONFIG_INET_RAW_DIAG) += raw_diag.o
  obj-$(CONFIG_TCP_CONG_BBR) += tcp_bbr.o
@@ -46,9 +44,8 @@ diff -ruaN a/net/ipv4/Makefile b/net/ipv4/Makefile
  obj-$(CONFIG_TCP_CONG_BBRPLUS) += tcp_bbrplus.o
  obj-$(CONFIG_TCP_CONG_BIC) += tcp_bic.o
  obj-$(CONFIG_TCP_CONG_CDG) += tcp_cdg.o
-diff --git a/net/ipv4/tcp_nanqinlang.c b/net/ipv4/tcp_nanqinlang.c
---- a/net/ipv4/tcp_nanqinlang.c	1970-01-01 08:00:00.000000000 +0800
-+++ b/net/ipv4/tcp_nanqinlang.c	2020-12-27 10:15:42.310392124 +0800
+--- /dev/null
++++ b/net/ipv4/tcp_nanqinlang.c
 @@ -0,0 +1,1175 @@
 +/* Bottleneck Bandwidth and RTT (BBR) congestion control
 + *
