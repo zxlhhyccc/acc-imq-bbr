@@ -1,2 +1,3 @@
+https://github.com/felixonmars/dnsmasq-china-list
 dnsmasq-china-list项目提供了很多属于中国大陆的域名列表。但是由于格式不兼容无法在AdGaurdHome中使用，我们需要对其进行转换。
 将上面的内容保存为dnsrule.sh文件赋予可执行权限并运行就会在脚本所在的目录生成一个dnsrule.txt文件，然后在AdGaurdHome.yaml文件内的upstream_dns_file:后面填入dnsrule.txt文件的绝对路径，保存后重启AdGaurdHome就可以了。
