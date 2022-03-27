@@ -1,8 +1,8 @@
 diff --git a/modules/crypto.mk b/modules/crypto.mk
-index 4097957..3fb1896 100644
+index 6fd53f6..f6054d7 100644
 --- a/modules/crypto.mk
 +++ b/modules/crypto.mk
-@@ -985,3 +985,19 @@ endef
+@@ -1004,3 +1004,19 @@ endef
  
  $(eval $(call KernelPackage,crypto-xts))
  
@@ -23,7 +23,7 @@ index 4097957..3fb1896 100644
 +$(eval $(call KernelPackage,crypto-zstd))
 +
 diff --git a/modules/lib.mk b/modules/lib.mk
-index 9a34193..eadb215 100644
+index 81ceb1f..1fdec8f 100644
 --- a/modules/lib.mk
 +++ b/modules/lib.mk
 @@ -168,6 +168,27 @@ endef
@@ -55,13 +55,14 @@ index 9a34193..eadb215 100644
    SUBMENU:=$(LIB_MENU)
    TITLE:=RAID6 algorithm support
 diff --git a/modules/other.mk b/modules/other.mk
-index d343ff8..6861923 100644
+index 499a408..1f9a8a4 100644
 --- a/modules/other.mk
 +++ b/modules/other.mk
-@@ -979,6 +979,85 @@ endef
+@@ -1001,6 +1001,86 @@ endef
+ 
  $(eval $(call KernelPackage,zram))
  
- 
++
 +define KernelPackage/zsmalloc
 +  SUBMENU:=$(OTHER_MENU)
 +  TITLE:=ZSMALLOC support

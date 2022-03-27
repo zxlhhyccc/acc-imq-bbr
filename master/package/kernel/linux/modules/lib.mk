@@ -109,9 +109,10 @@ define KernelPackage/lib-lzo
   HIDDEN:=1
   FILES:= \
 	$(LINUX_DIR)/crypto/lzo.ko \
+	$(LINUX_DIR)/crypto/lzo-rle.ko \
 	$(LINUX_DIR)/lib/lzo/lzo_compress.ko \
 	$(LINUX_DIR)/lib/lzo/lzo_decompress.ko
-  AUTOLOAD:=$(call AutoProbe,lzo lzo_compress lzo_decompress)
+  AUTOLOAD:=$(call AutoProbe,lzo lzo-rle lzo_compress lzo_decompress)
 endef
 
 define KernelPackage/lib-lzo/description
@@ -182,7 +183,7 @@ define KernelPackage/lib-lz4hc
 endef
 
 define KernelPackage/lib-lz4hc/description
-  Kernel module for LZ4HC compression/decompression support
+ Kernel module for LZ4HC compression/decompression support
 endef
 
 $(eval $(call KernelPackage,lib-lz4hc))
@@ -293,3 +294,23 @@ define KernelPackage/asn1-decoder
 endef
 
 $(eval $(call KernelPackage,asn1-decoder))
+
+define KernelPackage/asn1-encoder
+  SUBMENU:=$(LIB_MENU)
+  TITLE:=Simple ASN1 encoder
+  KCONFIG:= CONFIG_ASN1_ENCODER
+  HIDDEN:=1
+  FILES:=$(LINUX_DIR)/lib/asn1_encoder.ko
+endef
+
+$(eval $(call KernelPackage,asn1-encoder))
+
+define KernelPackage/oid-registry
+  SUBMENU:=$(LIB_MENU)
+  TITLE:=Object identifier registry
+  KCONFIG:= CONFIG_OID_REGISTRY
+  FILES:=$(LINUX_DIR)/lib/oid_registry.ko
+  AUTOLOAD:=$(call AutoLoad,31,oid_registry)
+endef
+
+$(eval $(call KernelPackage,oid-registry))

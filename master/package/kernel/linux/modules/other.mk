@@ -182,20 +182,30 @@ endef
 $(eval $(call KernelPackage,eeprom-at25))
 
 
-define KernelPackage/gpio-dev
+define KernelPackage/google-firmware
   SUBMENU:=$(OTHER_MENU)
-  TITLE:=Generic GPIO char device support
-  DEPENDS:=@GPIO_SUPPORT
-  KCONFIG:=CONFIG_GPIO_DEVICE
-  FILES:=$(LINUX_DIR)/drivers/char/gpio_dev.ko
-  AUTOLOAD:=$(call AutoLoad,40,gpio_dev)
+  TITLE:=Google firmware drivers (Coreboot, VPD, Memconsole)
+  KCONFIG:= \
+	CONFIG_GOOGLE_FIRMWARE=y \
+	CONFIG_GOOGLE_COREBOOT_TABLE \
+	CONFIG_GOOGLE_MEMCONSOLE \
+	CONFIG_GOOGLE_MEMCONSOLE_COREBOOT \
+	CONFIG_GOOGLE_VPD
+  FILES:= \
+	  $(LINUX_DIR)/drivers/firmware/google/coreboot_table.ko \
+	  $(LINUX_DIR)/drivers/firmware/google/memconsole.ko \
+	  $(LINUX_DIR)/drivers/firmware/google/memconsole-coreboot.ko \
+	  $(LINUX_DIR)/drivers/firmware/google/vpd-sysfs.ko
+  AUTOLOAD:=$(call AutoProbe,coreboot_table memconsole-coreboot vpd-sysfs)
 endef
 
-define KernelPackage/gpio-dev/description
- Kernel module to allows control of GPIO pins using a character device.
+define KernelPackage/google-firmware/description
+  Kernel modules for Google firmware drivers. Useful for examining firmware and
+  boot details on devices using a Google bootloader based on Coreboot. Provides
+  files like /sys/firmware/log and /sys/firmware/vpd.
 endef
 
-$(eval $(call KernelPackage,gpio-dev))
+$(eval $(call KernelPackage,google-firmware))
 
 
 define KernelPackage/gpio-f7188x
@@ -786,6 +796,41 @@ endef
 $(eval $(call KernelPackage,mtdram))
 
 
+define KernelPackage/ramoops
+  SUBMENU:=$(OTHER_MENU)
+  TITLE:=Ramoops (pstore-ram)
+  DEFAULT:=m if ALL_KMODS
+  KCONFIG:=CONFIG_PSTORE_RAM
+  DEPENDS:=+kmod-pstore +kmod-reed-solomon
+  FILES:= $(LINUX_DIR)/fs/pstore/ramoops.ko
+  AUTOLOAD:=$(call AutoLoad,30,ramoops,1)
+endef
+
+define KernelPackage/ramoops/description
+ Kernel module for pstore-ram (ramoops) crash log storage
+endef
+
+$(eval $(call KernelPackage,ramoops))
+
+
+define KernelPackage/reed-solomon
+  SUBMENU:=$(OTHER_MENU)
+  TITLE:=Reed-Solomon error correction
+  DEFAULT:=m if ALL_KMODS
+  KCONFIG:=CONFIG_REED_SOLOMON \
+	CONFIG_REED_SOLOMON_DEC8=y \
+	CONFIG_REED_SOLOMON_ENC8=y
+  FILES:= $(LINUX_DIR)/lib/reed_solomon/reed_solomon.ko
+  AUTOLOAD:=$(call AutoLoad,30,reed_solomon,1)
+endef
+
+define KernelPackage/reed-solomon/description
+ Kernel module for Reed-Solomon error correction
+endef
+
+$(eval $(call KernelPackage,reed-solomon))
+
+
 define KernelPackage/serial-8250
   SUBMENU:=$(OTHER_MENU)
   TITLE:=8250 UARTs
@@ -914,7 +959,6 @@ $(eval $(call KernelPackage,ikconfig))
 define KernelPackage/zram
   SUBMENU:=$(OTHER_MENU)
   TITLE:=ZRAM
-  DEPENDS:=+kmod-lib-lzo
   KCONFIG:= \
 	CONFIG_ZSMALLOC \
 	CONFIG_ZRAM \
@@ -929,6 +973,30 @@ endef
 
 define KernelPackage/zram/description
  Compressed RAM block device support
+endef
+
+define KernelPackage/zram/config
+  choice
+    prompt "ZRAM Default compressor"
+    default ZRAM_DEF_COMP_LZORLE
+
+  config ZRAM_DEF_COMP_LZORLE
+            bool "lzo-rle"
+            select PACKAGE_kmod-lib-lzo
+
+  config ZRAM_DEF_COMP_LZO
+            bool "lzo"
+            select PACKAGE_kmod-lib-lzo
+
+  config ZRAM_DEF_COMP_LZ4
+            bool "lz4"
+            select PACKAGE_kmod-lib-lz4
+
+  config ZRAM_DEF_COMP_ZSTD
+            bool "zstd"
+            select PACKAGE_kmod-lib-zstd
+
+  endchoice
 endef
 
 $(eval $(call KernelPackage,zram))
@@ -1087,7 +1155,7 @@ $(eval $(call KernelPackage,ptp))
 define KernelPackage/ptp-qoriq
   SUBMENU:=$(OTHER_MENU)
   TITLE:=Freescale QorIQ PTP support
-  DEPENDS:=@TARGET_mpc85xx +kmod-ptp
+  DEPENDS:=@(TARGET_mpc85xx||TARGET_qoriq) +kmod-ptp
   KCONFIG:=CONFIG_PTP_1588_CLOCK_QORIQ
   FILES:=$(LINUX_DIR)/drivers/ptp/ptp-qoriq.ko
   AUTOLOAD:=$(call AutoProbe,ptp-qoriq)
@@ -1224,7 +1292,8 @@ $(eval $(call KernelPackage,keys-trusted))
 define KernelPackage/tpm
   SUBMENU:=$(OTHER_MENU)
   TITLE:=TPM Hardware Support
-  DEPENDS:= +kmod-random-core
+  DEPENDS:= +kmod-random-core +(LINUX_5_15):kmod-asn1-decoder \
+	  +(LINUX_5_15):kmod-asn1-encoder +(LINUX_5_15):kmod-oid-registry
   KCONFIG:= CONFIG_TCG_TPM
   FILES:= $(LINUX_DIR)/drivers/char/tpm/tpm.ko
   AUTOLOAD:=$(call AutoLoad,10,tpm,1)

@@ -32,7 +32,7 @@ index 6d263bd..255c4a7 100644
    SUBMENU:=$(NETWORK_DEVICES_MENU)
    TITLE:=Broadcom Emulex OneConnect 10Gbps NIC
 diff --git a/modules/netfilter.mk b/modules/netfilter.mk
-index e2bb1d0..001eaf4 100644
+index 6427d07..920d35e 100644
 --- a/modules/netfilter.mk
 +++ b/modules/netfilter.mk
 @@ -480,6 +480,24 @@ endef
