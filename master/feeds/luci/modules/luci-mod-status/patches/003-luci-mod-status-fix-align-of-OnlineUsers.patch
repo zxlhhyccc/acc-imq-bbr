@@ -38,7 +38,7 @@ index 1a0f703..4a39e22 100644
  		var fields = [
 -			_('Active Connections'), ct_max ? ct_count : null
 +			_('Active Connections'), ct_max ? ct_count : null,
-+			_('Online Users'), onlineusers
++			_('Online Users'), onlineusers ? onlineusers.onlineusers : null
  		];
  
  		var ctstatus = E('table', { 'class': 'table' });
