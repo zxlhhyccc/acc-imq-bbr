@@ -1,7 +1,7 @@
-diff --git a/aria2.init b/aria2.init
+diff --git a/files/aria2.init b/files/aria2.init
 index 41f0005..ead8c66 100755
---- a/aria2.init
-+++ b/aria2.init
+--- a/files/aria2.init
++++ b/files/aria2.init
 @@ -168,6 +168,11 @@ aria2_start() {
  	config_file_tmp="$config_dir/$NAME.conf.tmp"
  	session_file="$config_dir/$NAME.session.$section"
