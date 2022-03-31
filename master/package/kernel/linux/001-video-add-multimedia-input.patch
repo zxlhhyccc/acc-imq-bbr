@@ -28,7 +28,7 @@ index 431f077..c51f967 100644
  define KernelPackage/drm
    SUBMENU:=$(VIDEO_MENU)
    TITLE:=Direct Rendering Manager (DRM) support
-@@ -370,6 +389,45 @@ endef
+@@ -371,6 +390,45 @@ endef
  
  $(eval $(call KernelPackage,drm-imx-ldb))
  
