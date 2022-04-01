@@ -58,7 +58,7 @@ diff --git a/modules/other.mk b/modules/other.mk
 index 499a408..1f9a8a4 100644
 --- a/modules/other.mk
 +++ b/modules/other.mk
-@@ -1001,6 +1001,86 @@ endef
+@@ -999,6 +999,86 @@ endef
  
  $(eval $(call KernelPackage,zram))
  
