@@ -3,11 +3,11 @@ include $(TOPDIR)/rules.mk
 PKG_NAME:=qca-nss-ecm
 PKG_RELEASE:=$(AUTORELEASE)
 
-PKG_SOURCE_URL:=https://source.codeaurora.org/quic/cc-qrdk/oss/lklm/qca-nss-ecm
+PKG_SOURCE_URL:=https://git.codelinaro.org/clo/qsdk/oss/lklm/qca-nss-ecm.git
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2021-07-03
-PKG_SOURCE_VERSION:=60db79f1fce8c621610bf82360c5b59b634b9120
-PKG_MIRROR_HASH:=841c91aa1cd265fbe6173db3169cad0fffd1a425075019852b40e198b1cebb60
+PKG_SOURCE_DATE:=2021-06-15
+PKG_SOURCE_VERSION:=34267065855d32f33264dc3054efb0e8103d627b
+PKG_MIRROR_HASH:=0917659d69c5f3e6067d6671b9393b4b2d6b6cd5a7bacf5e7d6cf842dc906eca
 
 PKG_BUILD_PARALLEL:=1
 
@@ -18,7 +18,7 @@ define KernelPackage/qca-nss-ecm
   SECTION:=kernel
   CATEGORY:=Kernel modules
   SUBMENU:=Network Support
-  DEPENDS:=@(TARGET_ipq807x||TARGET_ipq60xx) \
+  DEPENDS:=@LINUX_5_10 @(TARGET_ipq807x||TARGET_ipq60xx) \
   	+kmod-qca-nss-drv \
 	+iptables-mod-extra \
 	+kmod-ipt-conntrack \
@@ -30,7 +30,7 @@ define KernelPackage/qca-nss-ecm
   FILES:=$(PKG_BUILD_DIR)/*.ko
   KCONFIG:=CONFIG_BRIDGE_NETFILTER=y \
 	CONFIG_NF_CONNTRACK_EVENTS=y \
-	CONFIG_NF_CONNTRACK_CHAIN_EVENTS=y \
+	CONFIG_NF_CONNTRACK_CHAIN_EVENTS=n \
 	CONFIG_NF_CONNTRACK_DSCPREMARK_EXT=n
 endef
 
@@ -69,8 +69,7 @@ ECM_MAKE_OPTS+= ECM_FRONT_END_NSS_ENABLE=y \
 		ECM_CLASSIFIER_DSCP_ENABLE=n \
 		ECM_CLASSIFIER_PCC_ENABLE=n \
 		ECM_BAND_STEERING_ENABLE=n \
-		ECM_INTERFACE_PPPOE_ENABLE=y \
-		ECM_IPV6_ENABLE=n
+		ECM_INTERFACE_PPPOE_ENABLE=y
 endif
 
 ifeq ($(CONFIG_TARGET_BOARD), "ipq807x")
