@@ -1,0 +1,1792 @@
+diff --git a/patches/0001-Sync-with-mac80211-next.git-include-uapi-linux-nl802.patch b/patches/0001-Sync-with-mac80211-next.git-include-uapi-linux-nl802.patch
+new file mode 100644
+index 0000000..c416766
+--- /dev/null
++++ b/patches/0001-Sync-with-mac80211-next.git-include-uapi-linux-nl802.patch
+@@ -0,0 +1,406 @@
++From f5c8697c04576b1995d109abf96fddffbd3b4f1e Mon Sep 17 00:00:00 2001
++From: Jouni Malinen <j@w1.fi>
++Date: Wed, 9 Feb 2022 20:15:30 +0200
++Subject: [PATCH] Sync with mac80211-next.git include/uapi/linux/nl80211.h
++
++This brings in nl80211 definitions as of 2022-01-04. In addition, update
++nl80211_command_to_string() to cover the new defined commands.
++
++Signed-off-by: Jouni Malinen <j@w1.fi>
++---
++ src/drivers/driver_nl80211_event.c |   7 +
++ src/drivers/nl80211_copy.h         | 230 +++++++++++++++++++++++++++--
++ 2 files changed, 226 insertions(+), 11 deletions(-)
++
++--- a/src/drivers/driver_nl80211_event.c
+++++ b/src/drivers/driver_nl80211_event.c
++@@ -172,6 +172,13 @@ static const char * nl80211_command_to_s
++ 	C2S(NL80211_CMD_UNPROT_BEACON)
++ 	C2S(NL80211_CMD_CONTROL_PORT_FRAME_TX_STATUS)
++ 	C2S(NL80211_CMD_SET_SAR_SPECS)
+++	C2S(NL80211_CMD_OBSS_COLOR_COLLISION)
+++	C2S(NL80211_CMD_COLOR_CHANGE_REQUEST)
+++	C2S(NL80211_CMD_COLOR_CHANGE_STARTED)
+++	C2S(NL80211_CMD_COLOR_CHANGE_ABORTED)
+++	C2S(NL80211_CMD_COLOR_CHANGE_COMPLETED)
+++	C2S(NL80211_CMD_SET_FILS_AAD)
+++	C2S(NL80211_CMD_ASSOC_COMEBACK)
++ 	C2S(__NL80211_CMD_AFTER_LAST)
++ 	}
++ #undef C2S
++--- a/src/drivers/nl80211_copy.h
+++++ b/src/drivers/nl80211_copy.h
++@@ -11,7 +11,7 @@
++  * Copyright 2008 Jouni Malinen <jouni.malinen@atheros.com>
++  * Copyright 2008 Colin McCabe <colin@cozybit.com>
++  * Copyright 2015-2017	Intel Deutschland GmbH
++- * Copyright (C) 2018-2020 Intel Corporation
+++ * Copyright (C) 2018-2021 Intel Corporation
++  *
++  * Permission to use, copy, modify, and/or distribute this software for any
++  * purpose with or without fee is hereby granted, provided that the above
++@@ -301,6 +301,29 @@
++  */
++ 
++ /**
+++ * DOC: FILS shared key crypto offload
+++ *
+++ * This feature is applicable to drivers running in AP mode.
+++ *
+++ * FILS shared key crypto offload can be advertised by drivers by setting
+++ * @NL80211_EXT_FEATURE_FILS_CRYPTO_OFFLOAD flag. The drivers that support
+++ * FILS shared key crypto offload should be able to encrypt and decrypt
+++ * association frames for FILS shared key authentication as per IEEE 802.11ai.
+++ * With this capability, for FILS key derivation, drivers depend on userspace.
+++ *
+++ * After FILS key derivation, userspace shares the FILS AAD details with the
+++ * driver and the driver stores the same to use in decryption of association
+++ * request and in encryption of association response. The below parameters
+++ * should be given to the driver in %NL80211_CMD_SET_FILS_AAD.
+++ *	%NL80211_ATTR_MAC - STA MAC address, used for storing FILS AAD per STA
+++ *	%NL80211_ATTR_FILS_KEK - Used for encryption or decryption
+++ *	%NL80211_ATTR_FILS_NONCES - Used for encryption or decryption
+++ *			(STA Nonce 16 bytes followed by AP Nonce 16 bytes)
+++ *
+++ * Once the association is done, the driver cleans the FILS AAD data.
+++ */
+++
+++/**
++  * enum nl80211_commands - supported nl80211 commands
++  *
++  * @NL80211_CMD_UNSPEC: unspecified command to catch errors
++@@ -337,7 +360,10 @@
++  * @NL80211_CMD_DEL_INTERFACE: Virtual interface was deleted, has attributes
++  *	%NL80211_ATTR_IFINDEX and %NL80211_ATTR_WIPHY. Can also be sent from
++  *	userspace to request deletion of a virtual interface, then requires
++- *	attribute %NL80211_ATTR_IFINDEX.
+++ *	attribute %NL80211_ATTR_IFINDEX. If multiple BSSID advertisements are
+++ *	enabled using %NL80211_ATTR_MBSSID_CONFIG, %NL80211_ATTR_MBSSID_ELEMS,
+++ *	and if this command is used for the transmitting interface, then all
+++ *	the non-transmitting interfaces are deleted as well.
++  *
++  * @NL80211_CMD_GET_KEY: Get sequence counter information for a key specified
++  *	by %NL80211_ATTR_KEY_IDX and/or %NL80211_ATTR_MAC.
++@@ -1185,6 +1211,32 @@
++  *	passed using %NL80211_ATTR_SAR_SPEC. %NL80211_ATTR_WIPHY is used to
++  *	specify the wiphy index to be applied to.
++  *
+++ * @NL80211_CMD_OBSS_COLOR_COLLISION: This notification is sent out whenever
+++ *	mac80211/drv detects a bss color collision.
+++ *
+++ * @NL80211_CMD_COLOR_CHANGE_REQUEST: This command is used to indicate that
+++ *	userspace wants to change the BSS color.
+++ *
+++ * @NL80211_CMD_COLOR_CHANGE_STARTED: Notify userland, that a color change has
+++ *	started
+++ *
+++ * @NL80211_CMD_COLOR_CHANGE_ABORTED: Notify userland, that the color change has
+++ *	been aborted
+++ *
+++ * @NL80211_CMD_COLOR_CHANGE_COMPLETED: Notify userland that the color change
+++ *	has completed
+++ *
+++ * @NL80211_CMD_SET_FILS_AAD: Set FILS AAD data to the driver using -
+++ *	&NL80211_ATTR_MAC - for STA MAC address
+++ *	&NL80211_ATTR_FILS_KEK - for KEK
+++ *	&NL80211_ATTR_FILS_NONCES - for FILS Nonces
+++ *		(STA Nonce 16 bytes followed by AP Nonce 16 bytes)
+++ *
+++ * @NL80211_CMD_ASSOC_COMEBACK: notification about an association
+++ *      temporal rejection with comeback. The event includes %NL80211_ATTR_MAC
+++ *      to describe the BSSID address of the AP and %NL80211_ATTR_TIMEOUT to
+++ *      specify the timeout value.
+++ *
++  * @NL80211_CMD_MAX: highest used command number
++  * @__NL80211_CMD_AFTER_LAST: internal use
++  */
++@@ -1417,6 +1469,18 @@ enum nl80211_commands {
++ 
++ 	NL80211_CMD_SET_SAR_SPECS,
++ 
+++	NL80211_CMD_OBSS_COLOR_COLLISION,
+++
+++	NL80211_CMD_COLOR_CHANGE_REQUEST,
+++
+++	NL80211_CMD_COLOR_CHANGE_STARTED,
+++	NL80211_CMD_COLOR_CHANGE_ABORTED,
+++	NL80211_CMD_COLOR_CHANGE_COMPLETED,
+++
+++	NL80211_CMD_SET_FILS_AAD,
+++
+++	NL80211_CMD_ASSOC_COMEBACK,
+++
++ 	/* add new commands above here */
++ 
++ 	/* used to define NL80211_CMD_MAX below */
++@@ -2413,7 +2477,9 @@ enum nl80211_commands {
++  *	space supports external authentication. This attribute shall be used
++  *	with %NL80211_CMD_CONNECT and %NL80211_CMD_START_AP request. The driver
++  *	may offload authentication processing to user space if this capability
++- *	is indicated in the respective requests from the user space.
+++ *	is indicated in the respective requests from the user space. (This flag
+++ *	attribute deprecated for %NL80211_CMD_START_AP, use
+++ *	%NL80211_ATTR_AP_SETTINGS_FLAGS)
++  *
++  * @NL80211_ATTR_NSS: Station's New/updated  RX_NSS value notified using this
++  *	u8 attribute. This is used with %NL80211_CMD_STA_OPMODE_CHANGED.
++@@ -2560,6 +2626,39 @@ enum nl80211_commands {
++  *	disassoc events to indicate that an immediate reconnect to the AP
++  *	is desired.
++  *
+++ * @NL80211_ATTR_OBSS_COLOR_BITMAP: bitmap of the u64 BSS colors for the
+++ *	%NL80211_CMD_OBSS_COLOR_COLLISION event.
+++ *
+++ * @NL80211_ATTR_COLOR_CHANGE_COUNT: u8 attribute specifying the number of TBTT's
+++ *	until the color switch event.
+++ * @NL80211_ATTR_COLOR_CHANGE_COLOR: u8 attribute specifying the color that we are
+++ *	switching to
+++ * @NL80211_ATTR_COLOR_CHANGE_ELEMS: Nested set of attributes containing the IE
+++ *	information for the time while performing a color switch.
+++ *
+++ * @NL80211_ATTR_MBSSID_CONFIG: Nested attribute for multiple BSSID
+++ *	advertisements (MBSSID) parameters in AP mode.
+++ *	Kernel uses this attribute to indicate the driver's support for MBSSID
+++ *	and enhanced multi-BSSID advertisements (EMA AP) to the userspace.
+++ *	Userspace should use this attribute to configure per interface MBSSID
+++ *	parameters.
+++ *	See &enum nl80211_mbssid_config_attributes for details.
+++ *
+++ * @NL80211_ATTR_MBSSID_ELEMS: Nested parameter to pass multiple BSSID elements.
+++ *	Mandatory parameter for the transmitting interface to enable MBSSID.
+++ *	Optional for the non-transmitting interfaces.
+++ *
+++ * @NL80211_ATTR_RADAR_BACKGROUND: Configure dedicated offchannel chain
+++ *	available for radar/CAC detection on some hw. This chain can't be used
+++ *	to transmit or receive frames and it is bounded to a running wdev.
+++ *	Background radar/CAC detection allows to avoid the CAC downtime
+++ *	switching on a different channel during CAC detection on the selected
+++ *	radar channel.
+++ *
+++ * @NL80211_ATTR_AP_SETTINGS_FLAGS: u32 attribute contains ap settings flags,
+++ *	enumerated in &enum nl80211_ap_settings_flags. This attribute shall be
+++ *	used with %NL80211_CMD_START_AP request.
+++ *
++  * @NUM_NL80211_ATTR: total number of nl80211_attrs available
++  * @NL80211_ATTR_MAX: highest attribute number currently defined
++  * @__NL80211_ATTR_AFTER_LAST: internal use
++@@ -3057,6 +3156,19 @@ enum nl80211_attrs {
++ 
++ 	NL80211_ATTR_DISABLE_HE,
++ 
+++	NL80211_ATTR_OBSS_COLOR_BITMAP,
+++
+++	NL80211_ATTR_COLOR_CHANGE_COUNT,
+++	NL80211_ATTR_COLOR_CHANGE_COLOR,
+++	NL80211_ATTR_COLOR_CHANGE_ELEMS,
+++
+++	NL80211_ATTR_MBSSID_CONFIG,
+++	NL80211_ATTR_MBSSID_ELEMS,
+++
+++	NL80211_ATTR_RADAR_BACKGROUND,
+++
+++	NL80211_ATTR_AP_SETTINGS_FLAGS,
+++
++ 	/* add attributes here, update the policy in nl80211.c */
++ 
++ 	__NL80211_ATTR_AFTER_LAST,
++@@ -3650,11 +3762,12 @@ enum nl80211_mpath_info {
++  *     capabilities IE
++  * @NL80211_BAND_IFTYPE_ATTR_HE_CAP_PPE: HE PPE thresholds information as
++  *     defined in HE capabilities IE
++- * @NL80211_BAND_IFTYPE_ATTR_MAX: highest band HE capability attribute currently
++- *     defined
++  * @NL80211_BAND_IFTYPE_ATTR_HE_6GHZ_CAPA: HE 6GHz band capabilities (__le16),
++  *	given for all 6 GHz band channels
+++ * @NL80211_BAND_IFTYPE_ATTR_VENDOR_ELEMS: vendor element capabilities that are
+++ *	advertised on this band/for this iftype (binary)
++  * @__NL80211_BAND_IFTYPE_ATTR_AFTER_LAST: internal use
+++ * @NL80211_BAND_IFTYPE_ATTR_MAX: highest band attribute currently defined
++  */
++ enum nl80211_band_iftype_attr {
++ 	__NL80211_BAND_IFTYPE_ATTR_INVALID,
++@@ -3665,6 +3778,7 @@ enum nl80211_band_iftype_attr {
++ 	NL80211_BAND_IFTYPE_ATTR_HE_CAP_MCS_SET,
++ 	NL80211_BAND_IFTYPE_ATTR_HE_CAP_PPE,
++ 	NL80211_BAND_IFTYPE_ATTR_HE_6GHZ_CAPA,
+++	NL80211_BAND_IFTYPE_ATTR_VENDOR_ELEMS,
++ 
++ 	/* keep last */
++ 	__NL80211_BAND_IFTYPE_ATTR_AFTER_LAST,
++@@ -4887,6 +5001,7 @@ enum nl80211_txrate_gi {
++  * @NL80211_BAND_60GHZ: around 60 GHz band (58.32 - 69.12 GHz)
++  * @NL80211_BAND_6GHZ: around 6 GHz band (5.9 - 7.2 GHz)
++  * @NL80211_BAND_S1GHZ: around 900MHz, supported by S1G PHYs
+++ * @NL80211_BAND_LC: light communication band (placeholder)
++  * @NUM_NL80211_BANDS: number of bands, avoid using this in userspace
++  *	since newer kernel versions may support more bands
++  */
++@@ -4896,6 +5011,7 @@ enum nl80211_band {
++ 	NL80211_BAND_60GHZ,
++ 	NL80211_BAND_6GHZ,
++ 	NL80211_BAND_S1GHZ,
+++	NL80211_BAND_LC,
++ 
++ 	NUM_NL80211_BANDS,
++ };
++@@ -5462,7 +5578,7 @@ enum nl80211_iface_limit_attrs {
++  *	=> allows 8 of AP/GO that can have BI gcd >= min gcd
++  *
++  *	numbers = [ #{STA} <= 2 ], channels = 2, max = 2
++- *	=> allows two STAs on different channels
+++ *	=> allows two STAs on the same or on different channels
++  *
++  *	numbers = [ #{STA} <= 1, #{P2P-client,P2P-GO} <= 3 ], max = 4
++  *	=> allows a STA plus three P2P interfaces
++@@ -5507,7 +5623,7 @@ enum nl80211_if_combination_attrs {
++  * @NL80211_PLINK_ESTAB: mesh peer link is established
++  * @NL80211_PLINK_HOLDING: mesh peer link is being closed or cancelled
++  * @NL80211_PLINK_BLOCKED: all frames transmitted from this mesh
++- *	plink are discarded
+++ *	plink are discarded, except for authentication frames
++  * @NUM_NL80211_PLINK_STATES: number of peer link states
++  * @MAX_NL80211_PLINK_STATES: highest numerical value of plink states
++  */
++@@ -5644,13 +5760,15 @@ enum nl80211_tdls_operation {
++ 	NL80211_TDLS_DISABLE_LINK,
++ };
++ 
++-/*
+++/**
++  * enum nl80211_ap_sme_features - device-integrated AP features
++- * Reserved for future use, no bits are defined in
++- * NL80211_ATTR_DEVICE_AP_SME yet.
+++ * @NL80211_AP_SME_SA_QUERY_OFFLOAD: SA Query procedures offloaded to driver
+++ *	when user space indicates support for SA Query procedures offload during
+++ *	"start ap" with %NL80211_AP_SETTINGS_SA_QUERY_OFFLOAD_SUPPORT.
+++ */
++ enum nl80211_ap_sme_features {
+++	NL80211_AP_SME_SA_QUERY_OFFLOAD		= 1 << 0,
++ };
++- */
++ 
++ /**
++  * enum nl80211_feature_flags - device/driver features
++@@ -5950,6 +6068,17 @@ enum nl80211_feature_flags {
++  *      frame protection for all management frames exchanged during the
++  *      negotiation and range measurement procedure.
++  *
+++ * @NL80211_EXT_FEATURE_BSS_COLOR: The driver supports BSS color collision
+++ *	detection and change announcemnts.
+++ *
+++ * @NL80211_EXT_FEATURE_FILS_CRYPTO_OFFLOAD: Driver running in AP mode supports
+++ *	FILS encryption and decryption for (Re)Association Request and Response
+++ *	frames. Userspace has to share FILS AAD details to the driver by using
+++ *	@NL80211_CMD_SET_FILS_AAD.
+++ *
+++ * @NL80211_EXT_FEATURE_RADAR_BACKGROUND: Device supports background radar/CAC
+++ *	detection.
+++ *
++  * @NUM_NL80211_EXT_FEATURES: number of extended features.
++  * @MAX_NL80211_EXT_FEATURES: highest extended feature index.
++  */
++@@ -6014,6 +6143,9 @@ enum nl80211_ext_feature_index {
++ 	NL80211_EXT_FEATURE_SECURE_LTF,
++ 	NL80211_EXT_FEATURE_SECURE_RTT,
++ 	NL80211_EXT_FEATURE_PROT_RANGE_NEGO_AND_MEASURE,
+++	NL80211_EXT_FEATURE_BSS_COLOR,
+++	NL80211_EXT_FEATURE_FILS_CRYPTO_OFFLOAD,
+++	NL80211_EXT_FEATURE_RADAR_BACKGROUND,
++ 
++ 	/* add new features before the definition below */
++ 	NUM_NL80211_EXT_FEATURES,
++@@ -6912,6 +7044,9 @@ enum nl80211_peer_measurement_ftm_capa {
++  * @NL80211_PMSR_FTM_REQ_ATTR_LMR_FEEDBACK: negotiate for LMR feedback. Only
++  *	valid if either %NL80211_PMSR_FTM_REQ_ATTR_TRIGGER_BASED or
++  *	%NL80211_PMSR_FTM_REQ_ATTR_NON_TRIGGER_BASED is set.
+++ * @NL80211_PMSR_FTM_REQ_ATTR_BSS_COLOR: optional. The BSS color of the
+++ *	responder. Only valid if %NL80211_PMSR_FTM_REQ_ATTR_NON_TRIGGER_BASED
+++ *	or %NL80211_PMSR_FTM_REQ_ATTR_TRIGGER_BASED is set.
++  *
++  * @NUM_NL80211_PMSR_FTM_REQ_ATTR: internal
++  * @NL80211_PMSR_FTM_REQ_ATTR_MAX: highest attribute number
++@@ -6931,6 +7066,7 @@ enum nl80211_peer_measurement_ftm_req {
++ 	NL80211_PMSR_FTM_REQ_ATTR_TRIGGER_BASED,
++ 	NL80211_PMSR_FTM_REQ_ATTR_NON_TRIGGER_BASED,
++ 	NL80211_PMSR_FTM_REQ_ATTR_LMR_FEEDBACK,
+++	NL80211_PMSR_FTM_REQ_ATTR_BSS_COLOR,
++ 
++ 	/* keep last */
++ 	NUM_NL80211_PMSR_FTM_REQ_ATTR,
++@@ -7299,4 +7435,76 @@ enum nl80211_sar_specs_attrs {
++ 	NL80211_SAR_ATTR_SPECS_MAX = __NL80211_SAR_ATTR_SPECS_LAST - 1,
++ };
++ 
+++/**
+++ * enum nl80211_mbssid_config_attributes - multiple BSSID (MBSSID) and enhanced
+++ * multi-BSSID advertisements (EMA) in AP mode.
+++ * Kernel uses some of these attributes to advertise driver's support for
+++ * MBSSID and EMA.
+++ * Remaining attributes should be used by the userspace to configure the
+++ * features.
+++ *
+++ * @__NL80211_MBSSID_CONFIG_ATTR_INVALID: Invalid
+++ *
+++ * @NL80211_MBSSID_CONFIG_ATTR_MAX_INTERFACES: Used by the kernel to advertise
+++ *	the maximum number of MBSSID interfaces supported by the driver.
+++ *	Driver should indicate MBSSID support by setting
+++ *	wiphy->mbssid_max_interfaces to a value more than or equal to 2.
+++ *
+++ * @NL80211_MBSSID_CONFIG_ATTR_MAX_EMA_PROFILE_PERIODICITY: Used by the kernel
+++ *	to advertise the maximum profile periodicity supported by the driver
+++ *	if EMA is enabled. Driver should indicate EMA support to the userspace
+++ *	by setting wiphy->ema_max_profile_periodicity to
+++ *	a non-zero value.
+++ *
+++ * @NL80211_MBSSID_CONFIG_ATTR_INDEX: Mandatory parameter to pass the index of
+++ *	this BSS (u8) in the multiple BSSID set.
+++ *	Value must be set to 0 for the transmitting interface and non-zero for
+++ *	all non-transmitting interfaces. The userspace will be responsible
+++ *	for using unique indices for the interfaces.
+++ *	Range: 0 to wiphy->mbssid_max_interfaces-1.
+++ *
+++ * @NL80211_MBSSID_CONFIG_ATTR_TX_IFINDEX: Mandatory parameter for
+++ *	a non-transmitted profile which provides the interface index (u32) of
+++ *	the transmitted profile. The value must match one of the interface
+++ *	indices advertised by the kernel. Optional if the interface being set up
+++ *	is the transmitting one, however, if provided then the value must match
+++ *	the interface index of the same.
+++ *
+++ * @NL80211_MBSSID_CONFIG_ATTR_EMA: Flag used to enable EMA AP feature.
+++ *	Setting this flag is permitted only if the driver advertises EMA support
+++ *	by setting wiphy->ema_max_profile_periodicity to non-zero.
+++ *
+++ * @__NL80211_MBSSID_CONFIG_ATTR_LAST: Internal
+++ * @NL80211_MBSSID_CONFIG_ATTR_MAX: highest attribute
+++ */
+++enum nl80211_mbssid_config_attributes {
+++	__NL80211_MBSSID_CONFIG_ATTR_INVALID,
+++
+++	NL80211_MBSSID_CONFIG_ATTR_MAX_INTERFACES,
+++	NL80211_MBSSID_CONFIG_ATTR_MAX_EMA_PROFILE_PERIODICITY,
+++	NL80211_MBSSID_CONFIG_ATTR_INDEX,
+++	NL80211_MBSSID_CONFIG_ATTR_TX_IFINDEX,
+++	NL80211_MBSSID_CONFIG_ATTR_EMA,
+++
+++	/* keep last */
+++	__NL80211_MBSSID_CONFIG_ATTR_LAST,
+++	NL80211_MBSSID_CONFIG_ATTR_MAX = __NL80211_MBSSID_CONFIG_ATTR_LAST - 1,
+++};
+++
+++/**
+++ * enum nl80211_ap_settings_flags - AP settings flags
+++ *
+++ * @NL80211_AP_SETTINGS_EXTERNAL_AUTH_SUPPORT: AP supports external
+++ *	authentication.
+++ * @NL80211_AP_SETTINGS_SA_QUERY_OFFLOAD_SUPPORT: Userspace supports SA Query
+++ *	procedures offload to driver. If driver advertises
+++ *	%NL80211_AP_SME_SA_QUERY_OFFLOAD in AP SME features, userspace shall
+++ *	ignore SA Query procedures and validations when this flag is set by
+++ *	userspace.
+++ */
+++enum nl80211_ap_settings_flags {
+++	NL80211_AP_SETTINGS_EXTERNAL_AUTH_SUPPORT	= 1 << 0,
+++	NL80211_AP_SETTINGS_SA_QUERY_OFFLOAD_SUPPORT	= 1 << 1,
+++};
+++
++ #endif /* __LINUX_NL80211_H */
+diff --git a/patches/v2-1-5-bss-coloring-add-support-for-handling-collision-events-and-triggering-CCA.patch b/patches/v2-1-5-bss-coloring-add-support-for-handling-collision-events-and-triggering-CCA.patch
+new file mode 100644
+index 0000000..afbe0b6
+--- /dev/null
++++ b/patches/v2-1-5-bss-coloring-add-support-for-handling-collision-events-and-triggering-CCA.patch
+@@ -0,0 +1,419 @@
++From patchwork Mon Nov  8 03:04:22 2021
++Content-Type: text/plain; charset="utf-8"
++MIME-Version: 1.0
++Content-Transfer-Encoding: 7bit
++X-Patchwork-Submitter: Ryder Lee <ryder.lee@mediatek.com>
++X-Patchwork-Id: 1552115
++Return-Path: 
++ <hostap-bounces+incoming=patchwork.ozlabs.org@lists.infradead.org>
++X-Original-To: incoming@patchwork.ozlabs.org
++Delivered-To: patchwork-incoming@bilbo.ozlabs.org
++Authentication-Results: bilbo.ozlabs.org;
++	dkim=pass (2048-bit key;
++ secure) header.d=lists.infradead.org header.i=@lists.infradead.org
++ header.a=rsa-sha256 header.s=bombadil.20210309 header.b=TdjSI8dB;
++	dkim-atps=neutral
++Authentication-Results: ozlabs.org;
++ spf=none (no SPF record) smtp.mailfrom=lists.infradead.org
++ (client-ip=2607:7c80:54:e::133; helo=bombadil.infradead.org;
++ envelope-from=hostap-bounces+incoming=patchwork.ozlabs.org@lists.infradead.org;
++ receiver=<UNKNOWN>)
++Received: from bombadil.infradead.org (bombadil.infradead.org
++ [IPv6:2607:7c80:54:e::133])
++	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
++	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest
++ SHA256)
++	(No client certificate requested)
++	by bilbo.ozlabs.org (Postfix) with ESMTPS id 4Hnbbl2GBWz9sR4
++	for <incoming@patchwork.ozlabs.org>; Mon,  8 Nov 2021 14:06:11 +1100 (AEDT)
++DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
++	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
++	Content-Transfer-Encoding:Content-Type:List-Subscribe:List-Help:List-Post:
++	List-Archive:List-Unsubscribe:List-Id:MIME-Version:Message-ID:Date:Subject:CC
++	:To:From:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
++	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:
++	List-Owner; bh=jJbGlY/UjiOWDJu0LYiULCtBponRgB2rvIsYJaolOJc=; b=TdjSI8dBSKP247
++	l5QD34cAO9uWzUWoVC+tdBlaW1aby3k85d/nEEMtTcHWs4iVB1XkTTDnizxiADCA8QmZs4avo49De
++	FuPTgYekOV5QrTcMCYXQbUs4MP+J0t9IRB8nzfg9ZPmjK8os5S8X6Ofa+5FZqr/NAqltHVaVTXDUs
++	HOrKINWu1ER8b2CnrBV1aEMyR8CZB3jXELW/zvAB3eyzeMUQ3F3i5cXlOVKjoyHarqJ7KyolLh/zk
++	FdnmnVeKttaTQGaJbW45XnCwowirMKa+rwvGf7aC0Vogxms+teN/9QNnUkE6q2VdgHGgbiciEzkSF
++	Ez5Fi4ll8M2oap6VJaRg==;
++Received: from localhost ([::1] helo=bombadil.infradead.org)
++	by bombadil.infradead.org with esmtp (Exim 4.94.2 #2 (Red Hat Linux))
++	id 1mjuxn-00FLFN-D3; Mon, 08 Nov 2021 03:04:51 +0000
++Received: from mailgw01.mediatek.com ([216.200.240.184])
++ by bombadil.infradead.org with esmtps (Exim 4.94.2 #2 (Red Hat Linux))
++ id 1mjuxc-00FLDp-GA
++ for hostap@lists.infradead.org; Mon, 08 Nov 2021 03:04:42 +0000
++X-UUID: 2f3a392f63dc4f7596cff8bcd834ff56-20211107
++X-UUID: 2f3a392f63dc4f7596cff8bcd834ff56-20211107
++Received: from mtkcas68.mediatek.inc [(172.29.94.19)] by mailgw01.mediatek.com
++ (envelope-from <ryder.lee@mediatek.com>)
++ (musrelay.mediatek.com ESMTP with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
++ with ESMTP id 238529206; Sun, 07 Nov 2021 20:04:34 -0700
++Received: from MTKMBS07N2.mediatek.inc (172.21.101.141) by
++ MTKMBS62N1.mediatek.inc (172.29.193.41) with Microsoft SMTP Server (TLS) id
++ 15.0.1497.2; Sun, 7 Nov 2021 19:04:32 -0800
++Received: from mtkmbs10n1.mediatek.inc (172.21.101.34) by
++ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
++ 15.0.1497.2; Mon, 8 Nov 2021 11:04:31 +0800
++Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
++ mtkmbs10n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
++ 15.2.792.15 via Frontend Transport; Mon, 8 Nov 2021 11:04:31 +0800
++From: Ryder Lee <ryder.lee@mediatek.com>
++To: Jouni Malinen <jouni@codeaurora.org>
++CC: Felix Fietkau <nbd@nbd.name>, Lorenzo Bianconi
++ <lorenzo.bianconi@redhat.com>, Shayne Chen <shayne.chen@mediatek.com>,
++ "Evelyn Tsai" <evelyn.tsai@mediatek.com>, <hostap@lists.infradead.org>, John
++ Crispin <john@phrozen.org>, Lorenzo Bianconi <lorenzo@kernel.org>, Ryder Lee
++ <ryder.lee@mediatek.com>
++Subject: [PATCH v2 1/5] bss coloring: add support for handling collision
++ events and triggering CCA
++Date: Mon, 8 Nov 2021 11:04:22 +0800
++Message-ID: 
++ <2d69afce2fd6f44ae08ac75d5715fa9e43fe2a77.1636093546.git.ryder.lee@mediatek.com>
++X-Mailer: git-send-email 2.18.0
++MIME-Version: 1.0
++X-MTK: N
++X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
++X-CRM114-CacheID: sfid-20211107_190440_578484_445A5D3D 
++X-CRM114-Status: GOOD (  27.51  )
++X-Spam-Score: 0.0 (/)
++X-Spam-Report: Spam detection software,
++ running on the system "bombadil.infradead.org",
++ has NOT identified this incoming email as spam.  The original
++ message has been attached to this so you can view it or label
++ similar future email.  If you have any questions, see
++ the administrator of that system for details.
++ Content preview: From: John Crispin <john@phrozen.org> Add the core code for
++ handling bss color collision events and triggering CCA inside the kernel.
++ The caller of hostapd_switch_color() will be added in the following commits.
++ Content analysis details:   (0.0 points, 5.0 required)
++ pts rule name              description
++ ---- ----------------------
++ --------------------------------------------------
++ -0.0 SPF_PASS               SPF: sender matches SPF record
++ 0.0 SPF_HELO_NONE          SPF: HELO does not publish an SPF Record
++ 0.0 UNPARSEABLE_RELAY      Informational: message has unparseable relay
++ lines
++X-BeenThere: hostap@lists.infradead.org
++X-Mailman-Version: 2.1.34
++Precedence: list
++List-Id: <hostap.lists.infradead.org>
++List-Unsubscribe: <http://lists.infradead.org/mailman/options/hostap>,
++ <mailto:hostap-request@lists.infradead.org?subject=unsubscribe>
++List-Archive: <http://lists.infradead.org/pipermail/hostap/>
++List-Post: <mailto:hostap@lists.infradead.org>
++List-Help: <mailto:hostap-request@lists.infradead.org?subject=help>
++List-Subscribe: <http://lists.infradead.org/mailman/listinfo/hostap>,
++ <mailto:hostap-request@lists.infradead.org?subject=subscribe>
++Sender: "Hostap" <hostap-bounces@lists.infradead.org>
++Errors-To: hostap-bounces+incoming=patchwork.ozlabs.org@lists.infradead.org
++
++From: John Crispin <john@phrozen.org>
++
++Add the core code for handling bss color collision events and triggering
++CCA inside the kernel. The caller of hostapd_switch_color() will be added
++in the following commits.
++
++Tested-by: Peter Chiu <chui-hao.chiu@mediatek.com>
++Co-developed-by: Lorenzo Bianconi <lorenzo@kernel.org>
++Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
++Signed-off-by: John Crispin <john@phrozen.org>
++Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
++---
++changes since v2 -
++- use os_get_reltime and os_reltime instead.
++- use bool cca_in_progress.
++- use random BSS color to avoid hardcoded BSS color value of 1.
++- modify comment for DOT11BSS_COLOR_COLLISION_AP_PERIOD.
++- add a note for collision behavior.
++- fix compiler warnings.
++- Be clear in the commit message regarding hostapd_switch_color().
++---
++ src/ap/ap_drv_ops.h          |  12 ++++
++ src/ap/hostapd.c             | 134 ++++++++++++++++++++++++++++++++++-
++ src/ap/hostapd.h             |  16 +++++
++ src/common/ieee802_11_defs.h |   6 ++
++ src/drivers/driver.h         |  31 ++++++++
++ 5 files changed, 198 insertions(+), 1 deletion(-)
++
++--- a/src/ap/ap_drv_ops.h
+++++ b/src/ap/ap_drv_ops.h
++@@ -299,6 +299,18 @@ static inline int hostapd_drv_switch_cha
++ 	return hapd->driver->switch_channel(hapd->drv_priv, settings);
++ }
++ 
+++#ifdef CONFIG_IEEE80211AX
+++static inline int hostapd_drv_switch_color(struct hostapd_data *hapd,
+++					   struct cca_settings *settings)
+++{
+++	if (hapd->driver == NULL || hapd->driver->switch_color == NULL ||
+++	    hapd->drv_priv == NULL)
+++		return -1;
+++
+++	return hapd->driver->switch_color(hapd->drv_priv, settings);
+++}
+++#endif
+++
++ static inline int hostapd_drv_status(struct hostapd_data *hapd, char *buf,
++ 				     size_t buflen)
++ {
++--- a/src/ap/hostapd.c
+++++ b/src/ap/hostapd.c
++@@ -66,7 +66,10 @@ static int setup_interface2(struct hosta
++ static void channel_list_update_timeout(void *eloop_ctx, void *timeout_ctx);
++ static void hostapd_interface_setup_failure_handler(void *eloop_ctx,
++ 						    void *timeout_ctx);
++-
+++#ifdef CONFIG_IEEE80211AX
+++static void
+++hostapd_switch_color_timeout_handler(void *eloop_data, void *user_ctx);
+++#endif
++ 
++ int hostapd_for_each_interface(struct hapd_interfaces *interfaces,
++ 			       int (*cb)(struct hostapd_iface *iface,
++@@ -537,6 +540,9 @@ void hostapd_free_hapd_data(struct hosta
++ 	}
++ 	eloop_cancel_timeout(auth_sae_process_commit, hapd, NULL);
++ #endif /* CONFIG_SAE */
+++#ifdef CONFIG_IEEE80211AX
+++	eloop_cancel_timeout(hostapd_switch_color_timeout_handler, hapd, NULL);
+++#endif
++ }
++ 
++ 
++@@ -3790,6 +3796,132 @@ hostapd_switch_channel_fallback(struct h
++ 	hostapd_enable_iface(iface);
++ }
++ 
+++
+++#ifdef CONFIG_IEEE80211AX
+++void hostapd_cleanup_cca_params(struct hostapd_data *hapd)
+++{
+++	hapd->cca_count = 0;
+++	hapd->cca_color = 0;
+++	hapd->cca_c_off_beacon = 0;
+++	hapd->cca_c_off_proberesp = 0;
+++	hapd->cca_in_progress = false;
+++}
+++
+++
+++static int hostapd_fill_cca_settings(struct hostapd_data *hapd,
+++				     struct cca_settings *settings)
+++{
+++	struct hostapd_iface *iface = hapd->iface;
+++	u8 old_color;
+++	int ret;
+++
+++	if (!iface || iface->conf->he_op.he_bss_color_disabled)
+++		return -1;
+++
+++        old_color = iface->conf->he_op.he_bss_color;
+++	iface->conf->he_op.he_bss_color = hapd->cca_color;
+++	ret = hostapd_build_beacon_data(hapd, &settings->beacon_after);
+++	iface->conf->he_op.he_bss_color = old_color;
+++
+++	settings->cca_count = hapd->cca_count;
+++	settings->cca_color = hapd->cca_color,
+++	hapd->cca_in_progress = true;
+++
+++	ret = hostapd_build_beacon_data(hapd, &settings->beacon_cca);
+++	if (ret) {
+++		free_beacon_data(&settings->beacon_after);
+++		return ret;
+++	}
+++
+++	settings->counter_offset_beacon = hapd->cca_c_off_beacon;
+++	settings->counter_offset_presp = hapd->cca_c_off_proberesp;
+++
+++	return 0;
+++}
+++
+++
+++static void
+++hostapd_switch_color_timeout_handler(void *eloop_data, void *user_ctx)
+++{
+++	struct hostapd_data *hapd = (struct hostapd_data *) eloop_data;
+++	struct cca_settings settings;
+++	struct os_reltime now;
+++	unsigned int b;
+++	int i, r, ret;
+++
+++	if (os_get_reltime(&now))
+++		return;
+++
+++	/* 10s window is the approximate margin of collision persistent
+++	 * as an initial implementation. CCA can only be triggered once
+++	 * handler constantly receives collision events to update the
+++	 * last_color_collision.sec. How does it work -
+++	 *
+++	 * 1. BSS color collision persistent for at least 50 seconds.
+++	 * 2. The BSS Color Disabled subfield is set to 1.
+++	 * 3. CCA.
+++	 *
+++	 * TODO: implement other 'persistent' computation methods.
+++	 */
+++	if (now.sec - hapd->last_color_collision.sec >= 10)
+++		return;
+++
+++	r = os_random() % HE_OPERATION_BSS_COLOR_MAX;
+++	for (i = 0; i < HE_OPERATION_BSS_COLOR_MAX; i++) {
+++		if (r && (hapd->color_collision_bitmap & (1 << r)) == 0)
+++			break;
+++		r = (r + 1) % HE_OPERATION_BSS_COLOR_MAX;
+++	}
+++
+++	if (i == HE_OPERATION_BSS_COLOR_MAX) {
+++		/* there are no free colors so turn bss coloring off */
+++		wpa_printf(MSG_INFO, "no free colors left, turning of BSS coloring");
+++		hapd->iface->conf->he_op.he_bss_color_disabled = 1;
+++		hapd->iface->conf->he_op.he_bss_color = os_random() % 63 + 1;
+++		for (b = 0; b < hapd->iface->num_bss; b++)
+++			ieee802_11_set_beacon(hapd->iface->bss[b]);
+++		return;
+++	}
+++
+++	for (b = 0; b < hapd->iface->num_bss; b++) {
+++		struct hostapd_data *bss = hapd->iface->bss[b];
+++
+++		hostapd_cleanup_cca_params(bss);
+++		bss->cca_color = r;
+++		bss->cca_count = 10;
+++
+++		if (hostapd_fill_cca_settings(bss, &settings)) {
+++			hostapd_cleanup_cca_params(bss);
+++			continue;
+++		}
+++
+++		ret = hostapd_drv_switch_color(bss, &settings);
+++		free_beacon_data(&settings.beacon_cca);
+++		free_beacon_data(&settings.beacon_after);
+++
+++		if (ret)
+++			hostapd_cleanup_cca_params(bss);
+++	}
+++}
+++
+++
+++void
+++hostapd_switch_color(struct hostapd_data *hapd, u64 bitmap)
+++{
+++	if (hapd->cca_in_progress)
+++		return;
+++
+++	if (os_get_reltime(&hapd->last_color_collision))
+++		return;
+++
+++	hapd->color_collision_bitmap = bitmap;
+++
+++	if (!eloop_is_timeout_registered(hostapd_switch_color_timeout_handler, hapd, NULL))
+++		eloop_register_timeout(DOT11BSS_COLOR_COLLISION_AP_PERIOD, 0,
+++				       hostapd_switch_color_timeout_handler, hapd, NULL);
+++}
+++#endif
+++
++ #endif /* NEED_AP_MLME */
++ 
++ 
++--- a/src/ap/hostapd.h
+++++ b/src/ap/hostapd.h
++@@ -315,6 +315,16 @@ struct hostapd_data {
++ 	unsigned int cs_c_off_ecsa_beacon;
++ 	unsigned int cs_c_off_ecsa_proberesp;
++ 
+++#ifdef CONFIG_IEEE80211AX
+++	bool cca_in_progress;
+++	u8 cca_count;
+++	u8 cca_color;
+++	unsigned int cca_c_off_beacon;
+++	unsigned int cca_c_off_proberesp;
+++	struct os_reltime last_color_collision;
+++	u64 color_collision_bitmap;
+++#endif
+++
++ #ifdef CONFIG_P2P
++ 	struct p2p_data *p2p;
++ 	struct p2p_group *p2p_group;
++@@ -670,6 +680,12 @@ int hostapd_owe_trans_get_info(struct ho
++ void hostapd_ocv_check_csa_sa_query(void *eloop_ctx, void *timeout_ctx);
++ int hostapd_check_max_sta(struct hostapd_data *hapd);
++ 
+++
+++#ifdef CONFIG_IEEE80211AX
+++void hostapd_switch_color(struct hostapd_data *hapd, u64 bitmap);
+++void hostapd_cleanup_cca_params(struct hostapd_data *hapd);
+++#endif
+++
++ /* utils.c */
++ int hostapd_register_probereq_cb(struct hostapd_data *hapd,
++ 				 int (*cb)(void *ctx, const u8 *sa,
++--- a/src/common/ieee802_11_defs.h
+++++ b/src/common/ieee802_11_defs.h
++@@ -2305,6 +2305,7 @@ struct ieee80211_spatial_reuse {
++ #define HE_OPERATION_BSS_COLOR_PARTIAL		((u32) BIT(30))
++ #define HE_OPERATION_BSS_COLOR_DISABLED		((u32) BIT(31))
++ #define HE_OPERATION_BSS_COLOR_OFFSET		24
+++#define HE_OPERATION_BSS_COLOR_MAX		64
++ 
++ /* Spatial Reuse defines */
++ #define SPATIAL_REUSE_SRP_DISALLOWED		BIT(0)
++@@ -2470,6 +2471,11 @@ enum mscs_description_subelem {
++  */
++ #define FD_MAX_INTERVAL_6GHZ                  20 /* TUs */
++ 
+++/* IEEE802.11/D6.0 - 26.17.3.5.1, AP needs to wait and see the collision
+++ * persists for at least the minimum default timeout
+++ */
+++#define DOT11BSS_COLOR_COLLISION_AP_PERIOD	50
+++
++ /* Protected Vendor-specific QoS Management Action frame identifiers - WFA */
++ #define QM_ACTION_VENDOR_TYPE 0x506f9a1a
++ #define QM_ACTION_OUI_TYPE 0x1a
++--- a/src/drivers/driver.h
+++++ b/src/drivers/driver.h
++@@ -2402,6 +2402,26 @@ struct csa_settings {
++ 	u16 counter_offset_presp[2];
++ };
++ 
+++/**
+++ * struct cca_settings - Settings for color switch command
+++ * @cca_count: Count in Beacon frames (TBTT) to perform the switch
+++ * @cca_color: The new color that we are switching to
+++ * @beacon_cca: Beacon/probe resp/asooc resp info for color switch period
+++ * @beacon_after: Next beacon/probe resp/asooc resp info
+++ * @counter_offset_beacon: Offset to the count field in beacon's tail
+++ * @counter_offset_presp: Offset to the count field in probe resp.
+++ */
+++struct cca_settings {
+++	u8 cca_count;
+++	u8 cca_color;
+++
+++	struct beacon_data beacon_cca;
+++	struct beacon_data beacon_after;
+++
+++	u16 counter_offset_beacon;
+++	u16 counter_offset_presp;
+++};
+++
++ /* TDLS peer capabilities for send_tdls_mgmt() */
++ enum tdls_peer_capability {
++ 	TDLS_PEER_HT = BIT(0),
++@@ -3985,6 +4005,17 @@ struct wpa_driver_ops {
++ 	int (*switch_channel)(void *priv, struct csa_settings *settings);
++ 
++ 	/**
+++	 * switch_color - Announce color switch and migrate the BSS to the
+++	 * given color
+++	 * @priv: Private driver interface data
+++	 * @settings: Settings for CCA period and new color
+++	 * Returns: 0 on success, -1 on failure
+++	 *
+++	 * This function is used to move the BSS to its new color.
+++	 */
+++	int (*switch_color)(void *priv, struct cca_settings *settings);
+++
+++	/**
++ 	 * add_tx_ts - Add traffic stream
++ 	 * @priv: Private driver interface data
++ 	 * @tsid: Traffic stream ID
+diff --git a/patches/v2-2-5-bss_coloring-add-the-code-required-to-generate-the-CCA-IE.patch b/patches/v2-2-5-bss_coloring-add-the-code-required-to-generate-the-CCA-IE.patch
+new file mode 100644
+index 0000000..1d5214c
+--- /dev/null
++++ b/patches/v2-2-5-bss_coloring-add-the-code-required-to-generate-the-CCA-IE.patch
+@@ -0,0 +1,222 @@
++From patchwork Mon Nov  8 03:04:23 2021
++Content-Type: text/plain; charset="utf-8"
++MIME-Version: 1.0
++Content-Transfer-Encoding: 7bit
++X-Patchwork-Submitter: Ryder Lee <ryder.lee@mediatek.com>
++X-Patchwork-Id: 1552114
++Return-Path: 
++ <hostap-bounces+incoming=patchwork.ozlabs.org@lists.infradead.org>
++X-Original-To: incoming@patchwork.ozlabs.org
++Delivered-To: patchwork-incoming@bilbo.ozlabs.org
++Authentication-Results: bilbo.ozlabs.org;
++	dkim=pass (2048-bit key;
++ secure) header.d=lists.infradead.org header.i=@lists.infradead.org
++ header.a=rsa-sha256 header.s=bombadil.20210309 header.b=FNYbWSBm;
++	dkim-atps=neutral
++Authentication-Results: ozlabs.org;
++ spf=none (no SPF record) smtp.mailfrom=lists.infradead.org
++ (client-ip=2607:7c80:54:e::133; helo=bombadil.infradead.org;
++ envelope-from=hostap-bounces+incoming=patchwork.ozlabs.org@lists.infradead.org;
++ receiver=<UNKNOWN>)
++Received: from bombadil.infradead.org (bombadil.infradead.org
++ [IPv6:2607:7c80:54:e::133])
++	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
++	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest
++ SHA256)
++	(No client certificate requested)
++	by bilbo.ozlabs.org (Postfix) with ESMTPS id 4Hnbbf3YQVz9sR4
++	for <incoming@patchwork.ozlabs.org>; Mon,  8 Nov 2021 14:06:06 +1100 (AEDT)
++DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
++	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
++	Content-Transfer-Encoding:Content-Type:List-Subscribe:List-Help:List-Post:
++	List-Archive:List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:
++	Message-ID:Date:Subject:CC:To:From:Reply-To:Content-ID:Content-Description:
++	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
++	List-Owner; bh=zQnS3Zfye3rrdWsY67X+kqgEkt7sw7eyXA+j3iDImIs=; b=FNYbWSBmAKVGTL
++	G/vix+Ug5vQJ1C4MkodN488cA5n54x7wwD6nEXcYUir7i/Jo9DDP7toOFkmNye+/fWwsF3mopTfmD
++	mKcm57p5fg0Pl4v6C3K16WtgravMpwrr979HtbIHjMcaIX8UpdKF0atOg1CMcT3yfog+8MModkZyk
++	Duas/c2biGmKCPws+APX6cMLI4F/c0f8eMrTGmzFXBMpyTitjmG+q6SMsjvsq+7lxZpos+XFTO1QX
++	IVcBjVF+9tUuk3c0x8MA5r8kJfg0XhP/F7lufL8cWiwitTf1FRxLmblj6tp2PZH9aQpvxxTtzy3I+
++	GEBz8oRaZzYLQvevdyiQ==;
++Received: from localhost ([::1] helo=bombadil.infradead.org)
++	by bombadil.infradead.org with esmtp (Exim 4.94.2 #2 (Red Hat Linux))
++	id 1mjuxf-00FLEj-VJ; Mon, 08 Nov 2021 03:04:44 +0000
++Received: from mailgw01.mediatek.com ([216.200.240.184])
++ by bombadil.infradead.org with esmtps (Exim 4.94.2 #2 (Red Hat Linux))
++ id 1mjuxb-00FLDo-7a
++ for hostap@lists.infradead.org; Mon, 08 Nov 2021 03:04:41 +0000
++X-UUID: d5fc02cf516e4810a7ad38409f469145-20211107
++X-UUID: d5fc02cf516e4810a7ad38409f469145-20211107
++Received: from mtkcas68.mediatek.inc [(172.29.94.19)] by mailgw01.mediatek.com
++ (envelope-from <ryder.lee@mediatek.com>)
++ (musrelay.mediatek.com ESMTP with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
++ with ESMTP id 1005168563; Sun, 07 Nov 2021 20:04:34 -0700
++Received: from MTKMBS07N2.mediatek.inc (172.21.101.141) by
++ MTKMBS62N1.mediatek.inc (172.29.193.41) with Microsoft SMTP Server (TLS) id
++ 15.0.1497.2; Sun, 7 Nov 2021 19:04:33 -0800
++Received: from mtkmbs10n1.mediatek.inc (172.21.101.34) by
++ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
++ 15.0.1497.2; Mon, 8 Nov 2021 11:04:31 +0800
++Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
++ mtkmbs10n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
++ 15.2.792.15 via Frontend Transport; Mon, 8 Nov 2021 11:04:31 +0800
++From: Ryder Lee <ryder.lee@mediatek.com>
++To: Jouni Malinen <jouni@codeaurora.org>
++CC: Felix Fietkau <nbd@nbd.name>, Lorenzo Bianconi
++ <lorenzo.bianconi@redhat.com>, Shayne Chen <shayne.chen@mediatek.com>,
++ "Evelyn Tsai" <evelyn.tsai@mediatek.com>, <hostap@lists.infradead.org>, John
++ Crispin <john@phrozen.org>, Lorenzo Bianconi <lorenzo@kernel.org>, Ryder Lee
++ <ryder.lee@mediatek.com>
++Subject: [PATCH v2 2/5] bss_coloring: add the code required to generate the
++ CCA IE
++Date: Mon, 8 Nov 2021 11:04:23 +0800
++Message-ID: 
++ <d7a95338df080b7abafb3f796a0521130818f5e1.1636093546.git.ryder.lee@mediatek.com>
++X-Mailer: git-send-email 2.18.0
++In-Reply-To: 
++ <2d69afce2fd6f44ae08ac75d5715fa9e43fe2a77.1636093546.git.ryder.lee@mediatek.com>
++References: 
++ <2d69afce2fd6f44ae08ac75d5715fa9e43fe2a77.1636093546.git.ryder.lee@mediatek.com>
++MIME-Version: 1.0
++X-MTK: N
++X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
++X-CRM114-CacheID: sfid-20211107_190439_311523_23A01681 
++X-CRM114-Status: GOOD (  13.18  )
++X-Spam-Score: 0.0 (/)
++X-Spam-Report: Spam detection software,
++ running on the system "bombadil.infradead.org",
++ has NOT identified this incoming email as spam.  The original
++ message has been attached to this so you can view it or label
++ similar future email.  If you have any questions, see
++ the administrator of that system for details.
++ Content preview: From: John Crispin <john@phrozen.org> This IE is similar to
++ the CSA one. It contains a counter and the target color. Once the counter
++ expired,
++ the change to the new color happens. Just note the current implementation
++ is based on CCA counter attributes that only takes beacon and prob_resp into
++ account, as for the assoc_resp frames will be added in the future patches.
++ Content analysis details:   (0.0 points, 5.0 required)
++ pts rule name              description
++ ---- ----------------------
++ --------------------------------------------------
++ -0.0 SPF_PASS               SPF: sender matches SPF record
++ 0.0 SPF_HELO_NONE          SPF: HELO does not publish an SPF Record
++ 0.0 UNPARSEABLE_RELAY      Informational: message has unparseable relay
++ lines
++X-BeenThere: hostap@lists.infradead.org
++X-Mailman-Version: 2.1.34
++Precedence: list
++List-Id: <hostap.lists.infradead.org>
++List-Unsubscribe: <http://lists.infradead.org/mailman/options/hostap>,
++ <mailto:hostap-request@lists.infradead.org?subject=unsubscribe>
++List-Archive: <http://lists.infradead.org/pipermail/hostap/>
++List-Post: <mailto:hostap@lists.infradead.org>
++List-Help: <mailto:hostap-request@lists.infradead.org?subject=help>
++List-Subscribe: <http://lists.infradead.org/mailman/listinfo/hostap>,
++ <mailto:hostap-request@lists.infradead.org?subject=subscribe>
++Sender: "Hostap" <hostap-bounces@lists.infradead.org>
++Errors-To: hostap-bounces+incoming=patchwork.ozlabs.org@lists.infradead.org
++
++From: John Crispin <john@phrozen.org>
++
++This IE is similar to the CSA one. It contains a counter and the target
++color. Once the counter expired, the change to the new color happens.
++
++Just note the current implementation is based on CCA counter attributes
++that only takes beacon and prob_resp into account, as for the assoc_resp
++frames will be added in the future patches.
++
++Tested-by: Peter Chiu <chui-hao.chiu@mediatek.com>
++Co-developed-by: Lorenzo Bianconi <lorenzo@kernel.org>
++Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
++Signed-off-by: John Crispin <john@phrozen.org>
++Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
++---
++changes since v2 -
++- fix the position of CCA IE.
++---
++ src/ap/beacon.c              | 18 ++++++++++++++++++
++ src/ap/ieee802_11.h          |  1 +
++ src/ap/ieee802_11_he.c       | 14 ++++++++++++++
++ src/common/ieee802_11_defs.h |  1 +
++ 4 files changed, 34 insertions(+)
++
++--- a/src/ap/beacon.c
+++++ b/src/ap/beacon.c
++@@ -578,8 +578,17 @@ static u8 * hostapd_gen_probe_resp(struc
++ 
++ #ifdef CONFIG_IEEE80211AX
++ 	if (hapd->iconf->ieee80211ax && !hapd->conf->disable_11ax) {
+++		u8 *cca_pos;
+++
++ 		pos = hostapd_eid_he_capab(hapd, pos, IEEE80211_MODE_AP);
++ 		pos = hostapd_eid_he_operation(hapd, pos);
+++
+++		/* CCA IE */
+++		cca_pos = hostapd_eid_cca(hapd, pos);
+++		if (cca_pos != pos)
+++			hapd->cca_c_off_proberesp = cca_pos - (u8 *) resp - 2;
+++		pos = cca_pos;
+++
++ 		pos = hostapd_eid_spatial_reuse(hapd, pos);
++ 		pos = hostapd_eid_he_mu_edca_parameter_set(hapd, pos);
++ 		pos = hostapd_eid_he_6ghz_band_cap(hapd, pos);
++@@ -1612,9 +1621,18 @@ int ieee802_11_build_ap_params(struct ho
++ 
++ #ifdef CONFIG_IEEE80211AX
++ 	if (hapd->iconf->ieee80211ax && !hapd->conf->disable_11ax) {
+++		u8 *cca_pos;
+++
++ 		tailpos = hostapd_eid_he_capab(hapd, tailpos,
++ 					       IEEE80211_MODE_AP);
++ 		tailpos = hostapd_eid_he_operation(hapd, tailpos);
+++
+++		/* CCA IE */
+++		cca_pos = hostapd_eid_cca(hapd, tailpos);
+++		if (cca_pos != tailpos)
+++			hapd->cca_c_off_beacon = cca_pos - tail - 2;
+++		tailpos = cca_pos;
+++
++ 		tailpos = hostapd_eid_spatial_reuse(hapd, tailpos);
++ 		tailpos = hostapd_eid_he_mu_edca_parameter_set(hapd, tailpos);
++ 		tailpos = hostapd_eid_he_6ghz_band_cap(hapd, tailpos);
++--- a/src/ap/ieee802_11.h
+++++ b/src/ap/ieee802_11.h
++@@ -100,6 +100,7 @@ u16 copy_sta_he_6ghz_capab(struct hostap
++ 			   const u8 *he_6ghz_capab);
++ int hostapd_get_he_twt_responder(struct hostapd_data *hapd,
++ 				 enum ieee80211_op_mode mode);
+++u8 * hostapd_eid_cca(struct hostapd_data *hapd, u8 *eid);
++ void hostapd_tx_status(struct hostapd_data *hapd, const u8 *addr,
++ 		       const u8 *buf, size_t len, int ack);
++ void hostapd_eapol_tx_status(struct hostapd_data *hapd, const u8 *dst,
++--- a/src/ap/ieee802_11_he.c
+++++ b/src/ap/ieee802_11_he.c
++@@ -520,3 +520,17 @@ int hostapd_get_he_twt_responder(struct
++ 	return !!(mac_cap[HE_MAC_CAPAB_0] & HE_MACCAP_TWT_RESPONDER) &&
++ 		hapd->iface->conf->he_op.he_twt_responder;
++ }
+++
+++u8 * hostapd_eid_cca(struct hostapd_data *hapd, u8 *eid)
+++{
+++	if (!hapd->cca_in_progress)
+++		return eid;
+++
+++	*eid++ = WLAN_EID_EXTENSION;
+++	*eid++ = 3;
+++	*eid++ = WLAN_EID_EXT_COLOR_CHANGE_ANNOUNCEMENT;
+++	*eid++ = hapd->cca_count;
+++	*eid++ = hapd->cca_color;
+++
+++	return eid;
+++}
++--- a/src/common/ieee802_11_defs.h
+++++ b/src/common/ieee802_11_defs.h
++@@ -479,6 +479,7 @@
++ #define WLAN_EID_EXT_HE_OPERATION 36
++ #define WLAN_EID_EXT_HE_MU_EDCA_PARAMS 38
++ #define WLAN_EID_EXT_SPATIAL_REUSE 39
+++#define WLAN_EID_EXT_COLOR_CHANGE_ANNOUNCEMENT 42
++ #define WLAN_EID_EXT_OCV_OCI 54
++ #define WLAN_EID_EXT_SHORT_SSID_LIST 58
++ #define WLAN_EID_EXT_HE_6GHZ_BAND_CAP 59
+diff --git a/patches/v2-3-5-bss-coloring-disable-BSS-color-during-CCA.patch b/patches/v2-3-5-bss-coloring-disable-BSS-color-during-CCA.patch
+new file mode 100644
+index 0000000..9c72eb7
+--- /dev/null
++++ b/patches/v2-3-5-bss-coloring-disable-BSS-color-during-CCA.patch
+@@ -0,0 +1,144 @@
++From patchwork Mon Nov  8 03:04:24 2021
++Content-Type: text/plain; charset="utf-8"
++MIME-Version: 1.0
++Content-Transfer-Encoding: 7bit
++X-Patchwork-Submitter: Ryder Lee <ryder.lee@mediatek.com>
++X-Patchwork-Id: 1552124
++Return-Path: 
++ <hostap-bounces+incoming=patchwork.ozlabs.org@lists.infradead.org>
++X-Original-To: incoming@patchwork.ozlabs.org
++Delivered-To: patchwork-incoming@bilbo.ozlabs.org
++Authentication-Results: bilbo.ozlabs.org;
++	dkim=pass (2048-bit key;
++ secure) header.d=lists.infradead.org header.i=@lists.infradead.org
++ header.a=rsa-sha256 header.s=bombadil.20210309 header.b=zkbh7Ryq;
++	dkim-atps=neutral
++Authentication-Results: ozlabs.org;
++ spf=none (no SPF record) smtp.mailfrom=lists.infradead.org
++ (client-ip=2607:7c80:54:e::133; helo=bombadil.infradead.org;
++ envelope-from=hostap-bounces+incoming=patchwork.ozlabs.org@lists.infradead.org;
++ receiver=<UNKNOWN>)
++Received: from bombadil.infradead.org (bombadil.infradead.org
++ [IPv6:2607:7c80:54:e::133])
++	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
++	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest
++ SHA256)
++	(No client certificate requested)
++	by bilbo.ozlabs.org (Postfix) with ESMTPS id 4Hnbq56ZSDz9sRK
++	for <incoming@patchwork.ozlabs.org>; Mon,  8 Nov 2021 14:16:01 +1100 (AEDT)
++DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
++	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
++	Content-Transfer-Encoding:Content-Type:List-Subscribe:List-Help:List-Post:
++	List-Archive:List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:
++	Message-ID:Date:Subject:CC:To:From:Reply-To:Content-ID:Content-Description:
++	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
++	List-Owner; bh=ZbtBLdHqwnNjHBoOMRI6QOzOvTzZ+TO1Kw2XqvWwciA=; b=zkbh7RyqMn3A0m
++	KrUfa6c2piAsXpi54eURNi1+HMN1X6VOkOST8pXCmNxzhQ+ywBLnhl1eDmq8rNnrZg43TSncySEBf
++	dbkHP2/41t02SSF4nsJlaOhLjUg5rXfsxiCxSG9QJoxETJPeb+3WaLhpVUd32cjw8tWHNp8FnN5Aa
++	V5UPt2BHi7yPjb3JQCqKXNgIhXIJyCzk02tN8R9RDGKgYnqVHdWMrCVDWyEDIeg0cBfGr3GKgZtty
++	NAMF25PGe24HOzn3vL/P2Cvhbr9fQQ7u4o9u8XISJt6VKXolXfYuY3RM4EFhNdPIGS2K6GBFRhzus
++	DkgEqnKizFTxUots4cKQ==;
++Received: from localhost ([::1] helo=bombadil.infradead.org)
++	by bombadil.infradead.org with esmtp (Exim 4.94.2 #2 (Red Hat Linux))
++	id 1mjv7R-00FM0A-2A; Mon, 08 Nov 2021 03:14:49 +0000
++Received: from mailgw02.mediatek.com ([216.200.240.185])
++ by bombadil.infradead.org with esmtps (Exim 4.94.2 #2 (Red Hat Linux))
++ id 1mjv7O-00FLzJ-CZ
++ for hostap@lists.infradead.org; Mon, 08 Nov 2021 03:14:47 +0000
++X-UUID: 5aa40d43241f42da8848d056b8fa9b18-20211107
++X-UUID: 5aa40d43241f42da8848d056b8fa9b18-20211107
++Received: from mtkcas66.mediatek.inc [(172.29.193.44)] by
++ mailgw02.mediatek.com
++ (envelope-from <ryder.lee@mediatek.com>)
++ (musrelay.mediatek.com ESMTP with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
++ with ESMTP id 361743472; Sun, 07 Nov 2021 20:14:42 -0700
++Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
++ MTKMBS62N1.mediatek.inc (172.29.193.41) with Microsoft SMTP Server (TLS) id
++ 15.0.1497.2; Sun, 7 Nov 2021 19:04:40 -0800
++Received: from mtkmbs10n1.mediatek.inc (172.21.101.34) by
++ mtkexhb02.mediatek.inc (172.21.101.103) with Microsoft SMTP Server (TLS) id
++ 15.0.1497.2; Mon, 8 Nov 2021 11:04:32 +0800
++Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
++ mtkmbs10n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
++ 15.2.792.15 via Frontend Transport; Mon, 8 Nov 2021 11:04:32 +0800
++From: Ryder Lee <ryder.lee@mediatek.com>
++To: Jouni Malinen <jouni@codeaurora.org>
++CC: Felix Fietkau <nbd@nbd.name>, Lorenzo Bianconi
++ <lorenzo.bianconi@redhat.com>, Shayne Chen <shayne.chen@mediatek.com>,
++ "Evelyn Tsai" <evelyn.tsai@mediatek.com>, <hostap@lists.infradead.org>, John
++ Crispin <john@phrozen.org>, Lorenzo Bianconi <lorenzo@kernel.org>, Ryder Lee
++ <ryder.lee@mediatek.com>
++Subject: [PATCH v2 3/5] bss coloring: disable BSS color during CCA
++Date: Mon, 8 Nov 2021 11:04:24 +0800
++Message-ID: 
++ <9ac28de67dc46471179ef84d516727a153dc89c0.1636093546.git.ryder.lee@mediatek.com>
++X-Mailer: git-send-email 2.18.0
++In-Reply-To: 
++ <2d69afce2fd6f44ae08ac75d5715fa9e43fe2a77.1636093546.git.ryder.lee@mediatek.com>
++References: 
++ <2d69afce2fd6f44ae08ac75d5715fa9e43fe2a77.1636093546.git.ryder.lee@mediatek.com>
++MIME-Version: 1.0
++X-MTK: N
++X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
++X-CRM114-CacheID: sfid-20211107_191446_479100_E5E06374 
++X-CRM114-Status: GOOD (  10.72  )
++X-Spam-Score: 0.0 (/)
++X-Spam-Report: Spam detection software,
++ running on the system "bombadil.infradead.org",
++ has NOT identified this incoming email as spam.  The original
++ message has been attached to this so you can view it or label
++ similar future email.  If you have any questions, see
++ the administrator of that system for details.
++ Content preview: From: John Crispin <john@phrozen.org> While we are doing CCA
++ the bss color disable bit inside the he oper field needs to be set.
++ Tested-by:
++ Peter Chiu <chui-hao.chiu@mediatek.com> Co-developed-by: Lorenzo Bianconi
++ <lorenzo@kernel.org> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
++ Signed-off-by: John Crispin <john@phrozen [...]
++ Content analysis details:   (0.0 points, 5.0 required)
++ pts rule name              description
++ ---- ----------------------
++ --------------------------------------------------
++ -0.0 SPF_PASS               SPF: sender matches SPF record
++ 0.0 SPF_HELO_NONE          SPF: HELO does not publish an SPF Record
++ 0.0 UNPARSEABLE_RELAY      Informational: message has unparseable relay
++ lines
++X-BeenThere: hostap@lists.infradead.org
++X-Mailman-Version: 2.1.34
++Precedence: list
++List-Id: <hostap.lists.infradead.org>
++List-Unsubscribe: <http://lists.infradead.org/mailman/options/hostap>,
++ <mailto:hostap-request@lists.infradead.org?subject=unsubscribe>
++List-Archive: <http://lists.infradead.org/pipermail/hostap/>
++List-Post: <mailto:hostap@lists.infradead.org>
++List-Help: <mailto:hostap-request@lists.infradead.org?subject=help>
++List-Subscribe: <http://lists.infradead.org/mailman/listinfo/hostap>,
++ <mailto:hostap-request@lists.infradead.org?subject=subscribe>
++Sender: "Hostap" <hostap-bounces@lists.infradead.org>
++Errors-To: hostap-bounces+incoming=patchwork.ozlabs.org@lists.infradead.org
++
++From: John Crispin <john@phrozen.org>
++
++While we are doing CCA the bss color disable bit inside the he oper field
++needs to be set.
++
++Tested-by: Peter Chiu <chui-hao.chiu@mediatek.com>
++Co-developed-by: Lorenzo Bianconi <lorenzo@kernel.org>
++Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
++Signed-off-by: John Crispin <john@phrozen.org>
++Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
++---
++ src/ap/ieee802_11_he.c | 2 +-
++ 1 file changed, 1 insertion(+), 1 deletion(-)
++
++--- a/src/ap/ieee802_11_he.c
+++++ b/src/ap/ieee802_11_he.c
++@@ -195,7 +195,7 @@ u8 * hostapd_eid_he_operation(struct hos
++ 	if (hapd->iface->conf->he_op.he_er_su_disable)
++ 		params |= HE_OPERATION_ER_SU_DISABLE;
++ 
++-	if (hapd->iface->conf->he_op.he_bss_color_disabled)
+++	if (hapd->iface->conf->he_op.he_bss_color_disabled || hapd->cca_in_progress)
++ 		params |= HE_OPERATION_BSS_COLOR_DISABLED;
++ 	if (hapd->iface->conf->he_op.he_bss_color_partial)
++ 		params |= HE_OPERATION_BSS_COLOR_PARTIAL;
+diff --git a/patches/v2-4-5-bss-coloring-add-the-switch_color-handler-to-the-nl80211-driver.patch b/patches/v2-4-5-bss-coloring-add-the-switch_color-handler-to-the-nl80211-driver.patch
+new file mode 100644
+index 0000000..221c437
+--- /dev/null
++++ b/patches/v2-4-5-bss-coloring-add-the-switch_color-handler-to-the-nl80211-driver.patch
+@@ -0,0 +1,229 @@
++From patchwork Mon Nov  8 03:04:25 2021
++Content-Type: text/plain; charset="utf-8"
++MIME-Version: 1.0
++Content-Transfer-Encoding: 7bit
++X-Patchwork-Submitter: Ryder Lee <ryder.lee@mediatek.com>
++X-Patchwork-Id: 1552126
++Return-Path: 
++ <hostap-bounces+incoming=patchwork.ozlabs.org@lists.infradead.org>
++X-Original-To: incoming@patchwork.ozlabs.org
++Delivered-To: patchwork-incoming@bilbo.ozlabs.org
++Authentication-Results: bilbo.ozlabs.org;
++	dkim=pass (2048-bit key;
++ secure) header.d=lists.infradead.org header.i=@lists.infradead.org
++ header.a=rsa-sha256 header.s=bombadil.20210309 header.b=f3dR9QlK;
++	dkim-atps=neutral
++Authentication-Results: ozlabs.org;
++ spf=none (no SPF record) smtp.mailfrom=lists.infradead.org
++ (client-ip=2607:7c80:54:e::133; helo=bombadil.infradead.org;
++ envelope-from=hostap-bounces+incoming=patchwork.ozlabs.org@lists.infradead.org;
++ receiver=<UNKNOWN>)
++Received: from bombadil.infradead.org (bombadil.infradead.org
++ [IPv6:2607:7c80:54:e::133])
++	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
++	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest
++ SHA256)
++	(No client certificate requested)
++	by bilbo.ozlabs.org (Postfix) with ESMTPS id 4Hnbq80ldSz9sR4
++	for <incoming@patchwork.ozlabs.org>; Mon,  8 Nov 2021 14:16:04 +1100 (AEDT)
++DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
++	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
++	Content-Transfer-Encoding:Content-Type:List-Subscribe:List-Help:List-Post:
++	List-Archive:List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:
++	Message-ID:Date:Subject:CC:To:From:Reply-To:Content-ID:Content-Description:
++	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
++	List-Owner; bh=pw/A1cFLx8vLCo09Sq0Z+nCWXPyM//TvHXXD1rCuOU8=; b=f3dR9QlKtxY6ba
++	AcO4VQpOa4TvVe0xvGqZSGNWrfx8hxo03JWio6vRj/Ni9kAIhIrrd6ycBrFEKER2Iw+8QMokIJ7+y
++	PajahCVWGUhkw0NDVp4qDPNNTVpsuWpFT/ZeC8T1Ow8eMdNuDxc/WBI3pT9uhxmS32IIOn1031Ksb
++	aTct90u5uaSupi39B/17JtQ/Mt4K1XBx7/2hRzweT5iOf+1/qdie3AhS0U8EAZAu61mVMvYoXBmZN
++	OwfJkSqPBTmVvVmr+0KWb3/1iIC09BG985varDaFqtTX7MPpjoF6nzSNiaB7M7XLeW12FxHdh3ZPu
++	oykuvkOqAYHm9+9tVA9g==;
++Received: from localhost ([::1] helo=bombadil.infradead.org)
++	by bombadil.infradead.org with esmtp (Exim 4.94.2 #2 (Red Hat Linux))
++	id 1mjv7Y-00FM0Q-JV; Mon, 08 Nov 2021 03:14:56 +0000
++Received: from mailgw02.mediatek.com ([216.200.240.185])
++ by bombadil.infradead.org with esmtps (Exim 4.94.2 #2 (Red Hat Linux))
++ id 1mjv7O-00FLzO-Gd
++ for hostap@lists.infradead.org; Mon, 08 Nov 2021 03:14:48 +0000
++X-UUID: f0f035fe35ce4f3c98817633a53a1a8b-20211107
++X-UUID: f0f035fe35ce4f3c98817633a53a1a8b-20211107
++Received: from mtkcas66.mediatek.inc [(172.29.193.44)] by
++ mailgw02.mediatek.com
++ (envelope-from <ryder.lee@mediatek.com>)
++ (musrelay.mediatek.com ESMTP with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
++ with ESMTP id 492139916; Sun, 07 Nov 2021 20:14:42 -0700
++Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
++ MTKMBS62N1.mediatek.inc (172.29.193.41) with Microsoft SMTP Server (TLS) id
++ 15.0.1497.2; Sun, 7 Nov 2021 19:04:41 -0800
++Received: from mtkmbs10n1.mediatek.inc (172.21.101.34) by
++ mtkexhb02.mediatek.inc (172.21.101.103) with Microsoft SMTP Server (TLS) id
++ 15.0.1497.2; Mon, 8 Nov 2021 11:04:33 +0800
++Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
++ mtkmbs10n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
++ 15.2.792.15 via Frontend Transport; Mon, 8 Nov 2021 11:04:33 +0800
++From: Ryder Lee <ryder.lee@mediatek.com>
++To: Jouni Malinen <jouni@codeaurora.org>
++CC: Felix Fietkau <nbd@nbd.name>, Lorenzo Bianconi
++ <lorenzo.bianconi@redhat.com>, Shayne Chen <shayne.chen@mediatek.com>,
++ "Evelyn Tsai" <evelyn.tsai@mediatek.com>, <hostap@lists.infradead.org>, John
++ Crispin <john@phrozen.org>, Lorenzo Bianconi <lorenzo@kernel.org>, Ryder Lee
++ <ryder.lee@mediatek.com>
++Subject: [PATCH v2 4/5] bss coloring: add the switch_color handler to the
++ nl80211 driver
++Date: Mon, 8 Nov 2021 11:04:25 +0800
++Message-ID: 
++ <c67dddcce3b58082415f4f967441c5c80663943c.1636093546.git.ryder.lee@mediatek.com>
++X-Mailer: git-send-email 2.18.0
++In-Reply-To: 
++ <2d69afce2fd6f44ae08ac75d5715fa9e43fe2a77.1636093546.git.ryder.lee@mediatek.com>
++References: 
++ <2d69afce2fd6f44ae08ac75d5715fa9e43fe2a77.1636093546.git.ryder.lee@mediatek.com>
++MIME-Version: 1.0
++X-MTK: N
++X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
++X-CRM114-CacheID: sfid-20211107_191446_582339_568C31F9 
++X-CRM114-Status: GOOD (  13.79  )
++X-Spam-Score: 0.0 (/)
++X-Spam-Report: Spam detection software,
++ running on the system "bombadil.infradead.org",
++ has NOT identified this incoming email as spam.  The original
++ message has been attached to this so you can view it or label
++ similar future email.  If you have any questions, see
++ the administrator of that system for details.
++ Content preview: From: John Crispin <john@phrozen.org> In order to start the
++ CCA process we need to send NL80211_CMD_COLOR_CHANGE to the kernel. This
++ patch adds the required code. Tested-by: Peter Chiu
++ <chui-hao.chiu@mediatek.com>
++ Co-developed-by: Lorenzo Bianconi <lorenzo@kernel.org> Signed-off-by: Lorenzo
++ Bianconi <lorenzo@kernel.org> Signed-off-by: John Crispin <john@phrozen [...]
++ Content analysis details:   (0.0 points, 5.0 required)
++ pts rule name              description
++ ---- ----------------------
++ --------------------------------------------------
++ -0.0 SPF_PASS               SPF: sender matches SPF record
++ 0.0 SPF_HELO_NONE          SPF: HELO does not publish an SPF Record
++ 0.0 UNPARSEABLE_RELAY      Informational: message has unparseable relay
++ lines
++X-BeenThere: hostap@lists.infradead.org
++X-Mailman-Version: 2.1.34
++Precedence: list
++List-Id: <hostap.lists.infradead.org>
++List-Unsubscribe: <http://lists.infradead.org/mailman/options/hostap>,
++ <mailto:hostap-request@lists.infradead.org?subject=unsubscribe>
++List-Archive: <http://lists.infradead.org/pipermail/hostap/>
++List-Post: <mailto:hostap@lists.infradead.org>
++List-Help: <mailto:hostap-request@lists.infradead.org?subject=help>
++List-Subscribe: <http://lists.infradead.org/mailman/listinfo/hostap>,
++ <mailto:hostap-request@lists.infradead.org?subject=subscribe>
++Sender: "Hostap" <hostap-bounces@lists.infradead.org>
++Errors-To: hostap-bounces+incoming=patchwork.ozlabs.org@lists.infradead.org
++
++From: John Crispin <john@phrozen.org>
++
++In order to start the CCA process we need to send NL80211_CMD_COLOR_CHANGE
++to the kernel. This patch adds the required code.
++
++Tested-by: Peter Chiu <chui-hao.chiu@mediatek.com>
++Co-developed-by: Lorenzo Bianconi <lorenzo@kernel.org>
++Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
++Signed-off-by: John Crispin <john@phrozen.org>
++Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
++---
++ src/drivers/driver_nl80211.c | 79 ++++++++++++++++++++++++++++++++++++
++ 1 file changed, 79 insertions(+)
++
++--- a/src/drivers/driver_nl80211.c
+++++ b/src/drivers/driver_nl80211.c
++@@ -9966,6 +9966,82 @@ error:
++ }
++ 
++ 
+++#ifdef CONFIG_IEEE80211AX
+++static int nl80211_switch_color(void *priv, struct cca_settings *settings)
+++{
+++	struct nl_msg *msg;
+++	struct i802_bss *bss = priv;
+++	struct wpa_driver_nl80211_data *drv = bss->drv;
+++	struct nlattr *beacon_cca;
+++	int ret = -ENOBUFS;
+++
+++	wpa_printf(MSG_DEBUG, "nl80211: Color change request (cca_count=%u color=%d)",
+++		   settings->cca_count, settings->cca_color);
+++
+++	if (drv->nlmode != NL80211_IFTYPE_AP)
+++		return -EOPNOTSUPP;
+++
+++	if (!settings->beacon_cca.tail)
+++		return -EINVAL;
+++
+++	if ((settings->beacon_cca.tail_len <= settings->counter_offset_beacon) ||
+++	    (settings->beacon_cca.tail[settings->counter_offset_beacon] !=
+++		     settings->cca_count))
+++		return -EINVAL;
+++
+++	if (settings->beacon_cca.probe_resp &&
+++	    ((settings->beacon_cca.probe_resp_len <=
+++			settings->counter_offset_presp) ||
+++	     (settings->beacon_cca.probe_resp[settings->counter_offset_presp] !=
+++			settings->cca_count)))
+++		return -EINVAL;
+++
+++	if (!(msg = nl80211_bss_msg(bss, 0, NL80211_CMD_COLOR_CHANGE_REQUEST)) ||
+++	    nla_put_u8(msg, NL80211_ATTR_COLOR_CHANGE_COUNT,
+++			settings->cca_count) ||
+++	    nla_put_u8(msg, NL80211_ATTR_COLOR_CHANGE_COLOR,
+++			settings->cca_color))
+++		goto error;
+++
+++	/* beacon_after params */
+++	ret = set_beacon_data(msg, &settings->beacon_after);
+++	if (ret)
+++		goto error;
+++
+++	/* beacon_csa params */
+++	beacon_cca = nla_nest_start(msg, NL80211_ATTR_COLOR_CHANGE_ELEMS);
+++	if (!beacon_cca)
+++		goto fail;
+++
+++	ret = set_beacon_data(msg, &settings->beacon_cca);
+++	if (ret)
+++		goto error;
+++
+++	if (nla_put_u16(msg, NL80211_ATTR_CNTDWN_OFFS_BEACON,
+++			settings->counter_offset_beacon) ||
+++	    (settings->beacon_cca.probe_resp &&
+++	     nla_put_u16(msg, NL80211_ATTR_CNTDWN_OFFS_PRESP,
+++			 settings->counter_offset_presp)))
+++		goto fail;
+++
+++	nla_nest_end(msg, beacon_cca);
+++	ret = send_and_recv_msgs(drv, msg, NULL, NULL, NULL, NULL);
+++	if (ret) {
+++		wpa_printf(MSG_DEBUG, "nl80211: switch_color failed err=%d (%s)",
+++			   ret, strerror(-ret));
+++	}
+++	return ret;
+++
+++fail:
+++	ret = -ENOBUFS;
+++error:
+++	nlmsg_free(msg);
+++	wpa_printf(MSG_DEBUG, "nl80211: Could not build color switch request");
+++	return ret;
+++}
+++#endif
+++
+++
++ static int nl80211_add_ts(void *priv, u8 tsid, const u8 *addr,
++ 			  u8 user_priority, u16 admitted_time)
++ {
++@@ -12215,6 +12291,9 @@ const struct wpa_driver_ops wpa_driver_n
++ 	.get_survey = wpa_driver_nl80211_get_survey,
++ 	.status = wpa_driver_nl80211_status,
++ 	.switch_channel = nl80211_switch_channel,
+++#ifdef CONFIG_IEEE80211AX
+++	.switch_color = nl80211_switch_color,
+++#endif
++ #ifdef ANDROID_P2P
++ 	.set_noa = wpa_driver_set_p2p_noa,
++ 	.get_noa = wpa_driver_get_p2p_noa,
+diff --git a/patches/v2-5-5-bss-coloring-handle-the-collision-and-CCA-events-coming-from-the-kernel.patch b/patches/v2-5-5-bss-coloring-handle-the-collision-and-CCA-events-coming-from-the-kernel.patch
+new file mode 100644
+index 0000000..75c298f
+--- /dev/null
++++ b/patches/v2-5-5-bss-coloring-handle-the-collision-and-CCA-events-coming-from-the-kernel.patch
+@@ -0,0 +1,336 @@
++From patchwork Mon Nov  8 03:04:26 2021
++Content-Type: text/plain; charset="utf-8"
++MIME-Version: 1.0
++Content-Transfer-Encoding: 7bit
++X-Patchwork-Submitter: Ryder Lee <ryder.lee@mediatek.com>
++X-Patchwork-Id: 1552125
++Return-Path: 
++ <hostap-bounces+incoming=patchwork.ozlabs.org@lists.infradead.org>
++X-Original-To: incoming@patchwork.ozlabs.org
++Delivered-To: patchwork-incoming@bilbo.ozlabs.org
++Authentication-Results: bilbo.ozlabs.org;
++	dkim=pass (2048-bit key;
++ secure) header.d=lists.infradead.org header.i=@lists.infradead.org
++ header.a=rsa-sha256 header.s=bombadil.20210309 header.b=D1mJI/T4;
++	dkim-atps=neutral
++Authentication-Results: ozlabs.org;
++ spf=none (no SPF record) smtp.mailfrom=lists.infradead.org
++ (client-ip=2607:7c80:54:e::133; helo=bombadil.infradead.org;
++ envelope-from=hostap-bounces+incoming=patchwork.ozlabs.org@lists.infradead.org;
++ receiver=<UNKNOWN>)
++Received: from bombadil.infradead.org (bombadil.infradead.org
++ [IPv6:2607:7c80:54:e::133])
++	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
++	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest
++ SHA256)
++	(No client certificate requested)
++	by bilbo.ozlabs.org (Postfix) with ESMTPS id 4Hnbq567wgz9sR4
++	for <incoming@patchwork.ozlabs.org>; Mon,  8 Nov 2021 14:16:01 +1100 (AEDT)
++DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
++	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
++	Content-Transfer-Encoding:Content-Type:List-Subscribe:List-Help:List-Post:
++	List-Archive:List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:
++	Message-ID:Date:Subject:CC:To:From:Reply-To:Content-ID:Content-Description:
++	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
++	List-Owner; bh=wYRX2JnpcX17NK4J2dl70g2OWXCWSPrMEhBFqXI5ge0=; b=D1mJI/T45cfwA/
++	hsfbvB5VRQswEDYH6zK0Fh57vwI7DQBcysxmyy+t6NVMVL8di0KZeNNKIE+TqwFv3arP4mce21KW2
++	XtPpzdO6QyjOgz3tSl8Po5XCycgDV5KsjSYgdqcuwTzYOw+Al75NdVX4qDEZ0afDxTMeen7BQqQhW
++	Wz9V20cvUZzGWjtzkt9ZEXXeFDQ5HWc9tNa9/SZ6WvVN42uomljzuKpOOsSpup/2Hrieefb7QCVgO
++	7c1PUeErYl+0Bu/MZxZBN8XeEmkXIFveBJWdQhrF4sjOQE2Zlab8sx4oefblg9e8Ec3oBd0/cz/oj
++	PRL9UQRkhtXO/xIyZAEw==;
++Received: from localhost ([::1] helo=bombadil.infradead.org)
++	by bombadil.infradead.org with esmtp (Exim 4.94.2 #2 (Red Hat Linux))
++	id 1mjv7h-00FM1G-JN; Mon, 08 Nov 2021 03:15:05 +0000
++Received: from mailgw02.mediatek.com ([216.200.240.185])
++ by bombadil.infradead.org with esmtps (Exim 4.94.2 #2 (Red Hat Linux))
++ id 1mjv7P-00FLzJ-Su
++ for hostap@lists.infradead.org; Mon, 08 Nov 2021 03:14:49 +0000
++X-UUID: 2942c98c91a646489611659c32262e8a-20211107
++X-UUID: 2942c98c91a646489611659c32262e8a-20211107
++Received: from mtkcas66.mediatek.inc [(172.29.193.44)] by
++ mailgw02.mediatek.com
++ (envelope-from <ryder.lee@mediatek.com>)
++ (musrelay.mediatek.com ESMTP with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
++ with ESMTP id 1260652155; Sun, 07 Nov 2021 20:14:42 -0700
++Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
++ MTKMBS62N1.mediatek.inc (172.29.193.41) with Microsoft SMTP Server (TLS) id
++ 15.0.1497.2; Sun, 7 Nov 2021 19:04:41 -0800
++Received: from mtkmbs10n1.mediatek.inc (172.21.101.34) by
++ mtkexhb02.mediatek.inc (172.21.101.103) with Microsoft SMTP Server (TLS) id
++ 15.0.1497.2; Mon, 8 Nov 2021 11:04:33 +0800
++Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
++ mtkmbs10n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
++ 15.2.792.15 via Frontend Transport; Mon, 8 Nov 2021 11:04:33 +0800
++From: Ryder Lee <ryder.lee@mediatek.com>
++To: Jouni Malinen <jouni@codeaurora.org>
++CC: Felix Fietkau <nbd@nbd.name>, Lorenzo Bianconi
++ <lorenzo.bianconi@redhat.com>, Shayne Chen <shayne.chen@mediatek.com>,
++ "Evelyn Tsai" <evelyn.tsai@mediatek.com>, <hostap@lists.infradead.org>, John
++ Crispin <john@phrozen.org>, Lorenzo Bianconi <lorenzo@kernel.org>, Ryder Lee
++ <ryder.lee@mediatek.com>
++Subject: [PATCH v2 5/5] bss coloring: handle the collision and CCA events
++ coming from the kernel
++Date: Mon, 8 Nov 2021 11:04:26 +0800
++Message-ID: 
++ <d77b2a2deaf750ca5d212de576acdfe7eb9e559a.1636093546.git.ryder.lee@mediatek.com>
++X-Mailer: git-send-email 2.18.0
++In-Reply-To: 
++ <2d69afce2fd6f44ae08ac75d5715fa9e43fe2a77.1636093546.git.ryder.lee@mediatek.com>
++References: 
++ <2d69afce2fd6f44ae08ac75d5715fa9e43fe2a77.1636093546.git.ryder.lee@mediatek.com>
++MIME-Version: 1.0
++X-MTK: N
++X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
++X-CRM114-CacheID: sfid-20211107_191447_973506_8BA7C4BD 
++X-CRM114-Status: GOOD (  17.58  )
++X-Spam-Score: 0.0 (/)
++X-Spam-Report: Spam detection software,
++ running on the system "bombadil.infradead.org",
++ has NOT identified this incoming email as spam.  The original
++ message has been attached to this so you can view it or label
++ similar future email.  If you have any questions, see
++ the administrator of that system for details.
++ Content preview:  From: John Crispin <john@phrozen.org> This patch activates
++ the functionality of the previous patches by handling the actual events that
++ will trigger the CCA process. Tested-by: Peter Chiu
++ <chui-hao.chiu@mediatek.com>
++ Co-developed-by: Lorenzo Bianconi <lorenzo@kernel.org> Signed-off-by: Lorenzo
++ Bianconi <lorenzo@kernel.org> Signed-off-by: John Crispin <john@phrozen [...]
++ Content analysis details:   (0.0 points, 5.0 required)
++ pts rule name              description
++ ---- ----------------------
++ --------------------------------------------------
++ -0.0 SPF_PASS               SPF: sender matches SPF record
++ 0.0 SPF_HELO_NONE          SPF: HELO does not publish an SPF Record
++ 0.0 UNPARSEABLE_RELAY      Informational: message has unparseable relay
++ lines
++X-BeenThere: hostap@lists.infradead.org
++X-Mailman-Version: 2.1.34
++Precedence: list
++List-Id: <hostap.lists.infradead.org>
++List-Unsubscribe: <http://lists.infradead.org/mailman/options/hostap>,
++ <mailto:hostap-request@lists.infradead.org?subject=unsubscribe>
++List-Archive: <http://lists.infradead.org/pipermail/hostap/>
++List-Post: <mailto:hostap@lists.infradead.org>
++List-Help: <mailto:hostap-request@lists.infradead.org?subject=help>
++List-Subscribe: <http://lists.infradead.org/mailman/listinfo/hostap>,
++ <mailto:hostap-request@lists.infradead.org?subject=subscribe>
++Sender: "Hostap" <hostap-bounces@lists.infradead.org>
++Errors-To: hostap-bounces+incoming=patchwork.ozlabs.org@lists.infradead.org
++
++From: John Crispin <john@phrozen.org>
++
++This patch activates the functionality of the previous patches by handling
++the actual events that will trigger the CCA process.
++
++Tested-by: Peter Chiu <chui-hao.chiu@mediatek.com>
++Co-developed-by: Lorenzo Bianconi <lorenzo@kernel.org>
++Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
++Signed-off-by: John Crispin <john@phrozen.org>
++Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
++---
++ src/ap/drv_callbacks.c             | 45 ++++++++++++++++++++-
++ src/drivers/driver.h               | 27 +++++++++++++
++ src/drivers/driver_common.c        |  4 ++
++ src/drivers/driver_nl80211_event.c | 64 ++++++++++++++++++++++++++++++
++ 4 files changed, 139 insertions(+), 1 deletion(-)
++
++--- a/src/ap/drv_callbacks.c
+++++ b/src/ap/drv_callbacks.c
++@@ -43,7 +43,6 @@
++ #include "fils_hlp.h"
++ #include "neighbor_db.h"
++ 
++-
++ #ifdef CONFIG_FILS
++ void hostapd_notify_assoc_fils_finish(struct hostapd_data *hapd,
++ 				      struct sta_info *sta)
++@@ -1783,6 +1782,39 @@ static void hostapd_event_wds_sta_interf
++ }
++ 
++ 
+++#ifdef CONFIG_IEEE80211AX
+++static void hostapd_event_bss_color_collision(struct hostapd_data *hapd,
+++					      u64 bitmap)
+++{
+++	/* the bss color is shared amongst all BBSs on a specific phy.
+++	 * therefore we always start the color change on the primary BSS
+++	 */
+++	wpa_printf(MSG_DEBUG, "BSS color collision on %s", hapd->conf->iface);
+++	hostapd_switch_color(hapd->iface->bss[0], bitmap);
+++}
+++
+++static void hostapd_event_cca(struct hostapd_data *hapd, enum wpa_event_type event)
+++{
+++	switch (event) {
+++	case EVENT_CCA_STARTED_NOTIFY:
+++		wpa_printf(MSG_DEBUG, "CCA started on on %s", hapd->conf->iface);
+++		break;
+++	case EVENT_CCA_NOTIFY:
+++		wpa_printf(MSG_DEBUG, "CCA finished on on %s", hapd->conf->iface);
+++		hapd->iface->conf->he_op.he_bss_color = hapd->cca_color;
+++		hostapd_cleanup_cca_params(hapd);
+++		break;
+++	case EVENT_CCA_ABORTED_NOTIFY:
+++		wpa_printf(MSG_DEBUG, "CCA aborted on on %s", hapd->conf->iface);
+++		hostapd_cleanup_cca_params(hapd);
+++		break;
+++	default:
+++		break;
+++	}
+++}
+++#endif
+++
+++
++ #ifdef CONFIG_OWE
++ static int hostapd_notif_update_dh_ie(struct hostapd_data *hapd,
++ 				      const u8 *peer, const u8 *ie,
++@@ -2089,6 +2121,17 @@ void hostapd_wpa_event(void *ctx, enum w
++ 			data->wds_sta_interface.ifname,
++ 			data->wds_sta_interface.sta_addr);
++ 		break;
+++#ifdef CONFIG_IEEE80211AX
+++	case EVENT_BSS_COLOR_COLLISION:
+++		hostapd_event_bss_color_collision(hapd,
+++						  data->bss_color_collision.bitmap);
+++		break;
+++	case EVENT_CCA_STARTED_NOTIFY:
+++	case EVENT_CCA_ABORTED_NOTIFY:
+++	case EVENT_CCA_NOTIFY:
+++		hostapd_event_cca(hapd, event);
+++		break;
+++#endif
++ 	default:
++ 		wpa_printf(MSG_DEBUG, "Unknown event %d", event);
++ 		break;
++--- a/src/drivers/driver.h
+++++ b/src/drivers/driver.h
++@@ -5165,6 +5165,26 @@ enum wpa_event_type {
++ 	 * is required to provide more details of the frame.
++ 	 */
++ 	EVENT_UNPROT_BEACON,
+++
+++	/**
+++	  * EVENT_BSS_COLOR_COLLISION - Notification of a BSS color collision
+++	  */
+++	EVENT_BSS_COLOR_COLLISION,
+++
+++	/**
+++	 * EVENT_CCA_STARTED_NOTIFY - Notification that CCA has started
+++	 */
+++	EVENT_CCA_STARTED_NOTIFY,
+++
+++	/**
+++	 * EVENT_CCA_ABORTED_NOTIFY - Notification that CCA has aborted
+++	 */
+++	EVENT_CCA_ABORTED_NOTIFY,
+++
+++	/**
+++	 * EVENT_CCA_NOTIFY - Notification that CCA has completed
+++	 */
+++	EVENT_CCA_NOTIFY,
++ };
++ 
++ 
++@@ -6059,6 +6079,13 @@ union wpa_event_data {
++ 	struct unprot_beacon {
++ 		const u8 *sa;
++ 	} unprot_beacon;
+++
+++	/**
+++	 * struct bss_color_collision - Data for EVENT_BSS_COLOR_COLLISION
+++	 */
+++	struct bss_color_collision {
+++		u64 bitmap;
+++	} bss_color_collision;
++ };
++ 
++ /**
++--- a/src/drivers/driver_common.c
+++++ b/src/drivers/driver_common.c
++@@ -90,6 +90,10 @@ const char * event_to_string(enum wpa_ev
++ 	E2S(WDS_STA_INTERFACE_STATUS);
++ 	E2S(UPDATE_DH);
++ 	E2S(UNPROT_BEACON);
+++	E2S(BSS_COLOR_COLLISION);
+++	E2S(CCA_STARTED_NOTIFY);
+++	E2S(CCA_ABORTED_NOTIFY);
+++	E2S(CCA_NOTIFY);
++ 	}
++ 
++ 	return "UNKNOWN";
++--- a/src/drivers/driver_nl80211_event.c
+++++ b/src/drivers/driver_nl80211_event.c
++@@ -2863,6 +2863,51 @@ nl80211_control_port_frame_tx_status(str
++ 	wpa_supplicant_event(drv->ctx, EVENT_EAPOL_TX_STATUS, &event);
++ }
++ 
+++#ifdef CONFIG_IEEE80211AX
+++static void mlme_event_obss_color_collision(struct wpa_driver_nl80211_data *drv,
+++					    struct nlattr *tb[])
+++{
+++	union wpa_event_data data;
+++
+++	if (!tb[NL80211_ATTR_OBSS_COLOR_BITMAP])
+++		return;
+++
+++	os_memset(&data, 0, sizeof(data));
+++	data.bss_color_collision.bitmap = nla_get_u64(tb[NL80211_ATTR_OBSS_COLOR_BITMAP]);
+++
+++	wpa_printf(MSG_DEBUG, "nl80211: BSS color collision - bitmap %08lx",
+++		   data.bss_color_collision.bitmap);
+++
+++	wpa_supplicant_event(drv->ctx, EVENT_BSS_COLOR_COLLISION, &data);
+++}
+++
+++static void mlme_event_color_change_announcement_started(struct wpa_driver_nl80211_data *drv)
+++{
+++	union wpa_event_data data = {};
+++
+++	wpa_printf(MSG_DEBUG, "nl80211: CCA started");
+++
+++	wpa_supplicant_event(drv->ctx, EVENT_CCA_STARTED_NOTIFY, &data);
+++}
+++
+++static void mlme_event_color_change_announcement_aborted(struct wpa_driver_nl80211_data *drv)
+++{
+++	union wpa_event_data data = {};
+++
+++	wpa_printf(MSG_DEBUG, "nl80211: CCA aborted");
+++
+++	wpa_supplicant_event(drv->ctx, EVENT_CCA_ABORTED_NOTIFY, &data);
+++}
+++
+++static void mlme_event_color_change_announcement_completed(struct wpa_driver_nl80211_data *drv)
+++{
+++	union wpa_event_data data = {};
+++
+++	wpa_printf(MSG_DEBUG, "nl80211: CCA completed");
+++
+++	wpa_supplicant_event(drv->ctx, EVENT_CCA_NOTIFY, &data);
+++}
+++#endif
++ 
++ static void do_process_drv_event(struct i802_bss *bss, int cmd,
++ 				 struct nlattr **tb)
++@@ -3112,6 +3157,20 @@ static void do_process_drv_event(struct
++ 						     tb[NL80211_ATTR_ACK],
++ 						     tb[NL80211_ATTR_COOKIE]);
++ 		break;
+++#ifdef CONFIG_IEEE80211AX
+++	case NL80211_CMD_OBSS_COLOR_COLLISION:
+++		mlme_event_obss_color_collision(drv, tb);
+++		break;
+++	case NL80211_CMD_COLOR_CHANGE_STARTED:
+++		mlme_event_color_change_announcement_started(drv);
+++		break;
+++	case NL80211_CMD_COLOR_CHANGE_ABORTED:
+++		mlme_event_color_change_announcement_aborted(drv);
+++		break;
+++	case NL80211_CMD_COLOR_CHANGE_COMPLETED:
+++		mlme_event_color_change_announcement_completed(drv);
+++		break;
+++#endif
++ 	default:
++ 		wpa_dbg(drv->ctx, MSG_DEBUG, "nl80211: Ignored unknown event "
++ 			"(cmd=%d)", cmd);
