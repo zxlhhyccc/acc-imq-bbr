@@ -1,0 +1,388 @@
+From eb790fa7061ad5dc9798cbba15992d67f3305d50 Mon Sep 17 00:00:00 2001
+From: Ansuel Smith <ansuelsmth@gmail.com>
+Date: Tue, 5 Apr 2022 15:38:18 +0200
+Subject: [PATCH 5/7] nss-drv: rework NSS_CORE_DMA_CACHE_MAINT ops
+
+Rework NSS_CORE_DMA_CACHE_MAINT ops to use standard dma sync ops instead
+of using the direct arch function. This permit to skip any hack/patch
+needed for nss-drv to correctly compile on upstream kernel.
+
+Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+---
+ nss_core.c                    | 60 +++++++++++++++++++----------------
+ nss_core.h                    | 26 +++++++++++----
+ nss_hal/ipq806x/nss_hal_pvt.c |  2 +-
+ nss_hal/ipq807x/nss_hal_pvt.c |  2 +-
+ nss_meminfo.c                 |  6 ++--
+ nss_profiler.c                |  4 ++-
+ 6 files changed, 60 insertions(+), 40 deletions(-)
+
+diff --git a/nss_core.c b/nss_core.c
+index 23dc155..ef880f9 100644
+--- a/nss_core.c
++++ b/nss_core.c
+@@ -1482,7 +1482,7 @@ next:
+ 	n2h_desc_ring->hlos_index = hlos_index;
+ 	if_map->n2h_hlos_index[NSS_IF_N2H_EMPTY_BUFFER_RETURN_QUEUE] = hlos_index;
+ 
+-	NSS_CORE_DMA_CACHE_MAINT((void *)&if_map->n2h_hlos_index[NSS_IF_N2H_EMPTY_BUFFER_RETURN_QUEUE], sizeof(uint32_t), DMA_TO_DEVICE);
++	NSS_CORE_DMA_CACHE_MAINT(nss_ctx->dev, n2h_desc_ring->desc_ring.desc->buffer, sizeof(uint32_t), DMA_TO_DEVICE);
+ 	NSS_CORE_DSB();
+ }
+ 
+@@ -1515,7 +1515,7 @@ static int32_t nss_core_handle_cause_queue(struct int_ctx_instance *int_ctx, uin
+ 	n2h_desc_ring = &nss_ctx->n2h_desc_ring[qid];
+ 	desc_if = &n2h_desc_ring->desc_ring;
+ 	desc_ring = desc_if->desc;
+-	NSS_CORE_DMA_CACHE_MAINT((void *)&if_map->n2h_nss_index[qid], sizeof(uint32_t), DMA_FROM_DEVICE);
++	NSS_CORE_DMA_CACHE_MAINT(nss_ctx->dev, desc_ring->buffer, sizeof(uint32_t), DMA_FROM_DEVICE);
+ 	NSS_CORE_DSB();
+ 	nss_index = if_map->n2h_nss_index[qid];
+ 
+@@ -1544,13 +1544,15 @@ static int32_t nss_core_handle_cause_queue(struct int_ctx_instance *int_ctx, uin
+ 	start = hlos_index;
+ 	end = (hlos_index + count) & mask;
+ 	if (end > start) {
+-		dmac_inv_range((void *)&desc_ring[start], (void *)&desc_ring[end] + sizeof(struct n2h_descriptor));
++		count_temp = end - start;
++		dma_sync_single_for_device(nss_ctx->dev, desc_ring[start].buffer, sizeof(struct n2h_descriptor) * count_temp, DMA_FROM_DEVICE);
+ 	} else {
+ 		/*
+ 		 * We have wrapped around
+ 		 */
+-		dmac_inv_range((void *)&desc_ring[start], (void *)&desc_ring[mask] + sizeof(struct n2h_descriptor));
+-		dmac_inv_range((void *)&desc_ring[0], (void *)&desc_ring[end] + sizeof(struct n2h_descriptor));
++		count_temp = start - mask;
++		dma_sync_single_for_device(nss_ctx->dev, desc_ring[start].buffer, sizeof(struct n2h_descriptor) * count_temp, DMA_FROM_DEVICE);
++		dma_sync_single_for_device(nss_ctx->dev, desc_ring[0].buffer, sizeof(struct n2h_descriptor) * end, DMA_FROM_DEVICE);
+ 	}
+ 
+ 	/*
+@@ -1679,7 +1681,7 @@ next:
+ 	n2h_desc_ring->hlos_index = hlos_index;
+ 	if_map->n2h_hlos_index[qid] = hlos_index;
+ 
+-	NSS_CORE_DMA_CACHE_MAINT((void *)&if_map->n2h_hlos_index[qid], sizeof(uint32_t), DMA_TO_DEVICE);
++	NSS_CORE_DMA_CACHE_MAINT(nss_ctx->dev, n2h_desc_ring->desc_ring.desc->buffer, sizeof(uint32_t), DMA_TO_DEVICE);
+ 	NSS_CORE_DSB();
+ 
+ 	return count;
+@@ -1691,10 +1693,11 @@ next:
+  */
+ static void nss_core_init_nss(struct nss_ctx_instance *nss_ctx, struct nss_if_mem_map *if_map)
+ {
++	struct nss_meminfo_ctx *mem_ctx = &nss_ctx->meminfo_ctx;
+ 	struct nss_top_instance *nss_top;
+ 	int ret;
+ 
+-	NSS_CORE_DMA_CACHE_MAINT((void *)if_map, sizeof(*if_map), DMA_FROM_DEVICE);
++	NSS_CORE_DMA_CACHE_MAINT(nss_ctx->dev, mem_ctx->if_map_dma, sizeof(*if_map), DMA_FROM_DEVICE);
+ 	NSS_CORE_DSB();
+ 
+ 	/*
+@@ -1831,7 +1834,7 @@ static void nss_core_alloc_paged_buffers(struct nss_ctx_instance *nss_ctx, struc
+ 		/*
+ 		 * Flush the descriptor
+ 		 */
+-		NSS_CORE_DMA_CACHE_MAINT((void *)desc, sizeof(*desc), DMA_TO_DEVICE);
++		NSS_CORE_DMA_CACHE_MAINT(nss_ctx->dev, desc->buffer, sizeof(*desc), DMA_TO_DEVICE);
+ 
+ 		hlos_index = (hlos_index + 1) & (mask);
+ 		count--;
+@@ -1845,7 +1848,7 @@ static void nss_core_alloc_paged_buffers(struct nss_ctx_instance *nss_ctx, struc
+ 	h2n_desc_ring->hlos_index = hlos_index;
+ 	if_map->h2n_hlos_index[buffer_queue] = hlos_index;
+ 
+-	NSS_CORE_DMA_CACHE_MAINT(&if_map->h2n_hlos_index[buffer_queue], sizeof(uint32_t), DMA_TO_DEVICE);
++	NSS_CORE_DMA_CACHE_MAINT(nss_ctx->dev, h2n_desc_ring->desc_ring.desc->buffer, sizeof(uint32_t), DMA_TO_DEVICE);
+ 	NSS_CORE_DSB();
+ 
+ 	NSS_PKT_STATS_INC(&nss_top->stats_drv[stats_index]);
+@@ -1905,7 +1908,7 @@ static void nss_core_alloc_jumbo_mru_buffers(struct nss_ctx_instance *nss_ctx, s
+ 		/*
+ 		 * Flush the descriptor
+ 		 */
+-		NSS_CORE_DMA_CACHE_MAINT((void *)desc, sizeof(*desc), DMA_TO_DEVICE);
++		NSS_CORE_DMA_CACHE_MAINT(nss_ctx->dev, desc->buffer, sizeof(*desc), DMA_TO_DEVICE);
+ 
+ 		hlos_index = (hlos_index + 1) & (mask);
+ 		count--;
+@@ -1919,7 +1922,7 @@ static void nss_core_alloc_jumbo_mru_buffers(struct nss_ctx_instance *nss_ctx, s
+ 	h2n_desc_ring->hlos_index = hlos_index;
+ 	if_map->h2n_hlos_index[NSS_IF_H2N_EMPTY_BUFFER_QUEUE] = hlos_index;
+ 
+-	NSS_CORE_DMA_CACHE_MAINT(&if_map->h2n_hlos_index[NSS_IF_H2N_EMPTY_BUFFER_QUEUE], sizeof(uint32_t), DMA_TO_DEVICE);
++	NSS_CORE_DMA_CACHE_MAINT(nss_ctx->dev, h2n_desc_ring->desc_ring.desc->buffer, sizeof(uint32_t), DMA_TO_DEVICE);
+ 	NSS_CORE_DSB();
+ 
+ 	NSS_PKT_STATS_INC(&nss_top->stats_drv[NSS_DRV_STATS_TX_EMPTY]);
+@@ -1939,6 +1942,7 @@ static void nss_core_alloc_max_avail_size_buffers(struct nss_ctx_instance *nss_c
+ 	uint16_t payload_len = max_buf_size + NET_SKB_PAD;
+ 	uint16_t start = hlos_index;
+ 	uint16_t prev_hlos_index;
++	int count_temp;
+ 
+ 	while (count) {
+ 		dma_addr_t buffer;
+@@ -1991,13 +1995,15 @@ static void nss_core_alloc_max_avail_size_buffers(struct nss_ctx_instance *nss_c
+ 	 * Flush the descriptors, including the descriptor at prev_hlos_index.
+ 	 */
+ 	if (prev_hlos_index > start) {
+-		dmac_clean_range((void *)&desc_ring[start], (void *)&desc_ring[prev_hlos_index] + sizeof(struct h2n_descriptor));
++		count_temp = prev_hlos_index - start;
++		dma_sync_single_for_device(nss_ctx->dev, desc_ring[start].buffer, sizeof(struct n2h_descriptor) * count_temp, DMA_TO_DEVICE);
+ 	} else {
+ 		/*
+ 		 * We have wrapped around
+ 		 */
+-		dmac_clean_range((void *)&desc_ring[start], (void *)&desc_ring[mask] + sizeof(struct h2n_descriptor));
+-		dmac_clean_range((void *)&desc_ring[0], (void *)&desc_ring[prev_hlos_index] + sizeof(struct h2n_descriptor));
++		count_temp = start - mask;
++		dma_sync_single_for_device(nss_ctx->dev, desc_ring[start].buffer, sizeof(struct n2h_descriptor) * count_temp, DMA_TO_DEVICE);
++		dma_sync_single_for_device(nss_ctx->dev, desc_ring[0].buffer, sizeof(struct n2h_descriptor) * prev_hlos_index, DMA_TO_DEVICE);
+ 	}
+ 
+ 	/*
+@@ -2008,7 +2014,7 @@ static void nss_core_alloc_max_avail_size_buffers(struct nss_ctx_instance *nss_c
+ 	h2n_desc_ring->hlos_index = hlos_index;
+ 	if_map->h2n_hlos_index[NSS_IF_H2N_EMPTY_BUFFER_QUEUE] = hlos_index;
+ 
+-	NSS_CORE_DMA_CACHE_MAINT(&if_map->h2n_hlos_index[NSS_IF_H2N_EMPTY_BUFFER_QUEUE], sizeof(uint32_t), DMA_TO_DEVICE);
++	NSS_CORE_DMA_CACHE_MAINT(nss_ctx->dev, h2n_desc_ring->desc_ring.desc->buffer, sizeof(uint32_t), DMA_TO_DEVICE);
+ 	NSS_CORE_DSB();
+ 
+ 	NSS_PKT_STATS_INC(&nss_top->stats_drv[NSS_DRV_STATS_TX_EMPTY]);
+@@ -2031,7 +2037,7 @@ static inline void nss_core_handle_empty_buffer_sos(struct nss_ctx_instance *nss
+ 	/*
+ 	 * Check how many empty buffers could be filled in queue
+ 	 */
+-	NSS_CORE_DMA_CACHE_MAINT(&if_map->h2n_nss_index[NSS_IF_H2N_EMPTY_BUFFER_QUEUE], sizeof(uint32_t), DMA_FROM_DEVICE);
++	NSS_CORE_DMA_CACHE_MAINT(nss_ctx->dev, h2n_desc_ring->desc_ring.desc->buffer, sizeof(uint32_t), DMA_FROM_DEVICE);
+ 	NSS_CORE_DSB();
+ 	nss_index = if_map->h2n_nss_index[NSS_IF_H2N_EMPTY_BUFFER_QUEUE];
+ 
+@@ -2083,7 +2089,7 @@ static inline void nss_core_handle_paged_empty_buffer_sos(struct nss_ctx_instanc
+ 	/*
+ 	 * Check how many empty buffers could be filled in queue
+ 	 */
+-	NSS_CORE_DMA_CACHE_MAINT((void *)&if_map->h2n_nss_index[NSS_IF_H2N_EMPTY_PAGED_BUFFER_QUEUE], sizeof(uint32_t), DMA_FROM_DEVICE);
++	NSS_CORE_DMA_CACHE_MAINT(nss_ctx->dev, h2n_desc_ring->desc_ring.desc->buffer, sizeof(uint32_t), DMA_FROM_DEVICE);
+ 	NSS_CORE_DSB();
+ 	nss_index = if_map->h2n_nss_index[NSS_IF_H2N_EMPTY_PAGED_BUFFER_QUEUE];
+ 
+@@ -2707,7 +2713,7 @@ static inline int32_t nss_core_send_buffer_simple_skb(struct nss_ctx_instance *n
+ 		(nss_ptr_t)nbuf, (uint16_t)(nbuf->data - nbuf->head), nbuf->len,
+ 		sz, (uint32_t)nbuf->priority, mss, bit_flags);
+ 
+-	NSS_CORE_DMA_CACHE_MAINT((void *)desc, sizeof(*desc), DMA_TO_DEVICE);
++	NSS_CORE_DMA_CACHE_MAINT(nss_ctx->dev, desc->buffer, sizeof(*desc), DMA_TO_DEVICE);
+ 
+ 	/*
+ 	 * We are done using the skb fields and can reuse it now
+@@ -2731,7 +2737,7 @@ no_reuse:
+ 		(nss_ptr_t)nbuf, (uint16_t)(nbuf->data - nbuf->head), nbuf->len,
+ 		(uint16_t)skb_end_offset(nbuf), (uint32_t)nbuf->priority, mss, bit_flags);
+ 
+-	NSS_CORE_DMA_CACHE_MAINT((void *)desc, sizeof(*desc), DMA_TO_DEVICE);
++	NSS_CORE_DMA_CACHE_MAINT(nss_ctx->dev, desc->buffer, sizeof(*desc), DMA_TO_DEVICE);
+ 
+ 	NSS_PKT_STATS_INC(&nss_ctx->nss_top->stats_drv[NSS_DRV_STATS_TX_SIMPLE]);
+ 	return 1;
+@@ -2787,7 +2793,7 @@ static inline int32_t nss_core_send_buffer_nr_frags(struct nss_ctx_instance *nss
+ 		(nss_ptr_t)NULL, nbuf->data - nbuf->head, nbuf->len - nbuf->data_len,
+ 		skb_end_offset(nbuf), (uint32_t)nbuf->priority, mss, bit_flags | H2N_BIT_FLAG_FIRST_SEGMENT);
+ 
+-	NSS_CORE_DMA_CACHE_MAINT((void *)desc, sizeof(*desc), DMA_TO_DEVICE);
++	NSS_CORE_DMA_CACHE_MAINT(nss_ctx->dev, desc->buffer, sizeof(*desc), DMA_TO_DEVICE);
+ 
+ 	/*
+ 	 * Now handle rest of the fragments.
+@@ -2811,7 +2817,7 @@ static inline int32_t nss_core_send_buffer_nr_frags(struct nss_ctx_instance *nss
+ 			(nss_ptr_t)NULL, 0, skb_frag_size(frag), skb_frag_size(frag),
+ 			nbuf->priority, mss, bit_flags);
+ 
+-		NSS_CORE_DMA_CACHE_MAINT((void *)desc, sizeof(*desc), DMA_TO_DEVICE);
++		NSS_CORE_DMA_CACHE_MAINT(nss_ctx->dev, desc->buffer, sizeof(*desc), DMA_TO_DEVICE);
+ 	}
+ 
+ 	/*
+@@ -2827,7 +2833,7 @@ static inline int32_t nss_core_send_buffer_nr_frags(struct nss_ctx_instance *nss
+ 	desc->bit_flags &= ~(H2N_BIT_FLAG_DISCARD);
+ 	desc->opaque = (nss_ptr_t)nbuf;
+ 
+-	NSS_CORE_DMA_CACHE_MAINT((void *)desc, sizeof(*desc), DMA_TO_DEVICE);
++	NSS_CORE_DMA_CACHE_MAINT(nss_ctx->dev, desc->buffer, sizeof(*desc), DMA_TO_DEVICE);
+ 
+ 	NSS_PKT_STATS_INC(&nss_ctx->nss_top->stats_drv[NSS_DRV_STATS_TX_NR_FRAGS]);
+ 	return i+1;
+@@ -2882,7 +2888,7 @@ static inline int32_t nss_core_send_buffer_fraglist(struct nss_ctx_instance *nss
+ 		(nss_ptr_t)nbuf, nbuf->data - nbuf->head, nbuf->len - nbuf->data_len,
+ 		skb_end_offset(nbuf), (uint32_t)nbuf->priority, mss, bit_flags | H2N_BIT_FLAG_FIRST_SEGMENT);
+ 
+-	NSS_CORE_DMA_CACHE_MAINT((void *)desc, sizeof(*desc), DMA_TO_DEVICE);
++	NSS_CORE_DMA_CACHE_MAINT(nss_ctx->dev, desc->buffer, sizeof(*desc), DMA_TO_DEVICE);
+ 
+ 	/*
+ 	 * Walk the frag_list in nbuf
+@@ -2935,7 +2941,7 @@ static inline int32_t nss_core_send_buffer_fraglist(struct nss_ctx_instance *nss
+ 			(nss_ptr_t)iter, iter->data - iter->head, iter->len - iter->data_len,
+ 			skb_end_offset(iter), iter->priority, mss, bit_flags);
+ 
+-		NSS_CORE_DMA_CACHE_MAINT((void *)desc, sizeof(*desc), DMA_TO_DEVICE);
++		NSS_CORE_DMA_CACHE_MAINT(nss_ctx->dev, desc->buffer, sizeof(*desc), DMA_TO_DEVICE);
+ 
+ 		i++;
+ 	}
+@@ -2954,7 +2960,7 @@ static inline int32_t nss_core_send_buffer_fraglist(struct nss_ctx_instance *nss
+ 	 * Update bit flag for last descriptor.
+ 	 */
+ 	desc->bit_flags |= H2N_BIT_FLAG_LAST_SEGMENT;
+-	NSS_CORE_DMA_CACHE_MAINT((void *)desc, sizeof(*desc), DMA_TO_DEVICE);
++	NSS_CORE_DMA_CACHE_MAINT(nss_ctx->dev, desc->buffer, sizeof(*desc), DMA_TO_DEVICE);
+ 
+ 	NSS_PKT_STATS_INC(&nss_ctx->nss_top->stats_drv[NSS_DRV_STATS_TX_FRAGLIST]);
+ 	return i+1;
+@@ -3025,7 +3031,7 @@ int32_t nss_core_send_buffer(struct nss_ctx_instance *nss_ctx, uint32_t if_num,
+ 	 * We need to work out if there's sufficent space in our transmit descriptor
+ 	 * ring to place all the segments of a nbuf.
+ 	 */
+-	NSS_CORE_DMA_CACHE_MAINT((void *)&if_map->h2n_nss_index[qid], sizeof(uint32_t), DMA_FROM_DEVICE);
++	NSS_CORE_DMA_CACHE_MAINT(nss_ctx->dev, h2n_desc_ring->desc_ring.desc->buffer, sizeof(uint32_t), DMA_FROM_DEVICE);
+ 	NSS_CORE_DSB();
+ 	nss_index = if_map->h2n_nss_index[qid];
+ 
+@@ -3125,7 +3131,7 @@ int32_t nss_core_send_buffer(struct nss_ctx_instance *nss_ctx, uint32_t if_num,
+ 	h2n_desc_ring->hlos_index = hlos_index;
+ 	if_map->h2n_hlos_index[qid] = hlos_index;
+ 
+-	NSS_CORE_DMA_CACHE_MAINT(&if_map->h2n_hlos_index[qid], sizeof(uint32_t), DMA_TO_DEVICE);
++	NSS_CORE_DMA_CACHE_MAINT(nss_ctx->dev, h2n_desc_ring->desc_ring.desc->buffer, sizeof(uint32_t), DMA_TO_DEVICE);
+ 	NSS_CORE_DSB();
+ 
+ #ifdef CONFIG_DEBUG_KMEMLEAK
+diff --git a/nss_core.h b/nss_core.h
+index d7f62fe..bc903d9 100644
+--- a/nss_core.h
++++ b/nss_core.h
+@@ -103,23 +103,35 @@
+  * Cache operation
+  */
+ #define NSS_CORE_DSB() dsb(sy)
+-#define NSS_CORE_DMA_CACHE_MAINT(start, size, dir) nss_core_dma_cache_maint(start, size, dir)
++#define NSS_CORE_DMA_CACHE_MAINT(dev, start, size, dir) nss_core_dma_cache_maint(dev, start, size, dir)
+ 
+ /*
+  * nss_core_dma_cache_maint()
+  *	Perform the appropriate cache op based on direction
+  */
+-static inline void nss_core_dma_cache_maint(void *start, uint32_t size, int direction)
++static inline void nss_core_dma_cache_maint(struct device *dev, uint32_t dma_addr,
++					    uint32_t size, enum dma_data_direction dir)
+ {
+-	switch (direction) {
++	/* 
++	 * We use the generic dma sync helper.
++	 * We sync always for device here.
++	 *
++	 * From arch/arm/mm/dma-mapping.c there is a
++	 * FIXME: non-speculating: flush on bidirectional mappings?
++	 * So we should require an user to flush on bidirectional mapping and
++	 * in anycase we should use outer_flush_range and propose a fix in dma-mapping.c
++	 *
++	 * To workaround this we currently sync for both TO and FROM so we trigger
++	 * an invalidate and writeback.
++	 */
++	switch (dir) {
+ 	case DMA_FROM_DEVICE:/* invalidate only */
+-		dmac_inv_range(start, start + size);
+-		break;
+ 	case DMA_TO_DEVICE:/* writeback only */
+-		dmac_clean_range(start, start + size);
++		dma_sync_single_for_device(dev, dma_addr, size, dir);
+ 		break;
+ 	case DMA_BIDIRECTIONAL:/* writeback and invalidate */
+-		dmac_flush_range(start, start + size);
++		dma_sync_single_for_device(dev, dma_addr, size, DMA_TO_DEVICE);
++		dma_sync_single_for_device(dev, dma_addr, size, DMA_FROM_DEVICE);
+ 		break;
+ 	default:
+ 		BUG();
+diff --git a/nss_hal/ipq806x/nss_hal_pvt.c b/nss_hal/ipq806x/nss_hal_pvt.c
+index 5563e9f..e553169 100644
+--- a/nss_hal/ipq806x/nss_hal_pvt.c
++++ b/nss_hal/ipq806x/nss_hal_pvt.c
+@@ -484,7 +484,7 @@ static struct nss_platform_data *__nss_hal_of_get_pdata(struct platform_device *
+ 	 */
+ 	for (i = 0; i < resource_size(&res_vphys) ; i += 4) {
+ 		nss_write_32(npd->vmap, i, 0);
+-		NSS_CORE_DMA_CACHE_MAINT((npd->vmap + i), 4, DMA_TO_DEVICE);
++		NSS_CORE_DMA_CACHE_MAINT(nss_ctx->dev, (npd->vphys + i), 4, DMA_TO_DEVICE);
+ 	}
+ 	NSS_CORE_DSB();
+ 
+diff --git a/nss_hal/ipq807x/nss_hal_pvt.c b/nss_hal/ipq807x/nss_hal_pvt.c
+index bb8f42f..b110167 100644
+--- a/nss_hal/ipq807x/nss_hal_pvt.c
++++ b/nss_hal/ipq807x/nss_hal_pvt.c
+@@ -258,7 +258,7 @@ static struct nss_platform_data *__nss_hal_of_get_pdata(struct platform_device *
+ 	 */
+ 	for (i = 0; i < resource_size(&res_vphys) ; i += 4) {
+ 		nss_write_32(npd->vmap, i, 0);
+-		NSS_CORE_DMA_CACHE_MAINT((npd->vmap + i), 4, DMA_TO_DEVICE);
++		NSS_CORE_DMA_CACHE_MAINT(nss_ctx->dev, (npd->vphys + i), 4, DMA_TO_DEVICE);
+ 	}
+ 	NSS_CORE_DSB();
+ 
+diff --git a/nss_meminfo.c b/nss_meminfo.c
+index 2255eae..7be5c61 100644
+--- a/nss_meminfo.c
++++ b/nss_meminfo.c
+@@ -414,7 +414,7 @@ static bool nss_meminfo_init_block_lists(struct nss_ctx_instance *nss_ctx)
+ 		/*
+ 		 * Flush the updated meminfo request.
+ 		 */
+-		NSS_CORE_DMA_CACHE_MAINT(r, sizeof(struct nss_meminfo_request), DMA_TO_DEVICE);
++		NSS_CORE_DMA_CACHE_MAINT(nss_ctx->dev, r->addr, sizeof(struct nss_meminfo_request), DMA_TO_DEVICE);
+ 		NSS_CORE_DSB();
+ 
+ 		/*
+@@ -538,7 +538,7 @@ static bool nss_meminfo_configure_n2h_h2n_rings(struct nss_ctx_instance *nss_ctx
+ 	 * Bring a fresh copy of if_map from memory in order to read it correctly.
+ 	 */
+ 	if_map = mem_ctx->if_map;
+-	NSS_CORE_DMA_CACHE_MAINT((void *)if_map, sizeof(struct nss_if_mem_map), DMA_FROM_DEVICE);
++	NSS_CORE_DMA_CACHE_MAINT(nss_ctx->dev, mem_ctx->if_map_dma, sizeof(struct nss_if_mem_map), DMA_FROM_DEVICE);
+ 	NSS_CORE_DSB();
+ 
+ 	if_map->n2h_rings = NSS_N2H_RING_COUNT;
+@@ -576,7 +576,7 @@ static bool nss_meminfo_configure_n2h_h2n_rings(struct nss_ctx_instance *nss_ctx
+ 	/*
+ 	 * Flush the updated nss_if_mem_map.
+ 	 */
+-	NSS_CORE_DMA_CACHE_MAINT((void *)if_map, sizeof(struct nss_if_mem_map), DMA_TO_DEVICE);
++	NSS_CORE_DMA_CACHE_MAINT(nss_ctx->dev, mem_ctx->if_map_dma, sizeof(struct nss_if_mem_map), DMA_TO_DEVICE);
+ 	NSS_CORE_DSB();
+ 
+ 	return true;
+diff --git a/nss_profiler.c b/nss_profiler.c
+index 5717ac3..6693c82 100755
+--- a/nss_profiler.c
++++ b/nss_profiler.c
+@@ -199,11 +199,13 @@ EXPORT_SYMBOL(nss_profile_dma_deregister_cb);
+ struct nss_profile_sdma_ctrl *nss_profile_dma_get_ctrl(struct nss_ctx_instance *nss_ctx)
+ {
+ 	struct nss_profile_sdma_ctrl *ctrl = nss_ctx->meminfo_ctx.sdma_ctrl;
++	int size;
+ 	if (!ctrl) {
+ 		return ctrl;
+ 	}
+ 
+-	dmac_inv_range(ctrl, &ctrl->cidx);
++	size = sizeof(*ctrl) - sizeof(ctrl->cidx) - sizeof(ctrl->pad_for_1st_cl_in_2nd_arm_cl) - sizeof(ctrl->consumer);
++	dma_sync_single_for_device(nss_ctx->dev, (uint32_t) ctrl, size, DMA_FROM_DEVICE);
+ 	dsb(sy);
+ 	return ctrl;
+ }
+-- 
+2.34.1
+
