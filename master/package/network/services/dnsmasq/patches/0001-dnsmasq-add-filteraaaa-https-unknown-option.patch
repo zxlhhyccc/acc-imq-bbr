@@ -62,7 +62,7 @@ index 09dce0a..fa5ac8a 100755
  	append_parm "$cfg" cachesize "--cache-size"
  	append_parm "$cfg" dnsforwardmax "--dns-forward-max"
  	append_parm "$cfg" port "--port"
-@@ -1164,6 +1168,13 @@ dnsmasq_start()
+@@ -1169,6 +1173,13 @@ dnsmasq_start()
  	procd_add_jail_mount_rw /var/run/dnsmasq/ $leasefile
  
  	procd_close_instance
@@ -76,7 +76,7 @@ index 09dce0a..fa5ac8a 100755
  }
  
  dnsmasq_stop()
-@@ -1181,6 +1192,13 @@ dnsmasq_stop()
+@@ -1186,6 +1197,13 @@ dnsmasq_stop()
  	rm -f ${BASEDHCPSTAMPFILE}.${cfg}.*.dhcp
  }
  
@@ -90,7 +90,7 @@ index 09dce0a..fa5ac8a 100755
  add_interface_trigger()
  {
  	local interface ignore
-@@ -1251,6 +1269,7 @@ start_service() {
+@@ -1256,6 +1274,7 @@ start_service() {
  }
  
  reload_service() {
@@ -98,7 +98,7 @@ index 09dce0a..fa5ac8a 100755
  	rc_procd start_service "$@"
  	procd_send_signal dnsmasq "$@"
  }
-@@ -1277,4 +1296,5 @@ stop_service() {
+@@ -1282,4 +1301,5 @@ stop_service() {
  	else
  		config_foreach dnsmasq_stop dnsmasq
  	fi
