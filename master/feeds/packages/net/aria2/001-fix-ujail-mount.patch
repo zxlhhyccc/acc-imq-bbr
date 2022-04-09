@@ -19,7 +19,7 @@ index 41f0005..ead8c66 100755
  
  	procd_add_jail "$NAME.$section" log
 -	procd_add_jail_mount "$config_file"
-+	# procd_add_jail_mount "$config_file"
++	procd_add_jail_mount "$ca_certificate" "$certificate" "$rpc_certificate" "$rpc_private_key"
  	procd_add_jail_mount_rw "$dir" "$config_dir" "$log"
  	procd_close_instance
  }
