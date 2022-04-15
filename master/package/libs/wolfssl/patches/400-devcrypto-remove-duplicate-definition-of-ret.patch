@@ -1,0 +1,24 @@
+From 524760ea9f4383c4c786df7474604f5d84aee2af Mon Sep 17 00:00:00 2001
+From: Eneas U de Queiroz <cotequeiroz@gmail.com>
+Date: Wed, 13 Apr 2022 10:07:25 -0300
+Subject: [PATCH] devcrypto: remove duplicate definition of ret
+
+Fixes: a718637c6
+
+Signed-off-by: Eneas U de Queiroz <cotequeiroz@gmail.com>
+---
+ wolfcrypt/src/port/devcrypto/devcrypto_aes.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/wolfcrypt/src/port/devcrypto/devcrypto_aes.c b/wolfcrypt/src/port/devcrypto/devcrypto_aes.c
+index 3bc1d5bb103..28e145e27f8 100644
+--- a/wolfcrypt/src/port/devcrypto/devcrypto_aes.c
++++ b/wolfcrypt/src/port/devcrypto/devcrypto_aes.c
+@@ -208,7 +208,6 @@ int wc_AesCtrEncrypt(Aes* aes, byte* out, const byte* in, word32 sz)
+     int ret;
+     struct crypt_op crt;
+     byte* tmp;
+-    int ret;
+ 
+     if (aes == NULL || out == NULL || in == NULL) {
+         return BAD_FUNC_ARG;
