@@ -1,16 +1,3 @@
-diff --git a/image.mk b/image.mk
-index de08d04..bc64e60 100644
---- a/image.mk
-+++ b/image.mk
-@@ -231,7 +231,7 @@ define Image/mkfs/squashfs-common
- 	$(STAGING_DIR_HOST)/bin/mksquashfs4 $(call mkfs_target_dir,$(1)) $@ \
- 		-nopad -noappend -root-owned \
- 		-comp $(SQUASHFSCOMP) $(SQUASHFSOPT) \
--		-processors 1
-+		-processors $(shell nproc)
- endef
- 
- ifeq ($(CONFIG_TARGET_ROOTFS_SECURITY_LABELS),y)
 diff --git a/netfilter.mk b/netfilter.mk
 index 803749d..6b58776 100644
 --- a/netfilter.mk
@@ -38,7 +25,16 @@ diff --git a/target.mk b/target.mk
 index a2e76f8..8451582 100644
 --- a/target.mk
 +++ b/target.mk
-@@ -28,7 +28,39 @@ DEFAULT_PACKAGES:=\
+@@ -17,7 +17,7 @@ DEFAULT_PACKAGES:=\
+ 	fstools \
+ 	libc \
+ 	libgcc \
+-	libustream-wolfssl \
++	libustream-openssl \
+ 	logd \
+ 	mtd \
+ 	netifd \
+@@ -25,7 +25,37 @@ DEFAULT_PACKAGES:=\
  	uci \
  	uclient-fetch \
  	urandom-seed \
@@ -50,7 +46,7 @@ index a2e76f8..8451582 100644
 +	kmod-nf-nathelper \
 +	kmod-nf-nathelper-extra \
 +	kmod-ipt-raw \
-+	wget \
++	wget-ssl \
 +	ca-certificates \
 +	default-settings \
 +	luci \
@@ -62,15 +58,13 @@ index a2e76f8..8451582 100644
 +	luci-app-ddns \
 +	luci-app-sqm \
 +	luci-app-upnp \
-+	luci-app-adbyby-plus \
-+	luci-app-autoreboot \
++	luci-app-autorebootschedule \
 +	luci-app-vsftpd \
-+	luci-app-ssr-plus \
++	luci-app-ssr-plus-mosdns \
 +	luci-app-arpbind \
-+	luci-app-vlmcsd \
++	luci-app-control-vlmcsd \
 +	luci-app-wol \
 +	luci-app-ramfree \
-+	luci-app-flowoffload \
 +	luci-app-nlbwmon \
 +	luci-app-accesscontrol \
 +	ddns-scripts_aliyun \
@@ -79,7 +73,7 @@ index a2e76f8..8451582 100644
  
  ifneq ($(CONFIG_SELINUX),)
  DEFAULT_PACKAGES+=busybox-selinux procd-selinux
-@@ -43,14 +75,15 @@ DEFAULT_PACKAGES.nas:=\
+@@ -50,13 +80,15 @@ DEFAULT_PACKAGES.nas:=\
  	block-mount \
  	fdisk \
  	lsblk \
@@ -90,11 +84,13 @@ index a2e76f8..8451582 100644
  # For router targets
  DEFAULT_PACKAGES.router:=\
 -	dnsmasq \
+-	firewall4 \
+-	nftables \
+-	kmod-nft-offload \
 +	dnsmasq-full \
- 	firewall \
- 	ip6tables \
- 	iptables \
--	kmod-ipt-offload \
++	firewall \
++	ip6tables \
++	iptables \
  	odhcp6c \
  	odhcpd-ipv6only \
  	ppp \
