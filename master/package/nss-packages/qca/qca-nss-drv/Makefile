@@ -20,7 +20,7 @@ define KernelPackage/qca-nss-drv
   SECTION:=kernel
   CATEGORY:=Kernel modules
   SUBMENU:=Network Devices
-  DEPENDS:=@(TARGET_ipq807x||TARGET_ipq60xx) +kmod-qca-nss-dp
+  DEPENDS:=@LINUX_5_10 @(TARGET_ipq807x||TARGET_ipq60xx) +kmod-qca-nss-dp
   TITLE:=Kernel driver for NSS (core driver)
   FILES:=$(PKG_BUILD_DIR)/qca-nss-drv.ko
   AUTOLOAD:=$(call AutoLoad,32,qca-nss-drv)

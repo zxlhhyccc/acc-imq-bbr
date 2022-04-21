@@ -110,7 +110,7 @@ index 76187df..68f9e9b 100644
 +
 +define KernelPackage/tcp-tsunamio
 +  SUBMENU:=$(NETWORK_SUPPORT_MENU)
-+  DEPENDS:=@LINUX_5_4
++#  DEPENDS:=@LINUX_5_4
 +  TITLE:=TSUNAMIO TCP congestion control
 +  KCONFIG:= \
 +            CONFIG_TCP_CONG_TSUNAMIO \
