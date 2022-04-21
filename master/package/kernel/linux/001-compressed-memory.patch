@@ -145,10 +145,27 @@ index 499a408..1f9a8a4 100644
  define KernelPackage/pps
    SUBMENU:=$(OTHER_MENU)
    TITLE:=PPS support
-@@ -1339,12 +1419,30 @@ endef
+@@ -1339,6 +1419,7 @@ endef
  
  $(eval $(call KernelPackage,f71808e-wdt))
  
++
+ define KernelPackage/mhi-bus
+   SUBMENU:=$(OTHER_MENU)
+   TITLE:=MHI bus
+@@ -1355,6 +1436,7 @@ endef
+ 
+ $(eval $(call KernelPackage,mhi-bus))
+ 
++
+ define KernelPackage/mhi-pci-generic
+   SUBMENU:=$(OTHER_MENU)
+   TITLE:=MHI PCI controller driver
+@@ -1369,3 +1451,18 @@ define KernelPackage/mhi-pci-generic/description
+ endef
+ 
+ $(eval $(call KernelPackage,mhi-pci-generic))
++
 +
 +define KernelPackage/qcom-qmi-helpers
 +  SUBMENU:=$(OTHER_MENU)
@@ -163,25 +180,3 @@ index 499a408..1f9a8a4 100644
 +endef
 +
 +$(eval $(call KernelPackage,qcom-qmi-helpers))
-+
-+
- define KernelPackage/mhi-bus
-   SUBMENU:=$(OTHER_MENU)
-   TITLE:=MHI bus
-   DEPENDS:=@LINUX_5_15
-   KCONFIG:=CONFIG_MHI_BUS \
--           CONFIG_MHI_BUS_DEBUG=y
-+           CONFIG_MHI_BUS_DEBUG=y \
-+           CONFIG_MHI_BUS_PCI_GENERIC=n \
-+           CONFIG_MHI_NET=n
-   FILES:=$(LINUX_DIR)/drivers/bus/mhi/core/mhi.ko
-   AUTOLOAD:=$(call AutoProbe,mhi)
- endef
-@@ -1355,6 +1453,7 @@ endef
- 
- $(eval $(call KernelPackage,mhi-bus))
- 
-+
- define KernelPackage/mhi-pci-generic
-   SUBMENU:=$(OTHER_MENU)
-   TITLE:=MHI PCI controller driver
