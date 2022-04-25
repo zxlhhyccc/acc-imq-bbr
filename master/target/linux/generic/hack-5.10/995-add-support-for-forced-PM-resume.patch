@@ -1,6 +1,6 @@
 --- a/drivers/bus/mhi/core/pm.c
 +++ b/drivers/bus/mhi/core/pm.c
-@@ -767,7 +767,7 @@ int mhi_pm_suspend(struct mhi_controller
+@@ -767,7 +767,7 @@ int mhi_pm_suspend(struct mhi_controller *mhi_cntrl)
  }
  EXPORT_SYMBOL_GPL(mhi_pm_suspend);
  
@@ -9,7 +9,7 @@
  {
  	struct mhi_chan *itr, *tmp;
  	struct device *dev = &mhi_cntrl->mhi_dev->dev;
-@@ -783,6 +783,13 @@ int mhi_pm_resume(struct mhi_controller
+@@ -783,6 +783,13 @@
  
  	if (MHI_PM_IN_ERROR_STATE(mhi_cntrl->pm_state))
  		return -EIO;
@@ -23,7 +23,7 @@
  
  	/* Notify clients about exiting LPM */
  	list_for_each_entry_safe(itr, tmp, &mhi_cntrl->lpm_chans, node) {
-@@ -823,8 +830,19 @@ int mhi_pm_resume(struct mhi_controller
+@@ -823,8 +830,19 @@ int mhi_pm_resume(struct mhi_controller *mhi_cntrl)
  
  	return 0;
  }
@@ -45,7 +45,7 @@
  	int ret;
 --- a/drivers/net/wireless/ath/ath11k/mhi.c
 +++ b/drivers/net/wireless/ath/ath11k/mhi.c
-@@ -415,6 +415,11 @@ static int ath11k_mhi_set_state(struct a
+@@ -415,6 +415,11 @@
  	case ATH11K_MHI_SUSPEND:
  		break;
  	case ATH11K_MHI_RESUME:
@@ -59,10 +59,11 @@
  		ret = mhi_force_rddm_mode(ab_pci->mhi_ctrl);
 --- a/include/linux/mhi.h
 +++ b/include/linux/mhi.h
-@@ -667,6 +667,19 @@ int mhi_force_rddm_mode(struct mhi_contr
- enum mhi_state mhi_get_mhi_state(struct mhi_controller *mhi_cntrl);
+@@ -646,6 +646,19 @@ int mhi_pm_suspend(struct mhi_controller *mhi_cntrl);
+  */
+ int mhi_pm_resume(struct mhi_controller *mhi_cntrl);
  
- /**
++/**
 + * mhi_pm_resume_force - Force resume MHI from suspended state
 + * @mhi_cntrl: MHI controller
 + *
@@ -75,7 +76,6 @@
 + */
 +int mhi_pm_resume_force(struct mhi_controller *mhi_cntrl);
 +
-+/**
-  * mhi_device_get - Disable device low power mode
-  * @mhi_dev: Device associated with the channel
-  */
+ /**
+  * mhi_download_rddm_img - Download ramdump image from device for
+  *                         debugging purpose.
