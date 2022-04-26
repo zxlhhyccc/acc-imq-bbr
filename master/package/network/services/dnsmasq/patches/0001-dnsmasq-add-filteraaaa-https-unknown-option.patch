@@ -17,37 +17,7 @@ diff --git a/files/dnsmasq.init b/files/dnsmasq.init
 index 09dce0a..fa5ac8a 100755
 --- a/files/dnsmasq.init
 +++ b/files/dnsmasq.init
-@@ -796,25 +796,23 @@ dhcp_relay_add() {
- 
- dnsmasq_ipset_add() {
- 	local cfg="$1"
--	local ipsets domains
-+	local ipsets
- 
- 	add_ipset() {
- 		ipsets="${ipsets:+$ipsets,}$1"
- 	}
- 
- 	add_domain() {
--		# leading '/' is expected
--		domains="$domains/$1"
-+		xappend "--ipset=/$1/$ipsets"
- 	}
- 
- 	config_list_foreach "$cfg" "name" add_ipset
--	config_list_foreach "$cfg" "domain" add_domain
- 
--	if [ -z "$ipsets" ] || [ -z "$domains" ]; then
-+	if [ -z "$ipsets" ]; then
- 		return 0
- 	fi
- 
--	xappend "--ipset=$domains/$ipsets"
-+	config_list_foreach "$cfg" "domain" add_domain
- }
- 
- dnsmasq_start()
-@@ -932,8 +930,14 @@ dnsmasq_start()
+@@ -932,8 +932,15 @@ dnsmasq_start()
  	append_bool "$cfg" rapidcommit "--dhcp-rapid-commit"
  	append_bool "$cfg" scriptarp "--script-arp"
  
@@ -56,14 +26,15 @@ index 09dce0a..fa5ac8a 100755
 +	append_bool "$cfg" filter_unknown "--filter-unknown"
 +
  	append_parm "$cfg" logfacility "--log-facility"
- 
+ 	config_get logfacility "$cfg" "logfacility"
++
 +	append_parm "$cfg" mini_ttl "--min-ttl"
 +
  	append_parm "$cfg" cachesize "--cache-size"
  	append_parm "$cfg" dnsforwardmax "--dns-forward-max"
  	append_parm "$cfg" port "--port"
-@@ -1169,6 +1173,13 @@ dnsmasq_start()
- 	procd_add_jail_mount_rw /var/run/dnsmasq/ $leasefile
+@@ -1173,6 +1180,13 @@ dnsmasq_start()
+ 	esac
  
  	procd_close_instance
 +
@@ -76,7 +47,7 @@ index 09dce0a..fa5ac8a 100755
  }
  
  dnsmasq_stop()
-@@ -1186,6 +1197,13 @@ dnsmasq_stop()
+@@ -1190,6 +1204,13 @@ dnsmasq_stop()
  	rm -f ${BASEDHCPSTAMPFILE}.${cfg}.*.dhcp
  }
  
@@ -90,7 +61,7 @@ index 09dce0a..fa5ac8a 100755
  add_interface_trigger()
  {
  	local interface ignore
-@@ -1256,6 +1274,7 @@ start_service() {
+@@ -1260,6 +1281,7 @@ start_service() {
  }
  
  reload_service() {
@@ -98,7 +69,7 @@ index 09dce0a..fa5ac8a 100755
  	rc_procd start_service "$@"
  	procd_send_signal dnsmasq "$@"
  }
-@@ -1282,4 +1301,5 @@ stop_service() {
+@@ -1286,4 +1308,5 @@ stop_service() {
  	else
  		config_foreach dnsmasq_stop dnsmasq
  	fi
