@@ -14,7 +14,7 @@ Signed-off-by: Rajkumar Ayyasamy <arajkuma@codeaurora.org>
 
 --- a/drivers/clk/qcom/gcc-ipq8074.c
 +++ b/drivers/clk/qcom/gcc-ipq8074.c
-@@ -391,6 +391,22 @@ static const struct parent_map gcc_xo_gp
+@@ -396,6 +396,22 @@ static const struct parent_map gcc_xo_gp
  	{ P_SLEEP_CLK, 6 },
  };
  
