@@ -2,7 +2,7 @@ diff --git a/luasrc/sys.lua b/luasrc/sys.lua
 index aa00766..5b58c84 100644
 --- a/luasrc/sys.lua
 +++ b/luasrc/sys.lua
-@@ -525,7 +525,7 @@ function user.checkpasswd(username, pass)
+@@ -531,7 +531,7 @@ function user.checkpasswd(username, pass)
  end
  
  function user.setpasswd(username, password)
