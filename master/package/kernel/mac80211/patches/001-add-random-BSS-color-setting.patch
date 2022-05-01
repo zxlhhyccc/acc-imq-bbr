@@ -2,7 +2,7 @@ diff --git a/files/lib/netifd/wireless/mac80211.sh b/files/lib/netifd/wireless/m
 index d74a2e0..89f4090 100644
 --- a/files/lib/netifd/wireless/mac80211.sh
 +++ b/files/lib/netifd/wireless/mac80211.sh
-@@ -419,7 +419,16 @@ mac80211_hostapd_setup_base() {
+@@ -422,7 +422,16 @@ mac80211_hostapd_setup_base() {
  		he_mac_cap=${he_mac_cap:2}
  
  		append base_cfg "ieee80211ax=1" "$N"
