@@ -1,5 +1,5 @@
 diff --git a/image/mt7621.mk b/image/mt7621.mk
-index 3793bf6..3d774e4 100644
+index 5844682..ce5be05 100644
 --- a/image/mt7621.mk
 +++ b/image/mt7621.mk
 @@ -124,7 +124,7 @@ define Device/alfa-network_quad-e4g
@@ -157,7 +157,7 @@ index 3793bf6..3d774e4 100644
    SUPPORTED_DEVICES += unielec,u7621-06-512m-64m
  endef
  TARGET_DEVICES += unielec_u7621-06-64m
-@@ -1933,7 +1931,7 @@ define Device/xiaoyu_xy-c5
+@@ -1943,7 +1941,7 @@ define Device/xiaoyu_xy-c5
    IMAGE_SIZE := 32448k
    DEVICE_VENDOR := XiaoYu
    DEVICE_MODEL := XY-C5
@@ -166,7 +166,7 @@ index 3793bf6..3d774e4 100644
  endef
  TARGET_DEVICES += xiaoyu_xy-c5
  
-@@ -1943,7 +1941,7 @@ define Device/xzwifi_creativebox-v1
+@@ -1953,7 +1951,7 @@ define Device/xzwifi_creativebox-v1
    DEVICE_VENDOR := CreativeBox
    DEVICE_MODEL := v1
    DEVICE_PACKAGES := kmod-ata-ahci kmod-mt7603 kmod-mt76x2 kmod-sdhci-mt7620 \
