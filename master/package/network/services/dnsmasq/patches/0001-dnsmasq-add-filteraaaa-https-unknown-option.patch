@@ -14,7 +14,7 @@ index 8c42ef7..49ff5fe 100644
  
  config dhcp lan
 diff --git a/files/dnsmasq.init b/files/dnsmasq.init
-index 09dce0a..fa5ac8a 100755
+index c4ca3eb..fd9986f 100755
 --- a/files/dnsmasq.init
 +++ b/files/dnsmasq.init
 @@ -932,8 +932,15 @@ dnsmasq_start()
@@ -33,7 +33,7 @@ index 09dce0a..fa5ac8a 100755
  	append_parm "$cfg" cachesize "--cache-size"
  	append_parm "$cfg" dnsforwardmax "--dns-forward-max"
  	append_parm "$cfg" port "--port"
-@@ -1173,6 +1180,13 @@ dnsmasq_start()
+@@ -1180,6 +1187,13 @@ dnsmasq_start()
  	esac
  
  	procd_close_instance
@@ -47,7 +47,7 @@ index 09dce0a..fa5ac8a 100755
  }
  
  dnsmasq_stop()
-@@ -1190,6 +1204,13 @@ dnsmasq_stop()
+@@ -1197,6 +1211,13 @@ dnsmasq_stop()
  	rm -f ${BASEDHCPSTAMPFILE}.${cfg}.*.dhcp
  }
  
@@ -61,7 +61,7 @@ index 09dce0a..fa5ac8a 100755
  add_interface_trigger()
  {
  	local interface ignore
-@@ -1260,6 +1281,7 @@ start_service() {
+@@ -1267,6 +1288,7 @@ start_service() {
  }
  
  reload_service() {
@@ -69,7 +69,7 @@ index 09dce0a..fa5ac8a 100755
  	rc_procd start_service "$@"
  	procd_send_signal dnsmasq "$@"
  }
-@@ -1286,4 +1308,5 @@ stop_service() {
+@@ -1293,4 +1315,5 @@ stop_service() {
  	else
  		config_foreach dnsmasq_stop dnsmasq
  	fi
