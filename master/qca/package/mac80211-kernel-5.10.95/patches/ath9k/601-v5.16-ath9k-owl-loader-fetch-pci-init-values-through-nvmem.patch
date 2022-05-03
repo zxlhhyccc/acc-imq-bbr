@@ -24,7 +24,7 @@ Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
  };
  
  #define EEPROM_FILENAME_LEN 100
-@@ -42,6 +47,12 @@ static int ath9k_pci_fixup(struct pci_dev *pdev, const u16 *cal_data,
+@@ -42,6 +47,12 @@ static int ath9k_pci_fixup(struct pci_de
  	u32 bar0;
  	bool swap_needed = false;
  
@@ -37,7 +37,7 @@ Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
  	if (*cal_data != AR5416_EEPROM_MAGIC) {
  		if (*cal_data != swab16(AR5416_EEPROM_MAGIC)) {
  			dev_err(&pdev->dev, "invalid calibration data\n");
-@@ -99,49 +110,31 @@ static int ath9k_pci_fixup(struct pci_dev *pdev, const u16 *cal_data,
+@@ -99,49 +110,31 @@ static int ath9k_pci_fixup(struct pci_de
  	return 0;
  }
  
@@ -102,7 +102,7 @@ Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
  	release_firmware(fw);
  }
  
-@@ -169,6 +162,43 @@ static const char *owl_get_eeprom_name(struct pci_dev *pdev)
+@@ -169,6 +162,43 @@ static const char *owl_get_eeprom_name(s
  	return eeprom_name;
  }
  
@@ -146,7 +146,7 @@ Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
  static int owl_probe(struct pci_dev *pdev,
  		     const struct pci_device_id *id)
  {
-@@ -181,21 +211,27 @@ static int owl_probe(struct pci_dev *pdev,
+@@ -181,21 +211,27 @@ static int owl_probe(struct pci_dev *pde
  
  	pcim_pin_device(pdev);
  

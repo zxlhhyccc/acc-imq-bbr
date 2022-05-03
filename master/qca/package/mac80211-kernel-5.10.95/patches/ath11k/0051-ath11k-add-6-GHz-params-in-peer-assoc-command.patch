@@ -68,7 +68,7 @@ Link: https://lore.kernel.org/r/20210913175510.193005-2-jouni@codeaurora.org
 +			FIELD_GET(IEEE80211_HE_6GHZ_CAP_MAX_AMPDU_LEN_EXP,
 +				  arg->peer_he_caps_6ghz);
 +
-+	arg->peer_max_mpdu = (1u << (IEEE80211_HE_VHT_MAX_AMPDU_FACTOR +
++	arg->peer_max_mpdu = (1u << (IEEE80211_HE_6GHZ_MAX_AMPDU_FACTOR +
 +				     ampdu_factor)) - 1;
 +}
 +

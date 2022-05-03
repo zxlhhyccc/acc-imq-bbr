@@ -23,8 +23,6 @@ Signed-off-by: Petr Štetiar <ynezz@true.cz>
  backport-include/linux/lockdep.h | 3 +++
  1 file changed, 3 insertions(+)
 
-diff --git a/backport-include/linux/lockdep.h b/backport-include/linux/lockdep.h
-index ed5ea67894e4..842e24b7ff8f 100644
 --- a/backport-include/linux/lockdep.h
 +++ b/backport-include/linux/lockdep.h
 @@ -11,6 +11,9 @@ struct lockdep_map { };
