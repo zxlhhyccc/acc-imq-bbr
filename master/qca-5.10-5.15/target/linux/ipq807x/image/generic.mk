@@ -118,18 +118,18 @@ define Device/xiaomi_ax3600
 endef
 TARGET_DEVICES += xiaomi_ax3600
 
-define Device/xiaomi_ax9000
-	$(call Device/FitImage)
-	$(call Device/UbiFit)
-	DEVICE_VENDOR := Xiaomi
-	DEVICE_MODEL := AX9000
-	BLOCKSIZE := 128k
-	PAGESIZE := 2048
-	DEVICE_DTS_CONFIG := config@hk14
-	SOC := ipq8072
-	DEVICE_PACKAGES := ipq-wifi-xiaomi_ax9000 kmod-ath10k-ct ath10k-firmware-qca9887-ct
-endef
-TARGET_DEVICES += xiaomi_ax9000
+#define Device/xiaomi_ax9000
+#	$(call Device/FitImage)
+#	$(call Device/UbiFit)
+#	DEVICE_VENDOR := Xiaomi
+#	DEVICE_MODEL := AX9000
+#	BLOCKSIZE := 128k
+#	PAGESIZE := 2048
+#	DEVICE_DTS_CONFIG := config@hk14
+#	SOC := ipq8072
+#	DEVICE_PACKAGES := ipq-wifi-xiaomi_ax9000 kmod-ath10k-ct ath10k-firmware-qca9887-ct
+#endef
+#TARGET_DEVICES += xiaomi_ax9000
 
 define Device/zte_mf269
 	$(call Device/FitImage)
