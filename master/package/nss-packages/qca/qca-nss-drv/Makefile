@@ -5,9 +5,9 @@ PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE_URL:=https://git.codelinaro.org/clo/qsdk/oss/lklm/nss-drv.git
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2021-07-13
+PKG_SOURCE_DATE:=2021-06-09
 PKG_SOURCE_VERSION:=22b485ac89a3a1b60f3a6d5b2fe3236d170934b9
-PKG_MIRROR_HASH:=d3129748ddc303f3c211c4bf61d8ddbc9096c1a3a411dff3cc2be884a2e829b8
+PKG_MIRROR_HASH:=ef94ba959cde4bd56d1bc4ffbbc5d91fb9a7766cd7096dc1538127e73bbae89a
 
 PKG_BUILD_PARALLEL:=1
 
@@ -20,7 +20,7 @@ define KernelPackage/qca-nss-drv
   SECTION:=kernel
   CATEGORY:=Kernel modules
   SUBMENU:=Network Devices
-  DEPENDS:=@LINUX_5_10 @(TARGET_ipq807x||TARGET_ipq60xx) +kmod-qca-nss-dp
+  DEPENDS:=@(TARGET_ipq807x||TARGET_ipq60xx) +LINUX_5_10:kmod-qca-nss-dp +LINUX_5_15:kmod-qca-nss-dp-64
   TITLE:=Kernel driver for NSS (core driver)
   FILES:=$(PKG_BUILD_DIR)/qca-nss-drv.ko
   AUTOLOAD:=$(call AutoLoad,32,qca-nss-drv)

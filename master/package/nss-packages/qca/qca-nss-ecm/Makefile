@@ -19,8 +19,7 @@ define KernelPackage/qca-nss-ecm
   CATEGORY:=Kernel modules
   SUBMENU:=Network Support
   DEPENDS:=@(TARGET_ipq807x||TARGET_ipq60xx) \
-  	+!LINUX_5_15:kmod-qca-nss-drv \
-  	+!LINUX_5_10:kmod-qca-nss-drv-64 \
+  	+kmod-qca-nss-drv \
 	+iptables-mod-extra \
 	+kmod-ipt-conntrack \
 	+kmod-ipt-physdev \
