@@ -10,7 +10,7 @@ Ref https://github.com/torvalds/linux/commit/06b4feb
 
 --- a/nss_core.c
 +++ b/nss_core.c
-@@ -2578,7 +2578,11 @@ static inline bool nss_core_skb_can_reus
+@@ -2623,7 +2623,11 @@ static inline bool nss_core_skb_can_reus
  	if (unlikely(irqs_disabled()))
  		return false;
  

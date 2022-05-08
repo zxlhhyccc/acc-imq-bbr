@@ -7,7 +7,7 @@ PKG_SOURCE_URL:=https://git.codelinaro.org/clo/qsdk/oss/lklm/nss-dp.git
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_DATE:=2021-03-26
 PKG_SOURCE_VERSION:=e0c89348d5ad99559ce2fbe15d37b3b5bc66aa03
-PKG_MIRROR_HASH:=a0ac051a5ec6a8f6d7ee62e26db97071632f2cdfd4056f2e207761cbf2bb78aa
+PKG_MIRROR_HASH:=f369f0c3b33b5f4ad6d0a6ad6ac5495f63c9ecaf94e4e7fa345169f3e44fcf45
 
 PKG_BUILD_PARALLEL:=1
 
@@ -24,7 +24,7 @@ define KernelPackage/qca-nss-dp-64
   AUTOLOAD:=$(call AutoLoad,31,qca-nss-dp,1)
 endef
 
-define KernelPackage/qca-nss-dp-64/Description
+define KernelPackage/qca-nss-dp/Description
 This package contains a NSS data plane driver for QCA chipset
 endef
 

@@ -58,10 +58,25 @@ diff --git a/modules/other.mk b/modules/other.mk
 index 499a408..1f9a8a4 100644
 --- a/modules/other.mk
 +++ b/modules/other.mk
-@@ -999,6 +999,86 @@ endef
+@@ -1322,3 +1322,96 @@ define KernelPackage/mhi-pci-generic/description
+ endef
  
- $(eval $(call KernelPackage,zram))
- 
+ $(eval $(call KernelPackage,mhi-pci-generic))
++
++define KernelPackage/qcom-qmi-helpers
++  SUBMENU:=$(OTHER_MENU)
++  TITLE:=Qualcomm QMI Helpers
++  KCONFIG:=CONFIG_QCOM_QMI_HELPERS
++  FILES:=$(LINUX_DIR)/drivers/soc/qcom/qmi_helpers.ko
++  AUTOLOAD:=$(call AutoProbe,qmi_helpers)
++endef
++
++define KernelPackage/qcom-qmi-helpers/description
++  Qualcomm QMI Helpers
++endef
++
++$(eval $(call KernelPackage,qcom-qmi-helpers))
++
 +
 +define KernelPackage/zsmalloc
 +  SUBMENU:=$(OTHER_MENU)
@@ -140,43 +155,3 @@ index 499a408..1f9a8a4 100644
 +endef
 +
 +$(eval $(call KernelPackage,zswap))
-+
-+
- define KernelPackage/pps
-   SUBMENU:=$(OTHER_MENU)
-   TITLE:=PPS support
-@@ -1339,6 +1419,7 @@ endef
- 
- $(eval $(call KernelPackage,f71808e-wdt))
- 
-+
- define KernelPackage/mhi-bus
-   SUBMENU:=$(OTHER_MENU)
-   TITLE:=MHI bus
-@@ -1355,6 +1436,7 @@ endef
- 
- $(eval $(call KernelPackage,mhi-bus))
- 
-+
- define KernelPackage/mhi-pci-generic
-   SUBMENU:=$(OTHER_MENU)
-   TITLE:=MHI PCI controller driver
-@@ -1369,3 +1451,18 @@ define KernelPackage/mhi-pci-generic/description
- endef
- 
- $(eval $(call KernelPackage,mhi-pci-generic))
-+
-+
-+define KernelPackage/qcom-qmi-helpers
-+  SUBMENU:=$(OTHER_MENU)
-+  TITLE:=Qualcomm QMI Helpers
-+  KCONFIG:=CONFIG_QCOM_QMI_HELPERS
-+  FILES:=$(LINUX_DIR)/drivers/soc/qcom/qmi_helpers.ko
-+  AUTOLOAD:=$(call AutoProbe,qmi_helpers)
-+endef
-+
-+define KernelPackage/qcom-qmi-helpers/description
-+  Qualcomm QMI Helpers
-+endef
-+
-+$(eval $(call KernelPackage,qcom-qmi-helpers))

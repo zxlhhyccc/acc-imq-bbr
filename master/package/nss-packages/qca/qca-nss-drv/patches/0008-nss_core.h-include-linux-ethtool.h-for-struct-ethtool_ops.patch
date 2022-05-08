@@ -22,3 +22,13 @@ to nss_core.h to fix "error: storage size of 'nss_ethtool_ops' isn't known".
  #include <linux/debugfs.h>
  #include <linux/workqueue.h>
  #include <asm/cacheflush.h>
+--- a/nss_hal/nss_hal.c
++++ b/nss_hal/nss_hal.c
+@@ -24,6 +24,7 @@
+ #include <linux/firmware.h>
+ #include <linux/of.h>
+ #include <linux/irq.h>
++#include <linux/ethtool.h>
+ 
+ #include "nss_hal.h"
+ #include "nss_arch.h"
