@@ -46,7 +46,7 @@ Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
  	if (*cal_data != AR5416_EEPROM_MAGIC) {
  		if (*cal_data != swab16(AR5416_EEPROM_MAGIC)) {
  			dev_err(&pdev->dev, "invalid calibration data\n");
-@@ -99,26 +110,8 @@ static int ath9k_pci_fixup(struct pci_de
+@@ -99,38 +110,31 @@ static int ath9k_pci_fixup(struct pci_de
  	return 0;
  }
  
@@ -55,7 +55,6 @@ Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
  {
 -	struct pci_dev *pdev = (struct pci_dev *)context;
 -	struct owl_ctx *ctx = (struct owl_ctx *)pci_get_drvdata(pdev);
--	struct ath9k_platform_data *pdata = dev_get_platdata(&pdev->dev);
 -	struct pci_bus *bus;
 -
 -	complete(&ctx->eeprom_load);
@@ -71,13 +70,6 @@ Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
 -		goto release;
 -	}
 -
- 	if (pdata) {
- 		memcpy(pdata->eeprom_data, fw->data, fw->size);
- 
-@@ -129,19 +122,30 @@ static void owl_fw_cb(const struct firmw
- 		pdata->eeprom_name = NULL;
- 	}
- 
 -	if (ath9k_pci_fixup(pdev, (const u16 *)fw->data, fw->size))
 -		goto release;
 +	struct pci_bus *bus = pdev->bus;
@@ -97,7 +89,6 @@ Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
 +	struct owl_ctx *ctx = (struct owl_ctx *)context;
 +
 +	complete(&ctx->eeprom_load);
-+
  
 -release:
 +	if (fw) {
@@ -109,7 +100,7 @@ Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
  	release_firmware(fw);
  }
  
-@@ -169,6 +173,43 @@ static const char *owl_get_eeprom_name(s
+@@ -152,6 +156,43 @@ static const char *owl_get_eeprom_name(s
  	return eeprom_name;
  }
  
@@ -153,7 +144,7 @@ Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
  static int owl_probe(struct pci_dev *pdev,
  		     const struct pci_device_id *id)
  {
-@@ -181,21 +222,27 @@ static int owl_probe(struct pci_dev *pde
+@@ -164,21 +205,27 @@ static int owl_probe(struct pci_dev *pde
  
  	pcim_pin_device(pdev);
  

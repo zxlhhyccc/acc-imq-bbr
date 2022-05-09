@@ -141,7 +141,7 @@ Link: https://lore.kernel.org/r/20211011123533.GA15188@kili
  static int ath9k_init_platform(struct ath_softc *sc)
  {
  	struct ath9k_platform_data *pdata = sc->dev->platform_data;
-@@ -710,6 +762,10 @@ static int ath9k_init_softc(u16 devid, s
+@@ -716,6 +768,10 @@ static int ath9k_init_softc(u16 devid, s
  	if (ret)
  		return ret;
  

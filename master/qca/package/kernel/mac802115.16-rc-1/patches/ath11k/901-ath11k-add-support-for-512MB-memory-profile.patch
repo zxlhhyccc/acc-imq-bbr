@@ -177,7 +177,7 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
  	ATH11K_QMI_FILE_TYPE_CALDATA = 2,
 --- a/local-symbols
 +++ b/local-symbols
-@@ -144,6 +144,7 @@ WCN36XX_DEBUGFS=
+@@ -145,6 +145,7 @@ WCN36XX_DEBUGFS=
  ATH11K=
  ATH11K_AHB=
  ATH11K_PCI=

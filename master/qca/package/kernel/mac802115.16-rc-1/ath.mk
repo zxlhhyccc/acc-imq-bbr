@@ -294,7 +294,7 @@ define KernelPackage/ath11k
   TITLE:=Qualcomm 802.11ax wireless chipset support (common code)
   URL:=https://wireless.wiki.kernel.org/en/users/drivers/ath11k
   DEPENDS+= +kmod-ath +@DRIVER_11N_SUPPORT +@DRIVER_11AC_SUPPORT +@DRIVER_11AX_SUPPORT \
-  +kmod-crypto-michael-mic +ATH11K_THERMAL:kmod-hwmon-core +ATH11K_THERMAL:kmod-thermal
+	+kmod-crypto-michael-mic +ATH11K_THERMAL:kmod-hwmon-core +ATH11K_THERMAL:kmod-thermal
   FILES:=$(PKG_BUILD_DIR)/drivers/net/wireless/ath/ath11k/ath11k.ko
   AUTOLOAD:=$(call AutoProbe,ath11k)
 endef
@@ -312,7 +312,7 @@ define KernelPackage/ath11k/config
                default y if TARGET_ipq807x
 
        config ATH11K_MEM_PROFILE_512M
-               bool "Use limits for the 512MB memory size instead of 1GB"
+               bool "Enable 512MB profile"
                depends on PACKAGE_kmod-ath11k
                default y if TARGET_ipq807x_generic_DEVICE_redmi_ax6 || TARGET_ipq807x_generic_DEVICE_xiaomi_ax3600 || TARGET_ipq807x_generic_DEVICE_zte_mf269
 
@@ -374,7 +374,7 @@ endef
 define KernelPackage/ar5523
   $(call KernelPackage/mac80211/Default)
   TITLE:=Driver for Atheros AR5523 USB sticks
-  DEPENDS:=@USB_SUPPORT +kmod-mac80211 +kmod-ath +kmod-usb-core +kmod-input-core 
+  DEPENDS:=@USB_SUPPORT +kmod-mac80211 +kmod-ath +kmod-usb-core +kmod-input-core
   FILES:=$(PKG_BUILD_DIR)/drivers/net/wireless/ath/ar5523/ar5523.ko
   AUTOLOAD:=$(call AutoProbe,ar5523)
 endef
