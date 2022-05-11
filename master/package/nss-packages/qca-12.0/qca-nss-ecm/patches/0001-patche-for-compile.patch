@@ -1,0 +1,1566 @@
+From 52906fa4c5199ceeafb4c6354a1a7400c50e640e Mon Sep 17 00:00:00 2001
+From: boos4721 <3.1415926535boos@gmail.com>
+Date: Tue, 10 May 2022 10:13:31 +0800
+Subject: [PATCH] patche for compile
+
+Signed-off-by: boos4721 <3.1415926535boos@gmail.com>
+---
+ Makefile                                 | 56 ++++++++++++---
+ ecm_classifier_default.c                 | 24 ++-----
+ ecm_classifier_dscp.c                    |  8 +--
+ ecm_classifier_emesh.c                   | 23 ++----
+ ecm_classifier_hyfi.c                    |  7 +-
+ ecm_classifier_mark.c                    |  8 +--
+ ecm_classifier_ovs.c                     |  8 +--
+ ecm_classifier_pcc.c                     |  8 +--
+ ecm_conntrack_notifier.c                 | 92 +++++++++++++++++++-----
+ ecm_db/ecm_db.c                          |  4 +-
+ ecm_db/ecm_db_connection.c               | 15 ++--
+ ecm_db/ecm_db_host.c                     |  7 +-
+ ecm_db/ecm_db_iface.c                    |  7 +-
+ ecm_db/ecm_db_mapping.c                  |  7 +-
+ ecm_db/ecm_db_node.c                     | 11 +--
+ ecm_interface.c                          | 33 ++++++---
+ ecm_state.c                              | 14 ++--
+ ecm_tracker_datagram.c                   |  8 +--
+ frontends/ecm_front_end_common.c         |  7 ++
+ frontends/ecm_front_end_ipv4.c           |  7 +-
+ frontends/ecm_front_end_ipv6.c           |  7 +-
+ frontends/include/ecm_front_end_common.h | 12 ++++
+ frontends/nss/ecm_nss_ipv4.c             | 53 +++++---------
+ frontends/nss/ecm_nss_ipv6.c             | 53 +++++---------
+ frontends/nss/ecm_nss_multicast_ipv4.c   |  7 +-
+ frontends/nss/ecm_nss_multicast_ipv6.c   |  7 +-
+ frontends/nss/ecm_nss_non_ported_ipv4.c  |  7 +-
+ frontends/nss/ecm_nss_non_ported_ipv6.c  |  7 +-
+ frontends/nss/ecm_nss_ported_ipv4.c      | 27 ++++---
+ frontends/nss/ecm_nss_ported_ipv6.c      | 25 +++----
+ frontends/sfe/ecm_sfe_ipv4.c             | 49 ++++---------
+ frontends/sfe/ecm_sfe_ipv6.c             | 49 ++++---------
+ frontends/sfe/ecm_sfe_non_ported_ipv4.c  |  7 +-
+ frontends/sfe/ecm_sfe_non_ported_ipv6.c  |  7 +-
+ frontends/sfe/ecm_sfe_ported_ipv4.c      | 27 ++++---
+ frontends/sfe/ecm_sfe_ported_ipv6.c      | 27 ++++---
+ 36 files changed, 338 insertions(+), 387 deletions(-)
+
+--- a/Makefile
++++ b/Makefile
+@@ -113,10 +113,18 @@ ccflags-$(ECM_INTERFACE_BOND_ENABLE) +=
+ # Define ECM_INTERFACE_PPPOE_ENABLE=y in order
+ # to enable support for PPPoE acceleration.
+ # #############################################################################
+-ECM_INTERFACE_PPPOE_ENABLE=y
++ifndef $(ECM_INTERFACE_PPPOE_ENABLE)
++	ECM_INTERFACE_PPPOE_ENABLE=y
++endif
+ ccflags-$(ECM_INTERFACE_PPPOE_ENABLE) += -DECM_INTERFACE_PPPOE_ENABLE
+ 
+ # #############################################################################
++# Define ECM_INTERFACE_L2TPV2_PPTP_ENABLE=y in order
++# to enable support for l2tpv2 or PPTP detection.
++# #############################################################################
++ccflags-$(ECM_INTERFACE_L2TPV2_PPTP_ENABLE) += -DECM_INTERFACE_L2TPV2_PPTP_ENABLE
++
++# #############################################################################
+ # Define ECM_INTERFACE_L2TPV2_ENABLE=y in order
+ # to enable support for l2tpv2 acceleration.
+ # #############################################################################
+@@ -143,6 +151,12 @@ endif
+ ccflags-$(ECM_INTERFACE_PPP_ENABLE) += -DECM_INTERFACE_PPP_ENABLE
+ 
+ # #############################################################################
++# Define ECM_INTERFACE_GRE_ENABLE=y in order
++# to enable support for GRE detection.
++# #############################################################################
++ccflags-$(ECM_INTERFACE_GRE_ENABLE) += -DECM_INTERFACE_GRE_ENABLE
++
++# #############################################################################
+ # Define ECM_INTERFACE_GRE_TAP_ENABLE=y in order
+ # to enable support for GRE TAP interface.
+ # #############################################################################
+@@ -218,7 +232,9 @@ ccflags-$(ECM_INTERFACE_OVS_BRIDGE_ENABL
+ # #############################################################################
+ # Define ECM_INTERFACE_VLAN_ENABLE=y in order to enable support for VLAN
+ # #############################################################################
+-ECM_INTERFACE_VLAN_ENABLE=y
++ifndef $(ECM_INTERFACE_VLAN_ENABLE)
++	ECM_INTERFACE_VLAN_ENABLE=y
++endif
+ ccflags-$(ECM_INTERFACE_VLAN_ENABLE) += -DECM_INTERFACE_VLAN_ENABLE
+ 
+ # #############################################################################
+@@ -255,7 +271,9 @@ ccflags-$(ECM_CLASSIFIER_OVS_ENABLE) +=
+ # #############################################################################
+ # Define ECM_CLASSIFIER_MARK_ENABLE=y in order to enable mark classifier.
+ # #############################################################################
+-ECM_CLASSIFIER_MARK_ENABLE=y
++ifndef $(ECM_CLASSIFIER_MARK_ENABLE)
++	ECM_CLASSIFIER_MARK_ENABLE=y
++endif
+ ecm-$(ECM_CLASSIFIER_MARK_ENABLE) += ecm_classifier_mark.o
+ ccflags-$(ECM_CLASSIFIER_MARK_ENABLE) += -DECM_CLASSIFIER_MARK_ENABLE
+ 
+@@ -274,7 +292,9 @@ ccflags-$(ECM_CLASSIFIER_NL_ENABLE) += -
+ # #############################################################################
+ # Define ECM_CLASSIFIER_DSCP_ENABLE=y in order to enable DSCP classifier.
+ # #############################################################################
+-ECM_CLASSIFIER_DSCP_ENABLE=y
++ifndef $(ECM_CLASSIFIER_DSCP_ENABLE)
++	ECM_CLASSIFIER_DSCP_ENABLE=y
++endif
+ ecm-$(ECM_CLASSIFIER_DSCP_ENABLE) += ecm_classifier_dscp.o
+ ccflags-$(ECM_CLASSIFIER_DSCP_ENABLE) += -DECM_CLASSIFIER_DSCP_ENABLE
+ ccflags-$(ECM_CLASSIFIER_DSCP_IGS) += -DECM_CLASSIFIER_DSCP_IGS
+@@ -293,7 +313,9 @@ ccflags-$(ECM_CLASSIFIER_HYFI_ENABLE) +=
+ # the Parental Controls subsystem classifier in ECM. Currently disabled until
+ # customers require it / if they need to integrate their Parental Controls with it.
+ # #############################################################################
+-ECM_CLASSIFIER_PCC_ENABLE=y
++ifndef $(ECM_CLASSIFIER_PCC_ENABLE)
++	ECM_CLASSIFIER_PCC_ENABLE=y
++endif
+ ecm-$(ECM_CLASSIFIER_PCC_ENABLE) += ecm_classifier_pcc.o
+ ccflags-$(ECM_CLASSIFIER_PCC_ENABLE) += -DECM_CLASSIFIER_PCC_ENABLE
+ 
+@@ -327,28 +349,36 @@ ccflags-$(ECM_NON_PORTED_SUPPORT_ENABLE)
+ # #############################################################################
+ # Define ECM_STATE_OUTPUT_ENABLE=y to support XML state output
+ # #############################################################################
+-ECM_STATE_OUTPUT_ENABLE=y
++ifndef $(ECM_STATE_OUTPUT_ENABLE)
++	ECM_STATE_OUTPUT_ENABLE=y
++endif
+ ecm-$(ECM_STATE_OUTPUT_ENABLE) += ecm_state.o
+ ccflags-$(ECM_STATE_OUTPUT_ENABLE) += -DECM_STATE_OUTPUT_ENABLE
+ 
+ # #############################################################################
+ # Define ECM_DB_ADVANCED_STATS_ENABLE to support XML state output
+ # #############################################################################
+-ECM_DB_ADVANCED_STATS_ENABLE=y
++ifndef $(ECM_DB_ADVANCED_STATS_ENABLE)
++	ECM_DB_ADVANCED_STATS_ENABLE=y
++endif
+ ccflags-$(ECM_DB_ADVANCED_STATS_ENABLE) += -DECM_DB_ADVANCED_STATS_ENABLE
+ 
+ # #############################################################################
+ # Define ECM_DB_CONNECTION_CROSS_REFERENCING_ENABLE=y in order to enable
+ # the database to track relationships between objects.
+ # #############################################################################
+-ECM_DB_CONNECTION_CROSS_REFERENCING_ENABLE=y
++ifndef $(ECM_DB_CONNECTION_CROSS_REFERENCING_ENABLE)
++	ECM_DB_CONNECTION_CROSS_REFERENCING_ENABLE=y
++endif
+ ccflags-$(ECM_DB_CONNECTION_CROSS_REFERENCING_ENABLE) += -DECM_DB_XREF_ENABLE
+ 
+ # #############################################################################
+ # Define ECM_TRACKER_DPI_SUPPORT_ENABLE=y in order to enable support for
+ # deep packet inspection and tracking of data with the trackers.
+ # #############################################################################
+-ECM_TRACKER_DPI_SUPPORT_ENABLE=y
++ifndef $(ECM_TRACKER_DPI_SUPPORT_ENABLE)
++	ECM_TRACKER_DPI_SUPPORT_ENABLE=y
++endif
+ ccflags-$(ECM_TRACKER_DPI_SUPPORT_ENABLE) += -DECM_TRACKER_DPI_SUPPORT_ENABLE
+ 
+ # #############################################################################
+@@ -356,14 +386,18 @@ ccflags-$(ECM_TRACKER_DPI_SUPPORT_ENABLE
+ # support for the database keeping lists of connections that are assigned
+ # on a per TYPE of classifier basis.
+ # #############################################################################
+-ECM_DB_CLASSIFIER_TYPE_ASSIGNMENTS_TRACK_ENABLE=y
++ifndef $(ECM_DB_CLASSIFIER_TYPE_ASSIGNMENTS_TRACK_ENABLE)
++	ECM_DB_CLASSIFIER_TYPE_ASSIGNMENTS_TRACK_ENABLE=y
++endif
+ ccflags-$(ECM_DB_CLASSIFIER_TYPE_ASSIGNMENTS_TRACK_ENABLE) += -DECM_DB_CTA_TRACK_ENABLE
+ 
+ # #############################################################################
+ # Define ECM_BAND_STEERING_ENABLE=y in order to enable
+ # band steering feature.
+ # #############################################################################
+-ECM_BAND_STEERING_ENABLE=y
++ifndef $(ECM_BAND_STEERING_ENABLE)
++	ECM_BAND_STEERING_ENABLE=y
++endif
+ ccflags-$(ECM_BAND_STEERING_ENABLE) += -DECM_BAND_STEERING_ENABLE
+ 
+ # #############################################################################
+--- a/ecm_classifier_default.c
++++ b/ecm_classifier_default.c
+@@ -757,26 +757,14 @@ int ecm_classifier_default_init(struct d
+ 		return -1;
+ 	}
+ 
+-	if (!debugfs_create_u32("enabled", S_IRUGO | S_IWUSR, ecm_classifier_default_dentry,
+-					(u32 *)&ecm_classifier_default_enabled)) {
+-		DEBUG_ERROR("Failed to create ecm deafult classifier enabled file in debugfs\n");
+-		debugfs_remove_recursive(ecm_classifier_default_dentry);
+-		return -1;
+-	}
++	debugfs_create_u32("enabled", S_IRUGO | S_IWUSR, ecm_classifier_default_dentry,
++					(u32 *)&ecm_classifier_default_enabled);
+ 
+-	if (!debugfs_create_u32("accel_mode", S_IRUGO | S_IWUSR, ecm_classifier_default_dentry,
+-					(u32 *)&ecm_classifier_default_accel_mode)) {
+-		DEBUG_ERROR("Failed to create ecm deafult classifier accel_mode file in debugfs\n");
+-		debugfs_remove_recursive(ecm_classifier_default_dentry);
+-		return -1;
+-	}
++	debugfs_create_u32("accel_mode", S_IRUGO | S_IWUSR, ecm_classifier_default_dentry,
++					(u32 *)&ecm_classifier_default_accel_mode);
+ 
+-	if (!debugfs_create_u32("accel_delay_pkts", S_IRUGO | S_IWUSR, ecm_classifier_default_dentry,
+-					(u32 *)&ecm_classifier_accel_delay_pkts)) {
+-		DEBUG_ERROR("Failed to create accel delay packet counts in debugfs\n");
+-		debugfs_remove_recursive(ecm_classifier_default_dentry);
+-		return -1;
+-	}
++	debugfs_create_u32("accel_delay_pkts", S_IRUGO | S_IWUSR, ecm_classifier_default_dentry,
++					(u32 *)&ecm_classifier_accel_delay_pkts);
+ 
+ 	return 0;
+ }
+--- a/ecm_classifier_dscp.c
++++ b/ecm_classifier_dscp.c
+@@ -763,12 +763,8 @@ int ecm_classifier_dscp_init(struct dent
+ 		return -1;
+ 	}
+ 
+-	if (!debugfs_create_u32("enabled", S_IRUGO | S_IWUSR, ecm_classifier_dscp_dentry,
+-					(u32 *)&ecm_classifier_dscp_enabled)) {
+-		DEBUG_ERROR("Failed to create dscp enabled file in debugfs\n");
+-		debugfs_remove_recursive(ecm_classifier_dscp_dentry);
+-		return -1;
+-	}
++	debugfs_create_u32("enabled", S_IRUGO | S_IWUSR, ecm_classifier_dscp_dentry,
++					(u32 *)&ecm_classifier_dscp_enabled);
+ 
+ 	return 0;
+ }
+--- a/ecm_classifier_emesh.c
++++ b/ecm_classifier_emesh.c
+@@ -1320,25 +1320,14 @@ int ecm_classifier_emesh_sawf_init(struc
+ 		return -1;
+ 	}
+ 
+-	if (!debugfs_create_u32("enabled", S_IRUGO | S_IWUSR, ecm_classifier_emesh_sawf_dentry,
+-				(u32 *)&ecm_classifier_emesh_enabled)) {
+-		DEBUG_ERROR("Failed to create ecm emesh classifier enabled file in debugfs\n");
+-		debugfs_remove_recursive(ecm_classifier_emesh_sawf_dentry);
+-		return -1;
+-	}
++	debugfs_create_u32("enabled", S_IRUGO | S_IWUSR, ecm_classifier_emesh_dentry,
++				(u32 *)&ecm_classifier_emesh_enabled);
+ 
+-	if (!debugfs_create_u32("latency_config_enabled", S_IRUGO | S_IWUSR, ecm_classifier_emesh_sawf_dentry,
+-				(u32 *)&ecm_classifier_emesh_latency_config_enabled)) {
+-		DEBUG_ERROR("Failed to create ecm emesh classifier latency config enabled file in debugfs\n");
+-		debugfs_remove_recursive(ecm_classifier_emesh_sawf_dentry);
+-		return -1;
+-	}
++	debugfs_create_u32("latency_config_enabled", S_IRUGO | S_IWUSR, ecm_classifier_emesh_dentry,
++				(u32 *)&ecm_classifier_emesh_latency_config_enabled);
+ 
+-	if (!debugfs_create_u32("sawf_enabled", S_IRUGO | S_IWUSR, ecm_classifier_emesh_sawf_dentry,
+-				(u32 *)&ecm_classifier_sawf_enabled)) {
+-		DEBUG_ERROR("Failed to create ecm sawf classifier  enabled file in debugfs\n");
+-		debugfs_remove_recursive(ecm_classifier_emesh_sawf_dentry);
+-		return -1;
++	debugfs_create_u32("sawf_enabled", S_IRUGO | S_IWUSR, ecm_classifier_emesh_sawf_dentry,
++				(u32 *)&ecm_classifier_sawf_enabled);
+ 	}
+ 	/*
+ 	 * Register for service prioritization notification update.
+--- a/ecm_classifier_hyfi.c
++++ b/ecm_classifier_hyfi.c
+@@ -1099,11 +1099,8 @@ int ecm_classifier_hyfi_rules_init(struc
+ 		goto classifier_task_cleanup;
+ 	}
+ 
+-	if (!debugfs_create_u32("enabled", S_IRUGO | S_IWUSR, ecm_classifier_hyfi_dentry,
+-					(u32 *)&ecm_classifier_hyfi_enabled)) {
+-		DEBUG_ERROR("Failed to create ecm hyfi classifier enabled file in debugfs\n");
+-		goto classifier_task_cleanup;
+-	}
++	debugfs_create_u32("enabled", S_IRUGO | S_IWUSR, ecm_classifier_hyfi_dentry,
++					(u32 *)&ecm_classifier_hyfi_enabled);
+ 
+ 	if (!debugfs_create_file("cmd", S_IWUSR, ecm_classifier_hyfi_dentry,
+ 					NULL, &ecm_classifier_hyfi_cmd_fops)) {
+--- a/ecm_classifier_mark.c
++++ b/ecm_classifier_mark.c
+@@ -753,12 +753,8 @@ int ecm_classifier_mark_init(struct dent
+ 		return -1;
+ 	}
+ 
+-	if (!debugfs_create_u32("enabled", S_IRUGO | S_IWUSR, ecm_classifier_mark_dentry,
+-					(u32 *)&ecm_classifier_mark_enabled)) {
+-		DEBUG_ERROR("Failed to create mark enabled file in debugfs\n");
+-		debugfs_remove_recursive(ecm_classifier_mark_dentry);
+-		return -1;
+-	}
++	debugfs_create_u32("enabled", S_IRUGO | S_IWUSR, ecm_classifier_mark_dentry,
++					(u32 *)&ecm_classifier_mark_enabled);
+ 
+ 	return 0;
+ }
+--- a/ecm_classifier_ovs.c
++++ b/ecm_classifier_ovs.c
+@@ -2265,12 +2265,8 @@ int ecm_classifier_ovs_init(struct dentr
+ 		return -1;
+ 	}
+ 
+-	if (!debugfs_create_u32("enabled", S_IRUGO | S_IWUSR, ecm_classifier_ovs_dentry,
+-					(u32 *)&ecm_classifier_ovs_enabled)) {
+-		DEBUG_ERROR("Failed to create ovs enabled file in debugfs\n");
+-		debugfs_remove_recursive(ecm_classifier_ovs_dentry);
+-		return -1;
+-	}
++	debugfs_create_u32("enabled", S_IRUGO | S_IWUSR, ecm_classifier_ovs_dentry,
++					(u32 *)&ecm_classifier_ovs_enabled);
+ 
+ 	return 0;
+ }
+--- a/ecm_classifier_pcc.c
++++ b/ecm_classifier_pcc.c
+@@ -1232,12 +1232,8 @@ int ecm_classifier_pcc_init(struct dentr
+ 		return -1;
+ 	}
+ 
+-	if (!debugfs_create_u32("enabled", S_IRUGO, ecm_classifier_pcc_dentry,
+-					(u32 *)&ecm_classifier_pcc_enabled)) {
+-		DEBUG_ERROR("Failed to create pcc enabled file in debugfs\n");
+-		debugfs_remove_recursive(ecm_classifier_pcc_dentry);
+-		return -1;
+-	}
++	debugfs_create_u32("enabled", S_IRUGO, ecm_classifier_pcc_dentry,
++					(u32 *)&ecm_classifier_pcc_enabled);
+ 
+ 	return 0;
+ }
+--- a/ecm_conntrack_notifier.c
++++ b/ecm_conntrack_notifier.c
+@@ -53,6 +53,9 @@
+ #include <net/netfilter/nf_conntrack_l4proto.h>
+ #include <net/netfilter/nf_conntrack_zones.h>
+ #include <net/netfilter/nf_conntrack_core.h>
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0)
++#include <net/netfilter/nf_conntrack_ecache.h>
++#endif
+ #include <net/netfilter/ipv4/nf_conntrack_ipv4.h>
+ #include <net/netfilter/ipv4/nf_defrag_ipv4.h>
+ 
+@@ -86,6 +89,7 @@
+  * Locking of the classifier - concurrency control
+  */
+ static DEFINE_SPINLOCK(ecm_conntrack_notifier_lock __attribute__((unused)));	/* Protect against SMP access between netfilter, events and private threaded function. */
++static DEFINE_MUTEX(nf_ct_net_event_lock);  /* Netfilter conntrack notifier registration lock */
+ 
+ /*
+  * Debugfs dentry object.
+@@ -316,17 +320,24 @@ EXPORT_SYMBOL(ecm_conntrack_ipv4_event);
+ 
+ #ifdef CONFIG_NF_CONNTRACK_EVENTS
+ /*
++ * Conntrack notifier expect event callback (since kernel 5.15).
++*/
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0) && !defined(CONFIG_NF_CONNTRACK_CHAIN_EVENTS)
++static int ecm_expect_event(unsigned int events, const struct nf_exp_event *item) {
++    return 0;
++}
++#endif
++/*
+  * ecm_conntrack_event()
+  *	Callback event invoked when conntrack connection state changes, currently we handle destroy events to quickly release state
+  */
+-#ifdef CONFIG_NF_CONNTRACK_CHAIN_EVENTS
+-static int ecm_conntrack_event(struct notifier_block *this, unsigned long events, void *ptr)
+-#else
+-static int ecm_conntrack_event(unsigned int events, struct nf_ct_event *item)
+-#endif
+-{
+-#ifdef CONFIG_NF_CONNTRACK_CHAIN_EVENTS
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0) && !defined(CONFIG_NF_CONNTRACK_CHAIN_EVENTS)
++static int ecm_conntrack_event(unsigned int events, const struct nf_ct_event *item) {
++#elif defined(CONFIG_NF_CONNTRACK_CHAIN_EVENTS)
++static int ecm_conntrack_event(struct notifier_block *this, unsigned long events, void *ptr) {
+ 	struct nf_ct_event *item = (struct nf_ct_event *)ptr;
++#else
++static int ecm_conntrack_event(unsigned int events, struct nf_ct_event *item) {
+ #endif
+ 	struct nf_conn *ct = item->ct;
+ 
+@@ -347,6 +358,14 @@ static int ecm_conntrack_event(unsigned
+ 	}
+ 
+ 	/*
+++	 * Do not process the packet, if the conntrack is in dying state.
+++	 */
++	if (unlikely(test_bit(IPS_DYING_BIT, &ct->status))) {
++		DEBUG_TRACE("Connection is in dying state - ignoring\n");
++		return NOTIFY_DONE;
++	}
++
++	/*	
+ 	 * Fake untracked conntrack objects were removed on 4.12 kernel version
+ 	 * and onwards.
+ 	 */
+@@ -374,7 +393,16 @@ static int ecm_conntrack_event(unsigned
+ 	return NOTIFY_DONE;
+ }
+ 
+-#ifdef CONFIG_NF_CONNTRACK_CHAIN_EVENTS
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0) && !defined(CONFIG_NF_CONNTRACK_CHAIN_EVENTS)
++/*
++ * struct nf_ct_event_notifier ecm_conntrack_notifier
++ *	Netfilter conntrack event system to monitor connection tracking changes
++ */
++static struct nf_ct_event_notifier ecm_conntrack_notifier = {
++	.ct_event  = ecm_conntrack_event,
++	.exp_event = ecm_expect_event,
++};
++#elif defined(CONFIG_NF_CONNTRACK_CHAIN_EVENTS)
+ /*
+  * struct notifier_block ecm_conntrack_notifier
+  *	Netfilter conntrack event system to monitor connection tracking changes
+@@ -416,19 +444,33 @@ int ecm_conntrack_notifier_init(struct d
+ 		return -1;
+ 	}
+ 
+-	if (!debugfs_create_u32("stop", S_IRUGO | S_IWUSR, ecm_conntrack_notifier_dentry,
+-					(u32 *)&ecm_conntrack_notifier_stopped)) {
+-		DEBUG_ERROR("Failed to create ecm conntrack notifier stopped file in debugfs\n");
+-		debugfs_remove_recursive(ecm_conntrack_notifier_dentry);
+-		return -1;
+-	}
++	debugfs_create_u32("stop", S_IRUGO | S_IWUSR, ecm_conntrack_notifier_dentry,
++					(u32 *)&ecm_conntrack_notifier_stopped);
+ 
+ #ifdef CONFIG_NF_CONNTRACK_EVENTS
+-	/*
++    /*
++     * Lock the conntrack notifier registration mutex
++     */
++    mutex_lock(&nf_ct_net_event_lock);
++
++    /*
+ 	 * Eventing subsystem is available so we register a notifier hook to get fast notifications of expired connections
+ 	 */
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0) && !defined(CONFIG_NF_CONNTRACK_CHAIN_EVENTS)
++    if (!READ_ONCE(init_net.ct.nf_conntrack_event_cb))
++        nf_conntrack_register_notifier(&init_net, &ecm_conntrack_notifier);
++    result = 0;
++#elif defined(CONFIG_NF_CONNTRACK_CHAIN_EVENTS)
++	result = nf_conntrack_register_chain_notifier(&init_net, &ecm_conntrack_notifier);
++#else
+ 	result = nf_conntrack_register_notifier(&init_net, &ecm_conntrack_notifier);
+-	if (result < 0) {
++#endif
++	/*
++    * Unlock the conntrack notifier registration mutex
++    */
++    mutex_unlock(&nf_ct_net_event_lock);
++
++    if (result < 0) {
+ 		DEBUG_ERROR("Can't register nf notifier hook.\n");
+ 		debugfs_remove_recursive(ecm_conntrack_notifier_dentry);
+ 		return result;
+@@ -445,9 +487,25 @@ EXPORT_SYMBOL(ecm_conntrack_notifier_ini
+ void ecm_conntrack_notifier_exit(void)
+ {
+ 	DEBUG_INFO("ECM Conntrack Notifier exit\n");
+-#ifdef CONFIG_NF_CONNTRACK_EVENTS
++
++    /*
++     * Lock the conntrack notifier registration mutex
++     */
++    mutex_lock(&nf_ct_net_event_lock);
++
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0) && !defined(CONFIG_NF_CONNTRACK_CHAIN_EVENTS)
++    nf_conntrack_unregister_notifier(&init_net);
++#elif defined(CONFIG_NF_CONNTRACK_CHAIN_EVENTS)
++	nf_conntrack_unregister_chain_notifier(&init_net, &ecm_conntrack_notifier);
++#else
+ 	nf_conntrack_unregister_notifier(&init_net, &ecm_conntrack_notifier);
+ #endif
++
++    /*
++     * Unlock the conntrack notifier registration mutex
++     */
++    mutex_unlock(&nf_ct_net_event_lock);
++
+ 	/*
+ 	 * Remove the debugfs files recursively.
+ 	 */
+--- a/ecm_db/ecm_db.c
++++ b/ecm_db/ecm_db.c
+@@ -298,7 +298,7 @@ static int ecm_db_ipv6_route_table_updat
+ 		 * Compute ECM connection's prefix destination address by masking it with the
+ 		 * route config's destination address prefix length.
+ 		 */
+-		ipv6_addr_prefix(&prefix_addr, &ecm_in6, cfg->fc_dst_len);
++		ipv6_addr_prefix(&prefix_addr, &ecm_in6, min(128, cfg->fc_dst_len));
+ 
+ 		DEBUG_TRACE("dest addr prefix: %pI6 prefix_len: %d ecm_in6: %pI6\n", &prefix_addr, cfg->fc_dst_len, &ecm_in6);
+ 
+@@ -326,7 +326,7 @@ static int ecm_db_ipv6_route_table_updat
+ 			 * Compute ECM connection's prefix source address by masking it with the
+ 			 * route config's destination address prefix length.
+ 			 */
+-			ipv6_addr_prefix(&prefix_addr, &ecm_in6, cfg->fc_dst_len);
++			ipv6_addr_prefix(&prefix_addr, &ecm_in6, min(128, cfg->fc_dst_len));
+ 
+ 			DEBUG_TRACE("src addr prefix: %pI6 prefix_len: %d ecm_in6: %pI6\n", &prefix_addr, cfg->fc_dst_len, &ecm_in6);
+ 
+--- a/ecm_db/ecm_db_connection.c
++++ b/ecm_db/ecm_db_connection.c
+@@ -454,7 +454,9 @@ EXPORT_SYMBOL(ecm_db_connection_make_def
+  */
+ void ecm_db_connection_data_totals_update(struct ecm_db_connection_instance *ci, bool is_from, uint64_t size, uint64_t packets)
+ {
++#ifdef ECM_DB_ADVANCED_STATS_ENABLE
+ 	int32_t i;
++#endif
+ 
+ 	DEBUG_CHECK_MAGIC(ci, ECM_DB_CONNECTION_INSTANCE_MAGIC, "%px: magic failed\n", ci);
+ 
+@@ -553,7 +555,9 @@ EXPORT_SYMBOL(ecm_db_connection_data_tot
+  */
+ void ecm_db_connection_data_totals_update_dropped(struct ecm_db_connection_instance *ci, bool is_from, uint64_t size, uint64_t packets)
+ {
++#ifdef ECM_DB_ADVANCED_STATS_ENABLE
+ 	int32_t i;
++#endif
+ 
+ 	DEBUG_CHECK_MAGIC(ci, ECM_DB_CONNECTION_INSTANCE_MAGIC, "%px: magic failed\n", ci);
+ 
+@@ -1532,6 +1536,7 @@ void ecm_db_connection_defunct_all(void)
+ }
+ EXPORT_SYMBOL(ecm_db_connection_defunct_all);
+ 
++#ifdef ECM_INTERFACE_OVS_BRIDGE_ENABLE
+ /*
+  * ecm_db_connection_defunct_by_classifier()
+  *	Make defunct based on masked fields
+@@ -1698,6 +1703,7 @@ next_ci:
+ 				ECM_IP_ADDR_TO_OCTAL(dest_addr_mask), dest_port_mask, proto_mask, cnt);
+ 	}
+ }
++#endif
+ 
+ /*
+  * ecm_db_connection_defunct_by_port()
+@@ -1987,6 +1993,7 @@ struct ecm_db_node_instance *ecm_db_conn
+ }
+ EXPORT_SYMBOL(ecm_db_connection_node_get_and_ref);
+ 
++#ifdef ECM_DB_XREF_ENABLE
+ /*
+  * ecm_db_connection_mapping_get_and_ref_next()
+  *	Return reference to next connection in the mapping chain in the specified direction.
+@@ -2028,6 +2035,7 @@ struct ecm_db_connection_instance *ecm_d
+ 	return nci;
+ }
+ EXPORT_SYMBOL(ecm_db_connection_iface_get_and_ref_next);
++#endif
+ 
+ /*
+  * ecm_db_connection_mapping_get_and_ref()
+@@ -3776,11 +3784,8 @@ static struct file_operations ecm_db_con
+  */
+ bool ecm_db_connection_init(struct dentry *dentry)
+ {
+-	if (!debugfs_create_u32("connection_count", S_IRUGO, dentry,
+-					(u32 *)&ecm_db_connection_count)) {
+-		DEBUG_ERROR("Failed to create ecm db connection count file in debugfs\n");
+-		return false;
+-	}
++	debugfs_create_u32("connection_count", S_IRUGO, dentry,
++					(u32 *)&ecm_db_connection_count);
+ 
+ 	if (!debugfs_create_file("connection_count_simple", S_IRUGO, dentry,
+ 					NULL, &ecm_db_connection_count_simple_fops)) {
+--- a/ecm_db/ecm_db_host.c
++++ b/ecm_db/ecm_db_host.c
+@@ -771,11 +771,8 @@ EXPORT_SYMBOL(ecm_db_host_alloc);
+ bool ecm_db_host_init(struct dentry *dentry)
+ {
+ 
+-	if (!debugfs_create_u32("host_count", S_IRUGO, dentry,
+-					(u32 *)&ecm_db_host_count)) {
+-		DEBUG_ERROR("Failed to create ecm db host count file in debugfs\n");
+-		return false;;
+-	}
++	debugfs_create_u32("host_count", S_IRUGO, dentry,
++					(u32 *)&ecm_db_host_count);
+ 
+ 	ecm_db_host_table = vzalloc(sizeof(struct ecm_db_host_instance *) * ECM_DB_HOST_HASH_SLOTS);
+ 	if (!ecm_db_host_table) {
+--- a/ecm_db/ecm_db_iface.c
++++ b/ecm_db/ecm_db_iface.c
+@@ -3688,11 +3688,8 @@ EXPORT_SYMBOL(ecm_db_iface_alloc);
+  */
+ bool ecm_db_iface_init(struct dentry *dentry)
+ {
+-	if (!debugfs_create_u32("iface_count", S_IRUGO, dentry,
+-					(u32 *)&ecm_db_iface_count)) {
+-		DEBUG_ERROR("Failed to create ecm db iface count file in debugfs\n");
+-		return false;
+-	}
++	debugfs_create_u32("iface_count", S_IRUGO, dentry,
++					(u32 *)&ecm_db_iface_count);
+ 
+ 	return true;
+ }
+--- a/ecm_db/ecm_db_mapping.c
++++ b/ecm_db/ecm_db_mapping.c
+@@ -807,11 +807,8 @@ EXPORT_SYMBOL(ecm_db_mapping_alloc);
+  */
+ bool ecm_db_mapping_init(struct dentry *dentry)
+ {
+-	if (!debugfs_create_u32("mapping_count", S_IRUGO, dentry,
+-					(u32 *)&ecm_db_mapping_count)) {
+-		DEBUG_ERROR("Failed to create ecm db mapping count file in debugfs\n");
+-		return false;
+-	}
++	debugfs_create_u32("mapping_count", S_IRUGO, dentry,
++					(u32 *)&ecm_db_mapping_count);
+ 
+ 	ecm_db_mapping_table = vzalloc(sizeof(struct ecm_db_mapping_instance *) * ECM_DB_MAPPING_HASH_SLOTS);
+ 	if (!ecm_db_mapping_table) {
+--- a/ecm_db/ecm_db_node.c
++++ b/ecm_db/ecm_db_node.c
+@@ -224,9 +224,11 @@ EXPORT_SYMBOL(ecm_db_node_get_and_ref_ne
+  */
+ int ecm_db_node_deref(struct ecm_db_node_instance *ni)
+ {
++#ifdef ECM_DB_XREF_ENABLE
+ #if (DEBUG_LEVEL >= 1)
+ 	int dir;
+ #endif
++#endif
+ 	DEBUG_CHECK_MAGIC(ni, ECM_DB_NODE_INSTANCE_MAGIC, "%px: magic failed\n", ni);
+ 
+ 	spin_lock_bh(&ecm_db_lock);
+@@ -486,9 +488,11 @@ EXPORT_SYMBOL(ecm_db_node_iface_get_and_
+ void ecm_db_node_add(struct ecm_db_node_instance *ni, struct ecm_db_iface_instance *ii, uint8_t *address,
+ 					ecm_db_node_final_callback_t final, void *arg)
+ {
++#ifdef ECM_DB_XREF_ENABLE
+ #if (DEBUG_LEVEL >= 1)
+ 	int dir;
+ #endif
++#endif
+ 	ecm_db_node_hash_t hash_index;
+ 	struct ecm_db_listener_instance *li;
+ 
+@@ -1184,11 +1188,8 @@ keep_sni_conn:
+  */
+ bool ecm_db_node_init(struct dentry *dentry)
+ {
+-	if (!debugfs_create_u32("node_count", S_IRUGO, dentry,
+-					(u32 *)&ecm_db_node_count)) {
+-		DEBUG_ERROR("Failed to create ecm db node count file in debugfs\n");
+-		return false;
+-	}
++	debugfs_create_u32("node_count", S_IRUGO, dentry,
++					(u32 *)&ecm_db_node_count);
+ 
+ 	ecm_db_node_table = vzalloc(sizeof(struct ecm_db_node_instance *) * ECM_DB_NODE_HASH_SLOTS);
+ 	if (!ecm_db_node_table) {
+--- a/ecm_interface.c
++++ b/ecm_interface.c
+@@ -334,7 +334,7 @@ static struct net_device *ecm_interface_
+ 	struct net_device *dev;
+ 
+ 	ECM_IP_ADDR_TO_NIN6_ADDR(addr6, addr);
+-	dev = (struct net_device *)ipv6_dev_find(&init_net, &addr6, 1);
++	dev = (struct net_device *)ipv6_dev_find_and_hold(&init_net, &addr6, 1);
+ 	return dev;
+ }
+ #endif
+@@ -736,7 +736,7 @@ static bool ecm_interface_mac_addr_get_i
+ 	 * Get the MAC address that corresponds to IP address given.
+ 	 */
+ 	ECM_IP_ADDR_TO_NIN6_ADDR(daddr, addr);
+-	local_dev = ipv6_dev_find(&init_net, &daddr, 1);
++	local_dev = ipv6_dev_find_and_hold(&init_net, &daddr, 1);
+ 	if (local_dev) {
+ 		DEBUG_TRACE("%pi6 is a local address\n", &daddr);
+ 		memcpy(mac_addr, dev->dev_addr, ETH_ALEN);
+@@ -1355,6 +1355,7 @@ struct neighbour *ecm_interface_ipv6_nei
+  */
+ bool ecm_interface_is_pptp(struct sk_buff *skb, const struct net_device *out)
+ {
++#ifdef ECM_INTERFACE_PPTP_ENABLE
+ 	struct net_device *in;
+ 
+ 	/*
+@@ -1379,6 +1380,7 @@ bool ecm_interface_is_pptp(struct sk_buf
+ 	}
+ 
+ 	dev_put(in);
++#endif
+ 	return false;
+ }
+ 
+@@ -1391,6 +1393,7 @@ bool ecm_interface_is_pptp(struct sk_buf
+  */
+ bool ecm_interface_is_l2tp_packet_by_version(struct sk_buff *skb, const struct net_device *out, int ver)
+ {
++#ifdef ECM_INTERFACE_L2TPV2_PPTP_ENABLE
+ 	uint32_t flag = 0;
+ 	struct net_device *in;
+ 
+@@ -1423,6 +1426,7 @@ bool ecm_interface_is_l2tp_packet_by_ver
+ 	}
+ 
+ 	dev_put(in);
++#endif
+ 	return false;
+ }
+ 
+@@ -1435,6 +1439,7 @@ bool ecm_interface_is_l2tp_packet_by_ver
+  */
+ bool ecm_interface_is_l2tp_pptp(struct sk_buff *skb, const struct net_device *out)
+ {
++#ifdef ECM_INTERFACE_L2TPV2_PPTP_ENABLE
+ 	struct net_device *in;
+ 
+ 	/*
+@@ -1457,6 +1462,7 @@ bool ecm_interface_is_l2tp_pptp(struct s
+ 	}
+ 
+ 	dev_put(in);
++#endif
+ 	return false;
+ }
+ 
+@@ -6460,15 +6466,6 @@ static void ecm_interface_list_stats_upd
+ 			 * Note: A bridge port can be of different interface type, e.g VLAN, ethernet.
+ 			 * This check, therefore, should be performed for all interface types.
+ 			 */
+-			if ((is_ported || ecm_db_connection_is_pppoe_bridged_get(ci)) &&
+-				is_valid_ether_addr(mac_addr) && ecm_front_end_is_bridge_port(dev) && rx_packets) {
+-
+-				DEBUG_TRACE("Update bridge fdb entry for mac: %pM\n", mac_addr);
+-				/*
+-				 * Update the existing fdb entry's timestamp only.
+-				 */
+-				br_fdb_entry_refresh(dev, mac_addr, 0);
+-			}
+ 		}
+ 
+ skip_bridge_refresh:
+@@ -6770,6 +6767,7 @@ static void ecm_interface_regenerate_con
+ 		return;
+ 	}
+ 
++#ifdef ECM_DB_XREF_ENABLE
+ 	for (dir = 0; dir < ECM_DB_OBJ_DIR_MAX; dir++) {
+ 		/*
+ 		 * Re-generate all connections associated with this interface
+@@ -6785,6 +6783,7 @@ static void ecm_interface_regenerate_con
+ 			ci[dir] = cin;
+ 		}
+ 	}
++#endif
+ 
+ #ifdef ECM_MULTICAST_ENABLE
+ 	/*
+@@ -7618,7 +7617,11 @@ static int ecm_interface_wifi_event_rx(s
+ {
+ 	struct msghdr msg;
+ 	struct iovec  iov;
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 15, 0)
++#ifdef set_fs
+ 	mm_segment_t oldfs;
++#endif
++#endif
+ 	int size;
+ 
+ 	iov.iov_base = buf;
+@@ -7630,14 +7633,22 @@ static int ecm_interface_wifi_event_rx(s
+ 	msg.msg_control = NULL;
+ 	msg.msg_controllen = 0;
+ 	iov_iter_init(&msg.msg_iter, READ, &iov, 1, 1);
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 15, 0)
++#ifdef set_fs
+ 	oldfs = get_fs();
+ 	set_fs(KERNEL_DS);
++#endif
++#endif
+ #if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 7, 0))
+ 	size = sock_recvmsg(sock, &msg, len, msg.msg_flags);
+ #else
+ 	size = sock_recvmsg(sock, &msg, msg.msg_flags);
+ #endif
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 15, 0)
++#ifdef set_fs
+ 	set_fs(oldfs);
++#endif
++#endif
+ 
+ 	return size;
+ }
+--- a/ecm_state.c
++++ b/ecm_state.c
+@@ -894,17 +894,11 @@ int ecm_state_init(struct dentry *dentry
+ 		return -1;
+ 	}
+ 
+-	if (!debugfs_create_u32("state_dev_major", S_IRUGO, ecm_state_dentry,
+-					(u32 *)&ecm_state_dev_major_id)) {
+-		DEBUG_ERROR("Failed to create ecm state dev major file in debugfs\n");
+-		goto init_cleanup;
+-	}
++	debugfs_create_u32("state_dev_major", S_IRUGO, ecm_state_dentry,
++					(u32 *)&ecm_state_dev_major_id);
+ 
+-	if (!debugfs_create_u32("state_file_output_mask", S_IRUGO | S_IWUSR, ecm_state_dentry,
+-					(u32 *)&ecm_state_file_output_mask)) {
+-		DEBUG_ERROR("Failed to create ecm state output mask file in debugfs\n");
+-		goto init_cleanup;
+-	}
++	debugfs_create_u32("state_file_output_mask", S_IRUGO | S_IWUSR, ecm_state_dentry,
++					(u32 *)&ecm_state_file_output_mask);
+ 
+ 	/*
+ 	 * Register a char device that we will use to provide a dump of our state
+--- a/ecm_tracker_datagram.c
++++ b/ecm_tracker_datagram.c
+@@ -203,7 +203,7 @@ static void ecm_tracker_datagram_datagra
+  * ecm_tracker_datagram_discard_all()
+  *	Discard all tracked data
+  */
+-static void ecm_tracker_datagram_discard_all(struct ecm_tracker_datagram_internal_instance *dtii)
++void ecm_tracker_datagram_discard_all(struct ecm_tracker_datagram_internal_instance *dtii)
+ {
+ 	int32_t src_count;
+ 	int32_t dest_count;
+@@ -364,7 +364,7 @@ static void ecm_tracker_datagram_datagra
+  * ecm_tracker_datagram_datagram_size_get()
+  *	Return size in bytes of datagram at index i that was sent to the target
+  */
+-static int32_t ecm_tracker_datagram_datagram_size_get(struct ecm_tracker_datagram_instance *uti, ecm_tracker_sender_type_t sender, int32_t i)
++int32_t ecm_tracker_datagram_datagram_size_get(struct ecm_tracker_datagram_instance *uti, ecm_tracker_sender_type_t sender, int32_t i)
+ {
+ 	struct ecm_tracker_datagram_internal_instance *dtii = (struct ecm_tracker_datagram_internal_instance *)uti;
+ 
+@@ -412,7 +412,7 @@ static int32_t ecm_tracker_datagram_data
+  * ecm_tracker_datagram_datagram_read()
+  *	Read size bytes from datagram at index i into the buffer
+  */
+-static int ecm_tracker_datagram_datagram_read(struct ecm_tracker_datagram_instance *uti, ecm_tracker_sender_type_t sender, int32_t i, int32_t offset, int32_t size, void *buffer)
++int ecm_tracker_datagram_datagram_read(struct ecm_tracker_datagram_instance *uti, ecm_tracker_sender_type_t sender, int32_t i, int32_t offset, int32_t size, void *buffer)
+ {
+ 	struct ecm_tracker_datagram_internal_instance *dtii = (struct ecm_tracker_datagram_internal_instance *)uti;
+ 	int res;
+@@ -466,7 +466,7 @@ static int ecm_tracker_datagram_datagram
+  * ecm_tracker_datagram_datagram_add()
+  *	Append the datagram onto the tracker queue for the given target
+  */
+-static bool ecm_tracker_datagram_datagram_add(struct ecm_tracker_datagram_instance *uti, ecm_tracker_sender_type_t sender, struct sk_buff *skb)
++bool ecm_tracker_datagram_datagram_add(struct ecm_tracker_datagram_instance *uti, ecm_tracker_sender_type_t sender, struct sk_buff *skb)
+ {
+ 	struct ecm_tracker_datagram_internal_instance *dtii = (struct ecm_tracker_datagram_internal_instance *)uti;
+ 	struct sk_buff *skbc;
+--- a/frontends/ecm_front_end_common.c
++++ b/frontends/ecm_front_end_common.c
+@@ -228,6 +228,7 @@ bool ecm_front_end_gre_proto_is_accel_al
+ 							     struct nf_conntrack_tuple *tuple,
+ 							     int ip_version)
+ {
++#ifdef ECM_INTERFACE_GRE_ENABLE
+ 	struct net_device *dev;
+ 	struct gre_base_hdr *greh;
+ 
+@@ -239,10 +240,12 @@ bool ecm_front_end_gre_proto_is_accel_al
+ 		/*
+ 		 * Case 1: PPTP locally terminated
+ 		 */
++#ifdef ECM_INTERFACE_PPTP_ENABLE
+ 		if (ecm_interface_is_pptp(skb, outdev)) {
+ 			DEBUG_TRACE("%px: PPTP GRE locally terminated - allow acceleration\n", skb);
+ 			return true;
+ 		}
++#endif
+ 
+ 		/*
+ 		 * Case 2: PPTP pass through
+@@ -350,6 +353,10 @@ bool ecm_front_end_gre_proto_is_accel_al
+ 	 */
+ 	DEBUG_TRACE("%px: GRE IPv%d pass through - allow acceleration\n", skb, ip_version);
+ 	return true;
++#else
++	DEBUG_TRACE("%px: GRE%d feature is disabled - do not allow acceleration\n", skb, ip_version);
++	return false;
++#endif
+ }
+ 
+ #ifdef ECM_CLASSIFIER_DSCP_ENABLE
+--- a/frontends/ecm_front_end_ipv4.c
++++ b/frontends/ecm_front_end_ipv4.c
+@@ -383,11 +383,8 @@ void ecm_front_end_ipv4_stop(int num)
+  */
+ int ecm_front_end_ipv4_init(struct dentry *dentry)
+ {
+-	if (!debugfs_create_u32("front_end_ipv4_stop", S_IRUGO | S_IWUSR, dentry,
+-					(u32 *)&ecm_front_end_ipv4_stopped)) {
+-		DEBUG_ERROR("Failed to create ecm front end ipv4 stop file in debugfs\n");
+-		return -1;
+-	}
++	debugfs_create_u32("front_end_ipv4_stop", S_IRUGO | S_IWUSR, dentry,
++			   (u32 *)&ecm_front_end_ipv4_stopped);
+ 
+ 	return ecm_ipv4_init(dentry);
+ }
+--- a/frontends/ecm_front_end_ipv6.c
++++ b/frontends/ecm_front_end_ipv6.c
+@@ -262,11 +262,8 @@ void ecm_front_end_ipv6_stop(int num)
+  */
+ int ecm_front_end_ipv6_init(struct dentry *dentry)
+ {
+-	if (!debugfs_create_u32("front_end_ipv6_stop", S_IRUGO | S_IWUSR, dentry,
+-					(u32 *)&ecm_front_end_ipv6_stopped)) {
+-		DEBUG_ERROR("Failed to create ecm front end ipv6 stop file in debugfs\n");
+-		return -1;
+-	}
++	debugfs_create_u32("front_end_ipv6_stop", S_IRUGO | S_IWUSR, dentry,
++			   (u32 *)&ecm_front_end_ipv6_stopped);
+ 
+ 	return ecm_ipv6_init(dentry);
+ }
+--- a/frontends/include/ecm_front_end_common.h
++++ b/frontends/include/ecm_front_end_common.h
+@@ -24,6 +24,18 @@
+ #include <net/netfilter/nf_conntrack_acct.h>
+ #include "ecm_bond_notifier.h"
+ 
++#ifdef ECM_OPENWRT_SUPPORT
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 15, 0)
++static int __rcu nf_ct_tcp_no_window_check __attribute__((__unused__)) __read_mostly = 1;
++#else
++static struct net __rcu *net __attribute__((__unused__)) __read_mostly;
++#endif
++#endif /* ECM_OPENWRT_SUPPORT */
++
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 13, 0)
++static int __rcu nf_ct_tcp_be_liberal __attribute__((__unused__)) __read_mostly = 0;
++#endif
++
+ #define ECM_FRONT_END_SYSCTL_PATH "/net/ecm"
+ 
+ /*
+--- a/frontends/nss/ecm_nss_ipv4.c
++++ b/frontends/nss/ecm_nss_ipv4.c
+@@ -697,7 +697,7 @@ static void ecm_nss_ipv4_stats_sync_req_
+ 	}
+ 	spin_unlock_bh(&ecm_nss_ipv4_lock);
+ 
+-	usleep_range(ECM_NSS_IPV4_STATS_SYNC_UDELAY - 100, ECM_NSS_IPV4_STATS_SYNC_UDELAY);
++	msleep_interruptible(ECM_NSS_IPV4_STATS_SYNC_UDELAY / 1000);
+ 
+ 	/*
+ 	 * If index is 0, we are starting a new round, but if we still have time remain
+@@ -711,7 +711,7 @@ static void ecm_nss_ipv4_stats_sync_req_
+ 		}
+ 
+ 		if (time_after(ecm_nss_ipv4_next_req_time, current_jiffies)) {
+-			msleep(jiffies_to_msecs(ecm_nss_ipv4_next_req_time - current_jiffies));
++			msleep_interruptible(jiffies_to_msecs(ecm_nss_ipv4_next_req_time - current_jiffies));
+ 		}
+ 		ecm_nss_ipv4_roll_check_jiffies = jiffies;
+ 		ecm_nss_ipv4_next_req_time = ecm_nss_ipv4_roll_check_jiffies + ECM_NSS_IPV4_STATS_SYNC_PERIOD;
+@@ -1006,41 +1006,23 @@ int ecm_nss_ipv4_init(struct dentry *den
+ 		return result;
+ 	}
+ 
+-	if (!debugfs_create_u32("no_action_limit_default", S_IRUGO | S_IWUSR, ecm_nss_ipv4_dentry,
+-					(u32 *)&ecm_nss_ipv4_no_action_limit_default)) {
+-		DEBUG_ERROR("Failed to create ecm nss ipv4 no_action_limit_default file in debugfs\n");
+-		goto task_cleanup;
+-	}
++	debugfs_create_u32("no_action_limit_default", S_IRUGO | S_IWUSR, ecm_nss_ipv4_dentry,
++					(u32 *)&ecm_nss_ipv4_no_action_limit_default);
+ 
+-	if (!debugfs_create_u32("driver_fail_limit_default", S_IRUGO | S_IWUSR, ecm_nss_ipv4_dentry,
+-					(u32 *)&ecm_nss_ipv4_driver_fail_limit_default)) {
+-		DEBUG_ERROR("Failed to create ecm nss ipv4 driver_fail_limit_default file in debugfs\n");
+-		goto task_cleanup;
+-	}
++	debugfs_create_u32("driver_fail_limit_default", S_IRUGO | S_IWUSR, ecm_nss_ipv4_dentry,
++					(u32 *)&ecm_nss_ipv4_driver_fail_limit_default);
+ 
+-	if (!debugfs_create_u32("nack_limit_default", S_IRUGO | S_IWUSR, ecm_nss_ipv4_dentry,
+-					(u32 *)&ecm_nss_ipv4_nack_limit_default)) {
+-		DEBUG_ERROR("Failed to create ecm nss ipv4 nack_limit_default file in debugfs\n");
+-		goto task_cleanup;
+-	}
++	debugfs_create_u32("nack_limit_default", S_IRUGO | S_IWUSR, ecm_nss_ipv4_dentry,
++					(u32 *)&ecm_nss_ipv4_nack_limit_default);
+ 
+-	if (!debugfs_create_u32("accelerated_count", S_IRUGO, ecm_nss_ipv4_dentry,
+-					(u32 *)&ecm_nss_ipv4_accelerated_count)) {
+-		DEBUG_ERROR("Failed to create ecm nss ipv4 accelerated_count file in debugfs\n");
+-		goto task_cleanup;
+-	}
++	debugfs_create_u32("accelerated_count", S_IRUGO, ecm_nss_ipv4_dentry,
++					(u32 *)&ecm_nss_ipv4_accelerated_count);
+ 
+-	if (!debugfs_create_u32("pending_accel_count", S_IRUGO, ecm_nss_ipv4_dentry,
+-					(u32 *)&ecm_nss_ipv4_pending_accel_count)) {
+-		DEBUG_ERROR("Failed to create ecm nss ipv4 pending_accel_count file in debugfs\n");
+-		goto task_cleanup;
+-	}
++	debugfs_create_u32("pending_accel_count", S_IRUGO, ecm_nss_ipv4_dentry,
++					(u32 *)&ecm_nss_ipv4_pending_accel_count);
+ 
+-	if (!debugfs_create_u32("pending_decel_count", S_IRUGO, ecm_nss_ipv4_dentry,
+-					(u32 *)&ecm_nss_ipv4_pending_decel_count)) {
+-		DEBUG_ERROR("Failed to create ecm nss ipv4 pending_decel_count file in debugfs\n");
+-		goto task_cleanup;
+-	}
++	debugfs_create_u32("pending_decel_count", S_IRUGO, ecm_nss_ipv4_dentry,
++					(u32 *)&ecm_nss_ipv4_pending_decel_count);
+ 
+ 	if (!debugfs_create_file("accel_limit_mode", S_IRUGO | S_IWUSR, ecm_nss_ipv4_dentry,
+ 					NULL, &ecm_nss_ipv4_accel_limit_mode_fops)) {
+@@ -1071,11 +1053,8 @@ int ecm_nss_ipv4_init(struct dentry *den
+ 		goto task_cleanup;
+ 	}
+ 
+-	if (!debugfs_create_u32("vlan_passthrough_set", S_IRUGO | S_IWUSR, ecm_nss_ipv4_dentry,
+-					(u32 *)&ecm_nss_ipv4_vlan_passthrough_enable)) {
+-		DEBUG_ERROR("Failed to create ecm nss ipv4 vlan passthrough file in debugfs\n");
+-		goto task_cleanup;
+-	}
++	debugfs_create_u32("vlan_passthrough_set", S_IRUGO | S_IWUSR, ecm_nss_ipv4_dentry,
++					(u32 *)&ecm_nss_ipv4_vlan_passthrough_enable);
+ 
+ #ifdef ECM_NON_PORTED_SUPPORT_ENABLE
+ 	if (!ecm_nss_non_ported_ipv4_debugfs_init(ecm_nss_ipv4_dentry)) {
+--- a/frontends/nss/ecm_nss_ipv6.c
++++ b/frontends/nss/ecm_nss_ipv6.c
+@@ -675,7 +675,7 @@ static void ecm_nss_ipv6_stats_sync_req_
+ 	}
+ 	spin_unlock_bh(&ecm_nss_ipv6_lock);
+ 
+-	usleep_range(ECM_NSS_IPV6_STATS_SYNC_UDELAY - 100, ECM_NSS_IPV6_STATS_SYNC_UDELAY);
++	msleep_interruptible(ECM_NSS_IPV6_STATS_SYNC_UDELAY / 1000);
+ 
+ 	/*
+ 	 * If index is 0, we are starting a new round, but if we still have time remain
+@@ -689,7 +689,7 @@ static void ecm_nss_ipv6_stats_sync_req_
+ 		}
+ 
+ 		if (time_after(ecm_nss_ipv6_next_req_time, current_jiffies)) {
+-			msleep(jiffies_to_msecs(ecm_nss_ipv6_next_req_time - current_jiffies));
++			msleep_interruptible(jiffies_to_msecs(ecm_nss_ipv6_next_req_time - current_jiffies));
+ 		}
+ 		ecm_nss_ipv6_roll_check_jiffies = jiffies;
+ 		ecm_nss_ipv6_next_req_time = ecm_nss_ipv6_roll_check_jiffies + ECM_NSS_IPV6_STATS_SYNC_PERIOD;
+@@ -985,41 +985,23 @@ int ecm_nss_ipv6_init(struct dentry *den
+ 		return result;
+ 	}
+ 
+-	if (!debugfs_create_u32("no_action_limit_default", S_IRUGO | S_IWUSR, ecm_nss_ipv6_dentry,
+-					(u32 *)&ecm_nss_ipv6_no_action_limit_default)) {
+-		DEBUG_ERROR("Failed to create ecm nss ipv6 no_action_limit_default file in debugfs\n");
+-		goto task_cleanup;
+-	}
++	debugfs_create_u32("no_action_limit_default", S_IRUGO | S_IWUSR, ecm_nss_ipv6_dentry,
++					(u32 *)&ecm_nss_ipv6_no_action_limit_default);
+ 
+-	if (!debugfs_create_u32("driver_fail_limit_default", S_IRUGO | S_IWUSR, ecm_nss_ipv6_dentry,
+-					(u32 *)&ecm_nss_ipv6_driver_fail_limit_default)) {
+-		DEBUG_ERROR("Failed to create ecm nss ipv6 driver_fail_limit_default file in debugfs\n");
+-		goto task_cleanup;
+-	}
++	debugfs_create_u32("driver_fail_limit_default", S_IRUGO | S_IWUSR, ecm_nss_ipv6_dentry,
++					(u32 *)&ecm_nss_ipv6_driver_fail_limit_default);
+ 
+-	if (!debugfs_create_u32("nack_limit_default", S_IRUGO | S_IWUSR, ecm_nss_ipv6_dentry,
+-					(u32 *)&ecm_nss_ipv6_nack_limit_default)) {
+-		DEBUG_ERROR("Failed to create ecm nss ipv6 nack_limit_default file in debugfs\n");
+-		goto task_cleanup;
+-	}
++	debugfs_create_u32("nack_limit_default", S_IRUGO | S_IWUSR, ecm_nss_ipv6_dentry,
++					(u32 *)&ecm_nss_ipv6_nack_limit_default);
+ 
+-	if (!debugfs_create_u32("accelerated_count", S_IRUGO, ecm_nss_ipv6_dentry,
+-					(u32 *)&ecm_nss_ipv6_accelerated_count)) {
+-		DEBUG_ERROR("Failed to create ecm nss ipv6 accelerated_count file in debugfs\n");
+-		goto task_cleanup;
+-	}
++	debugfs_create_u32("accelerated_count", S_IRUGO, ecm_nss_ipv6_dentry,
++					(u32 *)&ecm_nss_ipv6_accelerated_count);
+ 
+-	if (!debugfs_create_u32("pending_accel_count", S_IRUGO, ecm_nss_ipv6_dentry,
+-					(u32 *)&ecm_nss_ipv6_pending_accel_count)) {
+-		DEBUG_ERROR("Failed to create ecm nss ipv6 pending_accel_count file in debugfs\n");
+-		goto task_cleanup;
+-	}
++	debugfs_create_u32("pending_accel_count", S_IRUGO, ecm_nss_ipv6_dentry,
++					(u32 *)&ecm_nss_ipv6_pending_accel_count);
+ 
+-	if (!debugfs_create_u32("pending_decel_count", S_IRUGO, ecm_nss_ipv6_dentry,
+-					(u32 *)&ecm_nss_ipv6_pending_decel_count)) {
+-		DEBUG_ERROR("Failed to create ecm nss ipv6 pending_decel_count file in debugfs\n");
+-		goto task_cleanup;
+-	}
++	debugfs_create_u32("pending_decel_count", S_IRUGO, ecm_nss_ipv6_dentry,
++					(u32 *)&ecm_nss_ipv6_pending_decel_count);
+ 
+ 	if (!debugfs_create_file("accel_limit_mode", S_IRUGO | S_IWUSR, ecm_nss_ipv6_dentry,
+ 					NULL, &ecm_nss_ipv6_accel_limit_mode_fops)) {
+@@ -1050,11 +1032,8 @@ int ecm_nss_ipv6_init(struct dentry *den
+ 		goto task_cleanup;
+ 	}
+ 
+-	if (!debugfs_create_u32("vlan_passthrough_set", S_IRUGO | S_IWUSR, ecm_nss_ipv6_dentry,
+-					(u32 *)&ecm_nss_ipv6_vlan_passthrough_enable)) {
+-		DEBUG_ERROR("Failed to create ecm nss ipv6 vlan passthrough file in debugfs\n");
+-		goto task_cleanup;
+-	}
++	debugfs_create_u32("vlan_passthrough_set", S_IRUGO | S_IWUSR, ecm_nss_ipv6_dentry,
++					(u32 *)&ecm_nss_ipv6_vlan_passthrough_enable);
+ 
+ #ifdef ECM_NON_PORTED_SUPPORT_ENABLE
+ 	if (!ecm_nss_non_ported_ipv6_debugfs_init(ecm_nss_ipv6_dentry)) {
+--- a/frontends/nss/ecm_nss_multicast_ipv4.c
++++ b/frontends/nss/ecm_nss_multicast_ipv4.c
+@@ -2762,11 +2762,8 @@ void ecm_nss_multicast_ipv4_stop(int num
+  */
+ int ecm_nss_multicast_ipv4_init(struct dentry *dentry)
+ {
+-	if (!debugfs_create_u32("ecm_nss_multicast_ipv4_stop", S_IRUGO | S_IWUSR, dentry,
+-					(u32 *)&ecm_front_end_ipv4_mc_stopped)) {
+-		DEBUG_ERROR("Failed to create ecm front end ipv4 mc stop file in debugfs\n");
+-		return -1;
+-	}
++	debugfs_create_u32("ecm_nss_multicast_ipv4_stop", S_IRUGO | S_IWUSR, dentry,
++					(u32 *)&ecm_front_end_ipv4_mc_stopped);
+ 
+ 	/*
+ 	 * Register multicast update callback to MCS snooper
+--- a/frontends/nss/ecm_nss_multicast_ipv6.c
++++ b/frontends/nss/ecm_nss_multicast_ipv6.c
+@@ -2698,11 +2698,8 @@ void ecm_nss_multicast_ipv6_stop(int num
+  */
+ int ecm_nss_multicast_ipv6_init(struct dentry *dentry)
+ {
+-	if (!debugfs_create_u32("ecm_nss_multicast_ipv6_stop", S_IRUGO | S_IWUSR, dentry,
+-					(u32 *)&ecm_front_end_ipv6_mc_stopped)) {
+-		DEBUG_ERROR("Failed to create ecm front end ipv6 mc stop file in debugfs\n");
+-		return -1;
+-	}
++	debugfs_create_u32("ecm_nss_multicast_ipv6_stop", S_IRUGO | S_IWUSR, dentry,
++					(u32 *)&ecm_front_end_ipv6_mc_stopped);
+ 
+ 	/*
+ 	 * Register multicast update callback to MCS snooper
+--- a/frontends/nss/ecm_nss_non_ported_ipv4.c
++++ b/frontends/nss/ecm_nss_non_ported_ipv4.c
+@@ -1940,11 +1940,8 @@ struct ecm_nss_non_ported_ipv4_connectio
+  */
+ bool ecm_nss_non_ported_ipv4_debugfs_init(struct dentry *dentry)
+ {
+-	if (!debugfs_create_u32("non_ported_accelerated_count", S_IRUGO, dentry,
+-					(u32 *)&ecm_nss_non_ported_ipv4_accelerated_count)) {
+-		DEBUG_ERROR("Failed to create ecm nss ipv4 non_ported_accelerated_count file in debugfs\n");
+-		return false;
+-	}
++	debugfs_create_u32("non_ported_accelerated_count", S_IRUGO, dentry,
++					(u32 *)&ecm_nss_non_ported_ipv4_accelerated_count);
+ 
+ 	return true;
+ }
+--- a/frontends/nss/ecm_nss_non_ported_ipv6.c
++++ b/frontends/nss/ecm_nss_non_ported_ipv6.c
+@@ -1768,11 +1768,8 @@ struct ecm_nss_non_ported_ipv6_connectio
+  */
+ bool ecm_nss_non_ported_ipv6_debugfs_init(struct dentry *dentry)
+ {
+-	if (!debugfs_create_u32("non_ported_accelerated_count", S_IRUGO, dentry,
+-					(u32 *)&ecm_nss_non_ported_ipv6_accelerated_count)) {
+-		DEBUG_ERROR("Failed to create ecm nss ipv6 non_ported_accelerated_count file in debugfs\n");
+-		return false;
+-	}
++	debugfs_create_u32("non_ported_accelerated_count", S_IRUGO, dentry,
++					(u32 *)&ecm_nss_non_ported_ipv6_accelerated_count);
+ 
+ 	return true;
+ }
+--- a/frontends/nss/ecm_nss_ported_ipv4.c
++++ b/frontends/nss/ecm_nss_ported_ipv4.c
+@@ -129,8 +129,10 @@ static int ecm_nss_ported_ipv4_accelerat
+  * Expose what should be a static flag in the TCP connection tracker.
+  */
+ #ifdef ECM_OPENWRT_SUPPORT
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 15, 0)
+ extern int nf_ct_tcp_no_window_check;
+ #endif
++#endif
+ extern int nf_ct_tcp_be_liberal;
+ 
+ /*
+@@ -1236,7 +1238,12 @@ static void ecm_nss_ported_ipv4_connecti
+ 			nircm->tcp_rule.return_end = ct->proto.tcp.seen[return_dir].td_end;
+ 			nircm->tcp_rule.return_max_end = ct->proto.tcp.seen[return_dir].td_maxend;
+ #ifdef ECM_OPENWRT_SUPPORT
+-			if (nf_ct_tcp_be_liberal || nf_ct_tcp_no_window_check
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0)
++			net = nf_ct_net(ct);
++           if (nf_ct_tcp_be_liberal || (net && net->ct.sysctl_no_window_check)
++#else
++        	if (nf_ct_tcp_be_liberal || nf_ct_tcp_no_window_check
++#endif
+ #else
+ 			if (nf_ct_tcp_be_liberal
+ #endif
+@@ -2010,21 +2017,11 @@ struct ecm_nss_ported_ipv4_connection_in
+  */
+ bool ecm_nss_ported_ipv4_debugfs_init(struct dentry *dentry)
+ {
+-	struct dentry *udp_dentry;
+-
+-	udp_dentry = debugfs_create_u32("udp_accelerated_count", S_IRUGO, dentry,
+-						&ecm_nss_ported_ipv4_accelerated_count[ECM_NSS_PORTED_IPV4_PROTO_UDP]);
+-	if (!udp_dentry) {
+-		DEBUG_ERROR("Failed to create ecm nss ipv4 udp_accelerated_count file in debugfs\n");
+-		return false;
+-	}
++	debugfs_create_u32("udp_accelerated_count", S_IRUGO, dentry,
++ 					&ecm_nss_ported_ipv4_accelerated_count[ECM_NSS_PORTED_IPV4_PROTO_UDP]);
+ 
+-	if (!debugfs_create_u32("tcp_accelerated_count", S_IRUGO, dentry,
+-					&ecm_nss_ported_ipv4_accelerated_count[ECM_NSS_PORTED_IPV4_PROTO_TCP])) {
+-		DEBUG_ERROR("Failed to create ecm nss ipv4 tcp_accelerated_count file in debugfs\n");
+-		debugfs_remove(udp_dentry);
+-		return false;
+-	}
++	debugfs_create_u32("tcp_accelerated_count", S_IRUGO, dentry,
++					&ecm_nss_ported_ipv4_accelerated_count[ECM_NSS_PORTED_IPV4_PROTO_TCP]);
+ 
+ 	return true;
+ }
+--- a/frontends/nss/ecm_nss_ported_ipv6.c
++++ b/frontends/nss/ecm_nss_ported_ipv6.c
+@@ -129,8 +129,10 @@ static int ecm_nss_ported_ipv6_accelerat
+  * Expose what should be a static flag in the TCP connection tracker.
+  */
+ #ifdef ECM_OPENWRT_SUPPORT
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 15, 0)
+ extern int nf_ct_tcp_no_window_check;
+ #endif
++#endif
+ extern int nf_ct_tcp_be_liberal;
+ 
+ /*
+@@ -1162,7 +1164,12 @@ static void ecm_nss_ported_ipv6_connecti
+ 			nircm->tcp_rule.return_end = ct->proto.tcp.seen[return_dir].td_end;
+ 			nircm->tcp_rule.return_max_end = ct->proto.tcp.seen[return_dir].td_maxend;
+ #ifdef ECM_OPENWRT_SUPPORT
+-			if (nf_ct_tcp_be_liberal || nf_ct_tcp_no_window_check
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0)
++			net = nf_ct_net(ct);
++           if (nf_ct_tcp_be_liberal || (net && net->ct.sysctl_no_window_check)
++#else
++        	if (nf_ct_tcp_be_liberal || nf_ct_tcp_no_window_check
++#endif
+ #else
+ 			if (nf_ct_tcp_be_liberal
+ #endif
+@@ -1925,21 +1932,11 @@ struct ecm_nss_ported_ipv6_connection_in
+  */
+ bool ecm_nss_ported_ipv6_debugfs_init(struct dentry *dentry)
+ {
+-	struct dentry *udp_dentry;
+-
+-	udp_dentry = debugfs_create_u32("udp_accelerated_count", S_IRUGO, dentry,
++	debugfs_create_u32("udp_accelerated_count", S_IRUGO, dentry,
+ 						&ecm_nss_ported_ipv6_accelerated_count[ECM_NSS_PORTED_IPV6_PROTO_UDP]);
+-	if (!udp_dentry) {
+-		DEBUG_ERROR("Failed to create ecm nss ipv6 udp_accelerated_count file in debugfs\n");
+-		return false;
+-	}
+ 
+-	if (!debugfs_create_u32("tcp_accelerated_count", S_IRUGO, dentry,
+-					&ecm_nss_ported_ipv6_accelerated_count[ECM_NSS_PORTED_IPV6_PROTO_TCP])) {
+-		DEBUG_ERROR("Failed to create ecm nss ipv6 tcp_accelerated_count file in debugfs\n");
+-		debugfs_remove(udp_dentry);
+-		return false;
+-	}
++	debugfs_create_u32("tcp_accelerated_count", S_IRUGO, dentry,
++					&ecm_nss_ported_ipv6_accelerated_count[ECM_NSS_PORTED_IPV6_PROTO_TCP]);
+ 
+ 	return true;
+ }
+--- a/frontends/sfe/ecm_sfe_ipv4.c
++++ b/frontends/sfe/ecm_sfe_ipv4.c
+@@ -914,48 +914,27 @@ int ecm_sfe_ipv4_init(struct dentry *den
+ 	}
+ 
+ #ifdef CONFIG_XFRM
+-	if (!debugfs_create_u32("reject_acceleration_for_ipsec", S_IRUGO | S_IWUSR, ecm_sfe_ipv4_dentry,
+-					(u32 *)&ecm_sfe_ipv4_reject_acceleration_for_ipsec)) {
+-		DEBUG_ERROR("Failed to create ecm sfe ipv4 reject_acceleration_for_ipsec file in debugfs\n");
+-		goto task_cleanup;
+-	}
++	debugfs_create_u32("reject_acceleration_for_ipsec", S_IRUGO | S_IWUSR, ecm_sfe_ipv4_dentry,
++					(u32 *)&ecm_sfe_ipv4_reject_acceleration_for_ipsec);
+ #endif
+ 
+-	if (!debugfs_create_u32("no_action_limit_default", S_IRUGO | S_IWUSR, ecm_sfe_ipv4_dentry,
+-					(u32 *)&ecm_sfe_ipv4_no_action_limit_default)) {
+-		DEBUG_ERROR("Failed to create ecm sfe ipv4 no_action_limit_default file in debugfs\n");
+-		goto task_cleanup;
+-	}
++	debugfs_create_u32("no_action_limit_default", S_IRUGO | S_IWUSR, ecm_sfe_ipv4_dentry,
++					(u32 *)&ecm_sfe_ipv4_no_action_limit_default);
+ 
+-	if (!debugfs_create_u32("driver_fail_limit_default", S_IRUGO | S_IWUSR, ecm_sfe_ipv4_dentry,
+-					(u32 *)&ecm_sfe_ipv4_driver_fail_limit_default)) {
+-		DEBUG_ERROR("Failed to create ecm sfe ipv4 driver_fail_limit_default file in debugfs\n");
+-		goto task_cleanup;
+-	}
++	debugfs_create_u32("driver_fail_limit_default", S_IRUGO | S_IWUSR, ecm_sfe_ipv4_dentry,
++					(u32 *)&ecm_sfe_ipv4_driver_fail_limit_default);
+ 
+-	if (!debugfs_create_u32("nack_limit_default", S_IRUGO | S_IWUSR, ecm_sfe_ipv4_dentry,
+-					(u32 *)&ecm_sfe_ipv4_nack_limit_default)) {
+-		DEBUG_ERROR("Failed to create ecm sfe ipv4 nack_limit_default file in debugfs\n");
+-		goto task_cleanup;
+-	}
++	debugfs_create_u32("nack_limit_default", S_IRUGO | S_IWUSR, ecm_sfe_ipv4_dentry,
++					(u32 *)&ecm_sfe_ipv4_nack_limit_default);
+ 
+-	if (!debugfs_create_u32("accelerated_count", S_IRUGO, ecm_sfe_ipv4_dentry,
+-					(u32 *)&ecm_sfe_ipv4_accelerated_count)) {
+-		DEBUG_ERROR("Failed to create ecm sfe ipv4 accelerated_count file in debugfs\n");
+-		goto task_cleanup;
+-	}
++	debugfs_create_u32("accelerated_count", S_IRUGO, ecm_sfe_ipv4_dentry,
++					(u32 *)&ecm_sfe_ipv4_accelerated_count);
+ 
+-	if (!debugfs_create_u32("pending_accel_count", S_IRUGO, ecm_sfe_ipv4_dentry,
+-					(u32 *)&ecm_sfe_ipv4_pending_accel_count)) {
+-		DEBUG_ERROR("Failed to create ecm sfe ipv4 pending_accel_count file in debugfs\n");
+-		goto task_cleanup;
+-	}
++	debugfs_create_u32("pending_accel_count", S_IRUGO, ecm_sfe_ipv4_dentry,
++					(u32 *)&ecm_sfe_ipv4_pending_accel_count);
+ 
+-	if (!debugfs_create_u32("pending_decel_count", S_IRUGO, ecm_sfe_ipv4_dentry,
+-					(u32 *)&ecm_sfe_ipv4_pending_decel_count)) {
+-		DEBUG_ERROR("Failed to create ecm sfe ipv4 pending_decel_count file in debugfs\n");
+-		goto task_cleanup;
+-	}
++	debugfs_create_u32("pending_decel_count", S_IRUGO, ecm_sfe_ipv4_dentry,
++					(u32 *)&ecm_sfe_ipv4_pending_decel_count);
+ 
+ 	if (!debugfs_create_file("accel_limit_mode", S_IRUGO | S_IWUSR, ecm_sfe_ipv4_dentry,
+ 					NULL, &ecm_sfe_ipv4_accel_limit_mode_fops)) {
+--- a/frontends/sfe/ecm_sfe_ipv6.c
++++ b/frontends/sfe/ecm_sfe_ipv6.c
+@@ -906,48 +906,27 @@ int ecm_sfe_ipv6_init(struct dentry *den
+ 	}
+ 
+ #ifdef CONFIG_XFRM
+-	if (!debugfs_create_u32("reject_acceleration_for_ipsec", S_IRUGO | S_IWUSR, ecm_sfe_ipv6_dentry,
+-					(u32 *)&ecm_sfe_ipv6_reject_acceleration_for_ipsec)) {
+-		DEBUG_ERROR("Failed to create ecm sfe ipv6 reject_acceleration_for_ipsec file in debugfs\n");
+-		goto task_cleanup;
+-	}
++	debugfs_create_u32("reject_acceleration_for_ipsec", S_IRUGO | S_IWUSR, ecm_sfe_ipv6_dentry,
++					(u32 *)&ecm_sfe_ipv6_reject_acceleration_for_ipsec);
+ #endif
+ 
+-	if (!debugfs_create_u32("no_action_limit_default", S_IRUGO | S_IWUSR, ecm_sfe_ipv6_dentry,
+-					(u32 *)&ecm_sfe_ipv6_no_action_limit_default)) {
+-		DEBUG_ERROR("Failed to create ecm sfe ipv6 no_action_limit_default file in debugfs\n");
+-		goto task_cleanup;
+-	}
++	debugfs_create_u32("no_action_limit_default", S_IRUGO | S_IWUSR, ecm_sfe_ipv6_dentry,
++					(u32 *)&ecm_sfe_ipv6_no_action_limit_default);
+ 
+-	if (!debugfs_create_u32("driver_fail_limit_default", S_IRUGO | S_IWUSR, ecm_sfe_ipv6_dentry,
+-					(u32 *)&ecm_sfe_ipv6_driver_fail_limit_default)) {
+-		DEBUG_ERROR("Failed to create ecm sfe ipv6 driver_fail_limit_default file in debugfs\n");
+-		goto task_cleanup;
+-	}
++	debugfs_create_u32("driver_fail_limit_default", S_IRUGO | S_IWUSR, ecm_sfe_ipv6_dentry,
++					(u32 *)&ecm_sfe_ipv6_driver_fail_limit_default);
+ 
+-	if (!debugfs_create_u32("nack_limit_default", S_IRUGO | S_IWUSR, ecm_sfe_ipv6_dentry,
+-					(u32 *)&ecm_sfe_ipv6_nack_limit_default)) {
+-		DEBUG_ERROR("Failed to create ecm sfe ipv6 nack_limit_default file in debugfs\n");
+-		goto task_cleanup;
+-	}
++	debugfs_create_u32("nack_limit_default", S_IRUGO | S_IWUSR, ecm_sfe_ipv6_dentry,
++					(u32 *)&ecm_sfe_ipv6_nack_limit_default);
+ 
+-	if (!debugfs_create_u32("accelerated_count", S_IRUGO, ecm_sfe_ipv6_dentry,
+-					(u32 *)&ecm_sfe_ipv6_accelerated_count)) {
+-		DEBUG_ERROR("Failed to create ecm sfe ipv6 accelerated_count file in debugfs\n");
+-		goto task_cleanup;
+-	}
++	debugfs_create_u32("accelerated_count", S_IRUGO, ecm_sfe_ipv6_dentry,
++					(u32 *)&ecm_sfe_ipv6_accelerated_count);
+ 
+-	if (!debugfs_create_u32("pending_accel_count", S_IRUGO, ecm_sfe_ipv6_dentry,
+-					(u32 *)&ecm_sfe_ipv6_pending_accel_count)) {
+-		DEBUG_ERROR("Failed to create ecm sfe ipv6 pending_accel_count file in debugfs\n");
+-		goto task_cleanup;
+-	}
++	debugfs_create_u32("pending_accel_count", S_IRUGO, ecm_sfe_ipv6_dentry,
++					(u32 *)&ecm_sfe_ipv6_pending_accel_count);
+ 
+-	if (!debugfs_create_u32("pending_decel_count", S_IRUGO, ecm_sfe_ipv6_dentry,
+-					(u32 *)&ecm_sfe_ipv6_pending_decel_count)) {
+-		DEBUG_ERROR("Failed to create ecm sfe ipv6 pending_decel_count file in debugfs\n");
+-		goto task_cleanup;
+-	}
++	debugfs_create_u32("pending_decel_count", S_IRUGO, ecm_sfe_ipv6_dentry,
++					(u32 *)&ecm_sfe_ipv6_pending_decel_count);
+ 
+ 	if (!debugfs_create_file("accel_limit_mode", S_IRUGO | S_IWUSR, ecm_sfe_ipv6_dentry,
+ 					NULL, &ecm_sfe_ipv6_accel_limit_mode_fops)) {
+--- a/frontends/sfe/ecm_sfe_non_ported_ipv4.c
++++ b/frontends/sfe/ecm_sfe_non_ported_ipv4.c
+@@ -1930,11 +1930,8 @@ struct ecm_sfe_non_ported_ipv4_connectio
+  */
+ bool ecm_sfe_non_ported_ipv4_debugfs_init(struct dentry *dentry)
+ {
+-	if (!debugfs_create_u32("non_ported_accelerated_count", S_IRUGO, dentry,
+-					(u32 *)&ecm_sfe_non_ported_ipv4_accelerated_count)) {
+-		DEBUG_ERROR("Failed to create ecm sfe ipv4 non_ported_accelerated_count file in debugfs\n");
+-		return false;
+-	}
++	debugfs_create_u32("non_ported_accelerated_count", S_IRUGO, dentry,
++					(u32 *)&ecm_sfe_non_ported_ipv4_accelerated_count);
+ 
+ 	return true;
+ }
+--- a/frontends/sfe/ecm_sfe_non_ported_ipv6.c
++++ b/frontends/sfe/ecm_sfe_non_ported_ipv6.c
+@@ -1777,11 +1777,8 @@ struct ecm_sfe_non_ported_ipv6_connectio
+  */
+ bool ecm_sfe_non_ported_ipv6_debugfs_init(struct dentry *dentry)
+ {
+-	if (!debugfs_create_u32("non_ported_accelerated_count", S_IRUGO, dentry,
+-					(u32 *)&ecm_sfe_non_ported_ipv6_accelerated_count)) {
+-		DEBUG_ERROR("Failed to create ecm sfe ipv6 non_ported_accelerated_count file in debugfs\n");
+-		return false;
+-	}
++	debugfs_create_u32("non_ported_accelerated_count", S_IRUGO, dentry,
++					(u32 *)&ecm_sfe_non_ported_ipv6_accelerated_count);
+ 
+ 	return true;
+ }
+--- a/frontends/sfe/ecm_sfe_ported_ipv4.c
++++ b/frontends/sfe/ecm_sfe_ported_ipv4.c
+@@ -127,8 +127,10 @@ static int ecm_sfe_ported_ipv4_accelerat
+  * Expose what should be a static flag in the TCP connection tracker.
+  */
+ #ifdef ECM_OPENWRT_SUPPORT
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 15, 0)
+ extern int nf_ct_tcp_no_window_check;
+ #endif
++#endif
+ extern int nf_ct_tcp_be_liberal;
+ 
+ /*
+@@ -1259,7 +1261,12 @@ static void ecm_sfe_ported_ipv4_connecti
+ 			nircm->tcp_rule.return_end = ct->proto.tcp.seen[return_dir].td_end;
+ 			nircm->tcp_rule.return_max_end = ct->proto.tcp.seen[return_dir].td_maxend;
+ #ifdef ECM_OPENWRT_SUPPORT
+-			if (nf_ct_tcp_be_liberal || nf_ct_tcp_no_window_check
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0)
++			net = nf_ct_net(ct);
++           if (nf_ct_tcp_be_liberal || (net && net->ct.sysctl_no_window_check)
++#else
++        	if (nf_ct_tcp_be_liberal || nf_ct_tcp_no_window_check
++#endif
+ #else
+ 			if (nf_ct_tcp_be_liberal
+ #endif
+@@ -2053,21 +2060,11 @@ struct ecm_sfe_ported_ipv4_connection_in
+  */
+ bool ecm_sfe_ported_ipv4_debugfs_init(struct dentry *dentry)
+ {
+-	struct dentry *udp_dentry;
+-
+-	udp_dentry = debugfs_create_u32("udp_accelerated_count", S_IRUGO, dentry,
+-						&ecm_sfe_ported_ipv4_accelerated_count[ECM_SFE_PORTED_IPV4_PROTO_UDP]);
+-	if (!udp_dentry) {
+-		DEBUG_ERROR("Failed to create ecm sfe ipv4 udp_accelerated_count file in debugfs\n");
+-		return false;
+-	}
++	debugfs_create_u32("udp_accelerated_count", S_IRUGO, dentry,
++					&ecm_sfe_ported_ipv4_accelerated_count[ECM_SFE_PORTED_IPV4_PROTO_UDP]);
+ 
+-	if (!debugfs_create_u32("tcp_accelerated_count", S_IRUGO, dentry,
+-					&ecm_sfe_ported_ipv4_accelerated_count[ECM_SFE_PORTED_IPV4_PROTO_TCP])) {
+-		DEBUG_ERROR("Failed to create ecm sfe ipv4 tcp_accelerated_count file in debugfs\n");
+-		debugfs_remove(udp_dentry);
+-		return false;
+-	}
++	debugfs_create_u32("tcp_accelerated_count", S_IRUGO, dentry,
++					&ecm_sfe_ported_ipv4_accelerated_count[ECM_SFE_PORTED_IPV4_PROTO_TCP]);
+ 
+ 	return true;
+ }
+--- a/frontends/sfe/ecm_sfe_ported_ipv6.c
++++ b/frontends/sfe/ecm_sfe_ported_ipv6.c
+@@ -128,8 +128,10 @@ static int ecm_sfe_ported_ipv6_accelerat
+  * Expose what should be a static flag in the TCP connection tracker.
+  */
+ #ifdef ECM_OPENWRT_SUPPORT
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 15, 0)
+ extern int nf_ct_tcp_no_window_check;
+ #endif
++#endif
+ extern int nf_ct_tcp_be_liberal;
+ 
+ /*
+@@ -1219,7 +1221,12 @@ static void ecm_sfe_ported_ipv6_connecti
+ 			nircm->tcp_rule.return_end = ct->proto.tcp.seen[return_dir].td_end;
+ 			nircm->tcp_rule.return_max_end = ct->proto.tcp.seen[return_dir].td_maxend;
+ #ifdef ECM_OPENWRT_SUPPORT
+-			if (nf_ct_tcp_be_liberal || nf_ct_tcp_no_window_check
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0)
++			net = nf_ct_net(ct);
++           if (nf_ct_tcp_be_liberal || (net && net->ct.sysctl_no_window_check)
++#else
++        	if (nf_ct_tcp_be_liberal || nf_ct_tcp_no_window_check
++#endif
+ #else
+ 			if (nf_ct_tcp_be_liberal
+ #endif
+@@ -1998,21 +2005,11 @@ struct ecm_sfe_ported_ipv6_connection_in
+  */
+ bool ecm_sfe_ported_ipv6_debugfs_init(struct dentry *dentry)
+ {
+-	struct dentry *udp_dentry;
+-
+-	udp_dentry = debugfs_create_u32("udp_accelerated_count", S_IRUGO, dentry,
+-						&ecm_sfe_ported_ipv6_accelerated_count[ECM_SFE_PORTED_IPV6_PROTO_UDP]);
+-	if (!udp_dentry) {
+-		DEBUG_ERROR("Failed to create ecm sfe ipv6 udp_accelerated_count file in debugfs\n");
+-		return false;
+-	}
++	debugfs_create_u32("udp_accelerated_count", S_IRUGO, dentry,
++					&ecm_sfe_ported_ipv6_accelerated_count[ECM_SFE_PORTED_IPV6_PROTO_UDP]);
+ 
+-	if (!debugfs_create_u32("tcp_accelerated_count", S_IRUGO, dentry,
+-					&ecm_sfe_ported_ipv6_accelerated_count[ECM_SFE_PORTED_IPV6_PROTO_TCP])) {
+-		DEBUG_ERROR("Failed to create ecm sfe ipv6 tcp_accelerated_count file in debugfs\n");
+-		debugfs_remove(udp_dentry);
+-		return false;
+-	}
++	debugfs_create_u32("tcp_accelerated_count", S_IRUGO, dentry,
++					&ecm_sfe_ported_ipv6_accelerated_count[ECM_SFE_PORTED_IPV6_PROTO_TCP]);
+ 
+ 	return true;
+ }
