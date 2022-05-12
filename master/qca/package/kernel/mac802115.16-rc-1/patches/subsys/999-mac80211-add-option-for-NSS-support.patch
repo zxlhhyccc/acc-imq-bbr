@@ -9,7 +9,7 @@
 +config MAC80211_NSS_SUPPORT
 +	bool "Enable NSS support for IPQ platform"
 +	default n
-+	help
++	---help---
 +	This option enables support for NSS in boards
 +	like AP148.
 +
