@@ -1,7 +1,6 @@
 #!/bin/sh  /etc/rc.common
 #
-# Copyright (c) 2014, 2019-2021 The Linux Foundation. All rights reserved.
-# Copyright (c) 2022, Qualcomm Innovation Center, Inc. All rights reserved.
+# Copyright (c) 2014, 2019-2020 The Linux Foundation. All rights reserved.
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -35,9 +34,6 @@ get_front_end_mode() {
 	sfe)
 		echo '2'
 		;;
-	hybrid)
-		echo '3'
-		;;
 	*)
 		echo 'uci_option_acceleration_engine is invalid'
 	esac
@@ -46,32 +42,34 @@ get_front_end_mode() {
 support_bridge() {
 	#NSS support bridge acceleration
 	[ -d /sys/kernel/debug/ecm/ecm_nss_ipv4 ] && return 0
-	#SFE support bridge acceleration
-	[ -d /sys/kernel/debug/ecm/ecm_sfe_ipv4 ] && return 0
+	#SFE doesn't support bridge acceleration
+	[ -d /sys/kernel/debug/ecm/ecm_sfe_ipv4 ] && return 1
 }
 
 load_sfe() {
 	local kernel_version=$(uname -r)
 
-	[ -e "/lib/modules/$kernel_version/qca-nss-sfe.ko" ] && {
-		[ -d /sys/module/qca_nss_sfe ] || insmod qca-nss-sfe
+	[ -e "/lib/modules/$kernel_version/shortcut-fe.ko" ] && {
+		[ -d /sys/module/shortcut_fe ] || insmod shortcut-fe
 	}
 
-}
+	[ -e "/lib/modules/$kernel_version/shortcut-fe-ipv6.ko" ] && {
+		[ -d /sys/module/shortcut_fe_ipv6 ] || insmod shortcut-fe-ipv6
+	}
 
-unload_sfe() {
+	[ -e "/lib/modules/$kernel_version/shortcut-fe-cm.ko" ] && {
+		[ -d /sys/module/shortcut_fe_cm ] || insmod shortcut-fe-cm
+	}
 
-	[ -d /sys/module/qca_nss_sfe ] && rmmod qca-nss-sfe
+	[ -e "/lib/modules/$kernel_version/shortcut-fe-drv.ko" ] && {
+		[ -d /sys/module/shortcut_fe_drv ] || insmod shortcut-fe-drv
+	}
 }
 
 load_ecm() {
-
 	[ -d /sys/module/ecm ] || {
+		[ ! -e /proc/device-tree/MP_256 ] && load_sfe
 		insmod ecm front_end_selection=$(get_front_end_mode)
-
-		if [ $(get_front_end_mode) == 3 ]; then
-			insmod ecm_ae_select
-		fi
 	}
 
 	support_bridge && {
@@ -97,37 +95,35 @@ unload_ecm() {
 	        echo 1 > /sys/kernel/debug/ecm/ecm_db/defunct_all
 		sleep 5;
 
-		if [ -d /sys/module/ecm_ae_select ]; then
-			rmmod ecm_ae_select
-		fi
-
 		rmmod ecm
 		sleep 1
 	fi
 }
 
 start() {
+	# If SFE CM is loaded, return.
+	if [ -d /sys/module/shortcut_fe_cm ]; then
+		echo "shortcut_fe CM is loaded, unload it first"
+		echo "cmd: /etc/init.d/shortcut_fe stop"
+		return
+	fi
 
-	load_sfe
 	load_ecm
 
 	# If the acceleration engine is NSS, enable wifi redirect.
 	[ -d /sys/kernel/debug/ecm/ecm_nss_ipv4 ] && sysctl -w dev.nss.general.redirect=1
 
 	support_bridge && {
-		echo 'net.bridge.bridge-nf-call-ip6tables=1' >> /etc/sysctl.d/qca-nss-ecm.conf
-		echo 'net.bridge.bridge-nf-call-iptables=1' >> /etc/sysctl.d/qca-nss-ecm.conf
+		if ([ -z "$(grep "net.bridge.bridge-nf-call-ip6tables=1" /etc/sysctl.d/qca-nss-ecm.conf)" ] && [ -z "$(grep "net.bridge.bridge-nf-call-iptables=1" /etc/sysctl.d/qca-nss-ecm.conf)" ]); then
+			echo 'net.bridge.bridge-nf-call-ip6tables=1' >> /etc/sysctl.d/qca-nss-ecm.conf
+			echo 'net.bridge.bridge-nf-call-iptables=1' >> /etc/sysctl.d/qca-nss-ecm.conf
+		fi
 	}
 
 	if [ -d /sys/module/qca_ovsmgr ]; then
 		insmod ecm_ovs
 	fi
 
-	local kernel_version=$(uname -r)
-
-	[ -e "/lib/modules/$kernel_version/ecm-wifi-plugin.ko" ] && {
-		[ -d /sys/module/ecm_wifi_plugin ] || insmod ecm-wifi-plugin
-	}
 }
 
 stop() {
@@ -146,10 +142,5 @@ stop() {
 		rmmod ecm_ovs
 	fi
 
-	if [ -d /sys/module/ecm_wifi_plugin ]; then
-		rmmod ecm-wifi-plugin
-	fi
-
 	unload_ecm
-	unload_sfe
 }

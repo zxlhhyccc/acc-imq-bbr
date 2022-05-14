@@ -34,7 +34,7 @@ endef
 define Package/nss-firmware-ipq6018
 $(Package/nss-firmware-default)
   TITLE:=NSS firmware for IPQ6018 devices
-  NSS_ARCHIVE:=$(VERSION_PATH)/IPQ6018.ATH.11.4/BIN-NSS.CP.11.4.0.5-5-R.tar.bz2
+  NSS_ARCHIVE:=$(VERSION_PATH)/IPQ6018.ATH.11.5.0/BIN-NSS.FW.12.0.r1-002-CP.R.tar.bz2
 endef
 
 define Package/nss-firmware-ipq8074
