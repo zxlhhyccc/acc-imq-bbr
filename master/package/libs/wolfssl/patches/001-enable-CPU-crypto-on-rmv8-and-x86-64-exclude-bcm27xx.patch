@@ -1,5 +1,5 @@
 diff --git a/Makefile b/Makefile
-index 5cd2501..cc5f3aa 100644
+index cfd65b4..0aa56fb 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -38,12 +38,17 @@ PKG_ABI_VERSION=$(patsubst %-stable,%,$(PKG_VERSION)).$(call version_abbrev,$(ca
@@ -48,7 +48,7 @@ index 5cd2501..cc5f3aa 100644
  	--disable-examples \
  	--disable-jobserver \
  	--$(if $(CONFIG_IPV6),enable,disable)-ipv6 \
-@@ -108,6 +123,16 @@ CONFIGURE_ARGS += \
+@@ -108,6 +123,17 @@ CONFIGURE_ARGS += \
  	--enable-wpas --enable-fortress --enable-fastmath
  endif
  
@@ -58,6 +58,7 @@ index 5cd2501..cc5f3aa 100644
 +ifneq ($(CONFIG_aarch64),$(strip $(WOLFSSL_AARCH64_NO_CRYPTO)))
 +	CONFIGURE_ARGS += --enable-armasm
 +	TARGET_CFLAGS:=$(TARGET_CFLAGS:-mcpu%=-mcpu%+crypto)
++	STAMP_CONFIGURED:=$(STAMP_CONFIGURED)_armasm
 +else ifeq ($(CONFIG_TARGET_x86_64),y)
 +	CONFIGURE_ARGS += --enable-intelasm
 +endif
@@ -65,7 +66,7 @@ index 5cd2501..cc5f3aa 100644
  define Build/InstallDev
  	$(INSTALL_DIR) $(1)/usr/include $(1)/usr/lib/pkgconfig
  	$(CP) $(PKG_INSTALL_DIR)/usr/include/* $(1)/usr/include/
-@@ -125,4 +150,10 @@ define Package/libwolfssl/install
+@@ -125,4 +151,10 @@ define Package/libwolfssl/install
  	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libwolfssl.so.* $(1)/usr/lib/
  endef
  
