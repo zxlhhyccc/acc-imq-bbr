@@ -50,6 +50,36 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
  		.supports_suspend = false,
  		.hal_desc_sz = sizeof(struct hal_rx_desc_ipq8074),
  		.supports_regdb = false,
+--- a/drivers/net/wireless/ath/ath11k/dp.h
++++ b/drivers/net/wireless/ath/ath11k/dp.h
+@@ -203,7 +203,11 @@ struct ath11k_pdev_dp {
+ 
+ #define DP_WBM_RELEASE_RING_SIZE	64
+ #define DP_TCL_DATA_RING_SIZE		512
++#ifdef CPTCFG_ATH11K_MEM_PROFILE_512MB
++#define DP_TX_COMP_RING_SIZE		8192
++#else
+ #define DP_TX_COMP_RING_SIZE		32768
++#endif
+ #define DP_TX_IDR_SIZE			DP_TX_COMP_RING_SIZE
+ #define DP_TCL_CMD_RING_SIZE		32
+ #define DP_TCL_STATUS_RING_SIZE		32
+@@ -217,9 +221,15 @@ struct ath11k_pdev_dp {
+ #define DP_RXDMA_BUF_RING_SIZE		4096
+ #define DP_RXDMA_REFILL_RING_SIZE	2048
+ #define DP_RXDMA_ERR_DST_RING_SIZE	1024
++#ifdef CPTCFG_ATH11K_MEM_PROFILE_512MB
++#define DP_RXDMA_MON_STATUS_RING_SIZE	512
++#define DP_RXDMA_MONITOR_BUF_RING_SIZE	128
++#define DP_RXDMA_MONITOR_DST_RING_SIZE	128
++#else
+ #define DP_RXDMA_MON_STATUS_RING_SIZE	1024
+ #define DP_RXDMA_MONITOR_BUF_RING_SIZE	4096
+ #define DP_RXDMA_MONITOR_DST_RING_SIZE	2048
++#endif
+ #define DP_RXDMA_MONITOR_DESC_RING_SIZE	4096
+ 
+ #define DP_RX_BUFFER_SIZE	2048
 --- a/local-symbols
 +++ b/local-symbols
 @@ -155,6 +155,8 @@ ATH11K_DEBUG=

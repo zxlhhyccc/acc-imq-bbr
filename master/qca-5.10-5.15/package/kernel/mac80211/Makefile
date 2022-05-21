@@ -83,7 +83,6 @@ config-$(CONFIG_PACKAGE_CFG80211_TESTMODE) += NL80211_TESTMODE
 
 config-$(call config_package,mac80211) += MAC80211
 config-$(CONFIG_PACKAGE_MAC80211_MESH) += MAC80211_MESH
-config-$(CONFIG_PACKAGE_MAC80211_NSS_SUPPORT) += MAC80211_NSS_SUPPORT
 
 include ath.mk
 include broadcom.mk
@@ -127,7 +126,7 @@ define KernelPackage/mac80211
   $(call KernelPackage/mac80211/Default)
   TITLE:=Linux 802.11 Wireless Networking Stack
   # +kmod-crypto-cmac is a runtime only dependency of net/mac80211/aes_cmac.c
-  DEPENDS+= +kmod-cfg80211 +kmod-crypto-cmac +kmod-crypto-ccm +kmod-crypto-gcm +hostapd-common +PACKAGE_kmod-qca-nss-drv:kmod-qca-nss-drv
+  DEPENDS+= +kmod-cfg80211 +kmod-crypto-cmac +kmod-crypto-ccm +kmod-crypto-gcm +hostapd-common
   KCONFIG:=\
 	CONFIG_AVERAGE=y
   FILES:= $(PKG_BUILD_DIR)/net/mac80211/mac80211.ko
@@ -137,14 +136,6 @@ endef
 
 define KernelPackage/mac80211/config
   if PACKAGE_kmod-mac80211
-
-	if PACKAGE_kmod-qca-nss-drv
-		config PACKAGE_MAC80211_NSS_SUPPORT
-			bool "Enable NSS support for IPQ platform"
-			default y
-			help
-			  This option enables support for NSS in boards.
-	endif
 
 	config PACKAGE_MAC80211_DEBUGFS
 		bool "Export mac80211 internals in DebugFS"
@@ -434,10 +425,15 @@ ifeq ($(BUILD_VARIANT),smallbuffers)
 	C_DEFINES+= -DCONFIG_ATH10K_SMALLBUFFERS
 endif
 
+EXTRA_CFLAGS:=-I$(PKG_BUILD_DIR)/include $(IREMAP_CFLAGS) $(C_DEFINES)
+
+ifdef CONFIG_ATH11K_NSS_SUPPORT
+	EXTRA_CFLAGS+=-I$(STAGING_DIR)/usr/include/qca-nss-drv
+endif
+
 MAKE_OPTS:= -C "$(PKG_BUILD_DIR)" \
 	$(KERNEL_MAKE_FLAGS) \
-	EXTRA_CFLAGS="-I$(PKG_BUILD_DIR)/include $(IREMAP_CFLAGS) $(C_DEFINES) \
-		      -I$(STAGING_DIR)/usr/include/qca-nss-drv" \
+	EXTRA_CFLAGS="$(EXTRA_CFLAGS)" \
 	KLIB_BUILD="$(LINUX_DIR)" \
 	MODPROBE=true \
 	KLIB=$(TARGET_MODULES_DIR) \
@@ -506,6 +502,7 @@ define Build/Patch
 	$(call PatchDir,$(PKG_BUILD_DIR),$(PATCH_DIR)/ath9k,ath9k/)
 	$(call PatchDir,$(PKG_BUILD_DIR),$(PATCH_DIR)/ath10k,ath10k/)
 	$(call PatchDir,$(PKG_BUILD_DIR),$(PATCH_DIR)/ath11k,ath11k/)
+	$(if $(CONFIG_ATH11K_NSS_SUPPORT),$(call PatchDir,$(PKG_BUILD_DIR),$(PATCH_DIR)/ath11k_nss,ath11k_nss/))
 	$(call PatchDir,$(PKG_BUILD_DIR),$(PATCH_DIR)/rt2x00,rt2x00/)
 	$(call PatchDir,$(PKG_BUILD_DIR),$(PATCH_DIR)/mwl,mwl/)
 	$(call PatchDir,$(PKG_BUILD_DIR),$(PATCH_DIR)/brcm,brcm/)
@@ -521,6 +518,7 @@ define Quilt/Refresh/Package
 	$(call Quilt/RefreshDir,$(PKG_BUILD_DIR),$(PATCH_DIR)/ath9k,ath9k/)
 	$(call Quilt/RefreshDir,$(PKG_BUILD_DIR),$(PATCH_DIR)/ath10k,ath10k/)
 	$(call Quilt/RefreshDir,$(PKG_BUILD_DIR),$(PATCH_DIR)/ath11k,ath11k/)
+	$(if $(CONFIG_ATH11K_NSS_SUPPORT),$(call Quilt/RefreshDir,$(PKG_BUILD_DIR),$(PATCH_DIR)/ath11k_nss,ath11k_nss/))
 	$(call Quilt/RefreshDir,$(PKG_BUILD_DIR),$(PATCH_DIR)/rt2x00,rt2x00/)
 	$(call Quilt/RefreshDir,$(PKG_BUILD_DIR),$(PATCH_DIR)/mwl,mwl/)
 	$(call Quilt/RefreshDir,$(PKG_BUILD_DIR),$(PATCH_DIR)/brcm,brcm/)

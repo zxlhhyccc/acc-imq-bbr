@@ -1,0 +1,14 @@
+--- a/nss_core.c
++++ b/nss_core.c
+@@ -2679,7 +2679,11 @@ static inline bool nss_core_skb_can_reuse(struct nss_ctx_instance *nss_ctx,
+ 	if (unlikely(irqs_disabled()))
+ 		return false;
+ 
++	#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 14, 0))
++	if (unlikely(skb_shinfo(nbuf)->tx_flags & SKBTX_DEV_ZEROCOPY))
++	#else
+	if (unlikely(skb_shinfo(nbuf)->flags & SKBFL_ZEROCOPY_ENABLE))
++	#endif
+ 		return false;
+ 
+ 	if (unlikely(skb_is_nonlinear(nbuf)))

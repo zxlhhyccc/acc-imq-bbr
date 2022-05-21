@@ -2,7 +2,7 @@
 
 START=99
 
-. "${IPKG_INSTROOT}/lib/functions/system.sh"
+. /lib/functions/system.sh
 
 boot() {
 	case $(board_name) in
