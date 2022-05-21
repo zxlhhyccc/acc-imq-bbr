@@ -1,0 +1,14 @@
+diff --git a/image/Makefile b/image/Makefile
+index ae6831c..e49b5b4 100644
+--- a/image/Makefile
++++ b/image/Makefile
+@@ -421,7 +421,8 @@ endef
+ define Device/phicomm_k3
+   DEVICE_VENDOR := PHICOMM
+   DEVICE_MODEL := K3
+-  DEVICE_PACKAGES := $(BRCMFMAC_4366C0) $(USB3_PACKAGES)
++  DEVICE_PACKAGES := $(BRCMFMAC_4366C0) $(USB3_PACKAGES) \
++	-brcmfmac-firmware-4366c0-pcie brcmfmac-firmware-4366c0-pcie-vendor
+   IMAGES := trx
+ endef
+ TARGET_DEVICES += phicomm_k3
