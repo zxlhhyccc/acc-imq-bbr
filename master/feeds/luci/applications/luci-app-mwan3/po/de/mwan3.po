@@ -1,14 +1,14 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-06-18 19:32+0000\n"
-"Last-Translator: Martin <martin.hubner@web.de>\n"
+"PO-Revision-Date: 2022-04-29 10:18+0000\n"
+"Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/openwrt/"
 "luciapplicationsmwan3/de/>\n"
 "Language: de\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.7\n"
+"X-Generator: Weblate 4.12.1-dev\n"
 
 #: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/interface.js:186
 #: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/interface.js:202
@@ -41,11 +41,10 @@ msgstr "%d Minuten"
 #: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/interface.js:175
 #: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/interface.js:191
 #: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/interface.js:213
-#, fuzzy
 msgid "%d second"
 msgid_plural "%d seconds"
 msgstr[0] "%d Sekunde"
-msgstr[1] "%d Sekunde"
+msgstr[1] "%d Sekunden"
 
 #: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/interface.js:176
 #: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/interface.js:177
@@ -97,7 +96,7 @@ msgstr ""
 msgid "-- Interface Selection --"
 msgstr ""
 
-#: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/rule.js:84
+#: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/rule.js:85
 msgid "-- Please choose --"
 msgstr "-- Bitte auswählen --"
 
@@ -139,7 +138,7 @@ msgstr "Prüfen der Routing-Tabelle"
 
 #: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/status/overview.js:95
 msgid "Collecting data ..."
-msgstr ""
+msgstr "Ermittle Daten..."
 
 #: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/notify.js:18
 msgid "Contents have been saved."
@@ -150,14 +149,15 @@ msgid "Critical"
 msgstr "Kritisch"
 
 #: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/globals.js:32
+#, fuzzy
 msgid "Debug"
-msgstr "Debug"
+msgstr "Debuggen"
 
-#: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/rule.js:51
+#: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/rule.js:61
 msgid "Destination address"
 msgstr "Zieladresse"
 
-#: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/rule.js:55
+#: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/rule.js:65
 msgid "Destination port"
 msgstr "Zielport"
 
@@ -194,7 +194,7 @@ msgstr "Aktiviere SSL-Tracking"
 msgid "Enabled"
 msgstr "Aktiviert"
 
-#: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/rule.js:93
+#: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/rule.js:94
 msgid ""
 "Enables firewall rule logging (global mwan3 logging must also be enabled)"
 msgstr ""
@@ -269,7 +269,7 @@ msgstr "Hotplug ifdown"
 msgid "Hotplug ifup"
 msgstr "Hotplug ifup"
 
-#: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/rule.js:82
+#: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/rule.js:83
 msgid "IPset"
 msgstr "IP-Set"
 
@@ -358,7 +358,7 @@ msgid ""
 msgstr ""
 
 #: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/globals.js:19
-#: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/rule.js:92
+#: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/rule.js:93
 msgid "Logging"
 msgstr "Protokollierung"
 
@@ -370,8 +370,8 @@ msgstr "Protokollierungsstufe"
 msgid "Max TTL"
 msgstr "Maximale TTL"
 
-#: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/rule.js:47
-#: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/rule.js:56
+#: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/rule.js:57
+#: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/rule.js:66
 msgid ""
 "May be entered as a single or multiple port(s) (eg \"22\" or \"80,443\") or "
 "as a portrange (eg \"1024:2048\") without quotes"
@@ -463,7 +463,7 @@ msgid ""
 "config/network."
 msgstr ""
 
-#: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/rule.js:83
+#: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/rule.js:84
 msgid ""
 "Name of IPset rule. Requires IPset rule in /etc/dnsmasq.conf (eg \"ipset=/"
 "youtube.com/youtube\")"
@@ -582,11 +582,11 @@ msgstr ""
 msgid "Policy"
 msgstr "Standardregel"
 
-#: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/rule.js:96
+#: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/rule.js:97
 msgid "Policy assigned"
 msgstr "Richtlinie, zugewiesen"
 
-#: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/rule.js:60
+#: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/rule.js:42
 msgid "Protocol"
 msgstr "Protokoll"
 
@@ -647,11 +647,11 @@ msgid "Seconds. Acceptable values: 1-1000000. Defaults to 600 if not set"
 msgstr ""
 "Sekunden. Gültige Werte: 1-1000000. Standard bei 600 falls nicht gesetzt"
 
-#: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/rule.js:42
+#: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/rule.js:52
 msgid "Source address"
 msgstr "Quelladresse"
 
-#: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/rule.js:46
+#: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/rule.js:56
 msgid "Source port"
 msgstr "Quellport"
 
@@ -670,8 +670,8 @@ msgstr "Sticky"
 msgid "Sticky timeout"
 msgstr "Sticky-Timeout"
 
-#: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/rule.js:43
-#: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/rule.js:52
+#: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/rule.js:53
+#: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/rule.js:62
 msgid "Supports CIDR notation (eg \"192.168.100.0/24\") without quotes"
 msgstr ""
 "Unterstützt CIDR-Schreibweise (z.B. \"192.168.100.0/24\") ohne "
@@ -762,7 +762,7 @@ msgstr "Fehlerbehebung"
 
 #: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/notify.js:20
 msgid "Unable to save contents: %s"
-msgstr ""
+msgstr "Inhalt kann nicht gespeichert werden: %s"
 
 #: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/status/overview.js:33
 #: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/status/overview.js:47
@@ -771,7 +771,7 @@ msgstr ""
 msgid "Uptime"
 msgstr "Laufzeit"
 
-#: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/rule.js:61
+#: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/rule.js:43
 msgid "View the content of /etc/protocols for protocol description"
 msgstr "Schaue in der Datei /etc/protocols für Protokollbeschreibung mach"
 
@@ -791,7 +791,7 @@ msgid "Yes"
 msgstr "Ja"
 
 #: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/policy.js:41
-#: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/rule.js:103
+#: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/rule.js:104
 msgid "blackhole (drop)"
 msgstr "blackhole (drop)"
 
@@ -800,7 +800,7 @@ msgid "connected (mwan3)"
 msgstr "verbunden (mwan3)"
 
 #: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/policy.js:42
-#: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/rule.js:104
+#: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/rule.js:105
 msgid "default (use main routing table)"
 msgstr "default (Haupt-Routing-Tabelle wird benutzt)"
 
@@ -817,7 +817,7 @@ msgid "ifup (netifd)"
 msgstr "ifup (netifd)"
 
 #: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/policy.js:40
-#: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/rule.js:102
+#: applications/luci-app-mwan3/htdocs/luci-static/resources/view/mwan3/network/rule.js:103
 msgid "unreachable (reject)"
 msgstr "unerreichbar (rejectet)"
 

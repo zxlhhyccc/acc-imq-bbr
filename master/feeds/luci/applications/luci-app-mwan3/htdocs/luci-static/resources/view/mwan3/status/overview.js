@@ -21,30 +21,29 @@ function renderMwan3Status(status) {
 
 	var statusview = '';
 	for ( var iface in status.interfaces) {
-	for ( var family in status.interfaces[iface]) {
 		var state = '';
 		var css = '';
 		var time = '';
 		var tname = '';
-		switch (status.interfaces[iface][family].status) {
+		switch (status.interfaces[iface].status) {
 			case 'online':
 				state = _('Online');
 				css = 'success';
-				time = '%t'.format(status.interfaces[iface][family].online);
+				time = '%t'.format(status.interfaces[iface].online);
 				tname = _('Uptime');
 				css = 'success';
 				break;
 			case 'offline':
 				state = _('Offline');
 				css = 'danger';
-				time = '%t'.format(status.interfaces[iface][family].offline);
+				time = '%t'.format(status.interfaces[iface].offline);
 				tname = _('Downtime');
 				break;
 			case 'notracking':
 				state = _('No Tracking');
-				if ((status.interfaces[iface][family].uptime) > 0) {
+				if ((status.interfaces[iface].uptime) > 0) {
 					css = 'success';
-					time = '%t'.format(status.interfaces[iface][family].uptime);
+					time = '%t'.format(status.interfaces[iface].uptime);
 					tname = _('Uptime');
 				}
 				else {
@@ -62,14 +61,13 @@ function renderMwan3Status(status) {
 		}
 
 		statusview += '<div class="alert-message %h">'.format(css);
-		statusview += '<div><strong>%h:&#160;</strong>%h</div>'.format(_('Interface'), iface + '(' + family + ')');
+		statusview += '<div><strong>%h:&#160;</strong>%h</div>'.format(_('Interface'), iface);
 		statusview += '<div><strong>%h:&#160;</strong>%h</div>'.format(_('Status'), state);
 
 		if (time)
 			statusview += '<div><strong>%h:&#160;</strong>%h</div>'.format(tname, time);
 
 		statusview += '</div>';
-	}
 	}
 
 	return statusview;

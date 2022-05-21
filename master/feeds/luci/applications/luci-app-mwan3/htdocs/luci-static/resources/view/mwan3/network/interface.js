@@ -39,8 +39,7 @@ return view.extend({
 		o.modalonly = true;
 
 		o = s.option(form.ListValue, 'family', _('Internet Protocol'));
-		o.default = '';
-		o.value('', _('IPv4 and IPv6'));
+		o.default = 'ipv4';
 		o.value('ipv4', _('IPv4'));
 		o.value('ipv6', _('IPv6'));
 		o.modalonly = true;
@@ -49,8 +48,6 @@ return view.extend({
 			_('This hostname or IP address will be pinged to determine if the link is up or down. Leave blank to assume interface is always online'));
 		o.datatype = 'host';
 		o.modalonly = true;
-		o.default = "gateway";
-		o.placeholder = "gateway";
 
 		o = s.option(form.ListValue, 'track_method', _('Tracking method'));
 		o.default = 'ping';
@@ -257,8 +254,6 @@ return view.extend({
 
 		o = s.option(form.DynamicList, 'flush_conntrack', _('Flush conntrack table'),
 			_('Flush global firewall conntrack table on interface events'));
-		o.default='';
-		o.value('', _('Disabled'));
 		o.value('ifup', _('ifup (netifd)'));
 		o.value('ifdown', _('ifdown (netifd)'));
 		o.value('connected', _('connected (mwan3)'));
