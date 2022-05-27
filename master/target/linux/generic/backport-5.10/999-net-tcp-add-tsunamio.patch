@@ -1,7 +1,7 @@
 diff -ruaN a/net/ipv4/Kconfig b/net/ipv4/Kconfig
 --- a/net/ipv4/Kconfig	2020-12-21 20:27:07.000000000 +0800
 +++ b/net/ipv4/Kconfig	2021-01-01 01:59:50.362681282 +0800
-@@ -688,6 +688,15 @@ config TCP_CONG_TSUNAMI
+@@ -687,6 +687,15 @@ config TCP_CONG_TSUNAMI
            Originally introduced by dog250 & cx9208.
            Same as BBR, requires the fq ("Fair Queue") pacing packet scheduler.
  
@@ -17,7 +17,7 @@ diff -ruaN a/net/ipv4/Kconfig b/net/ipv4/Kconfig
  config TCP_CONG_BBRPLUS
          tristate "BBRPLUS TCP"
          default m
-@@ -740,6 +749,9 @@ choice
+@@ -739,6 +748,9 @@ choice
          config DEFAULT_TSUNAMI
                  bool "TSUNAMI" if TCP_CONG_TSUNAMI=y
  
@@ -27,7 +27,7 @@ diff -ruaN a/net/ipv4/Kconfig b/net/ipv4/Kconfig
          config DEFAULT_BBRPLUS
                  bool "BBRPLUS" if TCP_CONG_BBRPLUS=y
  
-@@ -769,6 +781,7 @@ config DEFAULT_TCP_CONG
+@@ -768,6 +780,7 @@ config DEFAULT_TCP_CONG
  	default "bbr" if DEFAULT_BBR
  	default "nanqinlang" if DEFAULT_NANQINLANG
  	default "tsunami" if DEFAULT_TSUNAMI
@@ -38,7 +38,7 @@ diff -ruaN a/net/ipv4/Kconfig b/net/ipv4/Kconfig
 diff -ruaN a/net/ipv4/Makefile b/net/ipv4/Makefile
 --- a/net/ipv4/Makefile	2020-12-21 20:27:07.000000000 +0800
 +++ b/net/ipv4/Makefile	2021-01-01 01:58:22.742234049 +0800
-@@ -47,6 +47,7 @@
+@@ -48,6 +48,7 @@
  obj-$(CONFIG_TCP_CONG_BBR) += tcp_bbr.o
  obj-$(CONFIG_TCP_CONG_NANQINLANG) += tcp_nanqinlang.o
  obj-$(CONFIG_TCP_CONG_TSUNAMI) += tcp_tsunami.o
