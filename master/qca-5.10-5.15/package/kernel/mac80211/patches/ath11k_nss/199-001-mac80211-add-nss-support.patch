@@ -53,10 +53,11 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  };
  
  /**
-@@ -1791,6 +1807,16 @@ struct ieee80211_vif *wdev_to_ieee80211_
+@@ -1790,6 +1806,16 @@ struct ieee80211_vif *wdev_to_ieee80211_vif(struct wireless_dev *wdev);
+  */
  struct wireless_dev *ieee80211_vif_to_wdev(struct ieee80211_vif *vif);
  
- /**
++/**
 + * ieee80211_vif_to_wdev_relaxed - return a wdev struct from a vif
 + * @vif: the vif to get the wdev for
 + *
@@ -66,28 +67,27 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
 + */
 +struct wireless_dev *ieee80211_vif_to_wdev_relaxed(struct ieee80211_vif *vif);
 +
-+/**
+ /**
   * enum ieee80211_key_flags - key flags
   *
-  * These flags are used for communication about keys between the driver
-@@ -2420,6 +2446,8 @@ struct ieee80211_txq {
-  *	usage and 802.11 frames with %RX_FLAG_ONLY_MONITOR set for monitor to
-  *	the stack.
+@@ -2423,6 +2449,8 @@ struct ieee80211_txq {
+  * @IEEE80211_HW_DETECTS_COLOR_COLLISION: HW/driver has support for BSS color
+  *	collision detection and doesn't need it in software.
   *
 + *  @IEEE80211_HW_SUPPORTS_NSS_OFFLOAD: Hardware/driver supports NSS offload
 + *
   * @NUM_IEEE80211_HW_FLAGS: number of hardware flags, used for sizing arrays
   */
  enum ieee80211_hw_flags {
-@@ -2475,6 +2503,7 @@ enum ieee80211_hw_flags {
- 	IEEE80211_HW_SUPPORTS_TX_ENCAP_OFFLOAD,
+@@ -2479,6 +2507,7 @@ enum ieee80211_hw_flags {
  	IEEE80211_HW_SUPPORTS_RX_DECAP_OFFLOAD,
  	IEEE80211_HW_SUPPORTS_CONC_MON_RX_DECAP,
+ 	IEEE80211_HW_DETECTS_COLOR_COLLISION,
 +	IEEE80211_HW_SUPPORTS_NSS_OFFLOAD,
  
  	/* keep last, obviously */
  	NUM_IEEE80211_HW_FLAGS
-@@ -3468,6 +3497,10 @@ struct ieee80211_prep_tx_info {
+@@ -3472,6 +3501,10 @@ struct ieee80211_prep_tx_info {
   *	of the bss parameters has changed when a call is made. The callback
   *	can sleep.
   *
@@ -98,7 +98,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
   * @prepare_multicast: Prepare for multicast filter configuration.
   *	This callback is optional, and its return value is passed
   *	to configure_filter(). This callback must be atomic.
-@@ -3976,6 +4009,9 @@ struct ieee80211_ops {
+@@ -3980,6 +4013,9 @@ struct ieee80211_ops {
  				 struct ieee80211_vif *vif,
  				 struct ieee80211_bss_conf *info,
  				 u32 changed);
@@ -108,7 +108,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  
  	int (*start_ap)(struct ieee80211_hw *hw, struct ieee80211_vif *vif);
  	void (*stop_ap)(struct ieee80211_hw *hw, struct ieee80211_vif *vif);
-@@ -4266,7 +4302,7 @@ struct ieee80211_ops {
+@@ -4270,7 +4306,7 @@ struct ieee80211_ops {
  	int (*reset_tid_config)(struct ieee80211_hw *hw,
  				struct ieee80211_vif *vif,
  				struct ieee80211_sta *sta, u8 tids);
@@ -119,10 +119,10 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  			      struct ieee80211_sta *sta, bool enabled);
 --- a/net/mac80211/debugfs.c
 +++ b/net/mac80211/debugfs.c
-@@ -504,6 +504,7 @@ static const char *hw_flag_names[] = {
- 	FLAG(SUPPORTS_TX_ENCAP_OFFLOAD),
+@@ -505,6 +505,7 @@ static const char *hw_flag_names[] = {
  	FLAG(SUPPORTS_RX_DECAP_OFFLOAD),
  	FLAG(SUPPORTS_CONC_MON_RX_DECAP),
+ 	FLAG(DETECTS_COLOR_COLLISION),
 +	FLAG(SUPPORTS_NSS_OFFLOAD),
  #undef FLAG
  };
