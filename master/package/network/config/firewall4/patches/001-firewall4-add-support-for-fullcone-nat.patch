@@ -17,6 +17,19 @@ Renew: ZiMing Mo <msylgj@immortalwrt.org>
  4 files changed, 53 insertions(+), 3 deletions(-)
  create mode 100644 root/usr/share/firewall4/templates/zone-fullcone.uc
 
+diff --git a/Makefile b/Makefile
+index 7109af7..ee78d72 100644
+--- a/Makefile
++++ b/Makefile
+@@ -23,7 +23,7 @@ define Package/firewall4
+   TITLE:=OpenWrt 4th gen firewall
+   DEPENDS:= \
+ 	+kmod-nft-core +kmod-nft-fib +kmod-nft-offload \
+-	+kmod-nft-nat +kmod-nft-nat6 \
++	+kmod-nft-nat +kmod-nft-nat6 +kmod-nft-fullcone \
+ 	+nftables-json \
+ 	+ucode +ucode-mod-fs +ucode-mod-ubus +ucode-mod-uci
+   EXTRA_DEPENDS:=ucode (>= 2022-03-22)
 --- a/root/etc/config/firewall
 +++ b/root/etc/config/firewall
 @@ -5,6 +5,7 @@ config defaults
