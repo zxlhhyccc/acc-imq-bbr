@@ -2,26 +2,7 @@ diff --git a/modules/crypto.mk b/modules/crypto.mk
 index 6fd53f6..f6054d7 100644
 --- a/modules/crypto.mk
 +++ b/modules/crypto.mk
-@@ -101,6 +101,18 @@ endef
- $(eval $(call KernelPackage,crypto-ccm))
- 
- 
-+define KernelPackage/crypto-chacha20poly1305
-+  TITLE:=ChaCha20-Poly1305 AEAD support, RFC7539 (used by strongSwan IPsec VPN)
-+  DEPENDS:=+kmod-crypto-aead +kmod-crypto-manager
-+  KCONFIG:=CONFIG_CRYPTO_CHACHA20POLY1305
-+  FILES:=$(LINUX_DIR)/crypto/chacha20poly1305.ko
-+  AUTOLOAD:=$(call AutoLoad,09,chacha20poly1305)
-+  $(call AddDepends/crypto)
-+endef
-+
-+$(eval $(call KernelPackage,crypto-chacha20poly1305))
-+
-+
- define KernelPackage/crypto-cmac
-   TITLE:=Support for Cipher-based Message Authentication Code (CMAC)
-   DEPENDS:=+kmod-crypto-hash
-@@ -1004,3 +1016,19 @@ endef
+@@ -1016,3 +1028,19 @@ endef
  
  $(eval $(call KernelPackage,crypto-xts))
  
