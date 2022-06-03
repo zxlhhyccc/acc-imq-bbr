@@ -2,11 +2,13 @@ diff --git a/files/dhcp.conf b/files/dhcp.conf
 index 8c42ef7..49ff5fe 100644
 --- a/files/dhcp.conf
 +++ b/files/dhcp.conf
-@@ -20,6 +20,10 @@ config dnsmasq
+@@ -20,6 +20,12 @@ config dnsmasq
  	#list notinterface	lo
  	#list bogusnxdomain     '64.94.110.11'
  	option localservice	1  # disable to allow DNS requests from non-local subnets
 +	option filter_aaaa	1
++	option cachesize	8000
++	option mini_ttl		3600
 +	option filter_https	1
 +	option filter_unknown	1
 +	option dns_redirect	1
