@@ -1,5 +1,7 @@
 diff --git a/Config.in b/Config.in
 index bc2f058..3358bf8 100644
+--- a/Config.in
++++ b/Config.in
 @@ -4,7 +4,7 @@ comment "Build Options"
  
  config OPENSSL_OPTIMIZE_SPEED
