@@ -1,7 +1,7 @@
 --- a/net/netfilter/nf_flow_table_ip.c
 +++ b/net/netfilter/nf_flow_table_ip.c
-@@ -229,6 +229,16 @@ static bool nf_flow_exceeds_mtu(const struct sk_buff *skb, unsigned int mtu)
- 	return true;
+@@ -229,6 +229,16 @@ static bool nf_flow_exceeds_mtu(const st
+ 	return dst_check(tuple->dst_cache, tuple->dst_cookie);
  }
  
 +static int nf_flow_offload_dst_check(struct dst_entry *dst)
@@ -17,4 +17,3 @@
  static unsigned int nf_flow_xmit_xfrm(struct sk_buff *skb,
  				      const struct nf_hook_state *state,
  				      struct dst_entry *dst)
- 

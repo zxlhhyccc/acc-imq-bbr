@@ -960,7 +960,7 @@
 +MODULE_ALIAS_RTNL_LINK("imq");
 --- a/drivers/net/Kconfig
 +++ b/drivers/net/Kconfig
-@@ -339,6 +339,125 @@ config RIONET_RX_SIZE
+@@ -338,6 +338,125 @@ config RIONET_RX_SIZE
  	depends on RIONET
  	default "128"
  
