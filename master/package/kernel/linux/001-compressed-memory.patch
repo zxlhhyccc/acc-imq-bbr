@@ -2,7 +2,7 @@ diff --git a/modules/crypto.mk b/modules/crypto.mk
 index 6fd53f6..f6054d7 100644
 --- a/modules/crypto.mk
 +++ b/modules/crypto.mk
-@@ -1016,3 +1028,19 @@ endef
+@@ -974,3 +974,19 @@ endef
  
  $(eval $(call KernelPackage,crypto-xts))
  
