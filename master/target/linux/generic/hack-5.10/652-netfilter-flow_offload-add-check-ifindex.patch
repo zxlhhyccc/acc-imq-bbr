@@ -1,6 +1,6 @@
 --- a/net/netfilter/nf_flow_table_ip.c
 +++ b/net/netfilter/nf_flow_table_ip.c
-@@ -229,6 +229,16 @@ static bool nf_flow_exceeds_mtu(const st
+@@ -238,6 +238,16 @@ static bool nf_flow_exceeds_mtu(const st
  	return dst_check(tuple->dst_cache, tuple->dst_cookie);
  }
  
