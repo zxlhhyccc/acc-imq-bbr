@@ -127,3 +127,43 @@ diff -ur a/ecm_types.h b/ecm_types.h
   * This macro converts from Linux IPv6 address (host order) to ECM ip_addr_t
   */
  #define ECM_HIN6_ADDR_TO_IP_ADDR(ipaddrt, hin6) \
+diff --git a/frontends/nss/ecm_nss_multicast_ipv4.c b/frontends/nss/ecm_nss_multicast_ipv4.c
+index a3dcb79..9418593 100644
+--- a/frontends/nss/ecm_nss_multicast_ipv4.c
++++ b/frontends/nss/ecm_nss_multicast_ipv4.c
+@@ -2736,14 +2736,9 @@ find_next_tuple:
+  */
+ bool ecm_nss_multicast_ipv4_debugfs_init(struct dentry *dentry)
+ {
+-	struct dentry *multicast_dentry;
+ 
+-	multicast_dentry = debugfs_create_u32("multicast_accelerated_count", S_IRUGO, dentry,
++	debugfs_create_u32("multicast_accelerated_count", S_IRUGO, dentry,
+ 						&ecm_nss_multicast_ipv4_accelerated_count);
+-	if (!multicast_dentry) {
+-		DEBUG_ERROR("Failed to create ecm nss ipv4 multicast_accelerated_count file in debugfs\n");
+-		return false;
+-	}
+ 
+ 	return true;
+ }
+diff --git a/frontends/nss/ecm_nss_multicast_ipv6.c b/frontends/nss/ecm_nss_multicast_ipv6.c
+index 7c027f3..843de85 100644
+--- a/frontends/nss/ecm_nss_multicast_ipv6.c
++++ b/frontends/nss/ecm_nss_multicast_ipv6.c
+@@ -2672,14 +2672,9 @@ static void ecm_nss_multicast_ipv6_mfc_update_event_callback(struct in6_addr *gr
+  */
+ bool ecm_nss_multicast_ipv6_debugfs_init(struct dentry *dentry)
+ {
+-	struct dentry *multicast_dentry;
+ 
+-	multicast_dentry = debugfs_create_u32("multicast_accelerated_count", S_IRUGO, dentry,
++	debugfs_create_u32("multicast_accelerated_count", S_IRUGO, dentry,
+ 						&ecm_nss_multicast_ipv6_accelerated_count);
+-	if (!multicast_dentry) {
+-		DEBUG_ERROR("Failed to create ecm nss ipv6 multicast_accelerated_count file in debugfs\n");
+-		return false;
+-	}
+ 
+ 	return true;
+ }

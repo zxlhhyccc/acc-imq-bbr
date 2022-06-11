@@ -50,10 +50,7 @@ define Build/InstallDev
 	$(CP) $(PKG_BUILD_DIR)/exports/* $(1)/usr/include/qca-nss-drv/
 endef
 
-EXTRA_CFLAGS+= -I$(STAGING_DIR)/usr/include/qca-nss-gmac \
-			   -I$(STAGING_DIR)/usr/include/qca-nss-dp \
-			   -I$(STAGING_DIR)/usr/include/qca-ssdk \
-			   -Wno-unused-variable
+EXTRA_CFLAGS+= -I$(STAGING_DIR)/usr/include/qca-nss-gmac -I$(STAGING_DIR)/usr/include/qca-nss-dp -I$(STAGING_DIR)/usr/include/qca-ssdk -Wno-unused-variable
 
 ifneq (, $(findstring $(CONFIG_TARGET_BOARD), "ipq807x" "ipq60xx"))
 EXTRA_CFLAGS+= -DNSS_MEM_PROFILE_MEDIUM
@@ -68,6 +65,9 @@ DRV_MAKE_OPTS:=
 ifeq ($(LOW_MEM_PROFILE_MAKE_OPTS),y)
 DRV_MAKE_OPTS+= \
 	NSS_DRV_C2C_ENABLE=y \
+	NSS_DRV_BRIDGE_ENABLE=y \
+	NSS_DRV_IPV4_ENABLE=y \
+	NSS_DRV_IPV6_ENABLE=y \
 	NSS_DRV_CAPWAP_ENABLE=y \
 	NSS_DRV_CLMAP_ENABLE=y \
 	NSS_DRV_CRYPTO_ENABLE=y \

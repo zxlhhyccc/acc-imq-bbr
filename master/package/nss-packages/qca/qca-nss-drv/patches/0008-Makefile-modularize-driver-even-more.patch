@@ -12,6 +12,8 @@ Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
  nss_init.c        |  4 ++++
  3 files changed, 48 insertions(+), 18 deletions(-)
 
+diff --git a/Makefile b/Makefile
+index f5c4b90..0194dbd 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -39,35 +39,55 @@ qca-nss-drv-objs := \
@@ -88,9 +90,11 @@ Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
  ifneq "$(NSS_DRV_BRIDGE_ENABLE)" "n"
  ccflags-y += -DNSS_DRV_BRIDGE_ENABLE
  qca-nss-drv-objs += \
+diff --git a/nss_hal/nss_hal.c b/nss_hal/nss_hal.c
+index 7e9a044..c0051e4 100644
 --- a/nss_hal/nss_hal.c
 +++ b/nss_hal/nss_hal.c
-@@ -461,10 +461,12 @@ int nss_hal_probe(struct platform_device
+@@ -461,10 +461,12 @@ int nss_hal_probe(struct platform_device *nss_dev)
  	}
  #endif
  
@@ -103,7 +107,7 @@ Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
  
  #ifdef NSS_DRV_PPE_ENABLE
  	if (npd->ppe_enabled == NSS_FEATURE_ENABLED) {
-@@ -559,6 +561,7 @@ int nss_hal_probe(struct platform_device
+@@ -559,6 +561,7 @@ int nss_hal_probe(struct platform_device *nss_dev)
  	}
  #endif
  
@@ -111,7 +115,7 @@ Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
  	if (npd->wifioffload_enabled == NSS_FEATURE_ENABLED) {
  		nss_top->wifi_handler_id = nss_dev->id;
  		nss_top->dynamic_interface_table[NSS_DYNAMIC_INTERFACE_TYPE_VAP] = nss_dev->id;
-@@ -586,6 +589,7 @@ int nss_hal_probe(struct platform_device
+@@ -586,6 +589,7 @@ int nss_hal_probe(struct platform_device *nss_dev)
  		 */
  		nss_wifili_thread_scheme_db_init(nss_dev->id);
  	}
@@ -119,7 +123,7 @@ Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
  
  #ifdef NSS_DRV_OAM_ENABLE
  	if (npd->oam_enabled == NSS_FEATURE_ENABLED) {
-@@ -602,11 +606,13 @@ int nss_hal_probe(struct platform_device
+@@ -602,11 +606,13 @@ int nss_hal_probe(struct platform_device *nss_dev)
  	}
  #endif
  
@@ -133,6 +137,8 @@ Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
  
  #ifdef NSS_DRV_QVPN_ENABLE
  #if defined(NSS_HAL_IPQ807x_SUPPORT) || defined(NSS_HAL_IPQ60XX_SUPPORT)
+diff --git a/nss_init.c b/nss_init.c
+index ebd2a12..40e9351 100644
 --- a/nss_init.c
 +++ b/nss_init.c
 @@ -775,10 +775,12 @@ static int __init nss_init(void)
@@ -161,3 +167,5 @@ Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
  
  	/*
  	 * Unregister ipv4/6 specific sysctl and free allocated to connection tables
+-- 
+2.34.1

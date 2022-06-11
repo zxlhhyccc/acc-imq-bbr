@@ -1,0 +1,19 @@
+--- a/mc_osdep.h
++++ b/mc_osdep.h
+@@ -24,7 +24,7 @@
+ #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 0, 0))
+ static inline int os_br_pass_frame_up(struct sk_buff *skb)
+ {
+-	return br_pass_frame_up(skb);
++	return os_br_pass_frame_up(skb);
+ }
+ #else
+ static inline int os_br_pass_frame_up(struct sk_buff *skb)
+@@ -189,7 +189,6 @@ static inline struct net_bridge_port *mc
+ 
+ 	dst = os_br_fdb_get((struct net_bridge *)br, eth_hdr(*skb)->h_dest);
+ 
+-	if (dst && !dst->is_local)
+ 		return dst->dst;
+ 
+ 	return NULL;

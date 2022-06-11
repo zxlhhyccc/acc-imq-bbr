@@ -1,0 +1,40 @@
+diff --git a/mc_snooping.c b/mc_snooping.c
+index 378b0f8..4ed5258 100644
+--- a/mc_snooping.c
++++ b/mc_snooping.c
+@@ -3457,24 +3457,6 @@ static const struct file_operations mc_proc_snooper_fops = {
+         .llseek         = seq_lseek,
+         .release        = single_release,
+ };
+-
+-/* mc_proc_create_snooper_entry
+- *	create proc entry for information show
+- */
+-int mc_proc_create_snooper_entry(void) {
+-
+-	mc_proc_root = proc_mkdir(MCS_PROC_ROOT_NAME, init_net.proc_net);
+-	if (mc_proc_root) {
+-		mc_proc_inst_entry = proc_create(MCS_PROC_INST_NAME, 0444, mc_proc_root, &mc_proc_snooper_fops );
+-		if(!mc_proc_inst_entry) {
+-			printk(KERN_INFO "Error creating stat proc entry");
+-			return -ENOMEM;
+-		}
+-
+-        }
+-
+-	return 0;
+-}
+ #endif
+ 
+ /* mc_snooping_init
+@@ -3485,10 +3467,6 @@ int mc_snooping_init(void)
+ 	spin_lock_init(&g_mcs_lock);
+ 	register_netdevice_notifier(&mc_dev_notifier);
+ 
+-#ifdef CONFIG_PROC_FS
+-	mc_proc_create_snooper_entry();
+-#endif
+-
+ 	return 0;
+ }
+ 
