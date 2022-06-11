@@ -14,11 +14,12 @@ Signed-off-by: Seevalamuthu Mariappan <seevalam@codeaurora.org>
 
 --- a/drivers/net/wireless/ath/ath11k/nss.c
 +++ b/drivers/net/wireless/ath/ath11k/nss.c
-@@ -2,6 +2,7 @@
+@@ -2,6 +2,8 @@
  /*
   * Copyright (c) 2020 The Linux Foundation. All rights reserved.
   */
 +#include <linux/of.h>
++#include <linux/skiplist.h>
  
  #include "mac.h"
  #include "nss.h"
