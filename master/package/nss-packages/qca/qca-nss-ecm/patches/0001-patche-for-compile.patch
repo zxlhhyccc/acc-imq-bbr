@@ -238,7 +238,7 @@ Signed-off-by: boos4721 <3.1415926535boos@gmail.com>
  }
 --- a/ecm_classifier_emesh.c
 +++ b/ecm_classifier_emesh.c
-@@ -1320,25 +1320,14 @@ int ecm_classifier_emesh_sawf_init(struc
+@@ -1325,25 +1325,14 @@ int ecm_classifier_emesh_sawf_init(struc
  		return -1;
  	}
  
@@ -248,7 +248,7 @@ Signed-off-by: boos4721 <3.1415926535boos@gmail.com>
 -		debugfs_remove_recursive(ecm_classifier_emesh_sawf_dentry);
 -		return -1;
 -	}
-+	debugfs_create_u32("enabled", S_IRUGO | S_IWUSR, ecm_classifier_emesh_dentry,
++	debugfs_create_u32("enabled", S_IRUGO | S_IWUSR, ecm_classifier_emesh_sawf_dentry,
 +				(u32 *)&ecm_classifier_emesh_enabled);
  
 -	if (!debugfs_create_u32("latency_config_enabled", S_IRUGO | S_IWUSR, ecm_classifier_emesh_sawf_dentry,
@@ -257,7 +257,7 @@ Signed-off-by: boos4721 <3.1415926535boos@gmail.com>
 -		debugfs_remove_recursive(ecm_classifier_emesh_sawf_dentry);
 -		return -1;
 -	}
-+	debugfs_create_u32("latency_config_enabled", S_IRUGO | S_IWUSR, ecm_classifier_emesh_dentry,
++	debugfs_create_u32("latency_config_enabled", S_IRUGO | S_IWUSR, ecm_classifier_emesh_sawf_dentry,
 +				(u32 *)&ecm_classifier_emesh_latency_config_enabled);
  
 -	if (!debugfs_create_u32("sawf_enabled", S_IRUGO | S_IWUSR, ecm_classifier_emesh_sawf_dentry,

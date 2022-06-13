@@ -4,19 +4,19 @@ index d5d26f5..962f8f5 100644
 +++ b/Makefile
 @@ -16,9 +16,15 @@ PKG_NAME:=shadowsocks-libev
  PKG_VERSION:=3.3.5
- PKG_RELEASE:=4
+ PKG_RELEASE:=5
  
-+# PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-+# PKG_SOURCE_URL:=https://github.com/shadowsocks/shadowsocks-libev/releases/download/v$(PKG_VERSION)
-+# PKG_HASH:=cfc8eded35360f4b67e18dc447b0c00cddb29cc57a3cec48b135e5fb87433488
++#PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
++#PKG_SOURCE_URL:=https://github.com/shadowsocks/shadowsocks-libev/releases/download/v$(PKG_VERSION)
++#PKG_HASH:=cfc8eded35360f4b67e18dc447b0c00cddb29cc57a3cec48b135e5fb87433488
 +
 +PKG_SOURCE_PROTO:=git
  PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 -PKG_SOURCE_URL:=https://github.com/shadowsocks/shadowsocks-libev/releases/download/v$(PKG_VERSION)
 -PKG_HASH:=cfc8eded35360f4b67e18dc447b0c00cddb29cc57a3cec48b135e5fb87433488
 +PKG_SOURCE_URL:=https://github.com/shadowsocks/shadowsocks-libev.git
-+PKG_SOURCE_VERSION:=b9117559000e1bdee4a84383c537ca5b4b7fe8dc
-+PKG_MIRROR_HASH:=32d7ef487237cebc8b8b8d519c0f7f821eb663aff4b3fd0dd98558c8330b9828
++PKG_SOURCE_VERSION:=01dd7df1da98710a619a4a853f6f357dfc46f60f
++PKG_MIRROR_HASH:=f5b9807c3a6f4d6d09d5f906e3b2e1233800bcbac00b7e8e7df1806144c48cbd
  
  PKG_MAINTAINER:=Yousong Zhou <yszhou4tech@gmail.com>
  

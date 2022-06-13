@@ -1,0 +1,896 @@
+diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
+index c2cef7ba2..e44d7cb8b 100644
+--- a/drivers/net/bonding/bond_3ad.c
++++ b/drivers/net/bonding/bond_3ad.c
+@@ -111,6 +111,40 @@ static void ad_marker_response_received(struct bond_marker *marker,
+ 					struct port *port);
+ static void ad_update_actor_keys(struct port *port, bool reset);
+ 
++/* QCA NSS ECM support - Start */
++struct bond_cb __rcu *bond_cb;
++
++int bond_register_cb(struct bond_cb *cb)
++{
++	struct bond_cb *lag_cb;
++
++	rcu_read_lock();
++	lag_cb = kzalloc(sizeof(*lag_cb), GFP_ATOMIC | __GFP_NOWARN);
++	if (!lag_cb) {
++		rcu_read_unlock();
++		return -1;
++	}
++
++	memcpy((void *)lag_cb, (void *)cb, sizeof(*cb));
++	rcu_assign_pointer(bond_cb, lag_cb);
++	rcu_read_unlock();
++	return 0;
++}
++EXPORT_SYMBOL(bond_register_cb);
++
++void bond_unregister_cb(void)
++{
++	struct bond_cb *lag_cb_main;
++
++	rcu_read_lock();
++	lag_cb_main = rcu_dereference(bond_cb);
++	kfree(lag_cb_main);
++	rcu_assign_pointer(bond_cb, NULL);
++	rcu_read_unlock();
++}
++EXPORT_SYMBOL(bond_unregister_cb);
++/* QCA NSS ECM support - Start */
++
+ 
+ /* ================= api to bonding and kernel code ================== */
+ 
+@@ -988,6 +1022,29 @@ static void ad_mux_machine(struct port *port, bool *update_slave_arr)
+ 				port->actor_oper_port_state |=
+ 				    LACP_STATE_SYNCHRONIZATION;
+ 			}
++
++			/* QCA NSS ECM support - Start */
++			/* Send a notificaton about change in state of this
++			 * port. We only want to handle case where port moves
++			 * from AD_MUX_COLLECTING_DISTRIBUTING ->
++			 * AD_MUX_ATTACHED.
++			 */
++			if (bond_slave_is_up(port->slave) &&
++			    (last_state == AD_MUX_COLLECTING_DISTRIBUTING)) {
++				struct bond_cb *lag_cb_main;
++
++				rcu_read_lock();
++				lag_cb_main = rcu_dereference(bond_cb);
++				if (lag_cb_main &&
++				    lag_cb_main->bond_cb_link_down) {
++					struct net_device *dev;
++
++					dev = port->slave->dev;
++					lag_cb_main->bond_cb_link_down(dev);
++				}
++				rcu_read_unlock();
++			}
++			/* QCA NSS ECM support - End */
+ 			break;
+ 		case AD_MUX_COLLECTING_DISTRIBUTING:
+ 			if (!(port->sm_vars & AD_PORT_SELECTED) ||
+@@ -1886,6 +1943,8 @@ static void ad_enable_collecting_distributing(struct port *port,
+ 					      bool *update_slave_arr)
+ {
+ 	if (port->aggregator->is_active) {
++		struct bond_cb *lag_cb_main; /* QCA NSS ECM support */
++
+ 		slave_dbg(port->slave->bond->dev, port->slave->dev,
+ 			  "Enabling port %d (LAG %d)\n",
+ 			  port->actor_port_number,
+@@ -1893,6 +1952,16 @@ static void ad_enable_collecting_distributing(struct port *port,
+ 		__enable_port(port);
+ 		/* Slave array needs update */
+ 		*update_slave_arr = true;
++
++		/* QCA NSS ECM support - Start */
++		rcu_read_lock();
++		lag_cb_main = rcu_dereference(bond_cb);
++
++		if (lag_cb_main && lag_cb_main->bond_cb_link_up)
++			lag_cb_main->bond_cb_link_up(port->slave->dev);
++
++		rcu_read_unlock();
++		/* QCA NSS ECM support - End */
+ 	}
+ }
+ 
+@@ -2771,3 +2840,101 @@ int bond_3ad_stats_fill(struct sk_buff *skb, struct bond_3ad_stats *stats)
+ 
+ 	return 0;
+ }
++
++/* QCA NSS ECM support - Start */
++/* bond_3ad_get_tx_dev - Calculate egress interface for a given packet,
++ * for a LAG that is configured in 802.3AD mode
++ * @skb: pointer to skb to be egressed
++ * @src_mac: pointer to source L2 address
++ * @dst_mac: pointer to destination L2 address
++ * @src: pointer to source L3 address
++ * @dst: pointer to destination L3 address
++ * @protocol: L3 protocol id from L2 header
++ * @bond_dev: pointer to bond master device
++ *
++ * If @skb is NULL, bond_xmit_hash is used to calculate hash using L2/L3
++ * addresses.
++ *
++ * Returns: Either valid slave device, or NULL otherwise
++ */
++struct net_device *bond_3ad_get_tx_dev(struct sk_buff *skb, u8 *src_mac,
++				       u8 *dst_mac, void *src,
++				       void *dst, u16 protocol,
++				       struct net_device *bond_dev,
++				       __be16 *layer4hdr)
++{
++	struct bonding *bond = netdev_priv(bond_dev);
++	struct aggregator *agg;
++	struct ad_info ad_info;
++	struct list_head *iter;
++	struct slave *slave;
++	struct slave *first_ok_slave = NULL;
++	u32 hash = 0;
++	int slaves_in_agg;
++	int slave_agg_no = 0;
++	int agg_id;
++
++	if (__bond_3ad_get_active_agg_info(bond, &ad_info)) {
++		pr_debug("%s: Error: __bond_3ad_get_active_agg_info failed\n",
++			 bond_dev->name);
++		return NULL;
++	}
++
++	slaves_in_agg = ad_info.ports;
++	agg_id = ad_info.aggregator_id;
++
++	if (slaves_in_agg == 0) {
++		pr_debug("%s: Error: active aggregator is empty\n",
++			 bond_dev->name);
++		return NULL;
++	}
++
++	if (skb) {
++		hash = bond_xmit_hash(bond, skb);
++		slave_agg_no = hash % slaves_in_agg;
++	} else {
++		if (bond->params.xmit_policy != BOND_XMIT_POLICY_LAYER23 &&
++		    bond->params.xmit_policy != BOND_XMIT_POLICY_LAYER2 &&
++		    bond->params.xmit_policy != BOND_XMIT_POLICY_LAYER34) {
++			pr_debug("%s: Error: Unsupported hash policy for 802.3AD fast path\n",
++				 bond_dev->name);
++			return NULL;
++		}
++
++		hash = bond_xmit_hash_without_skb(src_mac, dst_mac,
++						  src, dst, protocol,
++						  bond_dev, layer4hdr);
++		slave_agg_no = hash % slaves_in_agg;
++	}
++
++	bond_for_each_slave_rcu(bond, slave, iter) {
++		agg = SLAVE_AD_INFO(slave)->port.aggregator;
++		if (!agg || agg->aggregator_identifier != agg_id)
++			continue;
++
++		if (slave_agg_no >= 0) {
++			if (!first_ok_slave && bond_slave_can_tx(slave))
++				first_ok_slave = slave;
++			slave_agg_no--;
++			continue;
++		}
++
++		if (bond_slave_can_tx(slave))
++			return slave->dev;
++	}
++
++	if (slave_agg_no >= 0) {
++		pr_err("%s: Error: Couldn't find a slave to tx on for aggregator ID %d\n",
++		       bond_dev->name, agg_id);
++		return NULL;
++	}
++
++	/* we couldn't find any suitable slave after the agg_no, so use the
++	 * first suitable found, if found.
++	 */
++	if (first_ok_slave)
++		return first_ok_slave->dev;
++
++	return NULL;
++}
++/* QCA NSS ECM support - End */
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index c4f679c37..939aa79fb 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -1123,6 +1123,23 @@ void bond_change_active_slave(struct bonding *bond, struct slave *new_active)
+ 			if (BOND_MODE(bond) == BOND_MODE_8023AD)
+ 				bond_3ad_handle_link_change(new_active, BOND_LINK_UP);
+ 
++			/* QCA NSS ECM support - Start */
++			if (bond->params.mode == BOND_MODE_XOR) {
++				struct bond_cb *lag_cb_main;
++
++				rcu_read_lock();
++				lag_cb_main = rcu_dereference(bond_cb);
++				if (lag_cb_main &&
++				    lag_cb_main->bond_cb_link_up) {
++					struct net_device *dev;
++
++					dev = new_active->dev;
++					lag_cb_main->bond_cb_link_up(dev);
++				}
++				rcu_read_unlock();
++			}
++			/* QCA NSS ECM support - End */
++
+ 			if (bond_is_lb(bond))
+ 				bond_alb_handle_link_change(bond, new_active, BOND_LINK_UP);
+ 		} else {
+@@ -1700,6 +1717,7 @@ int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
+ 	const struct net_device_ops *slave_ops = slave_dev->netdev_ops;
+ 	struct slave *new_slave = NULL, *prev_slave;
+ 	struct sockaddr_storage ss;
++	struct bond_cb *lag_cb_main; /* QCA NSS ECM support */
+ 	int link_reporting;
+ 	int res = 0, i;
+ 
+@@ -2102,6 +2120,14 @@ int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
+ 	if (bond_mode_can_use_xmit_hash(bond))
+ 		bond_update_slave_arr(bond, NULL);
+ 
++	/* QCA NSS ECM support - Start */
++	rcu_read_lock();
++	lag_cb_main = rcu_dereference(bond_cb);
++	if (lag_cb_main && lag_cb_main->bond_cb_enslave)
++		lag_cb_main->bond_cb_enslave(slave_dev);
++	rcu_read_unlock();
++	/* QCA NSS ECM support - End */
++
+ 
+ 	slave_info(bond_dev, slave_dev, "Enslaving as %s interface with %s link\n",
+ 		   bond_is_active_slave(new_slave) ? "an active" : "a backup",
+@@ -2174,6 +2200,14 @@ int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
+ 		}
+ 	}
+ 
++	/* QCA NSS ECM support - Start */
++	rcu_read_lock();
++	lag_cb_main = rcu_dereference(bond_cb);
++	if (lag_cb_main && lag_cb_main->bond_cb_enslave)
++		lag_cb_main->bond_cb_enslave(slave_dev);
++	rcu_read_unlock();
++	/* QCA NSS ECM support - End */
++
+ 	return res;
+ }
+ 
+@@ -2195,6 +2229,7 @@ static int __bond_release_one(struct net_device *bond_dev,
+ 	struct bonding *bond = netdev_priv(bond_dev);
+ 	struct slave *slave, *oldcurrent;
+ 	struct sockaddr_storage ss;
++	struct bond_cb *lag_cb_main; /* QCA NSS ECM support */
+ 	int old_flags = bond_dev->flags;
+ 	netdev_features_t old_features = bond_dev->features;
+ 
+@@ -2217,6 +2252,14 @@ static int __bond_release_one(struct net_device *bond_dev,
+ 
+ 	bond_set_slave_inactive_flags(slave, BOND_SLAVE_NOTIFY_NOW);
+ 
++	/* QCA NSS ECM support - Start */
++	rcu_read_lock();
++	lag_cb_main = rcu_dereference(bond_cb);
++	if (lag_cb_main && lag_cb_main->bond_cb_release)
++		lag_cb_main->bond_cb_release(slave_dev);
++	rcu_read_unlock();
++	/* QCA NSS ECM support - End */
++
+ 	bond_sysfs_slave_del(slave);
+ 
+ 	/* recompute stats just before removing the slave */
+@@ -2513,6 +2556,10 @@ static void bond_miimon_commit(struct bonding *bond)
+ {
+ 	struct list_head *iter;
+ 	struct slave *slave, *primary;
++	/* QCA NSS ECM support - Start */
++	struct net_device *slave_dev = NULL;
++	struct bond_cb *lag_cb_main;
++	/* QCA NSS ECM support - End */
+ 
+ 	bond_for_each_slave(bond, slave, iter) {
+ 		switch (slave->link_new_state) {
+@@ -2556,6 +2603,12 @@ static void bond_miimon_commit(struct bonding *bond)
+ 
+ 			bond_miimon_link_change(bond, slave, BOND_LINK_UP);
+ 
++			/* QCA NSS ECM support - Start */
++			if ((bond->params.mode == BOND_MODE_XOR) &&
++			    (!slave_dev))
++				slave_dev = slave->dev;
++			/* QCA NSS ECM support - End */
++
+ 			if (!bond->curr_active_slave || slave == primary)
+ 				goto do_failover;
+ 
+@@ -2597,6 +2650,15 @@ static void bond_miimon_commit(struct bonding *bond)
+ 	}
+ 
+ 	bond_set_carrier(bond);
++
++	/* QCA NSS ECM support - Start */
++	rcu_read_lock();
++	lag_cb_main = rcu_dereference(bond_cb);
++
++	if (slave_dev && lag_cb_main && lag_cb_main->bond_cb_link_up)
++		lag_cb_main->bond_cb_link_up(slave_dev);
++	rcu_read_unlock();
++	/* QCA NSS ECM support - End */
+ }
+ 
+ /* bond_mii_monitor
+@@ -3864,23 +3926,6 @@ static int bond_get_lowest_level_rcu(struct net_device *dev)
+ }
+ #endif
+ 
+-/* QCA NSS bonding support */
+-int bond_get_id(struct net_device *bond_dev)
+-{
+-    struct bonding *bond;
+-    int bond_id = 0;
+-
+-    if (!((bond_dev->priv_flags & IFF_BONDING) &&
+-          (bond_dev->flags & IFF_MASTER)))
+-        return -EINVAL;
+-
+-    bond = netdev_priv(bond_dev);
+-    bond_id = bond->id;
+-
+-    return bond_id;
+-}
+-EXPORT_SYMBOL(bond_get_id);
+-
+ static void bond_get_stats(struct net_device *bond_dev,
+ 			   struct rtnl_link_stats64 *stats)
+ {
+@@ -5427,6 +5472,7 @@ int bond_create(struct net *net, const char *name)
+ 	bond_work_init_all(bond);
+ 
+     /* QCA NSS bonding support */
++    bond = netdev_priv(bond_dev);
+     bond->id = ~0U;
+     if (bond_id_mask != (~0UL)) {
+         bond->id = (u32)ffz(bond_id_mask);
+@@ -5531,6 +5577,203 @@ static void __exit bonding_exit(void)
+ #endif
+ }
+ 
++/* QCA NSS ECM support - Start */
++static bool bond_flow_dissect_without_skb(struct bonding *bond,
++					  u8 *src_mac, u8 *dst_mac,
++					  void *psrc, void *pdst,
++					  u16 protocol, __be16 *layer4hdr,
++					  struct flow_keys *fk)
++{
++	u32 *src = NULL;
++	u32 *dst = NULL;
++
++	fk->ports.ports = 0;
++	src = (uint32_t *)psrc;
++	dst = (uint32_t *)pdst;
++
++	if (protocol == htons(ETH_P_IP)) {
++		/* V4 addresses and address type*/
++		fk->addrs.v4addrs.src = src[0];
++		fk->addrs.v4addrs.dst = dst[0];
++		fk->control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
++	} else if (protocol == htons(ETH_P_IPV6)) {
++		/* V6 addresses and address type*/
++		memcpy(&fk->addrs.v6addrs.src, src, sizeof(struct in6_addr));
++		memcpy(&fk->addrs.v6addrs.dst, dst, sizeof(struct in6_addr));
++		fk->control.addr_type = FLOW_DISSECTOR_KEY_IPV6_ADDRS;
++	} else {
++		return false;
++	}
++	if ((bond->params.xmit_policy == BOND_XMIT_POLICY_LAYER34) &&
++	    (layer4hdr))
++		fk->ports.ports = *layer4hdr;
++
++	return true;
++}
++
++/* Extract the appropriate headers based on bond's xmit policy */
++
++/* bond_xmit_hash_without_skb - Applies load balancing algorithm for a packet,
++ * to calculate hash for a given set of L2/L3 addresses. Does not
++ * calculate egress interface.
++ */
++uint32_t bond_xmit_hash_without_skb(u8 *src_mac, u8 *dst_mac,
++				    void *psrc, void *pdst, u16 protocol,
++				    struct net_device *bond_dev,
++				    __be16 *layer4hdr)
++{
++	struct bonding *bond = netdev_priv(bond_dev);
++	struct flow_keys flow;
++	u32 hash = 0;
++
++	if (bond->params.xmit_policy == BOND_XMIT_POLICY_LAYER2 ||
++	    !bond_flow_dissect_without_skb(bond, src_mac, dst_mac, psrc,
++					   pdst, protocol, layer4hdr, &flow))
++		return (dst_mac[5] ^ src_mac[5]);
++
++	if (bond->params.xmit_policy == BOND_XMIT_POLICY_LAYER23)
++		hash = dst_mac[5] ^ src_mac[5];
++	else if (layer4hdr)
++		hash = (__force u32)flow.ports.ports;
++
++	hash ^= (__force u32)flow_get_u32_dst(&flow) ^
++		(__force u32)flow_get_u32_src(&flow);
++	hash ^= (hash >> 16);
++	hash ^= (hash >> 8);
++
++	return hash;
++}
++
++/* bond_xor_get_tx_dev - Calculate egress interface for a given packet for a LAG
++ * that is configured in balance-xor mode
++ * @skb: pointer to skb to be egressed
++ * @src_mac: pointer to source L2 address
++ * @dst_mac: pointer to destination L2 address
++ * @src: pointer to source L3 address in network order
++ * @dst: pointer to destination L3 address in network order
++ * @protocol: L3 protocol
++ * @bond_dev: pointer to bond master device
++ *
++ * If @skb is NULL, bond_xmit_hash_without_skb is used to calculate hash using
++ * L2/L3 addresses.
++ *
++ * Returns: Either valid slave device, or NULL otherwise
++ */
++static struct net_device *bond_xor_get_tx_dev(struct sk_buff *skb,
++					      u8 *src_mac, u8 *dst_mac,
++					      void *src, void *dst,
++					      u16 protocol,
++					      struct net_device *bond_dev,
++					      __be16 *layer4hdr)
++{
++	struct bonding *bond = netdev_priv(bond_dev);
++	int slave_cnt = READ_ONCE(bond->slave_cnt);
++	int slave_id = 0, i = 0;
++	u32 hash;
++	struct list_head *iter;
++	struct slave *slave;
++
++	if (slave_cnt == 0) {
++		pr_debug("%s: Error: No slave is attached to the interface\n",
++			 bond_dev->name);
++		return NULL;
++	}
++
++	if (skb) {
++		hash = bond_xmit_hash(bond, skb);
++		slave_id = hash % slave_cnt;
++	} else {
++		if (bond->params.xmit_policy != BOND_XMIT_POLICY_LAYER23 &&
++		    bond->params.xmit_policy != BOND_XMIT_POLICY_LAYER2	&&
++		    bond->params.xmit_policy != BOND_XMIT_POLICY_LAYER34) {
++			pr_debug("%s: Error: Unsupported hash policy for balance-XOR fast path\n",
++				 bond_dev->name);
++			return NULL;
++		}
++
++		hash = bond_xmit_hash_without_skb(src_mac, dst_mac, src,
++						  dst, protocol, bond_dev,
++						  layer4hdr);
++		slave_id = hash % slave_cnt;
++	}
++
++	i = slave_id;
++
++	/* Here we start from the slave with slave_id */
++	bond_for_each_slave_rcu(bond, slave, iter) {
++		if (--i < 0) {
++			if (bond_slave_can_tx(slave))
++				return slave->dev;
++		}
++	}
++
++	/* Here we start from the first slave up to slave_id */
++	i = slave_id;
++	bond_for_each_slave_rcu(bond, slave, iter) {
++		if (--i < 0)
++			break;
++		if (bond_slave_can_tx(slave))
++			return slave->dev;
++	}
++
++	return NULL;
++}
++
++/* bond_get_tx_dev - Calculate egress interface for a given packet.
++ *
++ * Supports 802.3AD and balance-xor modes
++ *
++ * @skb: pointer to skb to be egressed, if valid
++ * @src_mac: pointer to source L2 address
++ * @dst_mac: pointer to destination L2 address
++ * @src: pointer to source L3 address in network order
++ * @dst: pointer to destination L3 address in network order
++ * @protocol: L3 protocol id from L2 header
++ * @bond_dev: pointer to bond master device
++ *
++ * Returns: Either valid slave device, or NULL for un-supported LAG modes
++ */
++struct net_device *bond_get_tx_dev(struct sk_buff *skb, uint8_t *src_mac,
++				   u8 *dst_mac, void *src,
++				   void *dst, u16 protocol,
++				   struct net_device *bond_dev,
++				   __be16 *layer4hdr)
++{
++	struct bonding *bond = netdev_priv(bond_dev);
++
++	if (!bond)
++		return NULL;
++
++	switch (bond->params.mode) {
++	case BOND_MODE_XOR:
++		return bond_xor_get_tx_dev(skb, src_mac, dst_mac,
++					   src, dst, protocol,
++					   bond_dev, layer4hdr);
++	case BOND_MODE_8023AD:
++		return bond_3ad_get_tx_dev(skb, src_mac, dst_mac,
++					   src, dst, protocol,
++					   bond_dev, layer4hdr);
++	default:
++		return NULL;
++	}
++}
++EXPORT_SYMBOL(bond_get_tx_dev);
++
++int bond_get_id(struct net_device *bond_dev)
++{
++	struct bonding *bond;
++
++	if (!((bond_dev->priv_flags & IFF_BONDING) &&
++	      (bond_dev->flags & IFF_MASTER)))
++		return -EINVAL;
++
++	bond = netdev_priv(bond_dev);
++
++	return bond->id;
++}
++EXPORT_SYMBOL(bond_get_id);
++/* QCA NSS ECM support - End */
++
+ module_init(bonding_init);
+ module_exit(bonding_exit);
+ MODULE_LICENSE("GPL");
+diff --git a/include/linux/if_pppol2tp.h b/include/linux/if_pppol2tp.h
+index 96d40942e..e2d3de6d0 100644
+--- a/include/linux/if_pppol2tp.h
++++ b/include/linux/if_pppol2tp.h
+@@ -14,4 +14,30 @@
+ #include <linux/in6.h>
+ #include <uapi/linux/if_pppol2tp.h>
+ 
++/* QCA NSS ECM support - Start */
++/*
++ * Holds L2TP channel info
++ */
++struct  pppol2tp_common_addr {
++	int tunnel_version;				/* v2 or v3 */
++	__u32 local_tunnel_id, remote_tunnel_id;	/* tunnel id */
++	__u32 local_session_id, remote_session_id;	/* session id */
++	struct sockaddr_in local_addr, remote_addr; /* ip address and port */
++};
++
++/*
++ * L2TP channel operations
++ */
++struct pppol2tp_channel_ops {
++	struct ppp_channel_ops ops; /* ppp channel ops */
++};
++
++/*
++ * exported function which calls pppol2tp channel's get addressing
++ * function
++ */
++extern int pppol2tp_channel_addressing_get(struct ppp_channel *,
++					   struct pppol2tp_common_addr *);
++/* QCA NSS ECM support - End */
++
+ #endif
+diff --git a/include/net/bond_3ad.h b/include/net/bond_3ad.h
+index 1a28f299a..dbba12dd6 100644
+--- a/include/net/bond_3ad.h
++++ b/include/net/bond_3ad.h
+@@ -307,5 +307,13 @@ void bond_3ad_update_lacp_rate(struct bonding *bond);
+ void bond_3ad_update_ad_actor_settings(struct bonding *bond);
+ int bond_3ad_stats_fill(struct sk_buff *skb, struct bond_3ad_stats *stats);
+ size_t bond_3ad_stats_size(void);
++
++/* QCA NSS ECM support - Start */
++struct net_device *bond_3ad_get_tx_dev(struct sk_buff *skb, uint8_t *src_mac,
++				       uint8_t *dst_mac, void *src,
++				       void *dst, uint16_t protocol,
++				       struct net_device *bond_dev,
++				       __be16 *layer4hdr);
++/* QCA NSS ECM support - End */
+ #endif /* _NET_BOND_3AD_H */
+ 
+diff --git a/include/net/bonding.h b/include/net/bonding.h
+index d85601e06..59e623d30 100644
+--- a/include/net/bonding.h
++++ b/include/net/bonding.h
+@@ -772,4 +772,12 @@ static inline netdev_tx_t bond_tx_drop(struct net_device *dev, struct sk_buff *s
+ 	return NET_XMIT_DROP;
+ }
+ 
++/* QCA NSS ECM support - Start */
++extern struct bond_cb __rcu *bond_cb;
++
++uint32_t bond_xmit_hash_without_skb(uint8_t *src_mac, uint8_t *dst_mac,
++				    void *psrc, void *pdst, uint16_t protocol,
++				    struct net_device *bond_dev,
++				    __be16 *layer4hdr);
++/* QCA NSS ECM support - End */
+ #endif /* _NET_BONDING_H */
+diff --git a/include/net/netfilter/nf_conntrack_extend.h b/include/net/netfilter/nf_conntrack_extend.h
+index e1e588387..bdbc8ea71 100644
+--- a/include/net/netfilter/nf_conntrack_extend.h
++++ b/include/net/netfilter/nf_conntrack_extend.h
+@@ -28,6 +28,10 @@ enum nf_ct_ext_id {
+ #if IS_ENABLED(CONFIG_NETFILTER_SYNPROXY)
+ 	NF_CT_EXT_SYNPROXY,
+ #endif
++#ifdef CONFIG_NF_CONNTRACK_DSCPREMARK_EXT
++	NF_CT_EXT_DSCPREMARK,   /* QCA NSS ECM support */
++#endif
++
+ 	NF_CT_EXT_NUM,
+ };
+ 
+@@ -40,6 +44,9 @@ enum nf_ct_ext_id {
+ #define NF_CT_EXT_TIMEOUT_TYPE struct nf_conn_timeout
+ #define NF_CT_EXT_LABELS_TYPE struct nf_conn_labels
+ #define NF_CT_EXT_SYNPROXY_TYPE struct nf_conn_synproxy
++/* QCA NSS ECM support - Start */
++#define NF_CT_EXT_DSCPREMARK_TYPE struct nf_ct_dscpremark_ext
++/* QCA NSS ECM support - End */
+ 
+ /* Extensions: optional stuff which isn't permanently in struct. */
+ struct nf_ct_ext {
+diff --git a/include/uapi/linux/if_bonding.h b/include/uapi/linux/if_bonding.h
+index 45f3750aa..ac7c66356 100644
+--- a/include/uapi/linux/if_bonding.h
++++ b/include/uapi/linux/if_bonding.h
+@@ -151,6 +151,23 @@ enum {
+ };
+ #define BOND_3AD_STAT_MAX (__BOND_3AD_STAT_MAX - 1)
+ 
++/* QCA NSS ECM support - Start */
++#ifdef __KERNEL__
++struct bond_cb {
++	void (*bond_cb_link_up)(struct net_device *slave);
++	void (*bond_cb_link_down)(struct net_device *slave);
++	void (*bond_cb_enslave)(struct net_device *slave);
++	void (*bond_cb_release)(struct net_device *slave);
++	void (*bond_cb_delete_by_slave)(struct net_device *slave);
++	void (*bond_cb_delete_by_mac)(uint8_t *mac_addr);
++};
++
++extern int bond_register_cb(struct bond_cb *cb);
++extern void bond_unregister_cb(void);
++extern int bond_get_id(struct net_device *bond_dev);
++#endif /* __KERNEL__ */
++/* QCA NSS ECM support - End */
++
+ #endif /* _LINUX_IF_BONDING_H */
+ 
+ /*
+diff --git a/net/l2tp/l2tp_ppp.c b/net/l2tp/l2tp_ppp.c
+index aea85f91f..3933641d0 100644
+--- a/net/l2tp/l2tp_ppp.c
++++ b/net/l2tp/l2tp_ppp.c
+@@ -92,6 +92,7 @@
+ #include <net/ip.h>
+ #include <net/udp.h>
+ #include <net/inet_common.h>
++#include <linux/if_pppox.h>
+ 
+ #include <asm/byteorder.h>
+ #include <linux/atomic.h>
+@@ -124,9 +125,19 @@ struct pppol2tp_session {
+ 
+ static int pppol2tp_xmit(struct ppp_channel *chan, struct sk_buff *skb);
+ 
+-static const struct ppp_channel_ops pppol2tp_chan_ops = {
+-	.start_xmit =  pppol2tp_xmit,
++/* QCA NSS ECM support - Start */
++static int pppol2tp_get_channel_protocol(struct ppp_channel *);
++static int pppol2tp_get_channel_protocol_ver(struct ppp_channel *);
++static void pppol2tp_hold_chan(struct ppp_channel *);
++static void pppol2tp_release_chan(struct ppp_channel *);
++static const struct pppol2tp_channel_ops pppol2tp_chan_ops = {
++	.ops.start_xmit =  pppol2tp_xmit,
++	.ops.get_channel_protocol = pppol2tp_get_channel_protocol,
++	.ops.get_channel_protocol_ver = pppol2tp_get_channel_protocol_ver,
++	.ops.hold = pppol2tp_hold_chan,
++	.ops.release = pppol2tp_release_chan,
+ };
++/* QCA NSS ECM support - End */
+ 
+ static const struct proto_ops pppol2tp_ops;
+ 
+@@ -239,6 +250,7 @@ static void pppol2tp_recv(struct l2tp_session *session, struct sk_buff *skb, int
+ 
+ 		po = pppox_sk(sk);
+ 		ppp_input(&po->chan, skb);
++		skb->skb_iif = ppp_dev_index(&po->chan); /* QCA NSS ECM support */
+ 	} else {
+ 		if (sock_queue_rcv_skb(sk, skb) < 0) {
+ 			atomic_long_inc(&session->stats.rx_errors);
+@@ -374,6 +386,13 @@ static int pppol2tp_xmit(struct ppp_channel *chan, struct sk_buff *skb)
+ 	skb->data[0] = PPP_ALLSTATIONS;
+ 	skb->data[1] = PPP_UI;
+ 
++	/* QCA NSS ECM support - start */
++	/* set incoming interface as the ppp interface */
++	if ((skb->protocol == htons(ETH_P_IP)) ||
++	    (skb->protocol == htons(ETH_P_IPV6)))
++		skb->skb_iif = ppp_dev_index(chan);
++	/* QCA NSS ECM support - End */
++
+ 	local_bh_disable();
+ 	l2tp_xmit_skb(session, skb);
+ 	local_bh_enable();
+@@ -809,7 +828,7 @@ static int pppol2tp_connect(struct socket *sock, struct sockaddr *uservaddr,
+ 	po->chan.hdrlen = PPPOL2TP_L2TP_HDR_SIZE_NOSEQ;
+ 
+ 	po->chan.private = sk;
+-	po->chan.ops	 = &pppol2tp_chan_ops;
++	po->chan.ops	 = &pppol2tp_chan_ops.ops; /* QCA NSS ECM support */
+ 	po->chan.mtu	 = pppol2tp_tunnel_mtu(tunnel);
+ 
+ 	error = ppp_register_net_channel(sock_net(sk), &po->chan);
+@@ -1724,6 +1743,109 @@ static void __exit pppol2tp_exit(void)
+ 	unregister_pernet_device(&pppol2tp_net_ops);
+ }
+ 
++/* QCA NSS ECM support - Start */
++/* pppol2tp_hold_chan() */
++static void pppol2tp_hold_chan(struct ppp_channel *chan)
++{
++	struct sock *sk = (struct sock *)chan->private;
++
++	sock_hold(sk);
++}
++
++/* pppol2tp_release_chan() */
++static void pppol2tp_release_chan(struct ppp_channel *chan)
++{
++	struct sock *sk = (struct sock *)chan->private;
++
++	sock_put(sk);
++}
++
++/* pppol2tp_get_channel_protocol()
++ * Return the protocol type of the L2TP over PPP protocol
++ */
++static int pppol2tp_get_channel_protocol(struct ppp_channel *chan)
++{
++	return PX_PROTO_OL2TP;
++}
++
++/* pppol2tp_get_channel_protocol_ver()
++ * Return the protocol version of the L2TP over PPP protocol
++ */
++static int pppol2tp_get_channel_protocol_ver(struct ppp_channel *chan)
++{
++	struct sock *sk;
++	struct l2tp_session *session;
++	struct l2tp_tunnel *tunnel;
++	int version = 0;
++
++	if (chan && chan->private)
++		sk = (struct sock *)chan->private;
++	else
++		return -1;
++
++	/* Get session and tunnel contexts from the socket */
++	session = pppol2tp_sock_to_session(sk);
++	if (!session)
++		return -1;
++
++	tunnel = session->tunnel;
++	if (!tunnel) {
++		sock_put(sk);
++		return -1;
++	}
++
++	version = tunnel->version;
++
++	sock_put(sk);
++
++	return version;
++}
++
++/* pppol2tp_get_addressing() */
++static int pppol2tp_get_addressing(struct ppp_channel *chan,
++				   struct pppol2tp_common_addr *addr)
++{
++	struct sock *sk = (struct sock *)chan->private;
++	struct l2tp_session *session;
++	struct l2tp_tunnel *tunnel;
++	struct inet_sock *isk = NULL;
++	int err = -ENXIO;
++
++	/* Get session and tunnel contexts from the socket */
++	session = pppol2tp_sock_to_session(sk);
++	if (!session)
++		return err;
++
++	tunnel = session->tunnel;
++	if (!tunnel) {
++		sock_put(sk);
++		return err;
++	}
++	isk = inet_sk(tunnel->sock);
++
++	addr->local_tunnel_id = tunnel->tunnel_id;
++	addr->remote_tunnel_id = tunnel->peer_tunnel_id;
++	addr->local_session_id = session->session_id;
++	addr->remote_session_id = session->peer_session_id;
++
++	addr->local_addr.sin_port = isk->inet_sport;
++	addr->remote_addr.sin_port = isk->inet_dport;
++	addr->local_addr.sin_addr.s_addr = isk->inet_saddr;
++	addr->remote_addr.sin_addr.s_addr = isk->inet_daddr;
++
++	sock_put(sk);
++	return 0;
++}
++
++/* pppol2tp_channel_addressing_get() */
++int pppol2tp_channel_addressing_get(struct ppp_channel *chan,
++				    struct pppol2tp_common_addr *addr)
++{
++	return pppol2tp_get_addressing(chan, addr);
++}
++EXPORT_SYMBOL(pppol2tp_channel_addressing_get);
++/* QCA NSS ECM support - End */
++
+ module_init(pppol2tp_init);
+ module_exit(pppol2tp_exit);
+ 
+diff --git a/net/netfilter/Kconfig b/net/netfilter/Kconfig
+index 77c40518b..046af4c30 100644
+--- a/net/netfilter/Kconfig
++++ b/net/netfilter/Kconfig
+@@ -136,6 +136,13 @@ config NF_CONNTRACK_EVENTS
+ 
+ 	  If unsure, say `N'.
+ 
++config NF_CONNTRACK_DSCPREMARK_EXT
++	bool  'Connection tracking extension for dscp remark target'
++	depends on NETFILTER_ADVANCED
++	help
++	  This option enables support for connection tracking extension
++	  for dscp remark.
++
+ config NF_CONNTRACK_CHAIN_EVENTS
+ 	bool "Register multiple callbacks to ct events"
+ 	depends on NF_CONNTRACK_EVENTS
+diff --git a/net/netfilter/Makefile b/net/netfilter/Makefile
+index c6d9869a4..304039bd1 100644
+--- a/net/netfilter/Makefile
++++ b/net/netfilter/Makefile
+@@ -14,6 +14,7 @@ nf_conntrack-$(CONFIG_NF_CONNTRACK_LABELS) += nf_conntrack_labels.o
+ nf_conntrack-$(CONFIG_NF_CT_PROTO_DCCP) += nf_conntrack_proto_dccp.o
+ nf_conntrack-$(CONFIG_NF_CT_PROTO_SCTP) += nf_conntrack_proto_sctp.o
+ nf_conntrack-$(CONFIG_NF_CT_PROTO_GRE) += nf_conntrack_proto_gre.o
++nf_conntrack-$(CONFIG_NF_CONNTRACK_DSCPREMARK_EXT) += nf_conntrack_dscpremark_ext.o
+ 
+ obj-$(CONFIG_NETFILTER) = netfilter.o
+ 

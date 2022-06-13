@@ -1,0 +1,41 @@
+diff --git a/drivers/net/ppp/ppp_generic.c b/drivers/net/ppp/ppp_generic.c
+index 72cdf9e..46925b1 100644
+--- a/drivers/net/ppp/ppp_generic.c
++++ b/drivers/net/ppp/ppp_generic.c
+@@ -3552,6 +3552,22 @@ int ppp_is_multilink(struct net_device *dev)
+ }
+ EXPORT_SYMBOL(ppp_is_multilink);
+ 
++/* Return the PPP net device index */
++int ppp_dev_index(struct ppp_channel *chan)
++{
++	struct channel *pch = chan->ppp;
++	int ifindex = 0;
++
++	if (pch) {
++		read_lock_bh(&pch->upl);
++		if (pch->ppp && pch->ppp->dev)
++			ifindex = pch->ppp->dev->ifindex;
++		read_unlock_bh(&pch->upl);
++	}
++	return ifindex;
++}
++EXPORT_SYMBOL(ppp_dev_index);
++
+ /* ppp_channel_get_protocol()
+  *	Call this to obtain the underlying protocol of the PPP channel,
+  *	e.g. PX_PROTO_OE
+ diff --git a/include/linux/ppp_channel.h b/include/linux/ppp_channel.h
+index 5f79e5b..b845d85 100644
+--- a/include/linux/ppp_channel.h
++++ b/include/linux/ppp_channel.h
+@@ -96,6 +96,9 @@ extern int ppp_channel_get_protocol(struct ppp_channel *);
+ /* Call this get protocol version */
+ extern int ppp_channel_get_proto_version(struct ppp_channel *);
+ 
++/* Get the device index  associated with a channel, or 0, if none */
++extern int ppp_dev_index(struct ppp_channel *);
++
+ /* Call this to hold a channel */
+ extern bool ppp_channel_hold(struct ppp_channel *);
+ 

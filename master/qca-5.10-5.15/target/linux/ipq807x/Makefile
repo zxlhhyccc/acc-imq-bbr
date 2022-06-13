@@ -17,7 +17,7 @@ DEFAULT_PACKAGES += \
 	ath11k-firmware-ipq8074 kmod-ath11k-ahb \
 	autocore-arm wpad-wolfssl libwolfssl-benchmark zram-swap \
 	kmod-qca-nss-dp kmod-qca-nss-drv \
-	kmod-qca-nss-drv-pppoe kmod-qca-nss-ecm coremark \
+	kmod-qca-nss-drv-pppoe kmod-qca-nss-ecm kmod-qca-nss-ecm-64 coremark \
 	kmod-qca-nss-drv-bridge-mgr kmod-qca-drv-vlan-mgr nss-eip-firmware \
 	nss-firmware-ipq8074 ath11k-board-ipq8074 qca-ssdk-shell kmod-qca-ssdk-nohnat kmod-qca-nss-crypto uboot-envtools
 
