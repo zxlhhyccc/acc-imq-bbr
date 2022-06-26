@@ -1,0 +1,35 @@
+From 1958e34c4c1b8b4fb62eba693fbd7693536947b9 Mon Sep 17 00:00:00 2001
+From: flebourse <francis.lebourse@sfr.fr>
+Date: Thu, 23 Dec 2021 16:11:06 +0100
+Subject: [PATCH] qca-nss-ecm: fix a memcpy overflow in ecm_db
+
+Calls to ipv6_addr_prefix() trigger a memcpy overflow if the prefix len
+argument is greater than 128, cap it at this value.
+
+Signed-off-by: Francis Le Bourse <francis.lebourse@sfr.fr>
+---
+ ecm_db/ecm_db.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+--- a/ecm_db/ecm_db.c
++++ b/ecm_db/ecm_db.c
+@@ -298,7 +298,7 @@ static int ecm_db_ipv6_route_table_update_event(struct notifier_block *nb,
+ 		 * Compute ECM connection's prefix destination address by masking it with the
+ 		 * route config's destination address prefix length.
+ 		 */
+-		ipv6_addr_prefix(&prefix_addr, &ecm_in6, cfg->fc_dst_len);
++		ipv6_addr_prefix(&prefix_addr, &ecm_in6, min(128, cfg->fc_dst_len));
+
+ 		DEBUG_TRACE("dest addr prefix: %pI6 prefix_len: %d ecm_in6: %pI6\n", &prefix_addr, cfg->fc_dst_len, &ecm_in6);
+
+@@ -326,7 +326,7 @@ static int ecm_db_ipv6_route_table_update_event(struct notifier_block *nb,
+ 			 * Compute ECM connection's prefix source address by masking it with the
+ 			 * route config's destination address prefix length.
+ 			 */
+-			ipv6_addr_prefix(&prefix_addr, &ecm_in6, cfg->fc_dst_len);
++			ipv6_addr_prefix(&prefix_addr, &ecm_in6, min(128, cfg->fc_dst_len));
+
+ 			DEBUG_TRACE("src addr prefix: %pI6 prefix_len: %d ecm_in6: %pI6\n", &prefix_addr, cfg->fc_dst_len, &ecm_in6);
+
+-- 
+2.1.4
