@@ -1,6 +1,6 @@
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -6912,6 +6912,7 @@ int dev_set_threaded(struct net_device *
+@@ -6916,6 +6916,7 @@ int dev_set_threaded(struct net_device *
  
  	return err;
  }

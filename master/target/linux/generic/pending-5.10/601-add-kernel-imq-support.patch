@@ -1275,7 +1275,7 @@
  	if (qdisc_run_begin(q)) {
 --- a/include/net/sch_generic.h
 +++ b/include/net/sch_generic.h
-@@ -848,6 +848,13 @@ static inline int qdisc_enqueue(struct s
+@@ -834,6 +834,13 @@ static inline int qdisc_enqueue(struct s
  	return sch->enqueue(skb, sch, to_free);
  }
  
@@ -1313,7 +1313,7 @@
  #include <linux/sctp.h>
  #include <net/udp_tunnel.h>
  #include <linux/net_namespace.h>
-@@ -3643,6 +3646,13 @@ static int xmit_one(struct sk_buff *skb,
+@@ -3647,6 +3650,13 @@ static int xmit_one(struct sk_buff *skb,
  	unsigned int len;
  	int rc;
  
@@ -1327,7 +1327,7 @@
  	if (dev_nit_active(dev))
  		dev_queue_xmit_nit(skb, dev);
  
-@@ -3683,6 +3693,8 @@ out:
+@@ -3687,6 +3697,8 @@ out:
  	return skb;
  }
  
