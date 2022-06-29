@@ -119,7 +119,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  			      struct ieee80211_sta *sta, bool enabled);
 --- a/net/mac80211/debugfs.c
 +++ b/net/mac80211/debugfs.c
-@@ -505,6 +505,7 @@ static const char *hw_flag_names[] = {
+@@ -495,6 +495,7 @@ static const char *hw_flag_names[] = {
  	FLAG(SUPPORTS_RX_DECAP_OFFLOAD),
  	FLAG(SUPPORTS_CONC_MON_RX_DECAP),
  	FLAG(DETECTS_COLOR_COLLISION),
@@ -129,7 +129,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  
 --- a/net/mac80211/util.c
 +++ b/net/mac80211/util.c
-@@ -895,6 +895,22 @@ struct wireless_dev *ieee80211_vif_to_wd
+@@ -898,6 +898,22 @@ struct wireless_dev *ieee80211_vif_to_wd
  }
  EXPORT_SYMBOL_GPL(ieee80211_vif_to_wdev);
  
@@ -185,7 +185,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  			      NL80211_EXT_FEATURE_SCAN_FREQ_KHZ);
  
  	if (!ops->hw_scan) {
-@@ -939,6 +944,18 @@ int ieee80211_register_hw(struct ieee802
+@@ -937,6 +942,18 @@ int ieee80211_register_hw(struct ieee802
  		    (!local->ops->start_nan || !local->ops->stop_nan)))
  		return -EINVAL;
  
@@ -206,7 +206,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  		return -EINVAL;
 --- a/net/mac80211/sta_info.c
 +++ b/net/mac80211/sta_info.c
-@@ -2122,7 +2122,10 @@ sta_get_last_rx_stats(struct sta_info *s
+@@ -2100,7 +2100,10 @@ sta_get_last_rx_stats(struct sta_info *s
  	struct ieee80211_sta_rx_stats *stats = &sta->rx_stats;
  	int cpu;
  
@@ -220,7 +220,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  	for_each_possible_cpu(cpu) {
 --- a/net/mac80211/tx.c
 +++ b/net/mac80211/tx.c
-@@ -1002,6 +1002,16 @@ ieee80211_tx_h_stats(struct ieee80211_tx
+@@ -1001,6 +1001,16 @@ ieee80211_tx_h_stats(struct ieee80211_tx
  		return TX_CONTINUE;
  
  	skb_queue_walk(&tx->skbs, skb) {
@@ -237,7 +237,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  		ac = skb_get_queue_mapping(skb);
  		tx->sta->tx_stats.bytes[ac] += skb->len;
  	}
-@@ -2810,7 +2820,9 @@ static struct sk_buff *ieee80211_build_h
+@@ -2811,7 +2821,9 @@ static struct sk_buff *ieee80211_build_h
  
  	if (unlikely(!multicast && ((skb->sk &&
  		     skb_shinfo(skb)->tx_flags & SKBTX_WIFI_STATUS) ||
@@ -248,7 +248,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  		info_id = ieee80211_store_ack_skb(local, skb, &info_flags,
  						  cookie);
  
-@@ -4458,21 +4470,24 @@ static void ieee80211_8023_xmit(struct i
+@@ -4379,21 +4391,24 @@ static void ieee80211_8023_xmit(struct i
  	ieee80211_aggr_check(sdata, sta, skb);
  
  	tid = skb->priority & IEEE80211_QOS_CTL_TAG1D_MASK;
@@ -284,7 +284,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  		info->ack_frame_id = ieee80211_store_ack_skb(local, skb,
  							     &info->flags, NULL);
  
-@@ -4480,8 +4495,10 @@ static void ieee80211_8023_xmit(struct i
+@@ -4401,8 +4416,10 @@ static void ieee80211_8023_xmit(struct i
  
  	dev_sw_netstats_tx_add(dev, 1, skb->len);
  
@@ -297,7 +297,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  
  	if (sdata->vif.type == NL80211_IFTYPE_AP_VLAN)
  		sdata = container_of(sdata->bss,
-@@ -4506,7 +4523,7 @@ netdev_tx_t ieee80211_subif_start_xmit_8
+@@ -4427,7 +4444,7 @@ netdev_tx_t ieee80211_subif_start_xmit_8
  {
  	struct ieee80211_sub_if_data *sdata = IEEE80211_DEV_TO_SUB_IF(dev);
  	struct ethhdr *ehdr = (struct ethhdr *)skb->data;
@@ -306,7 +306,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  	struct sta_info *sta;
  
  	if (unlikely(skb->len < ETH_HLEN)) {
-@@ -4521,9 +4538,13 @@ netdev_tx_t ieee80211_subif_start_xmit_8
+@@ -4442,9 +4459,13 @@ netdev_tx_t ieee80211_subif_start_xmit_8
  		goto out;
  	}
  
@@ -323,7 +323,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  		goto skip_offload;
  
  	key = rcu_dereference(sta->ptk[sta->ptk_idx]);
-@@ -4533,6 +4554,7 @@ netdev_tx_t ieee80211_subif_start_xmit_8
+@@ -4454,6 +4475,7 @@ netdev_tx_t ieee80211_subif_start_xmit_8
  	if (key && (!(key->flags & KEY_FLAG_UPLOADED_TO_HARDWARE)))
  		goto skip_offload;
  
@@ -345,7 +345,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  				gfp);
 --- a/net/mac80211/cfg.c
 +++ b/net/mac80211/cfg.c
-@@ -2411,7 +2411,7 @@ static int ieee80211_change_bss(struct w
+@@ -2378,7 +2378,7 @@ static int ieee80211_change_bss(struct w
  {
  	struct ieee80211_sub_if_data *sdata = IEEE80211_DEV_TO_SUB_IF(dev);
  	struct ieee80211_supported_band *sband;
@@ -354,7 +354,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  
  	if (!sdata_dereference(sdata->u.ap.beacon, sdata))
  		return -ENOENT;
-@@ -2458,6 +2458,8 @@ static int ieee80211_change_bss(struct w
+@@ -2425,6 +2425,8 @@ static int ieee80211_change_bss(struct w
  			sdata->flags |= IEEE80211_SDATA_DONT_BRIDGE_PACKETS;
  		else
  			sdata->flags &= ~IEEE80211_SDATA_DONT_BRIDGE_PACKETS;
@@ -363,7 +363,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  		ieee80211_check_fast_rx_iface(sdata);
  	}
  
-@@ -2487,6 +2489,8 @@ static int ieee80211_change_bss(struct w
+@@ -2454,6 +2456,8 @@ static int ieee80211_change_bss(struct w
  
  	ieee80211_bss_info_change_notify(sdata, changed);
  
@@ -400,7 +400,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  {
 --- a/net/mac80211/ieee80211_i.h
 +++ b/net/mac80211/ieee80211_i.h
-@@ -1809,6 +1809,8 @@ int ieee80211_hw_config(struct ieee80211
+@@ -1669,6 +1669,8 @@ int ieee80211_hw_config(struct ieee80211
  void ieee80211_tx_set_protected(struct ieee80211_tx_data *tx);
  void ieee80211_bss_info_change_notify(struct ieee80211_sub_if_data *sdata,
  				      u32 changed);
@@ -452,7 +452,7 @@ Signed-off-by: Sriram R <srirrama@codeaurora.org>
  	TP_PROTO(struct ieee80211_local *local,
 --- a/net/mac80211/iface.c
 +++ b/net/mac80211/iface.c
-@@ -960,7 +960,8 @@ static bool ieee80211_set_sdata_offload_
+@@ -962,7 +962,8 @@ static bool ieee80211_set_sdata_offload_
  		    local->hw.wiphy->frag_threshold != (u32)-1)
  			flags &= ~IEEE80211_OFFLOAD_ENCAP_ENABLED;
  
