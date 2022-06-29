@@ -1,26 +1,28 @@
 diff --git a/files/hostapd.sh b/files/hostapd.sh
-index d9d5f34..af5e6fe 100644
+index 760b3ff..b7a76bb 100644
 --- a/files/hostapd.sh
 +++ b/files/hostapd.sh
-@@ -113,6 +113,7 @@ hostapd_common_add_device_config() {
+@@ -109,6 +109,7 @@ hostapd_common_add_device_config() {
+ 	config_add_string require_mode
+ 	config_add_boolean legacy_rates
+ 	config_add_int cell_density
++	config_add_boolean vendor_vht
+ 	config_add_int rts_threshold
  	config_add_int rssi_reject_assoc_rssi
  	config_add_int rssi_ignore_probe_request
- 	config_add_int maxassoc
-+	config_add_boolean vendor_vht
- 
- 	config_add_string acs_chan_bias
- 	config_add_array hostapd_options
-@@ -130,7 +131,8 @@ hostapd_prepare_device_config() {
+@@ -129,9 +130,9 @@ hostapd_prepare_device_config() {
+ 	local base_cfg=
  
  	json_get_vars country country3 country_ie beacon_int:100 dtim_period:2 doth require_mode legacy_rates \
- 		acs_chan_bias local_pwr_constraint spectrum_mgmt_required airtime_mode cell_density \
--		rts_threshold beacon_rate rssi_reject_assoc_rssi rssi_ignore_probe_request maxassoc
-+		rts_threshold beacon_rate rssi_reject_assoc_rssi rssi_ignore_probe_request maxassoc \
-+		vendor_vht
- 
+-		acs_chan_bias local_pwr_constraint spectrum_mgmt_required airtime_mode cell_density \
++		acs_chan_bias local_pwr_constraint spectrum_mgmt_required airtime_mode cell_density vendor_vht \
+ 		rts_threshold beacon_rate rssi_reject_assoc_rssi rssi_ignore_probe_request maxassoc
+-
++		
  	hostapd_set_log_options base_cfg
  
-@@ -199,6 +201,7 @@ hostapd_prepare_device_config() {
+ 	set_default country_ie 1
+@@ -199,6 +200,7 @@ hostapd_prepare_device_config() {
  				set_default rate_list "24000 36000 48000 54000"
  				set_default basic_rate_list "24000"
  			fi
