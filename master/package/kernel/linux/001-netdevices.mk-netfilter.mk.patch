@@ -2,7 +2,7 @@ diff --git a/modules/netdevices.mk b/modules/netdevices.mk
 index 6d263bd..255c4a7 100644
 --- a/modules/netdevices.mk
 +++ b/modules/netdevices.mk
-@@ -1164,6 +1164,28 @@ endef
+@@ -1180,6 +1180,28 @@ endef
  
  $(eval $(call KernelPackage,bnx2x))
  
