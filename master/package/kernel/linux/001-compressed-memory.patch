@@ -58,7 +58,7 @@ diff --git a/modules/other.mk b/modules/other.mk
 index 499a408..1f9a8a4 100644
 --- a/modules/other.mk
 +++ b/modules/other.mk
-@@ -1320,3 +1320,96 @@ define KernelPackage/mhi-pci-generic/description
+@@ -1338,3 +1338,96 @@ define KernelPackage/mhi-pci-generic/description
  endef
  
  $(eval $(call KernelPackage,mhi-pci-generic))
