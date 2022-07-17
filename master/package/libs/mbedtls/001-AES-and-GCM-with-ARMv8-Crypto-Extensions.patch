@@ -66,8 +66,8 @@ index 9c6c81d..3dd1e96 100644
 +endif
  
  CMAKE_OPTIONS += \
- 	-DUSE_SHARED_MBEDTLS_LIBRARY:Bool=ON \
-@@ -100,6 +136,8 @@ define Build/Configure
+ 	-DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+@@ -101,6 +137,8 @@ define Build/Configure
  
  	awk 'BEGIN { rc = 1 } \
  	     /#define MBEDTLS_DEBUG_C/ { $$$$0 = "$(if $(CONFIG_LIBMBEDTLS_DEBUG_C),,// )#define MBEDTLS_DEBUG_C"; rc = 0 } \
