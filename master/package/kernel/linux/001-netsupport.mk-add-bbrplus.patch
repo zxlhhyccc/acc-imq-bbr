@@ -170,10 +170,10 @@ index 76187df..68f9e9b 100644
  define KernelPackage/tcp-hybla
    SUBMENU:=$(NETWORK_SUPPORT_MENU)
    TITLE:=TCP-Hybla congestion control algorithm
-@@ -1346,3 +1463,67 @@ define KernelPackage/wireguard/description
+@@ -1362,3 +1479,67 @@ define KernelPackage/netconsole/description
  endef
  
- $(eval $(call KernelPackage,wireguard))
+ $(eval $(call KernelPackage,netconsole))
 +
 +
 +define KernelPackage/qrtr
