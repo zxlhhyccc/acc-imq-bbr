@@ -42,7 +42,7 @@ index 6aee5c6..2e68909 100644
  define Package/iptables-mod-ipopt
  $(call Package/iptables/Module, +kmod-ipt-ipopt)
    TITLE:=IP/Packet option extensions
-@@ -774,6 +807,11 @@ $(eval $(call BuildPlugin,iptables-mod-conntrack-label,$(IPT_CONNTRACK_LABEL-m))
+@@ -773,6 +806,11 @@ $(eval $(call BuildPlugin,iptables-mod-conntrack-label,$(IPT_CONNTRACK_LABEL-m))
  $(eval $(call BuildPlugin,iptables-mod-extra,$(IPT_EXTRA-m)))
  $(eval $(call BuildPlugin,iptables-mod-physdev,$(IPT_PHYSDEV-m)))
  $(eval $(call BuildPlugin,iptables-mod-filter,$(IPT_FILTER-m)))
