@@ -1251,7 +1251,7 @@ $(eval $(call KernelPackage,usb-net-mcs7830))
 
 define KernelPackage/usb-net-smsc75xx
   TITLE:=SMSC LAN75XX based USB 2.0 Gigabit ethernet devices
-  DEPENDS:=+!LINUX_5_4:kmod-libphy
+  DEPENDS:=+kmod-libphy
   KCONFIG:=CONFIG_USB_NET_SMSC75XX
   FILES:=$(LINUX_DIR)/drivers/$(USBNET_DIR)/smsc75xx.ko
   AUTOLOAD:=$(call AutoProbe,smsc75xx)
@@ -1267,7 +1267,7 @@ $(eval $(call KernelPackage,usb-net-smsc75xx))
 
 define KernelPackage/usb-net-smsc95xx
   TITLE:=SMSC LAN95XX based USB 2.0 10/100 ethernet devices
-  DEPENDS:=+(LINUX_5_10||LINUX_5_15):kmod-libphy
+  DEPENDS:=+kmod-libphy
   KCONFIG:=CONFIG_USB_NET_SMSC95XX
   FILES:=$(LINUX_DIR)/drivers/$(USBNET_DIR)/smsc95xx.ko
   AUTOLOAD:=$(call AutoProbe,smsc95xx)
@@ -1440,7 +1440,7 @@ define KernelPackage/usb-net-cdc-ncm
   KCONFIG:=CONFIG_USB_NET_CDC_NCM
   FILES:= $(LINUX_DIR)/drivers/$(USBNET_DIR)/cdc_ncm.ko
   AUTOLOAD:=$(call AutoProbe,cdc_ncm)
-  $(call AddDepends/usb-net,+!LINUX_5_4:kmod-usb-net-cdc-ether)
+  $(call AddDepends/usb-net,+kmod-usb-net-cdc-ether)
 endef
 
 define KernelPackage/usb-net-cdc-ncm/description
@@ -1543,7 +1543,7 @@ define KernelPackage/usb-hid-cp2112
   SUBMENU:=$(USB_MENU)
   TITLE:=Silicon Labs CP2112 HID USB to SMBus Master Bridge
   KCONFIG:=CONFIG_GPIOLIB=y CONFIG_HID_CP2112
-  DEPENDS:=+kmod-usb-hid +kmod-i2c-core
+  DEPENDS:=@GPIO_SUPPORT +kmod-usb-hid +kmod-i2c-core
   FILES:=$(LINUX_DIR)/drivers/hid/hid-cp2112.ko
   AUTOLOAD:=$(call AutoProbe,hid-cp2112)
 endef
@@ -1554,6 +1554,23 @@ define KernelPackage/usb-hid-cp2112/description
 endef
 
 $(eval $(call KernelPackage,usb-hid-cp2112))
+
+
+define KernelPackage/usb-hid-mcp2221
+  SUBMENU:=$(USB_MENU)
+  TITLE:=Microchip USB 2.0 to I2C/UART Protocol Converter with GPIO
+  KCONFIG:=CONFIG_HID_MCP2221
+  DEPENDS:=@GPIO_SUPPORT +kmod-usb-hid +kmod-i2c-core
+  FILES:=$(LINUX_DIR)/drivers/hid/hid-mcp2221.ko
+  AUTOLOAD:=$(call AutoProbe,hid-mcp2221)
+endef
+
+define KernelPackage/usb-hid-mcp2221/description
+ HID device driver which registers as an i2c adapter and gpiochip to expose
+ these functions of the MCP2221.
+endef
+
+$(eval $(call KernelPackage,usb-hid-mcp2221))
 
 
 define KernelPackage/usb-yealink
@@ -1804,7 +1821,6 @@ $(eval $(call KernelPackage,usb-xhci-mtk))
 
 define KernelPackage/usb-xhci-pci-renesas
   TITLE:=Support for additional Renesas xHCI controller with firmware
-  DEPENDS:=@LINUX_5_10
   KCONFIG:=CONFIG_USB_XHCI_PCI_RENESAS
   HIDDEN:=1
   FILES:=$(LINUX_DIR)/drivers/usb/host/xhci-pci-renesas.ko
