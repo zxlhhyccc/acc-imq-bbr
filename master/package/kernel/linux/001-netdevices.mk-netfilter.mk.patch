@@ -32,10 +32,10 @@ index 6d263bd..255c4a7 100644
    SUBMENU:=$(NETWORK_DEVICES_MENU)
    TITLE:=Broadcom Emulex OneConnect 10Gbps NIC
 diff --git a/modules/netfilter.mk b/modules/netfilter.mk
-index 6427d07..920d35e 100644
+index 22b7dbd..42c7c02 100644
 --- a/modules/netfilter.mk
 +++ b/modules/netfilter.mk
-@@ -501,6 +501,24 @@ endef
+@@ -502,6 +502,24 @@ endef
  $(eval $(call KernelPackage,ipt-nat))
  
  
@@ -60,7 +60,7 @@ index 6427d07..920d35e 100644
  define KernelPackage/ipt-raw
    TITLE:=Netfilter IPv4 raw table support
    KCONFIG:=CONFIG_IP_NF_RAW
-@@ -512,6 +530,75 @@ endef
+@@ -513,6 +531,75 @@ endef
  $(eval $(call KernelPackage,ipt-raw))
  
  
