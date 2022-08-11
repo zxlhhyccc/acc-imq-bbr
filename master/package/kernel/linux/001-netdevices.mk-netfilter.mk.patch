@@ -1,12 +1,11 @@
 diff --git a/modules/netdevices.mk b/modules/netdevices.mk
-index bb4e1ab..381eeb7 100644
+index 140459a..ac3be35 100644
 --- a/modules/netdevices.mk
 +++ b/modules/netdevices.mk
-@@ -1180,6 +1180,28 @@ endef
+@@ -1213,6 +1213,26 @@ endef
  
  $(eval $(call KernelPackage,bnx2x))
  
-+
 +define KernelPackage/bnxt-en
 +  SUBMENU:=$(NETWORK_DEVICES_MENU)
 +  TITLE:=BCM 574xx/575xx 10/25/50-Gigabit ethernet adapter driver
@@ -27,12 +26,11 @@ index bb4e1ab..381eeb7 100644
 +
 +$(eval $(call KernelPackage,bnxt-en))
 +
-+
  define KernelPackage/be2net
    SUBMENU:=$(NETWORK_DEVICES_MENU)
    TITLE:=Broadcom Emulex OneConnect 10Gbps NIC
 diff --git a/modules/netfilter.mk b/modules/netfilter.mk
-index 22b7dbd..42c7c02 100644
+index e6e2c9b..e99c193 100644
 --- a/modules/netfilter.mk
 +++ b/modules/netfilter.mk
 @@ -502,6 +502,24 @@ endef
