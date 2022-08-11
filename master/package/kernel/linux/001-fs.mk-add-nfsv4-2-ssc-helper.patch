@@ -2,7 +2,7 @@ diff --git a/modules/fs.mk b/modules/fs.mk
 index 06c609b..308b8b0 100644
 --- a/modules/fs.mk
 +++ b/modules/fs.mk
-@@ -376,7 +376,7 @@ $(eval $(call KernelPackage,fs-msdos))
+@@ -378,7 +378,7 @@ $(eval $(call KernelPackage,fs-msdos))
  define KernelPackage/fs-nfs
    SUBMENU:=$(FS_MENU)
    TITLE:=NFS filesystem client support
@@ -11,11 +11,11 @@ index 06c609b..308b8b0 100644
    KCONFIG:= \
  	CONFIG_NFS_FS \
  	CONFIG_NFS_USE_LEGACY_DNS=n \
-@@ -393,6 +393,17 @@ endef
+@@ -395,6 +395,17 @@ endef
  $(eval $(call KernelPackage,fs-nfs))
  
  
-+define KernelPackage/fs-nfs-ssc
+++define KernelPackage/fs-nfs-ssc
 +  SUBMENU:=$(FS_MENU)
 +  TITLE:=Common NFS filesystem SSC Helper module
 +  KCONFIG:= CONFIG_NFS_V4_2@ge5.10
@@ -29,7 +29,7 @@ index 06c609b..308b8b0 100644
  define KernelPackage/fs-nfs-common
    SUBMENU:=$(FS_MENU)
    TITLE:=Common NFS filesystem modules
-@@ -466,7 +477,7 @@ $(eval $(call KernelPackage,fs-nfs-v3))
+@@ -468,7 +479,7 @@ $(eval $(call KernelPackage,fs-nfs-v3))
  define KernelPackage/fs-nfs-v4
    SUBMENU:=$(FS_MENU)
    TITLE:=NFS4 filesystem client support
