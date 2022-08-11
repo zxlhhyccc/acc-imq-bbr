@@ -2,7 +2,7 @@ diff --git a/modules/usb.mk b/modules/usb.mk
 index a52ba74..467abfd 100644
 --- a/modules/usb.mk
 +++ b/modules/usb.mk
-@@ -477,7 +477,7 @@ $(eval $(call KernelPackage,usb-dwc3))
+@@ -494,7 +494,7 @@ $(eval $(call KernelPackage,usb-dwc3))
  
  define KernelPackage/usb-dwc3-qcom
    TITLE:=DWC3 Qualcomm USB driver
@@ -11,7 +11,7 @@ index a52ba74..467abfd 100644
    KCONFIG:= CONFIG_USB_DWC3_QCOM
    FILES:= $(LINUX_DIR)/drivers/usb/dwc3/dwc3-qcom.ko
    AUTOLOAD:=$(call AutoLoad,53,dwc3-qcom,1)
-@@ -1123,6 +1123,7 @@ endef
+@@ -1140,6 +1140,7 @@ endef
  
  define KernelPackage/usb-net-aqc111
    TITLE:=Support for USB-to-Ethernet Aquantia AQtion 5/2.5GbE
@@ -19,11 +19,3 @@ index a52ba74..467abfd 100644
    KCONFIG:=CONFIG_USB_NET_AQC111
    FILES:=$(LINUX_DIR)/drivers/$(USBNET_DIR)/aqc111.ko
    AUTOLOAD:=$(call AutoProbe,aqc111)
-@@ -1803,6 +1804,7 @@ $(eval $(call KernelPackage,usb-xhci-mtk))
- 
- define KernelPackage/usb-xhci-pci-renesas
-   TITLE:=Support for additional Renesas xHCI controller with firmware
-+  DEPENDS:=@LINUX_5_10
-   KCONFIG:=CONFIG_USB_XHCI_PCI_RENESAS
-   HIDDEN:=1
-   FILES:=$(LINUX_DIR)/drivers/usb/host/xhci-pci-renesas.ko
