@@ -15,7 +15,7 @@ index 06c609b..308b8b0 100644
  $(eval $(call KernelPackage,fs-nfs))
  
  
-++define KernelPackage/fs-nfs-ssc
++define KernelPackage/fs-nfs-ssc
 +  SUBMENU:=$(FS_MENU)
 +  TITLE:=Common NFS filesystem SSC Helper module
 +  KCONFIG:= CONFIG_NFS_V4_2@ge5.10
