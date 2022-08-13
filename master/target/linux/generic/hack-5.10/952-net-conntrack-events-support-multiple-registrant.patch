@@ -84,7 +84,7 @@ Signed-off-by: Zhi Chen <zhichen@codeaurora.org>
  #else
 --- a/include/net/netns/conntrack.h
 +++ b/include/net/netns/conntrack.h
-@@ -120,7 +120,11 @@ struct netns_ct {
+@@ -118,7 +118,11 @@ struct netns_ct {
  
  	struct ct_pcpu __percpu *pcpu_lists;
  	struct ip_conntrack_stat __percpu *stat;
