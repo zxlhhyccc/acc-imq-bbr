@@ -46,7 +46,7 @@ diff --git a/modules/netsupport.mk b/modules/netsupport.mk
 index 9b99aa1..ce8cf1e 100644
 --- a/modules/netsupport.mk
 +++ b/modules/netsupport.mk
-@@ -1014,6 +1014,123 @@ endef
+@@ -1029,6 +1029,123 @@ endef
  $(eval $(call KernelPackage,tcp-bbr))
  
  
@@ -170,7 +170,7 @@ index 9b99aa1..ce8cf1e 100644
  define KernelPackage/tcp-hybla
    SUBMENU:=$(NETWORK_SUPPORT_MENU)
    TITLE:=TCP-Hybla congestion control algorithm
-@@ -1408,3 +1525,67 @@ define KernelPackage/netconsole/description
+@@ -1423,3 +1540,67 @@ define KernelPackage/netconsole/description
  endef
  
  $(eval $(call KernelPackage,netconsole))
