@@ -15,7 +15,7 @@ index 1c53dab..9a7c59c 100644
 +
  endmenu
 diff --git a/Makefile b/Makefile
-index 886c55d..1256755 100644
+index 340de58..5facee4 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -16,7 +16,8 @@ PKG_SOURCE_URL:=https://nginx.org/download/
@@ -78,7 +78,16 @@ index 886c55d..1256755 100644
  
  TARGET_CFLAGS += -fvisibility=hidden -ffunction-sections -fdata-sections -DNGX_LUA_NO_BY_LUA_BLOCK
  TARGET_LDFLAGS += -Wl,--gc-sections
-@@ -445,6 +466,20 @@ define Prepare/nginx-ts
+@@ -372,7 +393,7 @@ ifeq ($(CONFIG_NGINX_NAXSI),y)
+ endif
+ 	$(if $(CONFIG_NGINX_NAXSI),$($(INSTALL_BIN) $(PKG_BUILD_DIR)/nginx-naxsi/naxsi_config/naxsi_core.rules $(1)/etc/nginx))
+ 	$(if $(CONFIG_NGINX_NAXSI),$(chmod 0640 $(1)/etc/nginx/naxsi_core.rules))
+-
++	
+ 	$(INSTALL_DIR) $(1)/etc/hotplug.d/acme
+ 	$(INSTALL_DATA) ./files/acme.hotplug $(1)/etc/hotplug.d/acme/00-nginx
+ endef
+@@ -448,6 +469,20 @@ define Prepare/nginx-ts
  	xzcat $(DL_DIR)/$(FILE) | tar -C $(PKG_BUILD_DIR) $(TAR_OPTIONS)
  endef
  
@@ -99,7 +108,7 @@ index 886c55d..1256755 100644
  define Download/nginx-naxsi
    VERSION:=951123ad456bdf5ac94e8d8819342fe3d49bc002
    SUBDIR:=nginx-naxsi
-@@ -558,6 +593,11 @@ ifeq ($(CONFIG_NGINX_TS_MODULE),y)
+@@ -561,6 +596,11 @@ ifeq ($(CONFIG_NGINX_TS_MODULE),y)
    $(Prepare/nginx-ts)
  endif
  
@@ -111,7 +120,7 @@ index 886c55d..1256755 100644
  ifneq "$(or $(CONFIG_NGINX_DAV),$(QUILT))" ""
    $(eval $(call Download,nginx-dav-ext-module))
    $(Prepare/nginx-dav-ext-module)
-@@ -574,6 +614,7 @@ endef
+@@ -577,6 +617,7 @@ endef
  $(eval $(call BuildPackage,nginx-ssl))
  $(eval $(call BuildPackage,nginx-all-module))
  $(eval $(call BuildPackage,nginx-mod-luci))
