@@ -12,11 +12,9 @@ Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
  nss_init.c        |  4 ++++
  3 files changed, 48 insertions(+), 18 deletions(-)
 
-diff --git a/Makefile b/Makefile
-index f5c4b90..0194dbd 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -39,35 +39,55 @@ qca-nss-drv-objs := \
+@@ -39,21 +39,44 @@ qca-nss-drv-objs := \
  			nss_pm.o \
  			nss_profiler.o \
  			nss_project.o \
@@ -33,68 +31,57 @@ index f5c4b90..0194dbd 100644
 -			nss_unaligned_stats.o \
 -			nss_virt_if.o \
 -			nss_virt_if_stats.o \
--			nss_vlan.o \
--			nss_vlan_log.o \
--			nss_wifi.o \
--			nss_wifi_log.o \
--			nss_wifi_stats.o \
--			nss_wifi_vdev.o \
--			nss_wifili.o \
--			nss_wifili_log.o \
--			nss_wifili_stats.o \
--			nss_wifili_strings.o \
--			nss_wifi_mac_db.o
 +			nss_unaligned_stats.o
- 
- # Base NSS data plane/HAL support
- qca-nss-drv-objs += nss_data_plane/nss_data_plane_common.o
- qca-nss-drv-objs += nss_hal/nss_hal.o
- 
++
++# Base NSS data plane/HAL support
++qca-nss-drv-objs += nss_data_plane/nss_data_plane_common.o
++qca-nss-drv-objs += nss_hal/nss_hal.o
++
 +ifneq "$(NSS_DRV_PPPOE_ENABLE)" "n"
 +ccflags-y += -DNSS_DRV_PPPOE_ENABLE
 +qca-nss-drv-objs += \
-+		    nss_pppoe.o \
-+		    nss_pppoe_log.o \
-+		    nss_pppoe_stats.o \
-+		    nss_pppoe_strings.o
++			nss_pppoe.o \
++			nss_pppoe_log.o \
++			nss_pppoe_stats.o \
++			nss_pppoe_strings.o
 +endif
 +
 +ifneq "$(NSS_DRV_VIRT_IF_ENABLE)" "n"
 +ccflags-y += -DNSS_DRV_VIRT_IF_ENABLE
 +qca-nss-drv-objs += \
-+		    nss_virt_if.o \
-+		    nss_virt_if_stats.o
++			nss_virt_if.o 		\
++			nss_virt_if_stats.o
 +endif
 +
 +ifneq "$(NSS_DRV_VLAN_ENABLE)" "n"
 +ccflags-y += -DNSS_DRV_VLAN_ENABLE
 +qca-nss-drv-objs += \
-+		    nss_vlan.o \
-+		    nss_vlan_log.o
+ 			nss_vlan.o \
+-			nss_vlan_log.o \
++			nss_vlan_log.o
 +endif
 +
 +ifneq "$(NSS_DRV_WIFI_ENABLE)" "n"
 +ccflags-y += -DNSS_DRV_WIFI_ENABLE
 +qca-nss-drv-objs += \
-+		    nss_wifi.o \
-+		    nss_wifi_log.o \
-+		    nss_wifi_stats.o \
-+		    nss_wifi_vdev.o \
-+		    nss_wifili.o \
-+		    nss_wifili_log.o \
-+		    nss_wifili_stats.o \
-+		    nss_wifili_strings.o \
-+		    nss_wifi_mac_db.o
+ 			nss_wifi.o \
+ 			nss_wifi_log.o \
+ 			nss_wifi_stats.o \
+@@ -63,10 +86,7 @@ qca-nss-drv-objs := \
+ 			nss_wifili_stats.o \
+ 			nss_wifili_strings.o \
+ 			nss_wifi_mac_db.o
+-
+-# Base NSS data plane/HAL support
+-qca-nss-drv-objs += nss_data_plane/nss_data_plane_common.o
+-qca-nss-drv-objs += nss_hal/nss_hal.o
 +endif
-+
+ 
  ifneq "$(NSS_DRV_BRIDGE_ENABLE)" "n"
  ccflags-y += -DNSS_DRV_BRIDGE_ENABLE
- qca-nss-drv-objs += \
-diff --git a/nss_hal/nss_hal.c b/nss_hal/nss_hal.c
-index 7e9a044..c0051e4 100644
 --- a/nss_hal/nss_hal.c
 +++ b/nss_hal/nss_hal.c
-@@ -461,10 +461,12 @@ int nss_hal_probe(struct platform_device *nss_dev)
+@@ -461,10 +461,12 @@ int nss_hal_probe(struct platform_device
  	}
  #endif
  
@@ -107,7 +94,7 @@ index 7e9a044..c0051e4 100644
  
  #ifdef NSS_DRV_PPE_ENABLE
  	if (npd->ppe_enabled == NSS_FEATURE_ENABLED) {
-@@ -559,6 +561,7 @@ int nss_hal_probe(struct platform_device *nss_dev)
+@@ -559,6 +561,7 @@ int nss_hal_probe(struct platform_device
  	}
  #endif
  
@@ -115,7 +102,7 @@ index 7e9a044..c0051e4 100644
  	if (npd->wifioffload_enabled == NSS_FEATURE_ENABLED) {
  		nss_top->wifi_handler_id = nss_dev->id;
  		nss_top->dynamic_interface_table[NSS_DYNAMIC_INTERFACE_TYPE_VAP] = nss_dev->id;
-@@ -586,6 +589,7 @@ int nss_hal_probe(struct platform_device *nss_dev)
+@@ -586,6 +589,7 @@ int nss_hal_probe(struct platform_device
  		 */
  		nss_wifili_thread_scheme_db_init(nss_dev->id);
  	}
@@ -123,7 +110,7 @@ index 7e9a044..c0051e4 100644
  
  #ifdef NSS_DRV_OAM_ENABLE
  	if (npd->oam_enabled == NSS_FEATURE_ENABLED) {
-@@ -602,11 +606,13 @@ int nss_hal_probe(struct platform_device *nss_dev)
+@@ -602,11 +606,13 @@ int nss_hal_probe(struct platform_device
  	}
  #endif
  
@@ -137,8 +124,6 @@ index 7e9a044..c0051e4 100644
  
  #ifdef NSS_DRV_QVPN_ENABLE
  #if defined(NSS_HAL_IPQ807x_SUPPORT) || defined(NSS_HAL_IPQ60XX_SUPPORT)
-diff --git a/nss_init.c b/nss_init.c
-index ebd2a12..40e9351 100644
 --- a/nss_init.c
 +++ b/nss_init.c
 @@ -775,10 +775,12 @@ static int __init nss_init(void)
@@ -167,5 +152,3 @@ index ebd2a12..40e9351 100644
  
  	/*
  	 * Unregister ipv4/6 specific sysctl and free allocated to connection tables
--- 
-2.34.1

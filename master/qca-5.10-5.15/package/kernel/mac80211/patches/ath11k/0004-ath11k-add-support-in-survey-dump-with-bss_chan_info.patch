@@ -1,7 +1,7 @@
-From 9b4dd38b46cf24d8cb3ab433661cdc23a35160d0 Mon Sep 17 00:00:00 2001
+From 376bbc37f720fbefb8f6b2c54e696cd9a6c1cf54 Mon Sep 17 00:00:00 2001
 From: Seevalamuthu Mariappan <seevalam@codeaurora.org>
 Date: Wed, 21 Jul 2021 00:49:21 +0300
-Subject: [PATCH] ath11k: add support in survey dump with bss_chan_info
+Subject: [PATCH 004/241] ath11k: add support in survey dump with bss_chan_info
 
 Survey dump statistics is not displaying channel rx and tx time because
 the service flag is not enabled. Enable the service flag "bss_chan_info"

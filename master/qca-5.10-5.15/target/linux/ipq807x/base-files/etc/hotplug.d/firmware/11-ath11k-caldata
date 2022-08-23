@@ -11,16 +11,14 @@ case "$FIRMWARE" in
 	case "$board" in
 	edgecore,eap102|\
 	edimax,cax1800|\
+	dynalink,dl-wrx36|\
 	qnap,301w|\
-	netgear,sxr80|\
 	redmi,ax6|\
-	xiaomi,ax3600-1G|\
 	xiaomi,ax3600|\
-	xiaomi,ax9000|\
-	zte,mf269)
+	xiaomi,ax9000)
 		caldata_extract "0:art" 0x1000 0x20000
 		;;
-	tplink,xtr10890)
+	zte,mf269)
 		caldata_extract "0:ART" 0x1000 0x20000
 		;;
 	esac

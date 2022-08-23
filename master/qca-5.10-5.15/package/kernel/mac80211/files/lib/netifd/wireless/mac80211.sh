@@ -1,6 +1,7 @@
 #!/bin/sh
 . /lib/netifd/netifd-wireless.sh
 . /lib/netifd/hostapd.sh
+. /lib/functions/system.sh
 
 init_wireless_driver "$@"
 
@@ -138,7 +139,8 @@ mac80211_hostapd_setup_base() {
 		append base_cfg "acs_exclude_dfs=1" "$N"
 
 	json_get_vars noscan ht_coex vendor_vht min_tx_power:0
-	json_get_values ht_capab_list ht_capab tx_burst
+	json_get_values ht_capab_list ht_capab
+	json_get_vars tx_burst
 	json_get_values channel_list channels
 
 	[ "$auto_channel" = 0 ] && [ -z "$channel_list" ] && \
@@ -268,7 +270,6 @@ mac80211_hostapd_setup_base() {
 				case "$channel" in
 					36|40|44|48|52|56|60|64) idx=50;;
 					100|104|108|112|116|120|124|128) idx=114;;
-					149|153|157|161|165|169|173|177) idx=163;;
 				esac
 			fi
 			enable_ac=1
@@ -421,9 +422,9 @@ mac80211_hostapd_setup_base() {
 			he_spr_non_srg_obss_pd_max_offset:1 \
 			he_bss_color
 
-		he_phy_cap=$(iw phy "$phy" info | awk -F "[()]" '/HE PHY Capabilities/ { print $2 }' | head -1)
+		he_phy_cap=$(iw phy "$phy" info | sed -n '/HE Iftypes: AP/,$p' | awk -F "[()]" '/HE PHY Capabilities/ { print $2 }' | head -1)
 		he_phy_cap=${he_phy_cap:2}
-		he_mac_cap=$(iw phy "$phy" info | awk -F "[()]" '/HE MAC Capabilities/ { print $2 }' | head -1)
+		he_mac_cap=$(iw phy "$phy" info | sed -n '/HE Iftypes: AP/,$p' | awk -F "[()]" '/HE MAC Capabilities/ { print $2 }' | head -1)
 		he_mac_cap=${he_mac_cap:2}
 
 		append base_cfg "ieee80211ax=1" "$N"
@@ -668,10 +669,12 @@ mac80211_prepare_vif() {
 
 	json_select ..
 
-	[ -n "$macaddr" ] || {
+	if [ -z "$macaddr" ]; then
 		macaddr="$(mac80211_generate_mac $phy)"
 		macidx="$(($macidx + 1))"
-	}
+	elif [ "$macaddr" = 'random' ]; then
+		macaddr="$(macaddr_random)"
+	fi
 
 	json_add_object data
 	json_add_string ifname "$ifname"

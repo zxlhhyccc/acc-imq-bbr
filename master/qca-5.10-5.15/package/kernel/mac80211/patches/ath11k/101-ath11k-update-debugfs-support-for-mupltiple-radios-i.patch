@@ -1,7 +1,8 @@
-From a1e16842a097171cc544b45e343effe97eadb493 Mon Sep 17 00:00:00 2001
+From 078dbf863b2ccda1952ffbd70b89ae64a784c407 Mon Sep 17 00:00:00 2001
 From: Anilkumar Kolli <akolli@codeaurora.org>
 Date: Wed, 30 Mar 2022 11:28:03 +0300
-Subject: ath11k: update debugfs support for mupltiple radios in PCI bus
+Subject: [PATCH 239/241] ath11k: update debugfs support for mupltiple radios
+ in PCI bus
 
 debugfs_ath11k struct is moved to ath11k_core, since its common
 for both pci and ahb.
@@ -37,14 +38,12 @@ Signed-off-by: Anilkumar Kolli <akolli@codeaurora.org>
 Patchwork-Id: 12101611
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 ---
- drivers/net/wireless/ath/ath11k/debugfs.c | 58 +++++++++++++++++++++++++------
+ drivers/net/wireless/ath/ath11k/debugfs.c | 58 +++++++++++++++++++----
  1 file changed, 48 insertions(+), 10 deletions(-)
-
-(limited to 'drivers/net/wireless/ath/ath11k/debugfs.c')
 
 --- a/drivers/net/wireless/ath/ath11k/debugfs.c
 +++ b/drivers/net/wireless/ath/ath11k/debugfs.c
-@@ -15,6 +15,8 @@
+@@ -13,6 +13,8 @@
  #include "debugfs_htt_stats.h"
  #include "peer.h"
  
@@ -53,7 +52,7 @@ Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
  static const char *htt_bp_umac_ring[HTT_SW_UMAC_RING_IDX_MAX] = {
  	"REO2SW1_RING",
  	"REO2SW2_RING",
-@@ -987,10 +989,6 @@ int ath11k_debugfs_pdev_create(struct at
+@@ -985,10 +987,6 @@ int ath11k_debugfs_pdev_create(struct at
  	if (test_bit(ATH11K_FLAG_REGISTERED, &ab->dev_flags))
  		return 0;
  
@@ -64,7 +63,7 @@ Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
  	debugfs_create_file("simulate_fw_crash", 0600, ab->debugfs_soc, ab,
  			    &fops_simulate_fw_crash);
  
-@@ -1002,24 +1000,58 @@ int ath11k_debugfs_pdev_create(struct at
+@@ -1000,24 +998,58 @@ int ath11k_debugfs_pdev_create(struct at
  
  void ath11k_debugfs_pdev_destroy(struct ath11k_base *ab)
  {
@@ -129,7 +128,7 @@ Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
  void ath11k_debugfs_fw_stats_init(struct ath11k *ar)
  {
  	struct dentry *fwstats_dir = debugfs_create_dir("fw_stats",
-@@ -1388,6 +1420,9 @@ int ath11k_debugfs_register(struct ath11
+@@ -1386,6 +1418,9 @@ int ath11k_debugfs_register(struct ath11
  	char pdev_name[5];
  	char buf[100] = {0};
  
@@ -139,7 +138,7 @@ Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
  	snprintf(pdev_name, sizeof(pdev_name), "%s%d", "mac", ar->pdev_idx);
  
  	ar->debug.debugfs_pdev = debugfs_create_dir(pdev_name, ab->debugfs_soc);
-@@ -1448,6 +1483,9 @@ void ath11k_debugfs_unregister(struct at
+@@ -1446,6 +1481,9 @@ void ath11k_debugfs_unregister(struct at
  		kfree(dbr_debug);
  		ar->debug.dbr_debug[i] = NULL;
  	}

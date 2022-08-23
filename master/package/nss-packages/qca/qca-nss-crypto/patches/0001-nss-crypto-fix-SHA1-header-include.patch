@@ -13,8 +13,6 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
  v2.0/src/nss_crypto_hlos.h | 2 ++
  1 file changed, 2 insertions(+)
 
-diff --git a/v2.0/src/nss_crypto_hlos.h b/v2.0/src/nss_crypto_hlos.h
-index 84740c2..e827f4f 100644
 --- a/v2.0/src/nss_crypto_hlos.h
 +++ b/v2.0/src/nss_crypto_hlos.h
 @@ -55,7 +55,9 @@
@@ -27,6 +25,3 @@ index 84740c2..e827f4f 100644
  #include <crypto/sha.h>
  #include <crypto/aes.h>
  #include <crypto/des.h>
--- 
-2.35.1
-

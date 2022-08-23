@@ -10,6 +10,9 @@ platform_check_image() {
 
 platform_do_upgrade() {
 	case "$(board_name)" in
+	dynalink,dl-wrx36)
+		nand_do_upgrade "$1"
+		;;
 	edgecore,eap102)
 		active="$(fw_printenv -n active)"
 		if [ "$active" -eq "1" ]; then
@@ -31,7 +34,6 @@ platform_do_upgrade() {
 		mmc_do_upgrade "$1"
 		;;
 	redmi,ax6|\
-	xiaomi,ax3600-1G|\
 	xiaomi,ax3600|\
 	xiaomi,ax9000)
 		part_num="$(fw_printenv -n flag_boot_rootfs)"
@@ -60,9 +62,6 @@ platform_do_upgrade() {
 		nand_do_upgrade "$1"
 		;;
 	zte,mf269)
-		nand_do_upgrade "$1"
-		;;
-	tplink,xtr10890)
 		nand_do_upgrade "$1"
 		;;
 	*)

@@ -23,25 +23,32 @@ define Device/UbiFit
 	IMAGE/nand-sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
 
-define Device/UbiFit-ipq
-        KERNEL_IN_UBI := 1
-        IMAGES := nand-factory.ubi nand-sysupgrade.bin
-        IMAGE/nand-factory.ubi := append-ubi | qsdk-ipq-factory-nand
-        IMAGE/nand-sysupgrade.bin := sysupgrade-tar | append-metadata
+define Device/dynalink_dl-wrx36
+	$(call Device/FitImage)
+	$(call Device/UbiFit)
+	DEVICE_VENDOR := Dynalink
+	DEVICE_MODEL := DL-WRX36
+	BLOCKSIZE := 128k
+	PAGESIZE := 2048
+	DEVICE_DTS_CONFIG := config@rt5010w-d350-rev0
+	SOC := ipq8072
+	DEVICE_PACKAGES := ipq-wifi-dynalink_dl-wrx36
 endef
+TARGET_DEVICES += dynalink_dl-wrx36
 
-#define Device/edgecore_eap102
-#	$(call Device/FitImage)
-#	$(call Device/UbiFit-ipq)
-#	DEVICE_VENDOR := Edgecore
-#	DEVICE_MODEL := EAP102
-#	BLOCKSIZE := 128k
-#	PAGESIZE := 2048
-#	DEVICE_DTS_CONFIG := config@ac02
-#	SOC := ipq8071
-#	DEVICE_PACKAGES := ipq-wifi-edgecore_eap102
-#endef
-#TARGET_DEVICES += edgecore_eap102
+define Device/edgecore_eap102
+	$(call Device/FitImage)
+	$(call Device/UbiFit)
+	DEVICE_VENDOR := Edgecore
+	DEVICE_MODEL := EAP102
+	BLOCKSIZE := 128k
+	PAGESIZE := 2048
+	DEVICE_DTS_CONFIG := config@ac02
+	SOC := ipq8071
+	DEVICE_PACKAGES := ipq-wifi-edgecore_eap102
+	IMAGE/nand-factory.ubi := append-ubi | qsdk-ipq-factory-nand
+endef
+TARGET_DEVICES += edgecore_eap102
 
 define Device/edimax_cax1800
 	$(call Device/FitImage)
@@ -67,22 +74,22 @@ define Device/qnap_301w
 	IMAGES += factory.bin sysupgrade.bin
 	IMAGE/factory.bin := append-rootfs | pad-rootfs | pad-to 64k
 	IMAGE/sysupgrade.bin/squashfs := append-rootfs | pad-to 64k | sysupgrade-tar rootfs=$$$$@ | append-metadata
-	DEVICE_PACKAGES := ipq-wifi-qnap_301w e2fsprogs kmod-fs-ext4 losetup kmod-usb3 kmod-usb-dwc3 kmod-usb-dwc3-qcom
+	DEVICE_PACKAGES := ipq-wifi-qnap_301w e2fsprogs kmod-fs-ext4 losetup
 endef
 TARGET_DEVICES += qnap_301w
 
-# define Device/netgear_sxr80
-#	$(call Device/FitImage)
-#	$(call Device/UbiFit)
-#	DEVICE_VENDOR := Netgear
-#	DEVICE_MODEL := SXR80
-#	BLOCKSIZE := 128k
-#	PAGESIZE := 2048
-#	DEVICE_DTS_CONFIG := config@hk01
-#	SOC := ipq8074
-#	DEVICE_PACKAGES := ipq-wifi-netgear_sxr80
-#endef
-#TARGET_DEVICES += netgear_sxr80
+define Device/zte_mf269
+    $(call Device/FitImage)
+    $(call Device/UbiFit)
+    DEVICE_VENDOR := ZTE
+    DEVICE_MODEL := MF269
+    BLOCKSIZE := 128k
+    PAGESIZE := 2048
+    DEVICE_DTS_CONFIG := config@ac04
+    SOC := ipq8071
+    DEVICE_PACKAGES := ipq-wifi-zte_mf269 uboot-envtools kmod-usb3 kmod-usb-dwc3 kmod-usb-dwc3-qcom
+endef
+TARGET_DEVICES += zte_mf269
 
 define Device/redmi_ax6
 	$(call Device/xiaomi_ax3600)
@@ -91,19 +98,6 @@ define Device/redmi_ax6
 	DEVICE_PACKAGES := ipq-wifi-redmi_ax6
 endef
 TARGET_DEVICES += redmi_ax6
-
-define Device/xiaomi_ax3600-1G
-	$(call Device/FitImage)
-	$(call Device/UbiFit)
-	DEVICE_VENDOR := Xiaomi
-	DEVICE_MODEL := AX3600-1G
-	BLOCKSIZE := 128k
-	PAGESIZE := 2048
-	DEVICE_DTS_CONFIG := config@ac04
-	SOC := ipq8071
-	DEVICE_PACKAGES := ipq-wifi-xiaomi_ax3600 kmod-ath10k-ct-smallbuffers ath10k-firmware-qca9887-ct
-endef
-TARGET_DEVICES += xiaomi_ax3600-1G
 
 define Device/xiaomi_ax3600
 	$(call Device/FitImage)
@@ -127,32 +121,6 @@ define Device/xiaomi_ax9000
 	PAGESIZE := 2048
 	DEVICE_DTS_CONFIG := config@hk14
 	SOC := ipq8072
-	DEVICE_PACKAGES := ipq-wifi-xiaomi_ax9000 kmod-ath10k-ct ath10k-firmware-qca9887-ct kmod-usb3 kmod-usb-dwc3 kmod-usb-dwc3-qcom
+	DEVICE_PACKAGES := ipq-wifi-xiaomi_ax9000 kmod-ath10k-ct ath10k-firmware-qca9887-ct
 endef
 TARGET_DEVICES += xiaomi_ax9000
-
-define Device/zte_mf269
-	$(call Device/FitImage)
-	$(call Device/UbiFit)
-	DEVICE_VENDOR := ZTE
-	DEVICE_MODEL := MF269
-	BLOCKSIZE := 128k
-	PAGESIZE := 2048
-	DEVICE_DTS_CONFIG := config@ac04
-	SOC := ipq8071
-	DEVICE_PACKAGES := ipq-wifi-zte_mf269 uboot-envtools kmod-usb3 kmod-usb-dwc3 kmod-usb-dwc3-qcom
-endef
-TARGET_DEVICES += zte_mf269
-
-#define Device/tplink_xtr10890
-#	$(call Device/FitImage)
-#	$(call Device/UbiFit)
-#	DEVICE_VENDOR := TPLINK
-#	DEVICE_MODEL := XTR10890
-#	BLOCKSIZE := 128k
-#	PAGESIZE := 2048
-#	DEVICE_DTS_CONFIG := config@hk01.c6
-#	SOC := ipq8078
-#	DEVICE_PACKAGES := ipq-wifi-tplink_xtr10890 uboot-envtools
-#endef
-#TARGET_DEVICES += tplink_xtr10890

@@ -12,11 +12,9 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
  hal/dp_ops/edma_dp/edma_v1/edma_tx_rx.c | 4 ++++
  2 files changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/Makefile b/Makefile
-index 8e81317..dcfa8ca 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -25,7 +25,7 @@ qca-nss-dp-objs += hal/dp_ops/edma_dp/edma_v1/edma_cfg.o \
+@@ -25,7 +25,7 @@ qca-nss-dp-objs += hal/dp_ops/edma_dp/ed
  		   hal/gmac_ops/qcom/qcom_if.o \
  		   hal/gmac_ops/syn/xgmac/syn_if.o
  NSS_DP_INCLUDE += -I$(obj)/hal/dp_ops/edma_dp/edma_v1/include
@@ -25,11 +23,9 @@ index 8e81317..dcfa8ca 100644
  endif
  
  ifeq ($(SoC),$(filter $(SoC),ipq807x))
-diff --git a/hal/dp_ops/edma_dp/edma_v1/edma_tx_rx.c b/hal/dp_ops/edma_dp/edma_v1/edma_tx_rx.c
-index 5780a30..6ee1451 100644
 --- a/hal/dp_ops/edma_dp/edma_v1/edma_tx_rx.c
 +++ b/hal/dp_ops/edma_dp/edma_v1/edma_tx_rx.c
-@@ -411,7 +411,11 @@ static uint32_t edma_clean_rx(struct edma_hw *ehw,
+@@ -411,7 +411,11 @@ static uint32_t edma_clean_rx(struct edm
  					NSS_PTP_EVENT_SERVICE_CODE))
  			nss_phy_tstamp_rx_buf(ndev, skb);
  		else
@@ -41,6 +37,3 @@ index 5780a30..6ee1451 100644
  
  next_rx_desc:
  		/*
--- 
-2.36.1
-

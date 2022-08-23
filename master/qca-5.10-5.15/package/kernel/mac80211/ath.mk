@@ -58,7 +58,6 @@ config-$(CONFIG_ATH10K_LEDS) += ATH10K_LEDS
 config-$(CONFIG_ATH10K_THERMAL) += ATH10K_THERMAL
 config-$(CONFIG_ATH11K_MEM_PROFILE_512MB) += ATH11K_MEM_PROFILE_512MB
 config-$(CONFIG_ATH11K_MEM_PROFILE_1GB) += ATH11K_MEM_PROFILE_1GB
-config-$(CONFIG_ATH11K_NSS_SUPPORT) += ATH11K_NSS_SUPPORT
 
 config-$(call config_package,ath9k-htc) += ATH9K_HTC
 config-$(call config_package,ath10k) += ATH10K ATH10K_PCI
@@ -307,12 +306,11 @@ define KernelPackage/ath11k
   URL:=https://wireless.wiki.kernel.org/en/users/drivers/ath11k
   DEPENDS+= +kmod-ath +@DRIVER_11N_SUPPORT +@DRIVER_11AC_SUPPORT +@DRIVER_11AX_SUPPORT \
   +kmod-qcom-qmi-helpers +kmod-crypto-michael-mic +ATH11K_THERMAL:kmod-hwmon-core \
-  +ATH11K_THERMAL:kmod-thermal +ATH11K_NSS_SUPPORT:kmod-qca-nss-drv
+  +ATH11K_THERMAL:kmod-thermal
   FILES:=$(PKG_BUILD_DIR)/drivers/net/wireless/ath/ath11k/ath11k.ko
   AUTOLOAD:=$(call AutoProbe,ath11k)
-ifdef CONFIG_ATH11K_NSS_SUPPORT
-  MODPARAMS.ath11k:=nss_offload=1 frame_mode=2
-endif
+  # Enable encapsulation/decapsulation offload by default
+  MODPARAMS.ath11k:=frame_mode=2
 endef
 
 define KernelPackage/ath11k/description
@@ -325,10 +323,6 @@ define KernelPackage/ath11k/config
        config ATH11K_THERMAL
                bool "Enable thermal sensors and throttling support"
                depends on PACKAGE_kmod-ath11k
-               default y if TARGET_ipq807x
-
-       config ATH11K_NSS_SUPPORT
-               bool "Enable NSS WiFi offload"
                default y if TARGET_ipq807x
 
        if PACKAGE_kmod-ath11k
@@ -349,18 +343,11 @@ define KernelPackage/ath11k/config
        endif
 endef
 
-ifdef CONFIG_ATH11K_NSS_SUPPORT
- define KernelPackage/ath11k/install
-	$(INSTALL_DIR) $(1)/etc/hotplug.d/firmware
-	$(INSTALL_DATA) ./files/ath11k_nss.hotplug $(1)/etc/hotplug.d/firmware/12-ath11k_nss
- endef
-endif
-
 define KernelPackage/ath11k-ahb
   $(call KernelPackage/mac80211/Default)
   TITLE:=Qualcomm 802.11ax AHB wireless chipset support
   URL:=https://wireless.wiki.kernel.org/en/users/drivers/ath11k
-  DEPENDS+= @TARGET_ipq807x +kmod-ath11k +LINUX_5_15:kmod-qrtr-smd
+  DEPENDS+= @TARGET_ipq807x +kmod-ath11k +(LINUX_5_15||LINUX_5_18):kmod-qrtr-smd
   FILES:=$(PKG_BUILD_DIR)/drivers/net/wireless/ath/ath11k/ath11k_ahb.ko
   AUTOLOAD:=$(call AutoProbe,ath11k_ahb)
 endef
@@ -374,7 +361,7 @@ define KernelPackage/ath11k-pci
   $(call KernelPackage/mac80211/Default)
   TITLE:=Qualcomm 802.11ax PCI wireless chipset support
   URL:=https://wireless.wiki.kernel.org/en/users/drivers/ath11k
-  DEPENDS+= @PCI_SUPPORT +LINUX_5_15:kmod-qrtr-mhi +kmod-ath11k
+  DEPENDS+= @PCI_SUPPORT +(LINUX_5_15||LINUX_5_18):kmod-qrtr-mhi +kmod-ath11k
   FILES:=$(PKG_BUILD_DIR)/drivers/net/wireless/ath/ath11k/ath11k_pci.ko
   AUTOLOAD:=$(call AutoProbe,ath11k_pci)
 endef
@@ -412,7 +399,7 @@ endef
 define KernelPackage/ar5523
   $(call KernelPackage/mac80211/Default)
   TITLE:=Driver for Atheros AR5523 USB sticks
-  DEPENDS:=@USB_SUPPORT +kmod-mac80211 +kmod-ath +kmod-usb-core +kmod-input-core 
+  DEPENDS:=@USB_SUPPORT +kmod-mac80211 +kmod-ath +kmod-usb-core +kmod-input-core
   FILES:=$(PKG_BUILD_DIR)/drivers/net/wireless/ath/ar5523/ar5523.ko
   AUTOLOAD:=$(call AutoProbe,ar5523)
 endef

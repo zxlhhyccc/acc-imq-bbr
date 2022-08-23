@@ -41,7 +41,7 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
 --- a/src/hsl/phy/malibu_phy.c
 +++ b/src/hsl/phy/malibu_phy.c
 @@ -15,6 +15,8 @@
-  * OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
   */
  
 +#include <linux/of.h>

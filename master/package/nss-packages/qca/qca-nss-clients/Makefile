@@ -5,9 +5,9 @@ PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE_URL:=https://git.codelinaro.org/clo/qsdk/oss/lklm/nss-clients.git
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2022-04-23
-PKG_SOURCE_VERSION:=7e86daa6a51e8c1427a6342cc2076394ea0eab93
-PKG_MIRROR_HASH:=af8f20110bad3b57e4d9ed179b614f4079b8408c72071db1d7979fc64449f9ab
+PKG_SOURCE_DATE:=2022-03-18
+PKG_SOURCE_VERSION:=a93764b647be71342e588f5e6406fde44f5b9ca4
+PKG_MIRROR_HASH:=f855957345c06f1760a059328e58b78bf1f9559e60aebf44784e0289d11743c2
 
 include $(INCLUDE_DIR)/kernel.mk
 include $(INCLUDE_DIR)/package.mk
@@ -38,17 +38,6 @@ endef
 
 define KernelPackage/qca-nss-drv-bridge-mgr/Description
 Kernel modules for NSS bridge manager
-endef
-
-define KernelPackage/qca-nss-drv-qdisc
-  SECTION:=kernel
-  CATEGORY:=Kernel modules
-  SUBMENU:=Network Support
-  TITLE:=Qdisc for configuring shapers in NSS
-  DEPENDS:=+kmod-qca-nss-drv @!LINUX_3_18
-  FILES:=$(PKG_BUILD_DIR)/nss_qdisc/qca-nss-qdisc.ko
-  KCONFIG:=CONFIG_NET_CLS_ACT=y
-  AUTOLOAD:=$(call AutoLoad,58,qca-nss-qdisc)
 endef
 
 define KernelPackage/qca-nss-drv-vlan-mgr
@@ -110,5 +99,4 @@ endef
 
 $(eval $(call KernelPackage,qca-nss-drv-pppoe))
 $(eval $(call KernelPackage,qca-nss-drv-bridge-mgr))
-$(eval $(call KernelPackage,qca-nss-drv-qdisc))
 $(eval $(call KernelPackage,qca-nss-drv-vlan-mgr))

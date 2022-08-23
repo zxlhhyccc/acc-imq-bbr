@@ -16,15 +16,24 @@ Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 
 --- a/ecm_interface.c
 +++ b/ecm_interface.c
-@@ -718,6 +718,34 @@ bool ecm_interface_mac_addr_get(ip_addr_
+@@ -336,7 +336,7 @@ static struct net_device *ecm_interface_
+ 	struct net_device *dev;
+ 
+ 	ECM_IP_ADDR_TO_NIN6_ADDR(addr6, addr);
+-	dev = (struct net_device *)ipv6_dev_find(&init_net, &addr6, 1);
++	dev = (struct net_device *)ecm_interface_ipv6_dev_find_and_hold(&init_net, &addr6, 1);
+ 	return dev;
+ }
+ #endif
+@@ -719,6 +719,34 @@ bool ecm_interface_mac_addr_get(ip_addr_
  EXPORT_SYMBOL(ecm_interface_mac_addr_get);
  
  #ifdef ECM_IPV6_ENABLE
-+/* ipv6_dev_find_and_hold()
++/* ecm_interface_ipv6_dev_find_and_hold()
 + *	Find (and hold) net device that has the given address.
 + *	Or NULL on failure.
 + */
-+struct net_device *ipv6_dev_find_and_hold(struct net *net, struct in6_addr *addr,
++struct net_device *ecm_interface_ipv6_dev_find_and_hold(struct net *net, struct in6_addr *addr,
 +							int strict)
 +{
 +	struct inet6_ifaddr *ifp;
@@ -51,19 +60,28 @@ Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
  /*
   * ecm_interface_mac_addr_get_ipv6_no_route()
   *	Finds the mac address of a node from its ip address reachable via
+@@ -737,7 +765,7 @@ static bool ecm_interface_mac_addr_get_i
+ 	 * Get the MAC address that corresponds to IP address given.
+ 	 */
+ 	ECM_IP_ADDR_TO_NIN6_ADDR(daddr, addr);
+-	local_dev = ipv6_dev_find(&init_net, &daddr, 1);
++	local_dev = ecm_interface_ipv6_dev_find_and_hold(&init_net, &daddr, 1);
+ 	if (local_dev) {
+ 		DEBUG_TRACE("%pi6 is a local address\n", &daddr);
+ 		memcpy(mac_addr, dev->dev_addr, ETH_ALEN);
 --- a/ecm_interface.h
 +++ b/ecm_interface.h
 @@ -58,6 +58,7 @@ bool ecm_interface_mac_addr_get(ip_addr_
  bool ecm_interface_find_route_by_addr(ip_addr_t addr, struct ecm_interface_route *ecm_rt);
  void ecm_interface_route_release(struct ecm_interface_route *rt);
  #ifdef ECM_IPV6_ENABLE
-+struct net_device *ipv6_dev_find_and_hold(struct net *net, struct in6_addr *addr, int strict);
++struct net_device *ecm_interface_ipv6_dev_find_and_hold(struct net *net, struct in6_addr *addr, int strict);
  struct neighbour *ecm_interface_ipv6_neigh_get(struct ecm_front_end_connection_instance *feci, ecm_db_obj_dir_t dir, ip_addr_t addr);
  void ecm_interface_send_neighbour_solicitation(struct net_device *dev, ip_addr_t addr);
  #endif
 --- a/frontends/ecm_front_end_common.c
 +++ b/frontends/ecm_front_end_common.c
-@@ -56,6 +56,9 @@
+@@ -57,6 +57,9 @@
  #include "ecm_db.h"
  #include "ecm_front_end_common.h"
  #include "ecm_interface.h"
@@ -71,23 +89,23 @@ Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 +#include "ecm_front_end_ipv6.h"
 +#endif
  
- /*
-  * Sysctl table header
-@@ -315,7 +318,7 @@ bool ecm_front_end_gre_proto_is_accel_al
+ #ifdef ECM_FRONT_END_NSS_ENABLE
+ #include <nss_api_if.h>
+@@ -441,7 +444,7 @@ bool ecm_front_end_gre_proto_is_accel_al
  		}
  	} else {
  #ifdef ECM_IPV6_ENABLE
 -		dev = ipv6_dev_find(&init_net, &(tuple->src.u3.in6), 1);
-+		dev = ipv6_dev_find_and_hold(&init_net, &(tuple->src.u3.in6), 1);
++		dev = ecm_interface_ipv6_dev_find_and_hold(&init_net, &(tuple->src.u3.in6), 1);
  		if (dev) {
  			/*
  			 * Source IP address is local
-@@ -325,7 +328,7 @@ bool ecm_front_end_gre_proto_is_accel_al
+@@ -451,7 +454,7 @@ bool ecm_front_end_gre_proto_is_accel_al
  			return false;
  		}
  
 -		dev = ipv6_dev_find(&init_net, &(tuple->dst.u3.in6), 1);
-+		dev = ipv6_dev_find_and_hold(&init_net, &(tuple->dst.u3.in6), 1);
++		dev = ecm_interface_ipv6_dev_find_and_hold(&init_net, &(tuple->dst.u3.in6), 1);
  		if (dev) {
  			/*
  			 * Destination IP address is local

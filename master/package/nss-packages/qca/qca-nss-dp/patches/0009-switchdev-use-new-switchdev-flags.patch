@@ -26,7 +26,7 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
  
  #include "nss_dp_api_if.h"
  #include "nss_dp_hal_if.h"
-@@ -126,7 +129,11 @@ struct nss_dp_dev {
+@@ -137,7 +140,11 @@ struct nss_dp_dev {
  	/* switchdev related attributes */
  #ifdef CONFIG_NET_SWITCHDEV
  	u8 stp_state;			/* STP state of this physical port */

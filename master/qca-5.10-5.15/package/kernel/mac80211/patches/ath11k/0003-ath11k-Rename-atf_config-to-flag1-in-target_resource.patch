@@ -1,7 +1,8 @@
-From 7e9fb2418a4c092a363d23e97973c9624150e5b2 Mon Sep 17 00:00:00 2001
+From 787957bba2ae6d1d33334abb9a4d0e243d061597 Mon Sep 17 00:00:00 2001
 From: Seevalamuthu Mariappan <seevalam@codeaurora.org>
 Date: Wed, 21 Jul 2021 00:49:20 +0300
-Subject: [PATCH] ath11k: Rename atf_config to flag1 in target_resource_config
+Subject: [PATCH 003/241] ath11k: Rename atf_config to flag1 in
+ target_resource_config
 
 The flag's purpose is not only meant for ATF configs. Rename atf_config
 to flag1, so it can be used for future purposes.

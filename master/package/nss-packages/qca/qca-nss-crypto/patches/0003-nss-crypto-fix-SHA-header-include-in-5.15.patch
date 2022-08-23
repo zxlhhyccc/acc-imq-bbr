@@ -12,8 +12,6 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
  v2.0/src/nss_crypto_hlos.h | 4 ++++
  2 files changed, 10 insertions(+)
 
-diff --git a/v2.0/src/nss_crypto_ctrl.c b/v2.0/src/nss_crypto_ctrl.c
-index 72d1602..a462705 100644
 --- a/v2.0/src/nss_crypto_ctrl.c
 +++ b/v2.0/src/nss_crypto_ctrl.c
 @@ -38,7 +38,13 @@
@@ -30,8 +28,6 @@ index 72d1602..a462705 100644
  #include <crypto/des.h>
  #include <crypto/aes.h>
  #include <crypto/md5.h>
-diff --git a/v2.0/src/nss_crypto_hlos.h b/v2.0/src/nss_crypto_hlos.h
-index e827f4f..5565472 100644
 --- a/v2.0/src/nss_crypto_hlos.h
 +++ b/v2.0/src/nss_crypto_hlos.h
 @@ -58,7 +58,11 @@
@@ -46,6 +42,3 @@ index e827f4f..5565472 100644
  #include <crypto/aes.h>
  #include <crypto/des.h>
  #include <crypto/ghash.h>
--- 
-2.35.1
-
