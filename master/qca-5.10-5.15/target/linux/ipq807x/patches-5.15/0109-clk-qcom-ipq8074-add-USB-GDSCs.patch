@@ -34,7 +34,7 @@ Changes in v2:
  #include "reset.h"
  
  enum {
-@@ -4434,6 +4435,22 @@ static const struct alpha_pll_config nss
+@@ -4435,6 +4436,22 @@ static const struct alpha_pll_config nss
  	.alpha_en_mask = BIT(24),
  };
  
@@ -57,7 +57,7 @@ Changes in v2:
  static struct clk_hw *gcc_ipq8074_hws[] = {
  	&gpll0_out_main_div2.hw,
  	&gpll6_out_main_div2.hw,
-@@ -4810,6 +4827,11 @@ static const struct qcom_reset_map gcc_i
+@@ -4811,6 +4828,11 @@ static const struct qcom_reset_map gcc_i
  	[GCC_PCIE1_AXI_MASTER_STICKY_ARES] = { 0x76040, 6 },
  };
  
@@ -69,7 +69,7 @@ Changes in v2:
  static const struct of_device_id gcc_ipq8074_match_table[] = {
  	{ .compatible = "qcom,gcc-ipq8074" },
  	{ }
-@@ -4832,6 +4854,8 @@ static const struct qcom_cc_desc gcc_ipq
+@@ -4833,6 +4855,8 @@ static const struct qcom_cc_desc gcc_ipq
  	.num_resets = ARRAY_SIZE(gcc_ipq8074_resets),
  	.clk_hws = gcc_ipq8074_hws,
  	.num_clk_hws = ARRAY_SIZE(gcc_ipq8074_hws),

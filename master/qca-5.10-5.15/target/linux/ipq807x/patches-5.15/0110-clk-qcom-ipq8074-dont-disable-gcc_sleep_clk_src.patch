@@ -63,9 +63,9 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
 
 --- a/drivers/clk/qcom/gcc-ipq8074.c
 +++ b/drivers/clk/qcom/gcc-ipq8074.c
-@@ -663,6 +663,7 @@ static struct clk_branch gcc_sleep_clk_s
- 			},
+@@ -1262,6 +1262,7 @@ static struct clk_branch gcc_xo_clk_src
  			.num_parents = 1,
+ 			.flags = CLK_SET_RATE_PARENT | CLK_IS_CRITICAL,
  			.ops = &clk_branch2_ops,
 +			.flags = CLK_IS_CRITICAL,
  		},
