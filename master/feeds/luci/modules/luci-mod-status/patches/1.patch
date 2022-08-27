@@ -1,0 +1,143 @@
+diff --git a/htdocs/luci-static/resources/view/status/include/10_system.js b/htdocs/luci-static/resources/view/status/include/10_system.js
+index ae7efa3..859a0b7 100644
+--- a/htdocs/luci-static/resources/view/status/include/10_system.js
++++ b/htdocs/luci-static/resources/view/status/include/10_system.js
+@@ -13,6 +13,16 @@ var callSystemInfo = rpc.declare({
+ 	method: 'info'
+ });
+ 
++var callCPUBench = rpc.declare({
++	object: 'luci',
++	method: 'getCPUBench'
++});
++
++var callCPUUsage = rpc.declare({
++	object: 'luci',
++	method: 'getCPUUsage'
++});
++
+ return baseclass.extend({
+ 	title: _('System'),
+ 
+@@ -20,6 +30,8 @@ return baseclass.extend({
+ 		return Promise.all([
+ 			L.resolveDefault(callSystemBoard(), {}),
+ 			L.resolveDefault(callSystemInfo(), {}),
++			L.resolveDefault(callCPUBench(), {}),
++			L.resolveDefault(callCPUUsage(), {}),
+ 			fs.lines('/usr/lib/lua/luci/version.lua')
+ 		]);
+ 	},
+@@ -27,7 +39,9 @@ return baseclass.extend({
+ 	render: function(data) {
+ 		var boardinfo   = data[0],
+ 		    systeminfo  = data[1],
+-		    luciversion = data[2];
++		    cpubench    = data[2],
++		    cpuusage    = data[3],
++		    luciversion = data[4];
+ 
+ 		luciversion = luciversion.filter(function(l) {
+ 			return l.match(/^\s*(luciname|luciversion)\s*=/);
+@@ -52,7 +66,7 @@ return baseclass.extend({
+ 
+ 		var fields = [
+ 			_('Hostname'),         boardinfo.hostname,
+-			_('Model'),            boardinfo.model,
++			_('Model'),            boardinfo.model + cpubench.cpubench,
+ 			_('Architecture'),     boardinfo.system,
+ 			_('Target Platform'),  (L.isObject(boardinfo.release) ? boardinfo.release.target : ''),
+ 			_('Firmware Version'), (L.isObject(boardinfo.release) ? boardinfo.release.description + ' / ' : '') + (luciversion || ''),
+@@ -63,7 +77,8 @@ return baseclass.extend({
+ 				systeminfo.load[0] / 65535.0,
+ 				systeminfo.load[1] / 65535.0,
+ 				systeminfo.load[2] / 65535.0
+-			) : null
++			) : null,
++			_('CPU usage (%)'),    cpuusage.cpuusage
+ 		];
+ 
+ 		var table = E('table', { 'class': 'table' });
+diff --git a/htdocs/luci-static/resources/view/status/include/30_network.js b/htdocs/luci-static/resources/view/status/include/30_network.js
+index 1a0f703..f9c01bc 100644
+--- a/htdocs/luci-static/resources/view/status/include/30_network.js
++++ b/htdocs/luci-static/resources/view/status/include/30_network.js
+@@ -1,8 +1,14 @@
+ 'use strict';
+ 'require baseclass';
+ 'require fs';
++'require rpc';
+ 'require network';
+ 
++var callOnlineUsers = rpc.declare({
++        object: 'luci',
++        method: 'getOnlineUsers'
++});
++
+ function progressbar(value, max, byte) {
+ 	var vn = parseInt(value) || 0,
+ 	    mn = parseInt(max) || 100,
+@@ -67,7 +73,8 @@ return baseclass.extend({
+ 			fs.trimmed('/proc/sys/net/netfilter/nf_conntrack_count'),
+ 			fs.trimmed('/proc/sys/net/netfilter/nf_conntrack_max'),
+ 			network.getWANNetworks(),
+-			network.getWAN6Networks()
++			network.getWAN6Networks(),
++			L.resolveDefault(callOnlineUsers(), {})
+ 		]);
+ 	},
+ 
+@@ -75,21 +82,32 @@ return baseclass.extend({
+ 		var ct_count  = +data[0],
+ 		    ct_max    = +data[1],
+ 		    wan_nets  = data[2],
+-		    wan6_nets = data[3];
++		    wan6_nets = data[3],
++		    onlineusers = data[4];
+ 
+ 		var fields = [
+-			_('Active Connections'), ct_max ? ct_count : null
++			_('Active Connections'), ct_max ? ct_count : null,
++			_('Online Users'), onlineusers ? onlineusers.onlineusers : null
+ 		];
+ 
+ 		var ctstatus = E('table', { 'class': 'table' });
+ 
+ 		for (var i = 0; i < fields.length; i += 2) {
+-			ctstatus.appendChild(E('tr', { 'class': 'tr' }, [
+-				E('td', { 'class': 'td left', 'width': '33%' }, [ fields[i] ]),
+-				E('td', { 'class': 'td left' }, [
+-					(fields[i + 1] != null) ? progressbar(fields[i + 1], ct_max) : '?'
+-				])
+-			]));
++			if (fields[i] == _('Online Users')) {
++				ctstatus.appendChild(E('tr', { 'class': 'tr' }, [
++					E('td', { 'class': 'td left', 'width': '33%' }, [ fields[i] ]),
++					E('td', { 'class': 'td left' }, [
++						(fields[i + 1] != null) ? fields[i + 1] : '?'
++					])
++				]));
++			} else {
++				ctstatus.appendChild(E('tr', { 'class': 'tr' }, [
++					E('td', { 'class': 'td left', 'width': '33%' }, [ fields[i] ]),
++					E('td', { 'class': 'td left' }, [
++						(fields[i + 1] != null) ? progressbar(fields[i + 1], ct_max) : '?'
++					])
++				]));
++			}
+ 		}
+ 
+ 		var netstatus = E('div', { 'class': 'network-status-table' });
+diff --git a/root/usr/share/rpcd/acl.d/luci-mod-status.json b/root/usr/share/rpcd/acl.d/luci-mod-status.json
+index 18d267e..ad9e37e 100644
+--- a/root/usr/share/rpcd/acl.d/luci-mod-status.json
++++ b/root/usr/share/rpcd/acl.d/luci-mod-status.json
+@@ -3,7 +3,7 @@
+ 		"description": "Grant access to realtime statistics",
+ 		"read": {
+ 			"ubus": {
+-				"luci": [ "getConntrackList", "getRealtimeStats" ],
++				"luci": [ "getConntrackList", "getRealtimeStats", "getCPUBench", "getCPUUsage", "getOnlineUsers" ],
+ 				"network.rrdns": [ "lookup" ]
+ 			}
+ 		}
