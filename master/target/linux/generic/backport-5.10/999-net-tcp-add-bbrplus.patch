@@ -1269,7 +1269,7 @@
 +MODULE_DESCRIPTION("TCP BBR (Bottleneck Bandwidth and RTT)");
 --- a/net/ipv4/tcp_output.c
 +++ b/net/ipv4/tcp_output.c
-@@ -1957,7 +1957,7 @@ static bool tcp_nagle_check(bool partial
+@@ -1955,7 +1955,7 @@ static bool tcp_nagle_check(bool partial
  /* Return how many segs we'd like on a TSO packet,
   * to send one TSO packet per ms
   */
@@ -1278,7 +1278,7 @@
  			    int min_tso_segs)
  {
  	u32 bytes, segs;
-@@ -1975,6 +1975,7 @@ static u32 tcp_tso_autosize(const struct
+@@ -1973,6 +1973,7 @@ static u32 tcp_tso_autosize(const struct
  
  	return segs;
  }
