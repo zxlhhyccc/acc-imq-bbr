@@ -12,7 +12,17 @@ index f392c94..64b07b3 100644
  					o = ss.taboption('advanced', form.Value, 'distance', _('Distance Optimization'), _('Distance to farthest network member in meters.'));
  					o.datatype = 'or(range(0,114750),"auto")';
  					o.placeholder = 'auto';
-@@ -1516,6 +1519,76 @@ return view.extend({
+@@ -975,6 +978,9 @@ return view.extend({
+ 					o.datatype = 'range(15,65535)';
+ 					o.placeholder = 100;
+ 					o.rmempty = true;
++
++					o = ss.taboption('advanced', form.Flag, 'vendor_vht', _('Enable 256-QAM'), _('Enable 256QAM modulation. May not supported by some hardware!'));
++					o.rmempty = true;
+ 				}
+ 
+ 
+@@ -1516,6 +1522,76 @@ return view.extend({
  
  
  				if (hwtype == 'mac80211') {
