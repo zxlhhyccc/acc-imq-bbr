@@ -2,89 +2,86 @@ diff --git a/htdocs/luci-static/resources/view/network/wireless.js b/htdocs/luci
 index f392c94..64b07b3 100644
 --- a/htdocs/luci-static/resources/view/network/wireless.js
 +++ b/htdocs/luci-static/resources/view/network/wireless.js
-@@ -956,6 +956,10 @@ return view.extend({
+@@ -956,6 +956,9 @@ return view.extend({
  					o.value('2', _('High'));
  					o.value('3', _('Very High'));
  
-+					o = ss.taboption("advanced", form.Flag, 'mu_beamformer', _('MU-MIMO'));
-+					o.rmempty = false;
-+					o.default = '1';
++					o = ss.taboption('advanced', form.Flag, 'mu_beamformer', _('MU-MIMO'));
++					o.default = o.enabled;
 +
  					o = ss.taboption('advanced', form.Value, 'distance', _('Distance Optimization'), _('Distance to farthest network member in meters.'));
  					o.datatype = 'or(range(0,114750),"auto")';
  					o.placeholder = 'auto';
-@@ -975,6 +979,9 @@ return view.extend({
- 					o.datatype = 'range(15,65535)';
- 					o.placeholder = 100;
- 					o.rmempty = true;
-+
-+					o = ss.taboption('advanced', form.Flag, 'vendor_vht', _('Enable 256-QAM'), _('Enable 256QAM modulation. May not supported by some hardware!'));
-+					o.rmempty = true;
- 				}
- 
- 
-@@ -1507,6 +1514,68 @@ return view.extend({
+@@ -1516,6 +1519,76 @@ return view.extend({
  
  
  				if (hwtype == 'mac80211') {
++
 +					// Probe 802.11k support
 +					o = ss.taboption('encryption', form.Flag, 'ieee80211k', _('802.11k'), _('Enables The 802.11k standard provides information to discover the best available access point'));
-+					o.depends({ mode : 'ap', encryption : 'wpa' });
-+					o.depends({ mode : 'ap', encryption : 'wpa2' });
-+					o.depends({ mode : 'ap-wds', encryption : 'wpa' });
-+					o.depends({ mode : 'ap-wds', encryption : 'wpa2' });
-+					o.depends({ mode : 'ap', encryption : 'psk' });
-+					o.depends({ mode : 'ap', encryption : 'psk2' });
-+					o.depends({ mode : 'ap', encryption : 'psk-mixed' });
-+					o.depends({ mode : 'ap-wds', encryption : 'psk' });
-+					o.depends({ mode : 'ap-wds', encryption : 'psk2' });
-+					o.depends({ mode : 'ap-wds', encryption : 'psk-mixed' });
++					o.depends({ mode: 'ap', encryption: 'wpa' });
++					o.depends({ mode: 'ap', encryption: 'wpa2' });
++					o.depends({ mode: 'ap-wds', encryption: 'wpa' });
++					o.depends({ mode: 'ap-wds', encryption: 'wpa2' });
++					o.depends({ mode: 'ap', encryption: 'psk' });
++					o.depends({ mode: 'ap', encryption: 'psk2' });
++					o.depends({ mode: 'ap', encryption: 'psk-mixed' });
++					o.depends({ mode: 'ap-wds', encryption: 'psk' });
++					o.depends({ mode: 'ap-wds', encryption: 'psk2' });
++					o.depends({ mode: 'ap-wds', encryption: 'psk-mixed' });
++					o.depends({ mode: 'ap', encryption: 'sae' });
++					o.depends({ mode: 'ap', encryption: 'sae-mixed' });
++					o.depends({ mode: 'ap-wds', encryption: 'sae' });
++					o.depends({ mode: 'ap-wds', encryption: 'sae-mixed' });
 +					o.rmempty = true;
 +
 +					o = ss.taboption('encryption', form.Flag, 'rrm_neighbor_report', _('Enable neighbor report via radio measurements'));
 +					o.default = o.enabled;
-+					o.depends({ ieee80211k : '1' });
++					o.depends({ ieee80211k: '1' });
 +					o.rmempty = true;
 +
 +					o = ss.taboption('encryption', form.Flag, 'rrm_beacon_report', _('Enable beacon report via radio measurements'));
 +					o.default = o.enabled;
-+					o.depends({ ieee80211k : '1' });
++					o.depends({ ieee80211k: '1' });
 +					o.rmempty = true;
 +					// End of 802.11k options
 +
 +					// Probe 802.11v support
 +					o = ss.taboption('encryption', form.Flag, 'ieee80211v', _('802.11v'), _('Enables 802.11v allows client devices to exchange information about the network topology,tating overall improvement of the wireless network.'));
-+					o.depends({ mode : 'ap', encryption : 'wpa' });
-+					o.depends({ mode : 'ap', encryption : 'wpa2' });
-+					o.depends({ mode : 'ap-wds', encryption : 'wpa' });
-+					o.depends({ mode : 'ap-wds', encryption : 'wpa2' });
-+					o.depends({ mode : 'ap', encryption : 'psk' });
-+					o.depends({ mode : 'ap', encryption : 'psk2' });
-+					o.depends({ mode : 'ap', encryption : 'psk-mixed' });
-+					o.depends({ mode : 'ap-wds', encryption : 'psk' });
-+					o.depends({ mode : 'ap-wds', encryption : 'psk2' });
-+					o.depends({ mode : 'ap-wds', encryption : 'psk-mixed' });
++					o.depends({ mode: 'ap', encryption: 'wpa' });
++					o.depends({ mode: 'ap', encryption: 'wpa2' });
++					o.depends({ mode: 'ap-wds', encryption: 'wpa' });
++					o.depends({ mode: 'ap-wds', encryption: 'wpa2' });
++					o.depends({ mode: 'ap', encryption: 'psk' });
++					o.depends({ mode: 'ap', encryption: 'psk2' });
++					o.depends({ mode: 'ap', encryption: 'psk-mixed' });
++					o.depends({ mode: 'ap-wds', encryption: 'psk' });
++					o.depends({ mode: 'ap-wds', encryption: 'psk2' });
++					o.depends({ mode: 'ap-wds', encryption: 'psk-mixed' });
++					o.depends({ mode: 'ap', encryption: 'sae' });
++					o.depends({ mode: 'ap', encryption: 'sae-mixed' });
++					o.depends({ mode: 'ap-wds', encryption: 'sae' });
++					o.depends({ mode: 'ap-wds', encryption: 'sae-mixed' });
 +					o.rmempty = true;
 +
-+
 +					o = ss.taboption('encryption', form.Flag, 'wnm_sleep_mode', _('extended sleep mode for stations'));
-+					o.default = o.disabled;
-+					o.depends({ ieee80211v : '1' });
++					o.default = o.enabled;
++					o.depends({ ieee80211v: '1' });
 +					o.rmempty = true;
 +
 +					o = ss.taboption('encryption', form.Flag, 'bss_transition', _('BSS Transition Management'));
-+					o.default = o.disabled;
-+					o.depends({ ieee80211v : '1' });
++					o.default = o.enabled;
++					o.depends({ ieee80211v: '1' });
 +					o.rmempty = true;
 +
-+					o = ss.taboption('encryption', form.ListValue, 'time_advertisement', _('Time advertisement'));
-+					o.depends({ ieee80211v : '1' });
++					o = ss.taboption('encryption', form.ListValue, 'time_advertisement', _('Time advertisement"'));
++					o.depends({ ieee80211v: '1' });
 +					o.value('0', _('disabled'));
 +					o.value('2', _('UTC time at which the TSF timer is 0'));
 +					o.rmempty = true;
 +
-+					o = ss.taboption('encryption', form.Value, 'time_zone', _('time zone'), _('Local time zone as specified in 8.3 of IEEE Std 1003.1-2004'));
-+					o.depends({ time_advertisement : '2' });
++					o = ss.taboption('encryption', form.Value, 'time_zone', _('Local time zone as specified in 8.3 of IEEE Std 1003.1-2004'));
++					o.depends({ time_advertisement: '2' });
 +					o.placeholder = 'UTC8';
 +					o.rmempty = true;
 +					// End of 802.11v options
