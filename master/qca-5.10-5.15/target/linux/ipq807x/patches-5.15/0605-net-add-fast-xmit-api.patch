@@ -15,7 +15,7 @@ Signed-off-by: Ken Zhu <quic_guigenz@quicinc.com>
 
 --- a/include/linux/netdevice.h
 +++ b/include/linux/netdevice.h
-@@ -3015,6 +3015,8 @@ u16 dev_pick_tx_cpu_id(struct net_device
+@@ -3029,6 +3029,8 @@ u16 dev_pick_tx_cpu_id(struct net_device
  		       struct net_device *sb_dev);
  
  int dev_queue_xmit(struct sk_buff *skb);
