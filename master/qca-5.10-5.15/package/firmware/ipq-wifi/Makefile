@@ -38,6 +38,7 @@ ALLWIFIBOARDS:= \
 	hiwifi_c526a \
 	linksys_ea8300 \
 	p2w_r619ac \
+	pakedge_wr-1 \
 	netgear_sxr80 \
 	qnap_301w \
 	qxwlan_e2600ac-c1 \
@@ -132,6 +133,7 @@ $(eval $(call generate-ipq-wifi-package,glinet_gl-s1300,GL.iNet GL-S1300))
 $(eval $(call generate-ipq-wifi-package,hiwifi_c526a,HiWiFi C526A))
 $(eval $(call generate-ipq-wifi-package,linksys_ea8300,Linksys EA8300))
 $(eval $(call generate-ipq-wifi-package,p2w_r619ac,P&W R619AC))
+$(eval $(call generate-ipq-wifi-package,pakedge_wr-1,Pakedge WR-1))
 $(eval $(call generate-ipq-wifi-package,netgear_sxr80,Netgear SXR80))
 $(eval $(call generate-ipq-wifi-package,qnap_301w,QNAP 301w))
 $(eval $(call generate-ipq-wifi-package,qxwlan_e2600ac-c1,Qxwlan E2600AC C1))
