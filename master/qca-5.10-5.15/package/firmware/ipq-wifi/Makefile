@@ -31,8 +31,8 @@ ALLWIFIBOARDS:= \
 	edgecore_eap102 \
 	edgecore_ecw5410 \
 	edgecore_oap100 \
-	extreme-networks_ws-ap3915i \
 	edimax_cax1800 \
+	extreme-networks_ws-ap3915i \
 	glinet_gl-ap1300 \
 	glinet_gl-s1300 \
 	hiwifi_c526a \
@@ -44,11 +44,11 @@ ALLWIFIBOARDS:= \
 	qxwlan_e2600ac-c1 \
 	qxwlan_e2600ac-c2 \
 	teltonika_rutx \
+	tplink_xtr10890 \
 	redmi_ax6 \
 	xiaomi_ax3600 \
 	xiaomi_ax9000 \
-	zte_mf269 \
-	tplink_xtr10890
+	zte_mf269
 
 ALLWIFIPACKAGES:=$(foreach BOARD,$(ALLWIFIBOARDS),ipq-wifi-$(BOARD))
 
@@ -126,8 +126,8 @@ $(eval $(call generate-ipq-wifi-package,dynalink_dl-wrx36,Dynalink DL-WRX36))
 $(eval $(call generate-ipq-wifi-package,edgecore_eap102,Edgecore EAP102))
 $(eval $(call generate-ipq-wifi-package,edgecore_ecw5410,Edgecore ECW5410))
 $(eval $(call generate-ipq-wifi-package,edgecore_oap100,Edgecore OAP100))
-$(eval $(call generate-ipq-wifi-package,extreme-networks_ws-ap3915i,Edgecore OAP100))
 $(eval $(call generate-ipq-wifi-package,edimax_cax1800,Edimax CAX1800))
+$(eval $(call generate-ipq-wifi-package,extreme-networks_ws-ap3915i,Edgecore OAP100))
 $(eval $(call generate-ipq-wifi-package,glinet_gl-ap1300,GL.iNet GL-AP1300))
 $(eval $(call generate-ipq-wifi-package,glinet_gl-s1300,GL.iNet GL-S1300))
 $(eval $(call generate-ipq-wifi-package,hiwifi_c526a,HiWiFi C526A))
@@ -139,10 +139,10 @@ $(eval $(call generate-ipq-wifi-package,qnap_301w,QNAP 301w))
 $(eval $(call generate-ipq-wifi-package,qxwlan_e2600ac-c1,Qxwlan E2600AC C1))
 $(eval $(call generate-ipq-wifi-package,qxwlan_e2600ac-c2,Qxwlan E2600AC C2))
 $(eval $(call generate-ipq-wifi-package,teltonika_rutx,Teltonika RUTX))
+$(eval $(call generate-ipq-wifi-package,tplink_xtr10890,TPLINK XTR10890))
 $(eval $(call generate-ipq-wifi-package,redmi_ax6,Redmi AX6))
 $(eval $(call generate-ipq-wifi-package,xiaomi_ax3600,Xiaomi AX3600))
 $(eval $(call generate-ipq-wifi-package,xiaomi_ax9000,Xiaomi AX9000))
 $(eval $(call generate-ipq-wifi-package,zte_mf269,ZTE MF269))
-$(eval $(call generate-ipq-wifi-package,tplink_xtr10890,TPLINK XTR10890))
 
 $(foreach PACKAGE,$(ALLWIFIPACKAGES),$(eval $(call BuildPackage,$(PACKAGE))))
