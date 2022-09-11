@@ -1,8 +1,8 @@
 diff --git a/image/mt7621.mk b/image/mt7621.mk
-index dbafaad..940a58b 100644
+index 661f44d..b3c884e 100644
 --- a/image/mt7621.mk
 +++ b/image/mt7621.mk
-@@ -139,7 +139,7 @@ define Device/alfa-network_quad-e4g
+@@ -163,7 +163,7 @@ define Device/alfa-network_quad-e4g
    DEVICE_VENDOR := ALFA Network
    DEVICE_MODEL := Quad-E4G
    DEVICE_PACKAGES := kmod-ata-ahci kmod-sdhci-mt7620 kmod-usb3 uboot-envtools \
@@ -11,7 +11,7 @@ index dbafaad..940a58b 100644
    SUPPORTED_DEVICES += quad-e4g
  endef
  TARGET_DEVICES += alfa-network_quad-e4g
-@@ -176,7 +176,7 @@ define Device/asiarf_ap7621-001
+@@ -200,7 +200,7 @@ define Device/asiarf_ap7621-001
    IMAGE_SIZE := 16000k
    DEVICE_VENDOR := AsiaRF
    DEVICE_MODEL := AP7621-001
@@ -20,7 +20,7 @@ index dbafaad..940a58b 100644
  endef
  TARGET_DEVICES += asiarf_ap7621-001
  
-@@ -185,7 +185,7 @@ define Device/asiarf_ap7621-nv1
+@@ -209,7 +209,7 @@ define Device/asiarf_ap7621-nv1
    IMAGE_SIZE := 16000k
    DEVICE_VENDOR := AsiaRF
    DEVICE_MODEL := AP7621-NV1
@@ -29,7 +29,7 @@ index dbafaad..940a58b 100644
  endef
  TARGET_DEVICES += asiarf_ap7621-nv1
  
-@@ -774,7 +774,7 @@ define Device/gnubee_gb-pc1
+@@ -819,7 +819,7 @@ define Device/gnubee_gb-pc1
    $(Device/uimage-lzma-loader)
    DEVICE_VENDOR := GnuBee
    DEVICE_MODEL := Personal Cloud One
@@ -38,7 +38,7 @@ index dbafaad..940a58b 100644
    IMAGE_SIZE := 32448k
  endef
  TARGET_DEVICES += gnubee_gb-pc1
-@@ -784,7 +784,7 @@ define Device/gnubee_gb-pc2
+@@ -829,7 +829,7 @@ define Device/gnubee_gb-pc2
    $(Device/uimage-lzma-loader)
    DEVICE_VENDOR := GnuBee
    DEVICE_MODEL := Personal Cloud Two
@@ -47,7 +47,7 @@ index dbafaad..940a58b 100644
    IMAGE_SIZE := 32448k
  endef
  TARGET_DEVICES += gnubee_gb-pc2
-@@ -1229,7 +1229,7 @@ define Device/mediatek_ap-mt7621a-v60
+@@ -1283,7 +1283,7 @@ define Device/mediatek_ap-mt7621a-v60
    IMAGE_SIZE := 7872k
    DEVICE_VENDOR := Mediatek
    DEVICE_MODEL := AP-MT7621A-V60 EVB
@@ -56,7 +56,7 @@ index dbafaad..940a58b 100644
  endef
  TARGET_DEVICES += mediatek_ap-mt7621a-v60
  
-@@ -1239,7 +1239,7 @@ define Device/mediatek_mt7621-eval-board
+@@ -1293,7 +1293,7 @@ define Device/mediatek_mt7621-eval-board
    IMAGE_SIZE := 15104k
    DEVICE_VENDOR := MediaTek
    DEVICE_MODEL := MT7621 EVB
@@ -65,7 +65,7 @@ index dbafaad..940a58b 100644
    SUPPORTED_DEVICES += mt7621
  endef
  TARGET_DEVICES += mediatek_mt7621-eval-board
-@@ -1260,7 +1260,7 @@ endef
+@@ -1314,7 +1314,7 @@ endef
  define Device/mikrotik_routerboard-750gr3
    $(Device/MikroTik)
    DEVICE_MODEL := RouterBOARD 750Gr3
@@ -74,7 +74,7 @@ index dbafaad..940a58b 100644
    SUPPORTED_DEVICES += mikrotik,rb750gr3
  endef
  TARGET_DEVICES += mikrotik_routerboard-750gr3
-@@ -1268,14 +1268,14 @@ TARGET_DEVICES += mikrotik_routerboard-750gr3
+@@ -1322,14 +1322,14 @@ TARGET_DEVICES += mikrotik_routerboard-750gr3
  define Device/mikrotik_routerboard-760igs
    $(Device/MikroTik)
    DEVICE_MODEL := RouterBOARD 760iGS
@@ -91,7 +91,7 @@ index dbafaad..940a58b 100644
    SUPPORTED_DEVICES += mikrotik,rbm11g
  endef
  TARGET_DEVICES += mikrotik_routerboard-m11g
-@@ -1283,7 +1283,7 @@ TARGET_DEVICES += mikrotik_routerboard-m11g
+@@ -1337,7 +1337,7 @@ TARGET_DEVICES += mikrotik_routerboard-m11g
  define Device/mikrotik_routerboard-m33g
    $(Device/MikroTik)
    DEVICE_MODEL := RouterBOARD M33G
@@ -100,7 +100,7 @@ index dbafaad..940a58b 100644
    SUPPORTED_DEVICES += mikrotik,rbm33g
  endef
  TARGET_DEVICES += mikrotik_routerboard-m33g
-@@ -1581,10 +1581,8 @@ define Device/phicomm_k2p
+@@ -1635,10 +1635,8 @@ define Device/phicomm_k2p
    IMAGE_SIZE := 15744k
    DEVICE_VENDOR := Phicomm
    DEVICE_MODEL := K2P
@@ -112,7 +112,7 @@ index dbafaad..940a58b 100644
  endef
  TARGET_DEVICES += phicomm_k2p
  
-@@ -1594,7 +1592,7 @@ define Device/planex_vr500
+@@ -1648,7 +1646,7 @@ define Device/planex_vr500
    IMAGE_SIZE := 65216k
    DEVICE_VENDOR := Planex
    DEVICE_MODEL := VR500
@@ -121,7 +121,7 @@ index dbafaad..940a58b 100644
    SUPPORTED_DEVICES += vr500
  endef
  TARGET_DEVICES += planex_vr500
-@@ -1705,7 +1703,7 @@ define Device/thunder_timecloud
+@@ -1759,7 +1757,7 @@ define Device/thunder_timecloud
    IMAGE_SIZE := 16064k
    DEVICE_VENDOR := Thunder
    DEVICE_MODEL := Timecloud
@@ -130,7 +130,7 @@ index dbafaad..940a58b 100644
    SUPPORTED_DEVICES += timecloud
  endef
  TARGET_DEVICES += thunder_timecloud
-@@ -1862,7 +1860,7 @@ define Device/ubnt_edgerouter_common
+@@ -1916,7 +1914,7 @@ define Device/ubnt_edgerouter_common
    KERNEL_INITRAMFS := $$(KERNEL) | \
  	ubnt-erx-factory-image $(KDIR)/tmp/$$(KERNEL_INITRAMFS_PREFIX)-factory.tar
    IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
@@ -139,7 +139,7 @@ index dbafaad..940a58b 100644
  endef
  
  define Device/ubnt_edgerouter-x
-@@ -1930,7 +1928,7 @@ define Device/unielec_u7621-06-16m
+@@ -1984,7 +1982,7 @@ define Device/unielec_u7621-06-16m
    DEVICE_VENDOR := UniElec
    DEVICE_MODEL := U7621-06
    DEVICE_VARIANT := 16M
@@ -148,7 +148,7 @@ index dbafaad..940a58b 100644
    SUPPORTED_DEVICES += u7621-06-256M-16M unielec,u7621-06-256m-16m
  endef
  TARGET_DEVICES += unielec_u7621-06-16m
-@@ -1942,7 +1940,7 @@ define Device/unielec_u7621-06-64m
+@@ -1996,7 +1994,7 @@ define Device/unielec_u7621-06-64m
    DEVICE_VENDOR := UniElec
    DEVICE_MODEL := U7621-06
    DEVICE_VARIANT := 64M
@@ -157,7 +157,7 @@ index dbafaad..940a58b 100644
    SUPPORTED_DEVICES += unielec,u7621-06-512m-64m
  endef
  TARGET_DEVICES += unielec_u7621-06-64m
-@@ -2137,7 +2135,7 @@ define Device/xiaoyu_xy-c5
+@@ -2191,7 +2189,7 @@ define Device/xiaoyu_xy-c5
    IMAGE_SIZE := 32448k
    DEVICE_VENDOR := XiaoYu
    DEVICE_MODEL := XY-C5
@@ -166,7 +166,7 @@ index dbafaad..940a58b 100644
  endef
  TARGET_DEVICES += xiaoyu_xy-c5
  
-@@ -2147,7 +2145,7 @@ define Device/xzwifi_creativebox-v1
+@@ -2201,7 +2199,7 @@ define Device/xzwifi_creativebox-v1
    DEVICE_VENDOR := CreativeBox
    DEVICE_MODEL := v1
    DEVICE_PACKAGES := kmod-ata-ahci kmod-mt7603 kmod-mt76x2 kmod-sdhci-mt7620 \
