@@ -20,6 +20,8 @@ Link: https://lore.kernel.org/r/20210721180809.90960-4-jouni@codeaurora.org
  drivers/net/wireless/ath/ath11k/spectral.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/spectral.c b/drivers/net/wireless/ath/ath11k/spectral.c
+index 75b311f678e4..3a0ac75a84bb 100644
 --- a/drivers/net/wireless/ath/ath11k/spectral.c
 +++ b/drivers/net/wireless/ath/ath11k/spectral.c
 @@ -11,7 +11,7 @@
@@ -31,3 +33,6 @@ Link: https://lore.kernel.org/r/20210721180809.90960-4-jouni@codeaurora.org
  #define ATH11K_SPECTRAL_MIN_IB_BINS		(ATH11K_SPECTRAL_MIN_BINS >> 1)
  #define ATH11K_SPECTRAL_MAX_IB_BINS(x)	((x)->hw_params.spectral.max_fft_bins >> 1)
  
+-- 
+2.37.1
+

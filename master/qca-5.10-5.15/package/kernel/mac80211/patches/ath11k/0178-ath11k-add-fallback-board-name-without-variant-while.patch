@@ -63,9 +63,11 @@ Link: https://lore.kernel.org/r/20220315104721.26649-2-quic_wgong@quicinc.com
  drivers/net/wireless/ath/ath11k/core.c | 48 ++++++++++++++++++++++----
  1 file changed, 41 insertions(+), 7 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
+index 2ab5bb3d8d0d..bfdb675aa177 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -571,13 +571,13 @@ int ath11k_core_check_dt(struct ath11k_b
+@@ -571,13 +571,13 @@ int ath11k_core_check_dt(struct ath11k_base *ab)
  	return 0;
  }
  
@@ -82,7 +84,7 @@ Link: https://lore.kernel.org/r/20220315104721.26649-2-quic_wgong@quicinc.com
  		scnprintf(variant, sizeof(variant), ",variant=%s",
  			  ab->qmi.target.bdf_ext);
  
-@@ -607,6 +607,18 @@ static int ath11k_core_create_board_name
+@@ -607,6 +607,18 @@ static int ath11k_core_create_board_name(struct ath11k_base *ab, char *name,
  	return 0;
  }
  
@@ -101,7 +103,7 @@ Link: https://lore.kernel.org/r/20220315104721.26649-2-quic_wgong@quicinc.com
  const struct firmware *ath11k_core_firmware_request(struct ath11k_base *ab,
  						    const char *file)
  {
-@@ -810,7 +822,7 @@ static int ath11k_core_fetch_board_data_
+@@ -810,7 +822,7 @@ static int ath11k_core_fetch_board_data_api_n(struct ath11k_base *ab,
  
  out:
  	if (!bd->data || !bd->len) {
@@ -110,7 +112,7 @@ Link: https://lore.kernel.org/r/20220315104721.26649-2-quic_wgong@quicinc.com
  			   "failed to fetch board data for %s from %s\n",
  			   boardname, filepath);
  		ret = -ENODATA;
-@@ -842,10 +854,13 @@ int ath11k_core_fetch_board_data_api_1(s
+@@ -842,10 +854,13 @@ int ath11k_core_fetch_board_data_api_1(struct ath11k_base *ab,
  #define BOARD_NAME_SIZE 200
  int ath11k_core_fetch_bdf(struct ath11k_base *ab, struct ath11k_board_data *bd)
  {
@@ -126,7 +128,7 @@ Link: https://lore.kernel.org/r/20220315104721.26649-2-quic_wgong@quicinc.com
  	if (ret) {
  		ath11k_err(ab, "failed to create board name: %d", ret);
  		return ret;
-@@ -856,10 +871,29 @@ int ath11k_core_fetch_bdf(struct ath11k_
+@@ -856,10 +871,29 @@ int ath11k_core_fetch_bdf(struct ath11k_base *ab, struct ath11k_board_data *bd)
  	if (!ret)
  		goto success;
  
@@ -157,3 +159,6 @@ Link: https://lore.kernel.org/r/20220315104721.26649-2-quic_wgong@quicinc.com
  			   ab->hw_params.fw.dir);
  		return ret;
  	}
+-- 
+2.37.1
+

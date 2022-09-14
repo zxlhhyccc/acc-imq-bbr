@@ -21,9 +21,11 @@ Link: https://lore.kernel.org/r/20220528142516.20819-2-ansuelsmth@gmail.com
  drivers/net/wireless/ath/ath11k/htc.c | 4 +++-
  1 file changed, 3 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/htc.c b/drivers/net/wireless/ath/ath11k/htc.c
+index 069c29a4fac7..ca3aedc0252d 100644
 --- a/drivers/net/wireless/ath/ath11k/htc.c
 +++ b/drivers/net/wireless/ath/ath11k/htc.c
-@@ -258,8 +258,10 @@ void ath11k_htc_tx_completion_handler(st
+@@ -258,8 +258,10 @@ void ath11k_htc_tx_completion_handler(struct ath11k_base *ab,
  	u8 eid;
  
  	eid = ATH11K_SKB_CB(skb)->eid;
@@ -35,3 +37,6 @@ Link: https://lore.kernel.org/r/20220528142516.20819-2-ansuelsmth@gmail.com
  
  	ep = &htc->endpoint[eid];
  	spin_lock_bh(&htc->tx_lock);
+-- 
+2.37.1
+

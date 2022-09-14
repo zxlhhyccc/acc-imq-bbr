@@ -15,9 +15,11 @@ Link: https://lore.kernel.org/r/20220111071445.GA11243@kili
  drivers/net/wireless/ath/ath11k/qmi.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/qmi.c b/drivers/net/wireless/ath/ath11k/qmi.c
+index 42c2ad3e3668..d0701e8eca9c 100644
 --- a/drivers/net/wireless/ath/ath11k/qmi.c
 +++ b/drivers/net/wireless/ath/ath11k/qmi.c
-@@ -1932,7 +1932,7 @@ static int ath11k_qmi_assign_target_mem_
+@@ -1932,7 +1932,7 @@ static int ath11k_qmi_assign_target_mem_chunk(struct ath11k_base *ab)
  			if (!hremote_node) {
  				ath11k_dbg(ab, ATH11K_DBG_QMI,
  					   "qmi fail to get hremote_node\n");
@@ -26,3 +28,6 @@ Link: https://lore.kernel.org/r/20220111071445.GA11243@kili
  			}
  
  			ret = of_address_to_resource(hremote_node, 0, &res);
+-- 
+2.37.1
+

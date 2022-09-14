@@ -26,6 +26,8 @@ Link: https://lore.kernel.org/r/20210721212029.142388-2-jouni@codeaurora.org
  drivers/net/wireless/ath/ath11k/wmi.h  | 42 ++++++++++++++++++++++++++
  3 files changed, 111 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
+index cb299ca638a1..826f7fc4984f 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
 @@ -819,12 +819,15 @@ struct ath11k_fw_stats_pdev {
@@ -84,9 +86,11 @@ Link: https://lore.kernel.org/r/20210721212029.142388-2-jouni@codeaurora.org
  };
  
  struct ath11k_fw_stats_vdev {
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
+index 7de7bdaec483..499f59410af0 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -5252,9 +5252,11 @@ ath11k_wmi_pull_pdev_stats_tx(const stru
+@@ -5252,9 +5252,11 @@ ath11k_wmi_pull_pdev_stats_tx(const struct wmi_pdev_stats_tx *src,
  	dst->hw_queued = src->hw_queued;
  	dst->hw_reaped = src->hw_reaped;
  	dst->underrun = src->underrun;
@@ -98,7 +102,7 @@ Link: https://lore.kernel.org/r/20210721212029.142388-2-jouni@codeaurora.org
  	dst->data_rc = src->data_rc;
  	dst->self_triggers = src->self_triggers;
  	dst->sw_retry_failure = src->sw_retry_failure;
-@@ -5265,6 +5267,16 @@ ath11k_wmi_pull_pdev_stats_tx(const stru
+@@ -5265,6 +5267,16 @@ ath11k_wmi_pull_pdev_stats_tx(const struct wmi_pdev_stats_tx *src,
  	dst->stateless_tid_alloc_failure = src->stateless_tid_alloc_failure;
  	dst->phy_underrun = src->phy_underrun;
  	dst->txop_ovf = src->txop_ovf;
@@ -115,7 +119,7 @@ Link: https://lore.kernel.org/r/20210721212029.142388-2-jouni@codeaurora.org
  }
  
  static void ath11k_wmi_pull_pdev_stats_rx(const struct wmi_pdev_stats_rx *src,
-@@ -5284,6 +5296,7 @@ static void ath11k_wmi_pull_pdev_stats_r
+@@ -5284,6 +5296,7 @@ static void ath11k_wmi_pull_pdev_stats_rx(const struct wmi_pdev_stats_rx *src,
  	dst->phy_errs = src->phy_errs;
  	dst->phy_err_drop = src->phy_err_drop;
  	dst->mpdu_errs = src->mpdu_errs;
@@ -123,12 +127,13 @@ Link: https://lore.kernel.org/r/20210721212029.142388-2-jouni@codeaurora.org
  }
  
  static void
-@@ -5521,11 +5534,15 @@ ath11k_wmi_fw_pdev_tx_stats_fill(const s
+@@ -5520,12 +5533,16 @@ ath11k_wmi_fw_pdev_tx_stats_fill(const struct ath11k_fw_stats_pdev *pdev,
+ 			 "PPDUs reaped", pdev->hw_reaped);
  	len += scnprintf(buf + len, buf_len - len, "%30s %10d\n",
  			 "Num underruns", pdev->underrun);
- 	len += scnprintf(buf + len, buf_len - len, "%30s %10d\n",
-+			 "Num HW Paused", pdev->hw_paused);
 +	len += scnprintf(buf + len, buf_len - len, "%30s %10d\n",
++			 "Num HW Paused", pdev->hw_paused);
+ 	len += scnprintf(buf + len, buf_len - len, "%30s %10d\n",
  			 "PPDUs cleaned", pdev->tx_abort);
  	len += scnprintf(buf + len, buf_len - len, "%30s %10d\n",
  			 "MPDUs requeued", pdev->mpdus_requeued);
@@ -140,7 +145,7 @@ Link: https://lore.kernel.org/r/20210721212029.142388-2-jouni@codeaurora.org
  	len += scnprintf(buf + len, buf_len - len, "%30s %10u\n",
  			 "HW rate", pdev->data_rc);
  	len += scnprintf(buf + len, buf_len - len, "%30s %10u\n",
-@@ -5549,6 +5566,26 @@ ath11k_wmi_fw_pdev_tx_stats_fill(const s
+@@ -5549,6 +5566,26 @@ ath11k_wmi_fw_pdev_tx_stats_fill(const struct ath11k_fw_stats_pdev *pdev,
  			 "PHY underrun", pdev->phy_underrun);
  	len += scnprintf(buf + len, buf_len - len, "%30s %10u\n",
  			 "MPDU is more than txop limit", pdev->txop_ovf);
@@ -167,7 +172,7 @@ Link: https://lore.kernel.org/r/20210721212029.142388-2-jouni@codeaurora.org
  	*length = len;
  }
  
-@@ -5593,6 +5630,8 @@ ath11k_wmi_fw_pdev_rx_stats_fill(const s
+@@ -5593,6 +5630,8 @@ ath11k_wmi_fw_pdev_rx_stats_fill(const struct ath11k_fw_stats_pdev *pdev,
  			 "PHY errors drops", pdev->phy_err_drop);
  	len += scnprintf(buf + len, buf_len - len, "%30s %10d\n",
  			 "MPDU errors (FCS, MIC, ENC)", pdev->mpdu_errs);
@@ -176,6 +181,8 @@ Link: https://lore.kernel.org/r/20210721212029.142388-2-jouni@codeaurora.org
  	*length = len;
  }
  
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.h b/drivers/net/wireless/ath/ath11k/wmi.h
+index 3d55c087ef75..f4ab308cac97 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.h
 +++ b/drivers/net/wireless/ath/ath11k/wmi.h
 @@ -4223,6 +4223,9 @@ struct wmi_pdev_stats_tx {
@@ -248,3 +255,6 @@ Link: https://lore.kernel.org/r/20210721212029.142388-2-jouni@codeaurora.org
  } __packed;
  
  struct wmi_pdev_stats {
+-- 
+2.37.1
+

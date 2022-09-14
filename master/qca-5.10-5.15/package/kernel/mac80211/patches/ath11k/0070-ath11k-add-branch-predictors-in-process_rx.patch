@@ -22,9 +22,11 @@ Link: https://lore.kernel.org/r/1630560820-21905-8-git-send-email-ppranees@codea
  drivers/net/wireless/ath/ath11k/dp_rx.c | 24 +++++++++---------------
  1 file changed, 9 insertions(+), 15 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
+index 5a8ca9e064e9..3223d6d22628 100644
 --- a/drivers/net/wireless/ath/ath11k/dp_rx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
-@@ -2610,24 +2610,20 @@ static void ath11k_dp_rx_process_receive
+@@ -2610,24 +2610,20 @@ static void ath11k_dp_rx_process_received_packets(struct ath11k_base *ab,
  	if (skb_queue_empty(msdu_list))
  		return;
  
@@ -53,7 +55,7 @@ Link: https://lore.kernel.org/r/1630560820-21905-8-git-send-email-ppranees@codea
  			ath11k_dbg(ab, ATH11K_DBG_DATA,
  				   "Unable to process msdu %d", ret);
  			dev_kfree_skb_any(msdu);
-@@ -2636,8 +2632,6 @@ static void ath11k_dp_rx_process_receive
+@@ -2636,8 +2632,6 @@ static void ath11k_dp_rx_process_received_packets(struct ath11k_base *ab,
  
  		ath11k_dp_rx_deliver_msdu(ar, napi, msdu, &rx_status);
  	}
@@ -62,7 +64,7 @@ Link: https://lore.kernel.org/r/1630560820-21905-8-git-send-email-ppranees@codea
  }
  
  int ath11k_dp_process_rx(struct ath11k_base *ab, int ring_id,
-@@ -2682,7 +2676,7 @@ try_again:
+@@ -2682,7 +2676,7 @@ int ath11k_dp_process_rx(struct ath11k_base *ab, int ring_id,
  		rx_ring = &ar->dp.rx_refill_buf_ring;
  		spin_lock_bh(&rx_ring->idr_lock);
  		msdu = idr_find(&rx_ring->bufs_idr, buf_id);
@@ -71,7 +73,7 @@ Link: https://lore.kernel.org/r/1630560820-21905-8-git-send-email-ppranees@codea
  			ath11k_warn(ab, "frame rx with invalid buf_id %d\n",
  				    buf_id);
  			spin_unlock_bh(&rx_ring->idr_lock);
-@@ -2701,8 +2695,8 @@ try_again:
+@@ -2701,8 +2695,8 @@ int ath11k_dp_process_rx(struct ath11k_base *ab, int ring_id,
  
  		push_reason = FIELD_GET(HAL_REO_DEST_RING_INFO0_PUSH_REASON,
  					desc->info0);
@@ -82,7 +84,7 @@ Link: https://lore.kernel.org/r/1630560820-21905-8-git-send-email-ppranees@codea
  			dev_kfree_skb_any(msdu);
  			ab->soc_stats.hal_reo_error[dp->reo_dst_ring[ring_id].ring_id]++;
  			continue;
-@@ -2741,7 +2735,7 @@ try_again:
+@@ -2741,7 +2735,7 @@ int ath11k_dp_process_rx(struct ath11k_base *ab, int ring_id,
  	 * head pointer so that we can reap complete MPDU in the current
  	 * rx processing.
  	 */
@@ -91,7 +93,7 @@ Link: https://lore.kernel.org/r/1630560820-21905-8-git-send-email-ppranees@codea
  		ath11k_hal_srng_access_end(ab, srng);
  		goto try_again;
  	}
-@@ -2750,7 +2744,7 @@ try_again:
+@@ -2750,7 +2744,7 @@ int ath11k_dp_process_rx(struct ath11k_base *ab, int ring_id,
  
  	spin_unlock_bh(&srng->lock);
  
@@ -100,3 +102,6 @@ Link: https://lore.kernel.org/r/1630560820-21905-8-git-send-email-ppranees@codea
  		goto exit;
  
  	for (i = 0; i < ab->num_radios; i++) {
+-- 
+2.37.1
+

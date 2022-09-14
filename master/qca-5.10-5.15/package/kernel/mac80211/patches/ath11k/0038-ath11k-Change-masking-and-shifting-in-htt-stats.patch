@@ -19,9 +19,11 @@ Link: https://lore.kernel.org/r/20210913223148.208026-5-jouni@codeaurora.org
  drivers/net/wireless/ath/ath11k/dp.h          |   7 +
  3 files changed, 243 insertions(+), 136 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/debugfs_htt_stats.c b/drivers/net/wireless/ath/ath11k/debugfs_htt_stats.c
+index fb686793929f..9efce25a067e 100644
 --- a/drivers/net/wireless/ath/ath11k/debugfs_htt_stats.c
 +++ b/drivers/net/wireless/ath/ath11k/debugfs_htt_stats.c
-@@ -75,8 +75,8 @@ static inline void htt_print_tx_pdev_sta
+@@ -75,8 +75,8 @@ static inline void htt_print_tx_pdev_stats_cmn_tlv(const void *tag_buf,
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
  	len += scnprintf(buf + len, buf_len - len, "HTT_TX_PDEV_STATS_CMN_TLV:\n");
@@ -32,7 +34,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-5-jouni@codeaurora.org
  	len += scnprintf(buf + len, buf_len - len, "hw_queued = %u\n",
  			 htt_stats_buf->hw_queued);
  	len += scnprintf(buf + len, buf_len - len, "hw_reaped = %u\n",
-@@ -428,8 +428,8 @@ static inline void htt_print_hw_stats_pd
+@@ -428,8 +428,8 @@ static inline void htt_print_hw_stats_pdev_errs_tlv(const void *tag_buf,
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
  	len += scnprintf(buf + len, buf_len - len, "HTT_HW_STATS_PDEV_ERRS_TLV:\n");
@@ -43,7 +45,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-5-jouni@codeaurora.org
  	len += scnprintf(buf + len, buf_len - len, "tx_abort = %u\n",
  			 htt_stats_buf->tx_abort);
  	len += scnprintf(buf + len, buf_len - len, "tx_abort_fail_count = %u\n",
-@@ -480,13 +480,15 @@ static inline void htt_print_msdu_flow_s
+@@ -480,13 +480,15 @@ static inline void htt_print_msdu_flow_stats_tlv(const void *tag_buf,
  			 htt_stats_buf->cur_msdu_count_in_flowq);
  	len += scnprintf(buf + len, buf_len - len, "sw_peer_id = %u\n",
  			 htt_stats_buf->sw_peer_id);
@@ -66,7 +68,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-5-jouni@codeaurora.org
  	len += scnprintf(buf + len, buf_len - len, "last_cycle_enqueue_count = %u\n",
  			 htt_stats_buf->last_cycle_enqueue_count);
  	len += scnprintf(buf + len, buf_len - len, "last_cycle_dequeue_count = %u\n",
-@@ -516,15 +518,18 @@ static inline void htt_print_tx_tid_stat
+@@ -516,15 +518,18 @@ static inline void htt_print_tx_tid_stats_tlv(const void *tag_buf,
  	len += scnprintf(buf + len, buf_len - len, "HTT_TX_TID_STATS_TLV:\n");
  	memcpy(tid_name, &(htt_stats_buf->tid_name[0]), MAX_HTT_TID_NAME);
  	len += scnprintf(buf + len, buf_len - len, "tid_name = %s\n", tid_name);
@@ -94,7 +96,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-5-jouni@codeaurora.org
  	len += scnprintf(buf + len, buf_len - len, "tid_flags = 0x%x\n",
  			 htt_stats_buf->tid_flags);
  	len += scnprintf(buf + len, buf_len - len, "hw_queued = %u\n",
-@@ -566,15 +571,18 @@ static inline void htt_print_tx_tid_stat
+@@ -566,15 +571,18 @@ static inline void htt_print_tx_tid_stats_v1_tlv(const void *tag_buf,
  	len += scnprintf(buf + len, buf_len - len, "HTT_TX_TID_STATS_V1_TLV:\n");
  	memcpy(tid_name, &(htt_stats_buf->tid_name[0]), MAX_HTT_TID_NAME);
  	len += scnprintf(buf + len, buf_len - len, "tid_name = %s\n", tid_name);
@@ -122,7 +124,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-5-jouni@codeaurora.org
  	len += scnprintf(buf + len, buf_len - len, "tid_flags = 0x%x\n",
  			 htt_stats_buf->tid_flags);
  	len += scnprintf(buf + len, buf_len - len, "max_qdepth_bytes = %u\n",
-@@ -618,10 +626,12 @@ static inline void htt_print_rx_tid_stat
+@@ -618,10 +626,12 @@ static inline void htt_print_rx_tid_stats_tlv(const void *tag_buf,
  	char tid_name[MAX_HTT_TID_NAME + 1] = {0};
  
  	len += scnprintf(buf + len, buf_len - len, "HTT_RX_TID_STATS_TLV:\n");
@@ -139,7 +141,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-5-jouni@codeaurora.org
  	memcpy(tid_name, &(htt_stats_buf->tid_name[0]), MAX_HTT_TID_NAME);
  	len += scnprintf(buf + len, buf_len - len, "tid_name = %s\n", tid_name);
  	len += scnprintf(buf + len, buf_len - len, "dup_in_reorder = %u\n",
-@@ -724,20 +734,29 @@ static inline void htt_print_peer_detail
+@@ -724,20 +734,29 @@ static inline void htt_print_peer_details_tlv(const void *tag_buf,
  			 htt_stats_buf->peer_type);
  	len += scnprintf(buf + len, buf_len - len, "sw_peer_id = %u\n",
  			 htt_stats_buf->sw_peer_id);
@@ -149,14 +151,6 @@ Link: https://lore.kernel.org/r/20210913223148.208026-5-jouni@codeaurora.org
 -			 (htt_stats_buf->vdev_pdev_ast_idx & 0xFF00) >> 8);
 -	len += scnprintf(buf + len, buf_len - len, "ast_idx = %u\n",
 -			 (htt_stats_buf->vdev_pdev_ast_idx & 0xFFFF0000) >> 16);
--	len += scnprintf(buf + len, buf_len - len,
--			 "mac_addr = %02x:%02x:%02x:%02x:%02x:%02x\n",
--			 htt_stats_buf->mac_addr.mac_addr_l32 & 0xFF,
--			 (htt_stats_buf->mac_addr.mac_addr_l32 & 0xFF00) >> 8,
--			 (htt_stats_buf->mac_addr.mac_addr_l32 & 0xFF0000) >> 16,
--			 (htt_stats_buf->mac_addr.mac_addr_l32 & 0xFF000000) >> 24,
--			 (htt_stats_buf->mac_addr.mac_addr_h16 & 0xFF),
--			 (htt_stats_buf->mac_addr.mac_addr_h16 & 0xFF00) >> 8);
 +	len += scnprintf(buf + len, buf_len - len, "vdev_id = %lu\n",
 +			 FIELD_GET(HTT_PEER_DETAILS_VDEV_ID,
 +				   htt_stats_buf->vdev_pdev_ast_idx));
@@ -166,7 +160,14 @@ Link: https://lore.kernel.org/r/20210913223148.208026-5-jouni@codeaurora.org
 +	len += scnprintf(buf + len, buf_len - len, "ast_idx = %lu\n",
 +			 FIELD_GET(HTT_PEER_DETAILS_AST_IDX,
 +				   htt_stats_buf->vdev_pdev_ast_idx));
-+	len += scnprintf(buf + len, buf_len - len,
+ 	len += scnprintf(buf + len, buf_len - len,
+-			 "mac_addr = %02x:%02x:%02x:%02x:%02x:%02x\n",
+-			 htt_stats_buf->mac_addr.mac_addr_l32 & 0xFF,
+-			 (htt_stats_buf->mac_addr.mac_addr_l32 & 0xFF00) >> 8,
+-			 (htt_stats_buf->mac_addr.mac_addr_l32 & 0xFF0000) >> 16,
+-			 (htt_stats_buf->mac_addr.mac_addr_l32 & 0xFF000000) >> 24,
+-			 (htt_stats_buf->mac_addr.mac_addr_h16 & 0xFF),
+-			 (htt_stats_buf->mac_addr.mac_addr_h16 & 0xFF00) >> 8);
 +			 "mac_addr = %02lx:%02lx:%02lx:%02lx:%02lx:%02lx\n",
 +			 FIELD_GET(HTT_MAC_ADDR_L32_0,
 +				   htt_stats_buf->mac_addr.mac_addr_l32),
@@ -183,7 +184,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-5-jouni@codeaurora.org
  	len += scnprintf(buf + len, buf_len - len, "peer_flags = 0x%x\n",
  			 htt_stats_buf->peer_flags);
  	len += scnprintf(buf + len, buf_len - len, "qpeer_flags = 0x%x\n\n",
-@@ -799,7 +818,6 @@ static inline void htt_print_tx_peer_rat
+@@ -799,7 +818,6 @@ static inline void htt_print_tx_peer_rate_stats_tlv(const void *tag_buf,
  		buf[len] = 0;
  
  	stats_req->buf_len = len;
@@ -191,7 +192,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-5-jouni@codeaurora.org
  }
  
  static inline void htt_print_rx_peer_rate_stats_tlv(const void *tag_buf,
-@@ -930,10 +948,12 @@ htt_print_tx_hwq_mu_mimo_cmn_stats_tlv(c
+@@ -930,10 +948,12 @@ htt_print_tx_hwq_mu_mimo_cmn_stats_tlv(const void *tag_buf,
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
  	len += scnprintf(buf + len, buf_len - len, "HTT_TX_HWQ_MU_MIMO_CMN_STATS_TLV:\n");
@@ -208,7 +209,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-5-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -953,10 +973,12 @@ htt_print_tx_hwq_stats_cmn_tlv(const voi
+@@ -953,10 +973,12 @@ htt_print_tx_hwq_stats_cmn_tlv(const void *tag_buf, struct debug_htt_stats_req *
  
  	/* TODO: HKDBG */
  	len += scnprintf(buf + len, buf_len - len, "HTT_TX_HWQ_STATS_CMN_TLV:\n");
@@ -225,7 +226,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-5-jouni@codeaurora.org
  	len += scnprintf(buf + len, buf_len - len, "xretry = %u\n",
  			 htt_stats_buf->xretry);
  	len += scnprintf(buf + len, buf_len - len, "underrun_cnt = %u\n",
-@@ -1281,8 +1303,8 @@ htt_print_tx_selfgen_cmn_stats_tlv(const
+@@ -1281,8 +1303,8 @@ htt_print_tx_selfgen_cmn_stats_tlv(const void *tag_buf,
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
  	len += scnprintf(buf + len, buf_len - len, "HTT_TX_SELFGEN_CMN_STATS_TLV:\n");
@@ -236,7 +237,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-5-jouni@codeaurora.org
  	len += scnprintf(buf + len, buf_len - len, "su_bar = %u\n",
  			 htt_stats_buf->su_bar);
  	len += scnprintf(buf + len, buf_len - len, "rts = %u\n",
-@@ -1769,10 +1791,12 @@ htt_print_tx_pdev_stats_sched_per_txq_tl
+@@ -1769,10 +1791,12 @@ htt_print_tx_pdev_stats_sched_per_txq_tlv(const void *tag_buf,
  
  	len += scnprintf(buf + len, buf_len - len,
  			 "HTT_TX_PDEV_STATS_SCHED_PER_TXQ_TLV:\n");
@@ -253,7 +254,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-5-jouni@codeaurora.org
  	len += scnprintf(buf + len, buf_len - len, "sched_policy = %u\n",
  			 htt_stats_buf->sched_policy);
  	len += scnprintf(buf + len, buf_len - len,
-@@ -1833,8 +1857,8 @@ static inline void htt_print_stats_tx_sc
+@@ -1833,8 +1857,8 @@ static inline void htt_print_stats_tx_sched_cmn_tlv(const void *tag_buf,
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
  	len += scnprintf(buf + len, buf_len - len, "HTT_STATS_TX_SCHED_CMN_TLV:\n");
@@ -264,7 +265,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-5-jouni@codeaurora.org
  	len += scnprintf(buf + len, buf_len - len, "current_timestamp = %u\n\n",
  			 htt_stats_buf->current_timestamp);
  
-@@ -2011,8 +2035,8 @@ static inline void htt_print_tx_tqm_cmn_
+@@ -2011,8 +2035,8 @@ static inline void htt_print_tx_tqm_cmn_stats_tlv(const void *tag_buf,
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
  	len += scnprintf(buf + len, buf_len - len, "HTT_TX_TQM_CMN_STATS_TLV:\n");
@@ -275,7 +276,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-5-jouni@codeaurora.org
  	len += scnprintf(buf + len, buf_len - len, "max_cmdq_id = %u\n",
  			 htt_stats_buf->max_cmdq_id);
  	len += scnprintf(buf + len, buf_len - len, "list_mpdu_cnt_hist_intvl = %u\n",
-@@ -2069,10 +2093,12 @@ static inline void htt_print_tx_tqm_cmdq
+@@ -2069,10 +2093,12 @@ static inline void htt_print_tx_tqm_cmdq_status_tlv(const void *tag_buf,
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
  	len += scnprintf(buf + len, buf_len - len, "HTT_TX_TQM_CMDQ_STATUS_TLV:\n");
@@ -292,7 +293,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-5-jouni@codeaurora.org
  	len += scnprintf(buf + len, buf_len - len, "sync_cmd = %u\n",
  			 htt_stats_buf->sync_cmd);
  	len += scnprintf(buf + len, buf_len - len, "write_cmd = %u\n",
-@@ -2417,8 +2443,8 @@ htt_print_tx_de_cmn_stats_tlv(const void
+@@ -2417,8 +2443,8 @@ htt_print_tx_de_cmn_stats_tlv(const void *tag_buf, struct debug_htt_stats_req *s
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
  	len += scnprintf(buf + len, buf_len - len, "HTT_TX_DE_CMN_STATS_TLV:\n");
@@ -303,7 +304,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-5-jouni@codeaurora.org
  	len += scnprintf(buf + len, buf_len - len, "tcl2fw_entry_count = %u\n",
  			 htt_stats_buf->tcl2fw_entry_count);
  	len += scnprintf(buf + len, buf_len - len, "not_to_fw = %u\n",
-@@ -2453,26 +2479,32 @@ static inline void htt_print_ring_if_sta
+@@ -2453,26 +2479,32 @@ static inline void htt_print_ring_if_stats_tlv(const void *tag_buf,
  			 htt_stats_buf->base_addr);
  	len += scnprintf(buf + len, buf_len - len, "elem_size = %u\n",
  			 htt_stats_buf->elem_size);
@@ -354,7 +355,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-5-jouni@codeaurora.org
  	len += scnprintf(buf + len, buf_len - len, "overrun_hit_count = %u\n",
  			 htt_stats_buf->overrun_hit_count);
  	len += scnprintf(buf + len, buf_len - len, "underrun_hit_count = %u\n",
-@@ -2504,8 +2536,8 @@ static inline void htt_print_ring_if_cmn
+@@ -2504,8 +2536,8 @@ static inline void htt_print_ring_if_cmn_tlv(const void *tag_buf,
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
  	len += scnprintf(buf + len, buf_len - len, "HTT_RING_IF_CMN_TLV:\n");
@@ -365,7 +366,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-5-jouni@codeaurora.org
  	len += scnprintf(buf + len, buf_len - len, "num_records = %u\n\n",
  			 htt_stats_buf->num_records);
  
-@@ -2581,8 +2613,8 @@ static inline void htt_print_sfm_cmn_tlv
+@@ -2581,8 +2613,8 @@ static inline void htt_print_sfm_cmn_tlv(const void *tag_buf,
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
  	len += scnprintf(buf + len, buf_len - len, "HTT_SFM_CMN_TLV:\n");
@@ -376,7 +377,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-5-jouni@codeaurora.org
  	len += scnprintf(buf + len, buf_len - len, "buf_total = %u\n",
  			 htt_stats_buf->buf_total);
  	len += scnprintf(buf + len, buf_len - len, "mem_empty = %u\n",
-@@ -2609,14 +2641,18 @@ static inline void htt_print_sring_stats
+@@ -2609,14 +2641,18 @@ static inline void htt_print_sring_stats_tlv(const void *tag_buf,
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
  	len += scnprintf(buf + len, buf_len - len, "HTT_SRING_STATS_TLV:\n");
@@ -403,7 +404,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-5-jouni@codeaurora.org
  	len += scnprintf(buf + len, buf_len - len, "base_addr_lsb = 0x%x\n",
  			 htt_stats_buf->base_addr_lsb);
  	len += scnprintf(buf + len, buf_len - len, "base_addr_msb = 0x%x\n",
-@@ -2625,25 +2661,30 @@ static inline void htt_print_sring_stats
+@@ -2625,25 +2661,30 @@ static inline void htt_print_sring_stats_tlv(const void *tag_buf,
  			 htt_stats_buf->ring_size);
  	len += scnprintf(buf + len, buf_len - len, "elem_size = %u\n",
  			 htt_stats_buf->elem_size);
@@ -453,7 +454,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-5-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -2683,8 +2724,8 @@ static inline void htt_print_tx_pdev_rat
+@@ -2683,8 +2724,8 @@ static inline void htt_print_tx_pdev_rate_stats_tlv(const void *tag_buf,
  	u8 j;
  
  	len += scnprintf(buf + len, buf_len - len, "HTT_TX_PDEV_RATE_STATS_TLV:\n");
@@ -464,7 +465,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-5-jouni@codeaurora.org
  	len += scnprintf(buf + len, buf_len - len, "tx_ldpc = %u\n",
  			 htt_stats_buf->tx_ldpc);
  	len += scnprintf(buf + len, buf_len - len, "ac_mu_mimo_tx_ldpc = %u\n",
-@@ -2809,8 +2850,8 @@ static inline void htt_print_rx_pdev_rat
+@@ -2809,8 +2850,8 @@ static inline void htt_print_rx_pdev_rate_stats_tlv(const void *tag_buf,
  	u8 i, j;
  
  	len += scnprintf(buf + len, buf_len - len, "HTT_RX_PDEV_RATE_STATS_TLV:\n");
@@ -475,7 +476,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-5-jouni@codeaurora.org
  	len += scnprintf(buf + len, buf_len - len, "nsts = %u\n",
  			 htt_stats_buf->nsts);
  	len += scnprintf(buf + len, buf_len - len, "rx_ldpc = %u\n",
-@@ -2844,7 +2885,6 @@ static inline void htt_print_rx_pdev_rat
+@@ -2844,7 +2885,6 @@ static inline void htt_print_rx_pdev_rate_stats_tlv(const void *tag_buf,
  			 htt_stats_buf->pilot_count);
  
  	for (j = 0; j < HTT_RX_PDEV_STATS_NUM_SPATIAL_STREAMS; j++) {
@@ -483,7 +484,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-5-jouni@codeaurora.org
  		len += scnprintf(buf + len, buf_len - len,
  				 "pilot_evm_db[%u] = ", j);
  		for (i = 0; i < HTT_RX_PDEV_STATS_RXEVM_MAX_PILOTS_PER_NSS; i++)
-@@ -3173,8 +3213,8 @@ static inline void htt_print_rx_pdev_fw_
+@@ -3173,8 +3213,8 @@ static inline void htt_print_rx_pdev_fw_stats_tlv(const void *tag_buf,
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
  	len += scnprintf(buf + len, buf_len - len, "HTT_RX_PDEV_FW_STATS_TLV:\n");
@@ -494,7 +495,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-5-jouni@codeaurora.org
  	len += scnprintf(buf + len, buf_len - len, "ppdu_recvd = %u\n",
  			 htt_stats_buf->ppdu_recvd);
  	len += scnprintf(buf + len, buf_len - len, "mpdu_cnt_fcs_ok = %u\n",
-@@ -3422,8 +3462,8 @@ static inline void htt_print_hw_stats_wh
+@@ -3422,8 +3462,8 @@ static inline void htt_print_hw_stats_whal_tx_tlv(const void *tag_buf,
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
  	len += scnprintf(buf + len, buf_len - len, "HTT_HW_STATS_WHAL_TX_TLV:\n");
@@ -505,7 +506,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-5-jouni@codeaurora.org
  	len += scnprintf(buf + len, buf_len - len, "last_unpause_ppdu_id = %u\n",
  			 htt_stats_buf->last_unpause_ppdu_id);
  	len += scnprintf(buf + len, buf_len - len, "hwsch_unpause_wait_tqm_write = %u\n",
-@@ -3492,13 +3532,19 @@ htt_print_pdev_stats_twt_session_tlv(con
+@@ -3492,13 +3532,19 @@ htt_print_pdev_stats_twt_session_tlv(const void *tag_buf,
  	len += scnprintf(buf + len, buf_len - len, "vdev_id = %u\n",
  			 htt_stats_buf->vdev_id);
  	len += scnprintf(buf + len, buf_len - len,
@@ -532,6 +533,8 @@ Link: https://lore.kernel.org/r/20210913223148.208026-5-jouni@codeaurora.org
  	len += scnprintf(buf + len, buf_len - len, "flow_id_flags = %u\n",
  			 htt_stats_buf->flow_id_flags);
  	len += scnprintf(buf + len, buf_len - len, "dialog_id = %u\n",
+diff --git a/drivers/net/wireless/ath/ath11k/debugfs_htt_stats.h b/drivers/net/wireless/ath/ath11k/debugfs_htt_stats.h
+index d428f52003a4..95ab8505ae5f 100644
 --- a/drivers/net/wireless/ath/ath11k/debugfs_htt_stats.h
 +++ b/drivers/net/wireless/ath/ath11k/debugfs_htt_stats.h
 @@ -137,6 +137,8 @@ struct htt_stats_string_tlv {
@@ -599,7 +602,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-5-jouni@codeaurora.org
  struct htt_peer_details_tlv {
  	u32 peer_type;
  	u32 sw_peer_id;
-@@ -510,6 +533,9 @@ struct htt_tx_hwq_mu_mimo_mpdu_stats_tlv
+@@ -510,6 +533,9 @@ struct htt_tx_hwq_mu_mimo_mpdu_stats_tlv {
  	u32 mu_mimo_ampdu_underrun_usr;
  };
  
@@ -609,7 +612,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-5-jouni@codeaurora.org
  struct htt_tx_hwq_mu_mimo_cmn_stats_tlv {
  	u32 mac_id__hwq_id__word;
  };
-@@ -789,6 +815,9 @@ struct htt_sched_txq_sched_ineligibility
+@@ -789,6 +815,9 @@ struct htt_sched_txq_sched_ineligibility_tlv_v {
  	u32 sched_ineligibility[0];
  };
  
@@ -665,6 +668,8 @@ Link: https://lore.kernel.org/r/20210913223148.208026-5-jouni@codeaurora.org
  struct htt_sring_stats_tlv {
  	u32 mac_id__ring_id__arena__ep;
  	u32 base_addr_lsb; /* DWORD aligned base memory address of the ring */
+diff --git a/drivers/net/wireless/ath/ath11k/dp.h b/drivers/net/wireless/ath/ath11k/dp.h
+index 019199059eb7..f236770a2a10 100644
 --- a/drivers/net/wireless/ath/ath11k/dp.h
 +++ b/drivers/net/wireless/ath/ath11k/dp.h
 @@ -1594,6 +1594,13 @@ struct ath11k_htt_extd_stats_msg {
@@ -681,3 +686,6 @@ Link: https://lore.kernel.org/r/20210913223148.208026-5-jouni@codeaurora.org
  struct htt_mac_addr {
  	u32 mac_addr_l32;
  	u32 mac_addr_h16;
+-- 
+2.37.1
+

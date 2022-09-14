@@ -23,6 +23,8 @@ Link: https://lore.kernel.org/r/1644308006-22784-6-git-send-email-quic_cjhuang@q
  drivers/net/wireless/ath/ath11k/wow.c  |  52 +++++++++
  5 files changed, 391 insertions(+)
 
+diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
+index 1f5e977aa976..4ba12de44415 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
 @@ -213,6 +213,23 @@ enum ath11k_monitor_flags {
@@ -58,6 +60,8 @@ Link: https://lore.kernel.org/r/1644308006-22784-6-git-send-email-quic_cjhuang@q
  #ifdef CPTCFG_ATH11K_DEBUGFS
  	struct dentry *debugfs_twt;
  #endif /* CPTCFG_ATH11K_DEBUGFS */
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index 1bea2ddb4c37..4c2e6fba5ae1 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
 @@ -6,6 +6,11 @@
@@ -72,7 +76,7 @@ Link: https://lore.kernel.org/r/1644308006-22784-6-git-send-email-quic_cjhuang@q
  #include "mac.h"
  #include "core.h"
  #include "debug.h"
-@@ -3095,6 +3100,7 @@ static void ath11k_mac_op_bss_info_chang
+@@ -3095,6 +3100,7 @@ static void ath11k_mac_op_bss_info_changed(struct ieee80211_hw *hw,
  	int ret = 0;
  	u8 rateidx;
  	u32 rate;
@@ -80,7 +84,7 @@ Link: https://lore.kernel.org/r/1644308006-22784-6-git-send-email-quic_cjhuang@q
  
  	mutex_lock(&ar->conf_mutex);
  
-@@ -3393,6 +3399,18 @@ static void ath11k_mac_op_bss_info_chang
+@@ -3393,6 +3399,18 @@ static void ath11k_mac_op_bss_info_changed(struct ieee80211_hw *hw,
  	    changed & BSS_CHANGED_UNSOL_BCAST_PROBE_RESP)
  		ath11k_mac_fils_discovery(arvif, info);
  
@@ -99,7 +103,7 @@ Link: https://lore.kernel.org/r/1644308006-22784-6-git-send-email-quic_cjhuang@q
  	mutex_unlock(&ar->conf_mutex);
  }
  
-@@ -8099,6 +8117,101 @@ static void ath11k_mac_op_sta_statistics
+@@ -8099,6 +8117,101 @@ static void ath11k_mac_op_sta_statistics(struct ieee80211_hw *hw,
  	}
  }
  
@@ -201,7 +205,7 @@ Link: https://lore.kernel.org/r/1644308006-22784-6-git-send-email-quic_cjhuang@q
  static const struct ieee80211_ops ath11k_ops = {
  	.tx				= ath11k_mac_op_tx,
  	.start                          = ath11k_mac_op_start,
-@@ -8144,6 +8257,11 @@ static const struct ieee80211_ops ath11k
+@@ -8144,6 +8257,11 @@ static const struct ieee80211_ops ath11k_ops = {
  #ifdef CPTCFG_ATH11K_DEBUGFS
  	.sta_add_debugfs		= ath11k_debugfs_sta_op_add,
  #endif
@@ -213,9 +217,11 @@ Link: https://lore.kernel.org/r/1644308006-22784-6-git-send-email-quic_cjhuang@q
  };
  
  static void ath11k_mac_update_ch_list(struct ath11k *ar,
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
+index 62b13f5cb8b4..828f9cacbe57 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -8580,3 +8580,158 @@ int ath11k_wmi_wow_config_pno(struct ath
+@@ -8580,3 +8580,158 @@ int ath11k_wmi_wow_config_pno(struct ath11k *ar, u32 vdev_id,
  	return ath11k_wmi_cmd_send(ar->wmi, skb, WMI_NETWORK_LIST_OFFLOAD_CONFIG_CMDID);
  }
  
@@ -374,6 +380,8 @@ Link: https://lore.kernel.org/r/1644308006-22784-6-git-send-email-quic_cjhuang@q
 +
 +	return ath11k_wmi_cmd_send(ar->wmi, skb, WMI_SET_ARP_NS_OFFLOAD_CMDID);
 +}
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.h b/drivers/net/wireless/ath/ath11k/wmi.h
+index 17e50987e115..e2d03c3b422c 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.h
 +++ b/drivers/net/wireless/ath/ath11k/wmi.h
 @@ -13,6 +13,7 @@ struct ath11k_base;
@@ -434,7 +442,7 @@ Link: https://lore.kernel.org/r/1644308006-22784-6-git-send-email-quic_cjhuang@q
  int ath11k_wmi_cmd_send(struct ath11k_pdev_wmi *wmi, struct sk_buff *skb,
  			u32 cmd_id);
  struct sk_buff *ath11k_wmi_alloc_skb(struct ath11k_wmi_base *wmi_sc, u32 len);
-@@ -5968,4 +6012,7 @@ int ath11k_wmi_wow_add_wakeup_event(stru
+@@ -5968,4 +6012,7 @@ int ath11k_wmi_wow_add_wakeup_event(struct ath11k *ar, u32 vdev_id,
  				    u32 enable);
  int ath11k_wmi_hw_data_filter_cmd(struct ath11k *ar, u32 vdev_id,
  				  u32 filter_bitmap, bool enable);
@@ -442,9 +450,11 @@ Link: https://lore.kernel.org/r/1644308006-22784-6-git-send-email-quic_cjhuang@q
 +			      struct ath11k_vif *arvif, bool enable);
 +
  #endif
+diff --git a/drivers/net/wireless/ath/ath11k/wow.c b/drivers/net/wireless/ath/ath11k/wow.c
+index 602b8f4c5985..bc6a4d3d6d7c 100644
 --- a/drivers/net/wireless/ath/ath11k/wow.c
 +++ b/drivers/net/wireless/ath/ath11k/wow.c
-@@ -559,6 +559,43 @@ static int ath11k_wow_clear_hw_filter(st
+@@ -559,6 +559,43 @@ static int ath11k_wow_clear_hw_filter(struct ath11k *ar)
  	return 0;
  }
  
@@ -488,7 +498,7 @@ Link: https://lore.kernel.org/r/1644308006-22784-6-git-send-email-quic_cjhuang@q
  int ath11k_wow_op_suspend(struct ieee80211_hw *hw,
  			  struct cfg80211_wowlan *wowlan)
  {
-@@ -589,6 +626,14 @@ int ath11k_wow_op_suspend(struct ieee802
+@@ -589,6 +626,14 @@ int ath11k_wow_op_suspend(struct ieee80211_hw *hw,
  		goto cleanup;
  	}
  
@@ -503,7 +513,7 @@ Link: https://lore.kernel.org/r/1644308006-22784-6-git-send-email-quic_cjhuang@q
  	ret = ath11k_mac_wait_tx_complete(ar);
  	if (ret) {
  		ath11k_warn(ar->ab, "failed to wait tx complete: %d\n", ret);
-@@ -690,6 +735,13 @@ int ath11k_wow_op_resume(struct ieee8021
+@@ -690,6 +735,13 @@ int ath11k_wow_op_resume(struct ieee80211_hw *hw)
  		goto exit;
  	}
  
@@ -517,3 +527,6 @@ Link: https://lore.kernel.org/r/1644308006-22784-6-git-send-email-quic_cjhuang@q
  exit:
  	if (ret) {
  		switch (ar->state) {
+-- 
+2.37.1
+

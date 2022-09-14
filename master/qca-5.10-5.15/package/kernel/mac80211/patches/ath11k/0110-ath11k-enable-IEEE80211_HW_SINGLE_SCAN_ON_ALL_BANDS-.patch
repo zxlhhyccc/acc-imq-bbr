@@ -28,9 +28,11 @@ Link: https://lore.kernel.org/r/20211129101309.2931-1-quic_wgong@quicinc.com
  drivers/net/wireless/ath/ath11k/mac.c | 3 +++
  1 file changed, 3 insertions(+)
 
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index d190cd23cd40..efe071490a24 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -8134,6 +8134,9 @@ static int __ath11k_mac_register(struct
+@@ -8134,6 +8134,9 @@ static int __ath11k_mac_register(struct ath11k *ar)
  
  	ar->hw->wiphy->interface_modes = ab->hw_params.interface_modes;
  
@@ -40,3 +42,6 @@ Link: https://lore.kernel.org/r/20211129101309.2931-1-quic_wgong@quicinc.com
  	ieee80211_hw_set(ar->hw, SIGNAL_DBM);
  	ieee80211_hw_set(ar->hw, SUPPORTS_PS);
  	ieee80211_hw_set(ar->hw, SUPPORTS_DYNAMIC_PS);
+-- 
+2.37.1
+

@@ -26,9 +26,11 @@ Link: https://lore.kernel.org/r/1636554200-12345-1-git-send-email-quic_periyasa@
  drivers/net/wireless/ath/ath11k/peer.h |  1 +
  2 files changed, 47 insertions(+), 7 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index 0e1c4cb9b215..dfff15944fb7 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -2479,6 +2479,8 @@ static void ath11k_bss_assoc(struct ieee
+@@ -2479,6 +2479,8 @@ static void ath11k_bss_assoc(struct ieee80211_hw *hw,
  	struct ath11k_vif *arvif = (void *)vif->drv_priv;
  	struct peer_assoc_params peer_arg;
  	struct ieee80211_sta *ap_sta;
@@ -37,7 +39,7 @@ Link: https://lore.kernel.org/r/1636554200-12345-1-git-send-email-quic_periyasa@
  	int ret;
  
  	lockdep_assert_held(&ar->conf_mutex);
-@@ -2541,13 +2543,22 @@ static void ath11k_bss_assoc(struct ieee
+@@ -2541,13 +2543,22 @@ static void ath11k_bss_assoc(struct ieee80211_hw *hw,
  		   "mac vdev %d up (associated) bssid %pM aid %d\n",
  		   arvif->vdev_id, bss_conf->bssid, bss_conf->aid);
  
@@ -67,10 +69,11 @@ Link: https://lore.kernel.org/r/1636554200-12345-1-git-send-email-quic_periyasa@
  
  	ret = ath11k_wmi_send_obss_spr_cmd(ar, arvif->vdev_id,
  					   &bss_conf->he_obss_pd);
-@@ -4232,6 +4243,34 @@ static int ath11k_mac_op_sta_state(struc
+@@ -4231,6 +4242,34 @@ static int ath11k_mac_op_sta_state(struct ieee80211_hw *hw,
+ 		if (ret)
  			ath11k_warn(ar->ab, "Failed to associate station: %pM\n",
  				    sta->addr);
- 	} else if (old_state == IEEE80211_STA_ASSOC &&
++	} else if (old_state == IEEE80211_STA_ASSOC &&
 +		   new_state == IEEE80211_STA_AUTHORIZED) {
 +		spin_lock_bh(&ar->ab->base_lock);
 +
@@ -98,10 +101,11 @@ Link: https://lore.kernel.org/r/1636554200-12345-1-git-send-email-quic_periyasa@
 +			peer->is_authorized = false;
 +
 +		spin_unlock_bh(&ar->ab->base_lock);
-+	} else if (old_state == IEEE80211_STA_ASSOC &&
+ 	} else if (old_state == IEEE80211_STA_ASSOC &&
  		   new_state == IEEE80211_STA_AUTH &&
  		   (vif->type == NL80211_IFTYPE_AP ||
- 		    vif->type == NL80211_IFTYPE_MESH_POINT ||
+diff --git a/drivers/net/wireless/ath/ath11k/peer.h b/drivers/net/wireless/ath/ath11k/peer.h
+index 619db001be8e..63fe5665badf 100644
 --- a/drivers/net/wireless/ath/ath11k/peer.h
 +++ b/drivers/net/wireless/ath/ath11k/peer.h
 @@ -28,6 +28,7 @@ struct ath11k_peer {
@@ -112,3 +116,6 @@ Link: https://lore.kernel.org/r/1636554200-12345-1-git-send-email-quic_periyasa@
  };
  
  void ath11k_peer_unmap_event(struct ath11k_base *ab, u16 peer_id);
+-- 
+2.37.1
+

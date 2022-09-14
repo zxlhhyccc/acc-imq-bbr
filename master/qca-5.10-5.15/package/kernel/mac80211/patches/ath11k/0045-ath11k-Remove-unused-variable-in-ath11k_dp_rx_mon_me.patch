@@ -35,9 +35,11 @@ Link: https://lore.kernel.org/r/20210927150743.19816-1-tim.gardner@canonical.com
  drivers/net/wireless/ath/ath11k/dp_rx.c | 10 +---------
  1 file changed, 1 insertion(+), 9 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
+index 75f6d55dca46..1232bbea4b65 100644
 --- a/drivers/net/wireless/ath/ath11k/dp_rx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
-@@ -4828,7 +4828,7 @@ ath11k_dp_rx_mon_merg_msdus(struct ath11
+@@ -4828,7 +4828,7 @@ ath11k_dp_rx_mon_merg_msdus(struct ath11k *ar,
  			    struct ieee80211_rx_status *rxs)
  {
  	struct ath11k_base *ab = ar->ab;
@@ -46,7 +48,7 @@ Link: https://lore.kernel.org/r/20210927150743.19816-1-tim.gardner@canonical.com
  	u32 wifi_hdr_len;
  	struct hal_rx_desc *rx_desc;
  	char *hdr_desc;
-@@ -4836,8 +4836,6 @@ ath11k_dp_rx_mon_merg_msdus(struct ath11
+@@ -4836,8 +4836,6 @@ ath11k_dp_rx_mon_merg_msdus(struct ath11k *ar,
  	struct ieee80211_hdr_3addr *wh;
  	struct rx_attention *rx_attention;
  
@@ -55,7 +57,7 @@ Link: https://lore.kernel.org/r/20210927150743.19816-1-tim.gardner@canonical.com
  	if (!head_msdu)
  		goto err_merge_fail;
  
-@@ -4920,12 +4918,6 @@ ath11k_dp_rx_mon_merg_msdus(struct ath11
+@@ -4920,12 +4918,6 @@ ath11k_dp_rx_mon_merg_msdus(struct ath11k *ar,
  	return head_msdu;
  
  err_merge_fail:
@@ -68,3 +70,6 @@ Link: https://lore.kernel.org/r/20210927150743.19816-1-tim.gardner@canonical.com
  	return NULL;
  }
  
+-- 
+2.37.1
+

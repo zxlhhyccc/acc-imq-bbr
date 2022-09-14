@@ -18,9 +18,11 @@ Link: https://lore.kernel.org/r/20220217012112.31211-3-pradeepc@codeaurora.org
  drivers/net/wireless/ath/ath11k/hal_rx.h   | 135 ++++++++++++++++++++-
  3 files changed, 215 insertions(+), 21 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
+index 9183d6f2e5ef..b2599cfff577 100644
 --- a/drivers/net/wireless/ath/ath11k/dp_rx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
-@@ -4807,7 +4807,6 @@ ath11k_dp_rx_mon_merg_msdus(struct ath11
+@@ -4807,7 +4807,6 @@ ath11k_dp_rx_mon_merg_msdus(struct ath11k *ar,
  {
  	struct ath11k_base *ab = ar->ab;
  	struct sk_buff *msdu, *prev_buf;
@@ -28,7 +30,7 @@ Link: https://lore.kernel.org/r/20220217012112.31211-3-pradeepc@codeaurora.org
  	struct hal_rx_desc *rx_desc;
  	char *hdr_desc;
  	u8 *dest, decap_format;
-@@ -4849,38 +4848,27 @@ ath11k_dp_rx_mon_merg_msdus(struct ath11
+@@ -4849,38 +4848,27 @@ ath11k_dp_rx_mon_merg_msdus(struct ath11k *ar,
  
  		skb_trim(prev_buf, prev_buf->len - HAL_RX_FCS_LEN);
  	} else if (decap_format == DP_RX_DECAP_TYPE_NATIVE_WIFI) {
@@ -71,7 +73,7 @@ Link: https://lore.kernel.org/r/20220217012112.31211-3-pradeepc@codeaurora.org
  			prev_buf = msdu;
  			msdu = msdu->next;
  		}
-@@ -4904,8 +4892,83 @@ err_merge_fail:
+@@ -4904,8 +4892,83 @@ ath11k_dp_rx_mon_merg_msdus(struct ath11k *ar,
  	return NULL;
  }
  
@@ -155,7 +157,7 @@ Link: https://lore.kernel.org/r/20220217012112.31211-3-pradeepc@codeaurora.org
  				    struct sk_buff *tail_msdu,
  				    struct napi_struct *napi)
  {
-@@ -4940,7 +5003,7 @@ static int ath11k_dp_rx_mon_deliver(stru
+@@ -4940,7 +5003,7 @@ static int ath11k_dp_rx_mon_deliver(struct ath11k *ar, u32 mac_id,
  		} else {
  			rxs->flag |= RX_FLAG_ALLOW_SAME_PN;
  		}
@@ -164,7 +166,7 @@ Link: https://lore.kernel.org/r/20220217012112.31211-3-pradeepc@codeaurora.org
  
  		ath11k_dp_rx_deliver_msdu(ar, napi, mon_skb, rxs);
  		mon_skb = skb_next;
-@@ -5045,6 +5108,7 @@ static void ath11k_dp_rx_mon_dest_proces
+@@ -5045,6 +5108,7 @@ static void ath11k_dp_rx_mon_dest_process(struct ath11k *ar, int mac_id,
  		}
  		if (head_msdu && tail_msdu) {
  			ath11k_dp_rx_mon_deliver(ar, dp->mac_id, head_msdu,
@@ -172,7 +174,7 @@ Link: https://lore.kernel.org/r/20220217012112.31211-3-pradeepc@codeaurora.org
  						 tail_msdu, napi);
  			rx_mon_stats->dest_mpdu_done++;
  		}
-@@ -5114,6 +5178,7 @@ int ath11k_dp_rx_process_mon_status(stru
+@@ -5114,6 +5178,7 @@ int ath11k_dp_rx_process_mon_status(struct ath11k_base *ab, int mac_id,
  		if (log_type != ATH11K_PKTLOG_TYPE_INVALID)
  			trace_ath11k_htt_rxdesc(ar, skb->data, log_type, rx_buf_sz);
  
@@ -180,7 +182,7 @@ Link: https://lore.kernel.org/r/20220217012112.31211-3-pradeepc@codeaurora.org
  		hal_status = ath11k_hal_rx_parse_mon_status(ab, ppdu_info, skb);
  
  		if (test_bit(ATH11K_FLAG_MONITOR_STARTED, &ar->monitor_flags) &&
-@@ -5374,6 +5439,7 @@ static int ath11k_dp_rx_full_mon_deliver
+@@ -5374,6 +5439,7 @@ static int ath11k_dp_rx_full_mon_deliver_ppdu(struct ath11k *ar,
  		tail_msdu = mon_mpdu->tail;
  		if (head_msdu && tail_msdu) {
  			ret = ath11k_dp_rx_mon_deliver(ar, mac_id, head_msdu,
@@ -188,6 +190,8 @@ Link: https://lore.kernel.org/r/20220217012112.31211-3-pradeepc@codeaurora.org
  						       tail_msdu, napi);
  			rx_mon_stats->dest_mpdu_done++;
  			ath11k_dbg(ar->ab, ATH11K_DBG_DATA, "full mon: deliver ppdu\n");
+diff --git a/drivers/net/wireless/ath/ath11k/hal_desc.h b/drivers/net/wireless/ath/ath11k/hal_desc.h
+index 406767672844..24e72e75a8c7 100644
 --- a/drivers/net/wireless/ath/ath11k/hal_desc.h
 +++ b/drivers/net/wireless/ath/ath11k/hal_desc.h
 @@ -474,6 +474,7 @@ enum hal_tlv_tag {
@@ -198,6 +202,8 @@ Link: https://lore.kernel.org/r/20220217012112.31211-3-pradeepc@codeaurora.org
  
  #define HAL_TLV_ALIGN	4
  
+diff --git a/drivers/net/wireless/ath/ath11k/hal_rx.h b/drivers/net/wireless/ath/ath11k/hal_rx.h
+index 7bba4f0411e1..f6bae07abfd3 100644
 --- a/drivers/net/wireless/ath/ath11k/hal_rx.h
 +++ b/drivers/net/wireless/ath/ath11k/hal_rx.h
 @@ -73,6 +73,36 @@ enum hal_rx_mon_status {
@@ -422,3 +428,6 @@ Link: https://lore.kernel.org/r/20220217012112.31211-3-pradeepc@codeaurora.org
  } __packed;
  
  struct hal_rx_mpdu_info_wcn6855 {
+-- 
+2.37.1
+

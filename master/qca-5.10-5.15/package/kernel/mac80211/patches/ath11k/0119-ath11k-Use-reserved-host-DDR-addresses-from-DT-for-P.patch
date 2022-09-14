@@ -26,6 +26,8 @@ Link: https://lore.kernel.org/r/1638789319-2950-2-git-send-email-akolli@codeauro
  drivers/net/wireless/ath/ath11k/qmi.h  |  1 +
  5 files changed, 101 insertions(+), 13 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
+index e12d26374b5f..1b7543e111de 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
 @@ -203,6 +203,7 @@ enum ath11k_dev_flags {
@@ -36,6 +38,8 @@ Link: https://lore.kernel.org/r/1638789319-2950-2-git-send-email-akolli@codeauro
  };
  
  enum ath11k_monitor_flags {
+diff --git a/drivers/net/wireless/ath/ath11k/mhi.c b/drivers/net/wireless/ath/ath11k/mhi.c
+index 1786ea3ea800..f4400b25c5cf 100644
 --- a/drivers/net/wireless/ath/ath11k/mhi.c
 +++ b/drivers/net/wireless/ath/ath11k/mhi.c
 @@ -3,6 +3,9 @@
@@ -48,7 +52,7 @@ Link: https://lore.kernel.org/r/1638789319-2950-2-git-send-email-akolli@codeauro
  
  #include "core.h"
  #include "debug.h"
-@@ -318,6 +321,26 @@ static void ath11k_mhi_op_write_reg(stru
+@@ -318,6 +321,26 @@ static void ath11k_mhi_op_write_reg(struct mhi_controller *mhi_cntrl,
  	writel(val, addr);
  }
  
@@ -75,7 +79,7 @@ Link: https://lore.kernel.org/r/1638789319-2950-2-git-send-email-akolli@codeauro
  int ath11k_mhi_register(struct ath11k_pci *ab_pci)
  {
  	struct ath11k_base *ab = ab_pci->ab;
-@@ -351,8 +374,15 @@ int ath11k_mhi_register(struct ath11k_pc
+@@ -351,8 +374,15 @@ int ath11k_mhi_register(struct ath11k_pci *ab_pci)
  	if (!test_bit(ATH11K_PCI_FLAG_MULTI_MSI_VECTORS, &ab_pci->flags))
  		mhi_ctrl->irq_flags = IRQF_SHARED | IRQF_NOBALANCING;
  
@@ -93,6 +97,8 @@ Link: https://lore.kernel.org/r/1638789319-2950-2-git-send-email-akolli@codeauro
  	mhi_ctrl->sbl_size = SZ_512K;
  	mhi_ctrl->seg_len = SZ_512K;
  	mhi_ctrl->fbc_download = true;
+diff --git a/drivers/net/wireless/ath/ath11k/pci.c b/drivers/net/wireless/ath/ath11k/pci.c
+index ffa7d5e13a36..16a3560cfaf8 100644
 --- a/drivers/net/wireless/ath/ath11k/pci.c
 +++ b/drivers/net/wireless/ath/ath11k/pci.c
 @@ -6,6 +6,7 @@
@@ -103,7 +109,7 @@ Link: https://lore.kernel.org/r/1638789319-2950-2-git-send-email-akolli@codeauro
  
  #include "pci.h"
  #include "core.h"
-@@ -1353,7 +1354,7 @@ static int ath11k_pci_probe(struct pci_d
+@@ -1353,7 +1354,7 @@ static int ath11k_pci_probe(struct pci_dev *pdev,
  {
  	struct ath11k_base *ab;
  	struct ath11k_pci *ab_pci;
@@ -112,7 +118,7 @@ Link: https://lore.kernel.org/r/1638789319-2950-2-git-send-email-akolli@codeauro
  	int ret;
  
  	ab = ath11k_core_alloc(&pdev->dev, sizeof(*ab_pci), ATH11K_BUS_PCI,
-@@ -1373,6 +1374,14 @@ static int ath11k_pci_probe(struct pci_d
+@@ -1373,6 +1374,14 @@ static int ath11k_pci_probe(struct pci_dev *pdev,
  	pci_set_drvdata(pdev, ab);
  	spin_lock_init(&ab_pci->window_lock);
  
@@ -127,6 +133,8 @@ Link: https://lore.kernel.org/r/1638789319-2950-2-git-send-email-akolli@codeauro
  	ret = ath11k_pci_claim(ab_pci, pdev);
  	if (ret) {
  		ath11k_err(ab, "failed to claim device: %d\n", ret);
+diff --git a/drivers/net/wireless/ath/ath11k/qmi.c b/drivers/net/wireless/ath/ath11k/qmi.c
+index b71781398fc4..3b9ba0e03a66 100644
 --- a/drivers/net/wireless/ath/ath11k/qmi.c
 +++ b/drivers/net/wireless/ath/ath11k/qmi.c
 @@ -9,6 +9,8 @@
@@ -138,7 +146,7 @@ Link: https://lore.kernel.org/r/1638789319-2950-2-git-send-email-akolli@codeauro
  #include <linux/firmware.h>
  
  #define SLEEP_CLOCK_SELECT_INTERNAL_BIT	0x02
-@@ -1751,7 +1753,9 @@ static int ath11k_qmi_respond_fw_mem_req
+@@ -1751,7 +1753,9 @@ static int ath11k_qmi_respond_fw_mem_request(struct ath11k_base *ab)
  	 * failure to FW and FW will then request mulitple blocks of small
  	 * chunk size memory.
  	 */
@@ -149,7 +157,7 @@ Link: https://lore.kernel.org/r/1638789319-2950-2-git-send-email-akolli@codeauro
  		delayed = true;
  		ath11k_dbg(ab, ATH11K_DBG_QMI, "qmi delays mem_request %d\n",
  			   ab->qmi.mem_seg_count);
-@@ -1818,10 +1822,12 @@ static void ath11k_qmi_free_target_mem_c
+@@ -1818,10 +1822,12 @@ static void ath11k_qmi_free_target_mem_chunk(struct ath11k_base *ab)
  {
  	int i;
  
@@ -165,7 +173,7 @@ Link: https://lore.kernel.org/r/1638789319-2950-2-git-send-email-akolli@codeauro
  		if (!ab->qmi.target_mem[i].vaddr)
  			continue;
  
-@@ -1869,10 +1875,44 @@ static int ath11k_qmi_alloc_target_mem_c
+@@ -1869,10 +1875,44 @@ static int ath11k_qmi_alloc_target_mem_chunk(struct ath11k_base *ab)
  
  static int ath11k_qmi_assign_target_mem_chunk(struct ath11k_base *ab)
  {
@@ -211,7 +219,7 @@ Link: https://lore.kernel.org/r/1638789319-2950-2-git-send-email-akolli@codeauro
  		case BDF_MEM_REGION_TYPE:
  			ab->qmi.target_mem[idx].paddr = ab->hw_params.bdf_addr;
  			ab->qmi.target_mem[idx].vaddr = NULL;
-@@ -1887,10 +1927,16 @@ static int ath11k_qmi_assign_target_mem_
+@@ -1887,10 +1927,16 @@ static int ath11k_qmi_assign_target_mem_chunk(struct ath11k_base *ab)
  			}
  
  			if (ath11k_cold_boot_cal && ab->hw_params.cold_boot_calib) {
@@ -232,7 +240,7 @@ Link: https://lore.kernel.org/r/1638789319-2950-2-git-send-email-akolli@codeauro
  			} else {
  				ab->qmi.target_mem[idx].paddr = 0;
  				ab->qmi.target_mem[idx].vaddr = NULL;
-@@ -2621,7 +2667,8 @@ static void ath11k_qmi_msg_mem_request_c
+@@ -2621,7 +2667,8 @@ static void ath11k_qmi_msg_mem_request_cb(struct qmi_handle *qmi_hdl,
  			   msg->mem_seg[i].type, msg->mem_seg[i].size);
  	}
  
@@ -242,6 +250,8 @@ Link: https://lore.kernel.org/r/1638789319-2950-2-git-send-email-akolli@codeauro
  		ret = ath11k_qmi_assign_target_mem_chunk(ab);
  		if (ret) {
  			ath11k_warn(ab, "failed to assign qmi target memory: %d\n",
+diff --git a/drivers/net/wireless/ath/ath11k/qmi.h b/drivers/net/wireless/ath/ath11k/qmi.h
+index 49db39bf638c..a6fb7d47ee82 100644
 --- a/drivers/net/wireless/ath/ath11k/qmi.h
 +++ b/drivers/net/wireless/ath/ath11k/qmi.h
 @@ -94,6 +94,7 @@ struct target_mem_chunk {
@@ -252,3 +262,6 @@ Link: https://lore.kernel.org/r/1638789319-2950-2-git-send-email-akolli@codeauro
  };
  
  struct target_info {
+-- 
+2.37.1
+

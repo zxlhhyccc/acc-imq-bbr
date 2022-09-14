@@ -29,9 +29,11 @@ Link: https://lore.kernel.org/r/20211217102334.14907-1-quic_wgong@quicinc.com
  drivers/net/wireless/ath/ath11k/wmi.h  | 25 +++++++++
  7 files changed, 203 insertions(+)
 
+diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
+index 280cdf60a523..24e884e6d30a 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -52,6 +52,9 @@ static const struct ath11k_hw_params ath
+@@ -52,6 +52,9 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.target_ce_count = 11,
  		.svc_to_ce_map = ath11k_target_service_to_ce_map_wlan_ipq8074,
  		.svc_to_ce_map_len = 21,
@@ -41,7 +43,7 @@ Link: https://lore.kernel.org/r/20211217102334.14907-1-quic_wgong@quicinc.com
  		.single_pdev_only = false,
  		.rxdma1_enable = true,
  		.num_rxmda_per_pdev = 1,
-@@ -114,6 +117,9 @@ static const struct ath11k_hw_params ath
+@@ -114,6 +117,9 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.target_ce_count = 11,
  		.svc_to_ce_map = ath11k_target_service_to_ce_map_wlan_ipq6018,
  		.svc_to_ce_map_len = 19,
@@ -51,7 +53,7 @@ Link: https://lore.kernel.org/r/20211217102334.14907-1-quic_wgong@quicinc.com
  		.single_pdev_only = false,
  		.rxdma1_enable = true,
  		.num_rxmda_per_pdev = 1,
-@@ -173,6 +179,9 @@ static const struct ath11k_hw_params ath
+@@ -173,6 +179,9 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.target_ce_count = 9,
  		.svc_to_ce_map = ath11k_target_service_to_ce_map_wlan_qca6390,
  		.svc_to_ce_map_len = 14,
@@ -61,7 +63,7 @@ Link: https://lore.kernel.org/r/20211217102334.14907-1-quic_wgong@quicinc.com
  		.single_pdev_only = true,
  		.rxdma1_enable = false,
  		.num_rxmda_per_pdev = 2,
-@@ -231,6 +240,9 @@ static const struct ath11k_hw_params ath
+@@ -231,6 +240,9 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.target_ce_count = 9,
  		.svc_to_ce_map = ath11k_target_service_to_ce_map_wlan_qcn9074,
  		.svc_to_ce_map_len = 18,
@@ -71,7 +73,7 @@ Link: https://lore.kernel.org/r/20211217102334.14907-1-quic_wgong@quicinc.com
  		.rxdma1_enable = true,
  		.num_rxmda_per_pdev = 1,
  		.rx_mac_buf_ring = false,
-@@ -289,6 +301,9 @@ static const struct ath11k_hw_params ath
+@@ -289,6 +301,9 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.target_ce_count = 9,
  		.svc_to_ce_map = ath11k_target_service_to_ce_map_wlan_qca6390,
  		.svc_to_ce_map_len = 14,
@@ -81,7 +83,7 @@ Link: https://lore.kernel.org/r/20211217102334.14907-1-quic_wgong@quicinc.com
  		.single_pdev_only = true,
  		.rxdma1_enable = false,
  		.num_rxmda_per_pdev = 2,
-@@ -347,6 +362,9 @@ static const struct ath11k_hw_params ath
+@@ -347,6 +362,9 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.target_ce_count = 9,
  		.svc_to_ce_map = ath11k_target_service_to_ce_map_wlan_qca6390,
  		.svc_to_ce_map_len = 14,
@@ -91,7 +93,7 @@ Link: https://lore.kernel.org/r/20211217102334.14907-1-quic_wgong@quicinc.com
  		.single_pdev_only = true,
  		.rxdma1_enable = false,
  		.num_rxmda_per_pdev = 2,
-@@ -1015,6 +1033,27 @@ err_firmware_stop:
+@@ -1015,6 +1033,27 @@ static int ath11k_core_start(struct ath11k_base *ab,
  	return ret;
  }
  
@@ -119,7 +121,7 @@ Link: https://lore.kernel.org/r/20211217102334.14907-1-quic_wgong@quicinc.com
  int ath11k_core_qmi_firmware_ready(struct ath11k_base *ab)
  {
  	int ret;
-@@ -1061,6 +1100,13 @@ int ath11k_core_qmi_firmware_ready(struc
+@@ -1061,6 +1100,13 @@ int ath11k_core_qmi_firmware_ready(struct ath11k_base *ab)
  		goto err_core_stop;
  	}
  	ath11k_hif_irq_enable(ab);
@@ -170,7 +172,7 @@ Link: https://lore.kernel.org/r/20211217102334.14907-1-quic_wgong@quicinc.com
  static void ath11k_update_11d(struct work_struct *work)
  {
  	struct ath11k_base *ab = container_of(work, struct ath11k_base, update_11d_work);
-@@ -1339,6 +1408,7 @@ struct ath11k_base *ath11k_core_alloc(st
+@@ -1339,6 +1408,7 @@ struct ath11k_base *ath11k_core_alloc(struct device *dev, size_t priv_size,
  	init_waitqueue_head(&ab->qmi.cold_boot_waitq);
  	INIT_WORK(&ab->restart_work, ath11k_core_restart);
  	INIT_WORK(&ab->update_11d_work, ath11k_update_11d);
@@ -178,6 +180,8 @@ Link: https://lore.kernel.org/r/20211217102334.14907-1-quic_wgong@quicinc.com
  	timer_setup(&ab->rx_replenish_retry, ath11k_ce_rx_replenish_retry, 0);
  	init_completion(&ab->htc_suspend);
  	init_completion(&ab->wow.wakeup_completed);
+diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
+index 9284152e4c11..b36f718ac774 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
 @@ -786,6 +786,10 @@ struct ath11k_base {
@@ -191,6 +195,8 @@ Link: https://lore.kernel.org/r/20211217102334.14907-1-quic_wgong@quicinc.com
  
  	/* To synchronize 11d scan vdev id */
  	struct mutex vdev_id_11d_lock;
+diff --git a/drivers/net/wireless/ath/ath11k/hw.h b/drivers/net/wireless/ath/ath11k/hw.h
+index ed0e721eede6..1f48152b4313 100644
 --- a/drivers/net/wireless/ath/ath11k/hw.h
 +++ b/drivers/net/wireless/ath/ath11k/hw.h
 @@ -151,6 +151,9 @@ struct ath11k_hw_params {
@@ -203,9 +209,11 @@ Link: https://lore.kernel.org/r/20211217102334.14907-1-quic_wgong@quicinc.com
  
  	bool rxdma1_enable;
  	int num_rxmda_per_pdev;
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index dfe343d48847..80dd232deed2 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -5578,6 +5578,63 @@ static int ath11k_mac_mgmt_tx(struct ath
+@@ -5578,6 +5578,63 @@ static int ath11k_mac_mgmt_tx(struct ath11k *ar, struct sk_buff *skb,
  	return 0;
  }
  
@@ -269,7 +277,7 @@ Link: https://lore.kernel.org/r/20211217102334.14907-1-quic_wgong@quicinc.com
  static void ath11k_mac_op_tx(struct ieee80211_hw *hw,
  			     struct ieee80211_tx_control *control,
  			     struct sk_buff *skb)
-@@ -5810,6 +5867,7 @@ static void ath11k_mac_op_stop(struct ie
+@@ -5810,6 +5867,7 @@ static void ath11k_mac_op_stop(struct ieee80211_hw *hw)
  	cancel_delayed_work_sync(&ar->scan.timeout);
  	cancel_work_sync(&ar->regd_update_work);
  	cancel_work_sync(&ar->ab->update_11d_work);
@@ -277,9 +285,11 @@ Link: https://lore.kernel.org/r/20211217102334.14907-1-quic_wgong@quicinc.com
  
  	spin_lock_bh(&ar->data_lock);
  	list_for_each_entry_safe(ppdu_stats, tmp, &ar->ppdu_stats_info, list) {
+diff --git a/drivers/net/wireless/ath/ath11k/mac.h b/drivers/net/wireless/ath/ath11k/mac.h
+index cab3356ec0dc..0e6c870b09c8 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.h
 +++ b/drivers/net/wireless/ath/ath11k/mac.h
-@@ -147,6 +147,8 @@ u8 ath11k_mac_hw_rate_to_idx(const struc
+@@ -147,6 +147,8 @@ u8 ath11k_mac_hw_rate_to_idx(const struct ieee80211_supported_band *sband,
  
  void __ath11k_mac_scan_finish(struct ath11k *ar);
  void ath11k_mac_scan_finish(struct ath11k *ar);
@@ -288,9 +298,11 @@ Link: https://lore.kernel.org/r/20211217102334.14907-1-quic_wgong@quicinc.com
  
  struct ath11k_vif *ath11k_mac_get_arvif(struct ath11k *ar, u32 vdev_id);
  struct ath11k_vif *ath11k_mac_get_arvif_by_vdev_id(struct ath11k_base *ab,
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
+index 79b0463fe28e..747e1522ec8d 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -128,6 +128,8 @@ static const struct wmi_tlv_policy wmi_t
+@@ -128,6 +128,8 @@ static const struct wmi_tlv_policy wmi_tlv_policies[] = {
  		= { .min_len = sizeof(struct wmi_peer_assoc_conf_event) },
  	[WMI_TAG_STATS_EVENT]
  		= { .min_len = sizeof(struct wmi_stats_event) },
@@ -299,7 +311,7 @@ Link: https://lore.kernel.org/r/20211217102334.14907-1-quic_wgong@quicinc.com
  	[WMI_TAG_PDEV_CTL_FAILSAFE_CHECK_EVENT]
  		= { .min_len = sizeof(struct wmi_pdev_ctl_failsafe_chk_event) },
  	[WMI_TAG_HOST_SWFDA_EVENT] = {
-@@ -524,6 +526,8 @@ static int ath11k_pull_service_ready_tlv
+@@ -524,6 +526,8 @@ static int ath11k_pull_service_ready_tlv(struct ath11k_base *ab,
  	cap->default_dbs_hw_mode_index = ev->default_dbs_hw_mode_index;
  	cap->num_msdu_desc = ev->num_msdu_desc;
  
@@ -308,7 +320,7 @@ Link: https://lore.kernel.org/r/20211217102334.14907-1-quic_wgong@quicinc.com
  	return 0;
  }
  
-@@ -7334,6 +7338,40 @@ exit:
+@@ -7334,6 +7338,40 @@ ath11k_wmi_pdev_dfs_radar_detected_event(struct ath11k_base *ab, struct sk_buff
  	kfree(tb);
  }
  
@@ -349,7 +361,7 @@ Link: https://lore.kernel.org/r/20211217102334.14907-1-quic_wgong@quicinc.com
  static void
  ath11k_wmi_pdev_temperature_event(struct ath11k_base *ab,
  				  struct sk_buff *skb)
-@@ -7606,6 +7644,9 @@ static void ath11k_wmi_tlv_op_rx(struct
+@@ -7606,6 +7644,9 @@ static void ath11k_wmi_tlv_op_rx(struct ath11k_base *ab, struct sk_buff *skb)
  	case WMI_11D_NEW_COUNTRY_EVENTID:
  		ath11k_reg_11d_new_cc_event(ab, skb);
  		break;
@@ -359,6 +371,8 @@ Link: https://lore.kernel.org/r/20211217102334.14907-1-quic_wgong@quicinc.com
  	/* TODO: Add remaining events */
  	default:
  		ath11k_dbg(ab, ATH11K_DBG_WMI, "Unknown eventid: 0x%x\n", id);
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.h b/drivers/net/wireless/ath/ath11k/wmi.h
+index 20aa7234fc72..2f26ec1a8aa3 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.h
 +++ b/drivers/net/wireless/ath/ath11k/wmi.h
 @@ -5215,6 +5215,31 @@ struct target_resource_config {
@@ -393,3 +407,6 @@ Link: https://lore.kernel.org/r/20211217102334.14907-1-quic_wgong@quicinc.com
  #define WMI_MAX_MEM_REQS 32
  
  #define MAX_RADIOS 3
+-- 
+2.37.1
+

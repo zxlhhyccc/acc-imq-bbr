@@ -57,9 +57,11 @@ Link: https://lore.kernel.org/r/20220228064606.8981-2-quic_wgong@quicinc.com
  drivers/net/wireless/ath/ath11k/mhi.c  | 33 +++++++++++++
  4 files changed, 132 insertions(+)
 
+diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
+index bbebf6845158..cb1e4735b640 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -1381,6 +1381,65 @@ static void ath11k_core_restart(struct w
+@@ -1381,6 +1381,65 @@ static void ath11k_core_restart(struct work_struct *work)
  	complete(&ab->driver_recovery);
  }
  
@@ -133,7 +135,7 @@ Link: https://lore.kernel.org/r/20220228064606.8981-2-quic_wgong@quicinc.com
  	destroy_workqueue(ab->workqueue);
  
  	kfree(ab);
-@@ -1472,9 +1532,14 @@ struct ath11k_base *ath11k_core_alloc(st
+@@ -1472,9 +1532,14 @@ struct ath11k_base *ath11k_core_alloc(struct device *dev, size_t priv_size,
  	if (!ab->workqueue)
  		goto err_sc_free;
  
@@ -148,7 +150,7 @@ Link: https://lore.kernel.org/r/20220228064606.8981-2-quic_wgong@quicinc.com
  
  	INIT_LIST_HEAD(&ab->peers);
  	init_waitqueue_head(&ab->peer_mapping_wq);
-@@ -1483,6 +1548,7 @@ struct ath11k_base *ath11k_core_alloc(st
+@@ -1483,6 +1548,7 @@ struct ath11k_base *ath11k_core_alloc(struct device *dev, size_t priv_size,
  	INIT_WORK(&ab->restart_work, ath11k_core_restart);
  	INIT_WORK(&ab->update_11d_work, ath11k_update_11d);
  	INIT_WORK(&ab->rfkill_work, ath11k_rfkill_work);
@@ -156,7 +158,7 @@ Link: https://lore.kernel.org/r/20220228064606.8981-2-quic_wgong@quicinc.com
  	timer_setup(&ab->rx_replenish_retry, ath11k_ce_rx_replenish_retry, 0);
  	init_completion(&ab->htc_suspend);
  	init_completion(&ab->wow.wakeup_completed);
-@@ -1493,6 +1559,8 @@ struct ath11k_base *ath11k_core_alloc(st
+@@ -1493,6 +1559,8 @@ struct ath11k_base *ath11k_core_alloc(struct device *dev, size_t priv_size,
  
  	return ab;
  
@@ -165,6 +167,8 @@ Link: https://lore.kernel.org/r/20220228064606.8981-2-quic_wgong@quicinc.com
  err_sc_free:
  	kfree(ab);
  	return NULL;
+diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
+index e556beb945ac..bd31413d84ca 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
 @@ -40,6 +40,10 @@
@@ -194,9 +198,11 @@ Link: https://lore.kernel.org/r/20220228064606.8981-2-quic_wgong@quicinc.com
  	struct {
  		/* protected by data_lock */
  		u32 fw_crash_counter;
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index e7c4c15c5901..5ab6af54adf1 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -7922,6 +7922,8 @@ ath11k_mac_op_reconfig_complete(struct i
+@@ -7922,6 +7922,8 @@ ath11k_mac_op_reconfig_complete(struct ieee80211_hw *hw,
  				enum ieee80211_reconfig_type reconfig_type)
  {
  	struct ath11k *ar = hw->priv;
@@ -205,7 +211,7 @@ Link: https://lore.kernel.org/r/20220228064606.8981-2-quic_wgong@quicinc.com
  
  	if (reconfig_type != IEEE80211_RECONFIG_TYPE_RESTART)
  		return;
-@@ -7933,6 +7935,22 @@ ath11k_mac_op_reconfig_complete(struct i
+@@ -7933,6 +7935,22 @@ ath11k_mac_op_reconfig_complete(struct ieee80211_hw *hw,
  			    ar->pdev->pdev_id);
  		ar->state = ATH11K_STATE_ON;
  		ieee80211_wake_queues(ar->hw);
@@ -228,9 +234,11 @@ Link: https://lore.kernel.org/r/20220228064606.8981-2-quic_wgong@quicinc.com
  	}
  
  	mutex_unlock(&ar->conf_mutex);
+diff --git a/drivers/net/wireless/ath/ath11k/mhi.c b/drivers/net/wireless/ath/ath11k/mhi.c
+index fc3524e83e52..61d83be4841f 100644
 --- a/drivers/net/wireless/ath/ath11k/mhi.c
 +++ b/drivers/net/wireless/ath/ath11k/mhi.c
-@@ -292,15 +292,48 @@ static void ath11k_mhi_op_runtime_put(st
+@@ -292,15 +292,48 @@ static void ath11k_mhi_op_runtime_put(struct mhi_controller *mhi_cntrl)
  {
  }
  
@@ -279,3 +287,6 @@ Link: https://lore.kernel.org/r/20220228064606.8981-2-quic_wgong@quicinc.com
  	default:
  		break;
  	}
+-- 
+2.37.1
+

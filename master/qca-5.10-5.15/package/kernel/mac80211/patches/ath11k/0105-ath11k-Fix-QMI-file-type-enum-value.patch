@@ -19,6 +19,8 @@ Link: https://lore.kernel.org/r/1638182754-18408-1-git-send-email-quic_seevalam@
  drivers/net/wireless/ath/ath11k/qmi.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/qmi.h b/drivers/net/wireless/ath/ath11k/qmi.h
+index 3bb0f9ef7996..d9e95b700765 100644
 --- a/drivers/net/wireless/ath/ath11k/qmi.h
 +++ b/drivers/net/wireless/ath/ath11k/qmi.h
 @@ -41,7 +41,7 @@ struct ath11k_base;
@@ -30,3 +32,6 @@ Link: https://lore.kernel.org/r/1638182754-18408-1-git-send-email-quic_seevalam@
  	ATH11K_QMI_FILE_TYPE_EEPROM,
  	ATH11K_QMI_MAX_FILE_TYPE,
  };
+-- 
+2.37.1
+

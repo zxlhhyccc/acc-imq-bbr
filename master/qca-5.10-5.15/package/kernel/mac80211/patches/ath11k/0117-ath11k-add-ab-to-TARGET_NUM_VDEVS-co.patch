@@ -17,9 +17,11 @@ Link: https://lore.kernel.org/r/20211209104351.9811-2-kvalo@kernel.org
  drivers/net/wireless/ath/ath11k/mac.c  | 10 +++++-----
  4 files changed, 22 insertions(+), 22 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
+index 350698228d92..64eab0e8ff24 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -1067,7 +1067,7 @@ static int ath11k_core_reconfigure_on_cr
+@@ -1067,7 +1067,7 @@ static int ath11k_core_reconfigure_on_crash(struct ath11k_base *ab)
  	ath11k_dp_free(ab);
  	ath11k_hal_srng_deinit(ab);
  
@@ -28,9 +30,11 @@ Link: https://lore.kernel.org/r/20211209104351.9811-2-kvalo@kernel.org
  
  	ret = ath11k_hal_srng_init(ab);
  	if (ret)
+diff --git a/drivers/net/wireless/ath/ath11k/hw.c b/drivers/net/wireless/ath/ath11k/hw.c
+index 2f0b526188e4..3b0fdc1a6b3f 100644
 --- a/drivers/net/wireless/ath/ath11k/hw.c
 +++ b/drivers/net/wireless/ath/ath11k/hw.c
-@@ -150,18 +150,18 @@ static void ath11k_hw_ipq8074_reo_setup(
+@@ -150,18 +150,18 @@ static void ath11k_hw_ipq8074_reo_setup(struct ath11k_base *ab)
  static void ath11k_init_wmi_config_ipq8074(struct ath11k_base *ab,
  					   struct target_resource_config *config)
  {
@@ -56,6 +60,8 @@ Link: https://lore.kernel.org/r/20211209104351.9811-2-kvalo@kernel.org
  	}
  	config->num_offload_peers = TARGET_NUM_OFFLD_PEERS;
  	config->num_offload_reorder_buffs = TARGET_NUM_OFFLD_REORDER_BUFFS;
+diff --git a/drivers/net/wireless/ath/ath11k/hw.h b/drivers/net/wireless/ath/ath11k/hw.h
+index 178689a4d0cf..776c410780a1 100644
 --- a/drivers/net/wireless/ath/ath11k/hw.h
 +++ b/drivers/net/wireless/ath/ath11k/hw.h
 @@ -12,26 +12,26 @@
@@ -94,9 +100,11 @@ Link: https://lore.kernel.org/r/20211209104351.9811-2-kvalo@kernel.org
  
  #define TARGET_AST_SKID_LIMIT	16
  #define TARGET_NUM_OFFLD_PEERS	4
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index 3b31be6d79e4..0a2f4769bd0f 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -6011,9 +6011,9 @@ static int ath11k_mac_op_add_interface(s
+@@ -6011,9 +6011,9 @@ static int ath11k_mac_op_add_interface(struct ieee80211_hw *hw,
  		goto err;
  	}
  
@@ -108,7 +116,7 @@ Link: https://lore.kernel.org/r/20211209104351.9811-2-kvalo@kernel.org
  		ret = -EBUSY;
  		goto err;
  	}
-@@ -8214,8 +8214,8 @@ static int __ath11k_mac_register(struct
+@@ -8214,8 +8214,8 @@ static int __ath11k_mac_register(struct ath11k *ar)
  	ar->hw->wiphy->features |= NL80211_FEATURE_AP_MODE_CHAN_WIDTH_CHANGE |
  				   NL80211_FEATURE_AP_SCAN;
  
@@ -119,7 +127,7 @@ Link: https://lore.kernel.org/r/20211209104351.9811-2-kvalo@kernel.org
  
  	ar->hw->wiphy->max_ap_assoc_sta = ar->max_num_stations;
  
-@@ -8318,7 +8318,7 @@ int ath11k_mac_register(struct ath11k_ba
+@@ -8318,7 +8318,7 @@ int ath11k_mac_register(struct ath11k_base *ab)
  
  	/* Initialize channel counters frequency value in hertz */
  	ab->cc_freq_hz = IPQ8074_CC_FREQ_HERTZ;
@@ -128,3 +136,6 @@ Link: https://lore.kernel.org/r/20211209104351.9811-2-kvalo@kernel.org
  
  	for (i = 0; i < ab->num_radios; i++) {
  		pdev = &ab->pdevs[i];
+-- 
+2.37.1
+

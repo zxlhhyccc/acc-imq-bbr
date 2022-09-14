@@ -15,9 +15,11 @@ Link: https://lore.kernel.org/r/20220217012112.31211-2-pradeepc@codeaurora.org
  drivers/net/wireless/ath/ath11k/dp_tx.c | 28 ++++++++++++++++++++-----
  1 file changed, 23 insertions(+), 5 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/dp_tx.c b/drivers/net/wireless/ath/ath11k/dp_tx.c
+index c7d7631efa5a..00a45819907e 100644
 --- a/drivers/net/wireless/ath/ath11k/dp_tx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_tx.c
-@@ -518,9 +518,13 @@ static void ath11k_dp_tx_complete_msdu(s
+@@ -518,9 +518,13 @@ static void ath11k_dp_tx_complete_msdu(struct ath11k *ar,
  				       struct sk_buff *msdu,
  				       struct hal_tx_status *ts)
  {
@@ -31,7 +33,7 @@ Link: https://lore.kernel.org/r/20220217012112.31211-2-pradeepc@codeaurora.org
  
  	if (WARN_ON_ONCE(ts->buf_rel_source != HAL_WBM_REL_SRC_MODULE_TQM)) {
  		/* Must not happen */
-@@ -583,12 +587,26 @@ static void ath11k_dp_tx_complete_msdu(s
+@@ -583,12 +587,26 @@ static void ath11k_dp_tx_complete_msdu(struct ath11k *ar,
  		ath11k_dp_tx_cache_peer_stats(ar, msdu, ts);
  	}
  
@@ -55,11 +57,14 @@ Link: https://lore.kernel.org/r/20220217012112.31211-2-pradeepc@codeaurora.org
 +	status.info = info;
 +	rate = arsta->last_txrate;
 +	status.rate = &rate;
-+
-+	spin_unlock_bh(&ab->base_lock);
  
 -	ieee80211_tx_status(ar->hw, msdu);
++	spin_unlock_bh(&ab->base_lock);
++
 +	ieee80211_tx_status_ext(ar->hw, &status);
  }
  
  static inline void ath11k_dp_tx_status_parse(struct ath11k_base *ab,
+-- 
+2.37.1
+

@@ -25,9 +25,11 @@ Link: https://lore.kernel.org/r/20211108123826.8463-2-kvalo@codeaurora.org
  drivers/net/wireless/ath/ath11k/mac.c  | 87 ++++++++++++++++++++++++++
  4 files changed, 94 insertions(+)
 
+diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
+index 91a3f7a66496..6a44e32148b1 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -76,6 +76,7 @@ static const struct ath11k_hw_params ath
+@@ -76,6 +76,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.supports_monitor = true,
  		.supports_shadow_regs = false,
  		.idle_ps = false,
@@ -35,7 +37,7 @@ Link: https://lore.kernel.org/r/20211108123826.8463-2-kvalo@codeaurora.org
  		.cold_boot_calib = true,
  		.supports_suspend = false,
  		.hal_desc_sz = sizeof(struct hal_rx_desc_ipq8074),
-@@ -127,6 +128,7 @@ static const struct ath11k_hw_params ath
+@@ -127,6 +128,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.supports_monitor = true,
  		.supports_shadow_regs = false,
  		.idle_ps = false,
@@ -43,7 +45,7 @@ Link: https://lore.kernel.org/r/20211108123826.8463-2-kvalo@codeaurora.org
  		.cold_boot_calib = true,
  		.supports_suspend = false,
  		.hal_desc_sz = sizeof(struct hal_rx_desc_ipq8074),
-@@ -177,6 +179,7 @@ static const struct ath11k_hw_params ath
+@@ -177,6 +179,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.supports_monitor = false,
  		.supports_shadow_regs = true,
  		.idle_ps = true,
@@ -51,7 +53,7 @@ Link: https://lore.kernel.org/r/20211108123826.8463-2-kvalo@codeaurora.org
  		.cold_boot_calib = false,
  		.supports_suspend = true,
  		.hal_desc_sz = sizeof(struct hal_rx_desc_ipq8074),
-@@ -227,6 +230,7 @@ static const struct ath11k_hw_params ath
+@@ -227,6 +230,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.supports_monitor = true,
  		.supports_shadow_regs = false,
  		.idle_ps = false,
@@ -59,7 +61,7 @@ Link: https://lore.kernel.org/r/20211108123826.8463-2-kvalo@codeaurora.org
  		.cold_boot_calib = false,
  		.supports_suspend = false,
  		.hal_desc_sz = sizeof(struct hal_rx_desc_qcn9074),
-@@ -277,6 +281,7 @@ static const struct ath11k_hw_params ath
+@@ -277,6 +281,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.supports_monitor = false,
  		.supports_shadow_regs = true,
  		.idle_ps = true,
@@ -67,6 +69,8 @@ Link: https://lore.kernel.org/r/20211108123826.8463-2-kvalo@codeaurora.org
  		.cold_boot_calib = false,
  		.supports_suspend = true,
  		.hal_desc_sz = sizeof(struct hal_rx_desc_wcn6855),
+diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
+index 011373b91ae0..0e10ed4c9c2a 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
 @@ -246,6 +246,7 @@ struct ath11k_vif {
@@ -77,6 +81,8 @@ Link: https://lore.kernel.org/r/20211108123826.8463-2-kvalo@codeaurora.org
  	u32 aid;
  	u8 bssid[ETH_ALEN];
  	struct cfg80211_bitrate_mask bitrate_mask;
+diff --git a/drivers/net/wireless/ath/ath11k/hw.h b/drivers/net/wireless/ath/ath11k/hw.h
+index 9db79dcb5444..6aa966ea782b 100644
 --- a/drivers/net/wireless/ath/ath11k/hw.h
 +++ b/drivers/net/wireless/ath/ath11k/hw.h
 @@ -170,6 +170,7 @@ struct ath11k_hw_params {
@@ -87,9 +93,11 @@ Link: https://lore.kernel.org/r/20211108123826.8463-2-kvalo@codeaurora.org
  	bool cold_boot_calib;
  	bool supports_suspend;
  	u32 hal_desc_sz;
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index ffbeb1ab4afd..86806b3bc749 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -1050,6 +1050,83 @@ static int ath11k_mac_monitor_stop(struc
+@@ -1050,6 +1050,83 @@ static int ath11k_mac_monitor_stop(struct ath11k *ar)
  	return 0;
  }
  
@@ -173,7 +181,7 @@ Link: https://lore.kernel.org/r/20211108123826.8463-2-kvalo@codeaurora.org
  static int ath11k_mac_op_config(struct ieee80211_hw *hw, u32 changed)
  {
  	struct ath11k *ar = hw->priv;
-@@ -2952,6 +3029,16 @@ static void ath11k_mac_op_bss_info_chang
+@@ -2952,6 +3029,16 @@ static void ath11k_mac_op_bss_info_changed(struct ieee80211_hw *hw,
  		ath11k_mac_txpower_recalc(ar);
  	}
  
@@ -190,3 +198,6 @@ Link: https://lore.kernel.org/r/20211108123826.8463-2-kvalo@codeaurora.org
  	if (changed & BSS_CHANGED_MCAST_RATE &&
  	    !ath11k_mac_vif_chan(arvif->vif, &def)) {
  		band = def.chan->band;
+-- 
+2.37.1
+

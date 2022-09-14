@@ -17,9 +17,11 @@ Link: https://lore.kernel.org/r/20211221114003.335557-1-yangyingliang@huawei.com
  drivers/net/wireless/ath/ath11k/qmi.c | 1 +
  2 files changed, 2 insertions(+)
 
+diff --git a/drivers/net/wireless/ath/ath11k/mhi.c b/drivers/net/wireless/ath/ath11k/mhi.c
+index f4400b25c5cf..8b2143802816 100644
 --- a/drivers/net/wireless/ath/ath11k/mhi.c
 +++ b/drivers/net/wireless/ath/ath11k/mhi.c
-@@ -332,6 +332,7 @@ static int ath11k_mhi_read_addr_from_dt(
+@@ -332,6 +332,7 @@ static int ath11k_mhi_read_addr_from_dt(struct mhi_controller *mhi_ctrl)
  		return -ENOENT;
  
  	ret = of_address_to_resource(np, 0, &res);
@@ -27,9 +29,11 @@ Link: https://lore.kernel.org/r/20211221114003.335557-1-yangyingliang@huawei.com
  	if (ret)
  		return ret;
  
+diff --git a/drivers/net/wireless/ath/ath11k/qmi.c b/drivers/net/wireless/ath/ath11k/qmi.c
+index 65d3c6ba35ae..42c2ad3e3668 100644
 --- a/drivers/net/wireless/ath/ath11k/qmi.c
 +++ b/drivers/net/wireless/ath/ath11k/qmi.c
-@@ -1936,6 +1936,7 @@ static int ath11k_qmi_assign_target_mem_
+@@ -1936,6 +1936,7 @@ static int ath11k_qmi_assign_target_mem_chunk(struct ath11k_base *ab)
  			}
  
  			ret = of_address_to_resource(hremote_node, 0, &res);
@@ -37,3 +41,6 @@ Link: https://lore.kernel.org/r/20211221114003.335557-1-yangyingliang@huawei.com
  			if (ret) {
  				ath11k_dbg(ab, ATH11K_DBG_QMI,
  					   "qmi fail to get reg from hremote\n");
+-- 
+2.37.1
+

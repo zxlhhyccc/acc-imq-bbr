@@ -87,9 +87,11 @@ Link: https://lore.kernel.org/r/20211215090944.19729-1-quic_wgong@quicinc.com
  drivers/net/wireless/ath/ath11k/wmi.h     |  11 ++
  11 files changed, 284 insertions(+), 34 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
+index 70dbb107982f..280cdf60a523 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -91,6 +91,7 @@ static const struct ath11k_hw_params ath
+@@ -91,6 +91,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.hal_params = &ath11k_hw_hal_params_ipq8074,
  		.supports_dynamic_smps_6ghz = false,
  		.alloc_cacheable_memory = true,
@@ -97,7 +99,7 @@ Link: https://lore.kernel.org/r/20211215090944.19729-1-quic_wgong@quicinc.com
  	},
  	{
  		.hw_rev = ATH11K_HW_IPQ6018_HW10,
-@@ -149,6 +150,7 @@ static const struct ath11k_hw_params ath
+@@ -149,6 +150,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.hal_params = &ath11k_hw_hal_params_ipq8074,
  		.supports_dynamic_smps_6ghz = false,
  		.alloc_cacheable_memory = true,
@@ -105,7 +107,7 @@ Link: https://lore.kernel.org/r/20211215090944.19729-1-quic_wgong@quicinc.com
  	},
  	{
  		.name = "qca6390 hw2.0",
-@@ -206,6 +208,7 @@ static const struct ath11k_hw_params ath
+@@ -206,6 +208,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.hal_params = &ath11k_hw_hal_params_qca6390,
  		.supports_dynamic_smps_6ghz = false,
  		.alloc_cacheable_memory = false,
@@ -113,7 +115,7 @@ Link: https://lore.kernel.org/r/20211215090944.19729-1-quic_wgong@quicinc.com
  	},
  	{
  		.name = "qcn9074 hw1.0",
-@@ -263,6 +266,7 @@ static const struct ath11k_hw_params ath
+@@ -263,6 +266,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.hal_params = &ath11k_hw_hal_params_ipq8074,
  		.supports_dynamic_smps_6ghz = true,
  		.alloc_cacheable_memory = true,
@@ -121,7 +123,7 @@ Link: https://lore.kernel.org/r/20211215090944.19729-1-quic_wgong@quicinc.com
  	},
  	{
  		.name = "wcn6855 hw2.0",
-@@ -320,6 +324,7 @@ static const struct ath11k_hw_params ath
+@@ -320,6 +324,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.hal_params = &ath11k_hw_hal_params_qca6390,
  		.supports_dynamic_smps_6ghz = false,
  		.alloc_cacheable_memory = false,
@@ -129,7 +131,7 @@ Link: https://lore.kernel.org/r/20211215090944.19729-1-quic_wgong@quicinc.com
  	},
  	{
  		.name = "wcn6855 hw2.1",
-@@ -376,6 +381,7 @@ static const struct ath11k_hw_params ath
+@@ -376,6 +381,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.supports_dynamic_smps_6ghz = false,
  		.alloc_cacheable_memory = false,
  		.wakeup_mhi = true,
@@ -137,6 +139,8 @@ Link: https://lore.kernel.org/r/20211215090944.19729-1-quic_wgong@quicinc.com
  	},
  };
  
+diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
+index 1b7543e111de..0d9ccfc97a04 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
 @@ -387,6 +387,7 @@ struct ath11k_sta {
@@ -158,9 +162,11 @@ Link: https://lore.kernel.org/r/20211215090944.19729-1-quic_wgong@quicinc.com
  struct ath11k_fw_stats {
  	struct dentry *debugfs_fwstats;
  	u32 pdev_id;
+diff --git a/drivers/net/wireless/ath/ath11k/debugfs.c b/drivers/net/wireless/ath/ath11k/debugfs.c
+index dba055d085be..ca68cf63dd27 100644
 --- a/drivers/net/wireless/ath/ath11k/debugfs.c
 +++ b/drivers/net/wireless/ath/ath11k/debugfs.c
-@@ -126,6 +126,11 @@ void ath11k_debugfs_fw_stats_process(str
+@@ -126,6 +126,11 @@ void ath11k_debugfs_fw_stats_process(struct ath11k_base *ab, struct sk_buff *skb
  		goto complete;
  	}
  
@@ -172,7 +178,7 @@ Link: https://lore.kernel.org/r/20211215090944.19729-1-quic_wgong@quicinc.com
  	if (stats.stats_id == WMI_REQUEST_VDEV_STAT) {
  		if (list_empty(&stats.vdevs)) {
  			ath11k_warn(ab, "empty vdev stats");
-@@ -229,6 +234,38 @@ static int ath11k_debugfs_fw_stats_reque
+@@ -229,6 +234,38 @@ static int ath11k_debugfs_fw_stats_request(struct ath11k *ar,
  	return 0;
  }
  
@@ -211,9 +217,11 @@ Link: https://lore.kernel.org/r/20211215090944.19729-1-quic_wgong@quicinc.com
  static int ath11k_open_pdev_stats(struct inode *inode, struct file *file)
  {
  	struct ath11k *ar = inode->i_private;
+diff --git a/drivers/net/wireless/ath/ath11k/debugfs.h b/drivers/net/wireless/ath/ath11k/debugfs.h
+index ec743a015dc7..4c0740394c95 100644
 --- a/drivers/net/wireless/ath/ath11k/debugfs.h
 +++ b/drivers/net/wireless/ath/ath11k/debugfs.h
-@@ -117,6 +117,8 @@ void ath11k_debugfs_unregister(struct at
+@@ -117,6 +117,8 @@ void ath11k_debugfs_unregister(struct ath11k *ar);
  void ath11k_debugfs_fw_stats_process(struct ath11k_base *ab, struct sk_buff *skb);
  
  void ath11k_debugfs_fw_stats_init(struct ath11k *ar);
@@ -222,22 +230,24 @@ Link: https://lore.kernel.org/r/20211215090944.19729-1-quic_wgong@quicinc.com
  
  static inline bool ath11k_debugfs_is_pktlog_lite_mode_enabled(struct ath11k *ar)
  {
-@@ -215,6 +217,12 @@ static inline int ath11k_debugfs_rx_filt
- {
+@@ -216,6 +218,12 @@ static inline int ath11k_debugfs_rx_filter(struct ath11k *ar)
  	return 0;
  }
-+
+ 
 +static inline int ath11k_debugfs_get_fw_stats(struct ath11k *ar,
 +					      u32 pdev_id, u32 vdev_id, u32 stats_id)
 +{
 +	return 0;
 +}
- 
++
  #endif /* CPTCFG_MAC80211_DEBUGFS*/
  
+ #endif /* _ATH11K_DEBUGFS_H_ */
+diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
+index 38eeb6e7c6b6..ab681ca36e27 100644
 --- a/drivers/net/wireless/ath/ath11k/dp_rx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
-@@ -2768,6 +2768,7 @@ static void ath11k_dp_rx_update_peer_sta
+@@ -2768,6 +2768,7 @@ static void ath11k_dp_rx_update_peer_stats(struct ath11k_sta *arsta,
  {
  	struct ath11k_rx_peer_stats *rx_stats = arsta->rx_stats;
  	u32 num_msdu;
@@ -245,7 +255,7 @@ Link: https://lore.kernel.org/r/20211215090944.19729-1-quic_wgong@quicinc.com
  
  	if (!rx_stats)
  		return;
-@@ -2829,6 +2830,13 @@ static void ath11k_dp_rx_update_peer_sta
+@@ -2829,6 +2830,13 @@ static void ath11k_dp_rx_update_peer_stats(struct ath11k_sta *arsta,
  	rx_stats->ru_alloc_cnt[ppdu_info->ru_alloc] += num_msdu;
  
  	arsta->rssi_comb = ppdu_info->rssi_comb;
@@ -259,9 +269,11 @@ Link: https://lore.kernel.org/r/20211215090944.19729-1-quic_wgong@quicinc.com
  	rx_stats->rx_duration += ppdu_info->rx_duration;
  	arsta->rx_duration = rx_stats->rx_duration;
  }
+diff --git a/drivers/net/wireless/ath/ath11k/hal_rx.c b/drivers/net/wireless/ath/ath11k/hal_rx.c
+index 1e279e99baa8..a749903e2a16 100644
 --- a/drivers/net/wireless/ath/ath11k/hal_rx.c
 +++ b/drivers/net/wireless/ath/ath11k/hal_rx.c
-@@ -1079,6 +1079,9 @@ ath11k_hal_rx_parse_mon_status_tlv(struc
+@@ -1079,6 +1079,9 @@ ath11k_hal_rx_parse_mon_status_tlv(struct ath11k_base *ab,
  		break;
  	}
  	case HAL_PHYRX_RSSI_LEGACY: {
@@ -271,7 +283,7 @@ Link: https://lore.kernel.org/r/20211215090944.19729-1-quic_wgong@quicinc.com
  		struct hal_rx_phyrx_rssi_legacy_info *rssi =
  			(struct hal_rx_phyrx_rssi_legacy_info *)tlv_data;
  
-@@ -1089,6 +1092,14 @@ ath11k_hal_rx_parse_mon_status_tlv(struc
+@@ -1089,6 +1092,14 @@ ath11k_hal_rx_parse_mon_status_tlv(struct ath11k_base *ab,
  		ppdu_info->rssi_comb =
  			FIELD_GET(HAL_RX_PHYRX_RSSI_LEGACY_INFO_INFO1_RSSI_COMB,
  				  __le32_to_cpu(rssi->info0));
@@ -286,6 +298,8 @@ Link: https://lore.kernel.org/r/20211215090944.19729-1-quic_wgong@quicinc.com
  		break;
  	}
  	case HAL_RX_MPDU_START: {
+diff --git a/drivers/net/wireless/ath/ath11k/hal_rx.h b/drivers/net/wireless/ath/ath11k/hal_rx.h
+index 8db420ef6351..8488020d3763 100644
 --- a/drivers/net/wireless/ath/ath11k/hal_rx.h
 +++ b/drivers/net/wireless/ath/ath11k/hal_rx.h
 @@ -112,6 +112,7 @@ struct hal_rx_mon_ppdu_info {
@@ -315,6 +329,8 @@ Link: https://lore.kernel.org/r/20211215090944.19729-1-quic_wgong@quicinc.com
  	__le32 info0;
  } __packed;
  
+diff --git a/drivers/net/wireless/ath/ath11k/hw.h b/drivers/net/wireless/ath/ath11k/hw.h
+index eae6689f196b..ed0e721eede6 100644
 --- a/drivers/net/wireless/ath/ath11k/hw.h
 +++ b/drivers/net/wireless/ath/ath11k/hw.h
 @@ -185,6 +185,7 @@ struct ath11k_hw_params {
@@ -325,9 +341,11 @@ Link: https://lore.kernel.org/r/20211215090944.19729-1-quic_wgong@quicinc.com
  };
  
  struct ath11k_hw_ops {
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index 0a2f4769bd0f..0e8257eaa2da 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -7787,12 +7787,42 @@ exit:
+@@ -7787,12 +7787,42 @@ static int ath11k_mac_op_get_survey(struct ieee80211_hw *hw, int idx,
  	return ret;
  }
  
@@ -370,7 +388,7 @@ Link: https://lore.kernel.org/r/20211215090944.19729-1-quic_wgong@quicinc.com
  
  	sinfo->rx_duration = arsta->rx_duration;
  	sinfo->filled |= BIT_ULL(NL80211_STA_INFO_RX_DURATION);
-@@ -7815,6 +7845,16 @@ static void ath11k_mac_op_sta_statistics
+@@ -7815,6 +7845,16 @@ static void ath11k_mac_op_sta_statistics(struct ieee80211_hw *hw,
  		sinfo->filled |= BIT_ULL(NL80211_STA_INFO_TX_BITRATE);
  	}
  
@@ -387,6 +405,8 @@ Link: https://lore.kernel.org/r/20211215090944.19729-1-quic_wgong@quicinc.com
  	/* TODO: Use real NF instead of default one. */
  	sinfo->signal = arsta->rssi_comb + ATH11K_DEFAULT_NOISE_FLOOR;
  	sinfo->filled |= BIT_ULL(NL80211_STA_INFO_SIGNAL);
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
+index 2b4d27d807ab..b7bdc37f24fd 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
 @@ -73,6 +73,14 @@ struct wmi_tlv_dma_buf_release_parse {
@@ -404,7 +424,7 @@ Link: https://lore.kernel.org/r/20211215090944.19729-1-quic_wgong@quicinc.com
  static const struct wmi_tlv_policy wmi_tlv_policies[] = {
  	[WMI_TAG_ARRAY_BYTE]
  		= { .min_len = 0 },
-@@ -132,6 +140,8 @@ static const struct wmi_tlv_policy wmi_t
+@@ -132,6 +140,8 @@ static const struct wmi_tlv_policy wmi_tlv_policies[] = {
  		.min_len = sizeof(struct wmi_obss_color_collision_event) },
  	[WMI_TAG_11D_NEW_COUNTRY_EVENT] = {
  		.min_len = sizeof(struct wmi_11d_new_cc_ev) },
@@ -413,22 +433,21 @@ Link: https://lore.kernel.org/r/20211215090944.19729-1-quic_wgong@quicinc.com
  };
  
  #define PRIMAP(_hw_mode_) \
-@@ -5554,37 +5564,89 @@ ath11k_wmi_pull_bcn_stats(const struct w
+@@ -5554,37 +5564,89 @@ ath11k_wmi_pull_bcn_stats(const struct wmi_bcn_stats *src,
  	dst->tx_bcn_outage_cnt = src->tx_bcn_outage_cnt;
  }
  
 -int ath11k_wmi_pull_fw_stats(struct ath11k_base *ab, struct sk_buff *skb,
 -			     struct ath11k_fw_stats *stats)
--{
++static int ath11k_wmi_tlv_rssi_chain_parse(struct ath11k_base *ab,
++					   u16 tag, u16 len,
++					   const void *ptr, void *data)
+ {
 -	const void **tb;
 -	const struct wmi_stats_event *ev;
 -	const void *data;
 -	int i, ret;
 -	u32 len = skb->len;
-+static int ath11k_wmi_tlv_rssi_chain_parse(struct ath11k_base *ab,
-+					   u16 tag, u16 len,
-+					   const void *ptr, void *data)
-+{
 +	struct wmi_tlv_fw_stats_parse *parse = data;
 +	const struct wmi_stats_event *ev = parse->ev;
 +	struct ath11k_fw_stats *stats = parse->stats;
@@ -462,11 +481,8 @@ Link: https://lore.kernel.org/r/20211215090944.19729-1-quic_wgong@quicinc.com
 +			    stats_rssi->vdev_id);
 +		ret = -EPROTO;
 +		goto exit;
- 	}
- 
--	ev = tb[WMI_TAG_STATS_EVENT];
--	data = tb[WMI_TAG_ARRAY_BYTE];
--	if (!ev || !data) {
++	}
++
 +	ath11k_dbg(ab, ATH11K_DBG_WMI,
 +		   "wmi stats bssid %pM vif %pK\n",
 +		   arvif->bssid, arvif->vif);
@@ -494,8 +510,11 @@ Link: https://lore.kernel.org/r/20211215090944.19729-1-quic_wgong@quicinc.com
 +			   stats_rssi->rssi_avg_beacon[j],
 +			   j,
 +			   stats_rssi->rssi_avg_data[j]);
-+	}
-+
+ 	}
+ 
+-	ev = tb[WMI_TAG_STATS_EVENT];
+-	data = tb[WMI_TAG_ARRAY_BYTE];
+-	if (!ev || !data) {
 +exit:
 +	rcu_read_unlock();
 +	return ret;
@@ -527,7 +546,7 @@ Link: https://lore.kernel.org/r/20211215090944.19729-1-quic_wgong@quicinc.com
  	stats->stats_id = 0;
  
  	for (i = 0; i < ev->num_pdev_stats; i++) {
-@@ -5592,10 +5654,8 @@ int ath11k_wmi_pull_fw_stats(struct ath1
+@@ -5592,10 +5654,8 @@ int ath11k_wmi_pull_fw_stats(struct ath11k_base *ab, struct sk_buff *skb,
  		struct ath11k_fw_stats_pdev *dst;
  
  		src = data;
@@ -539,7 +558,7 @@ Link: https://lore.kernel.org/r/20211215090944.19729-1-quic_wgong@quicinc.com
  
  		stats->stats_id = WMI_REQUEST_PDEV_STAT;
  
-@@ -5617,10 +5677,8 @@ int ath11k_wmi_pull_fw_stats(struct ath1
+@@ -5617,10 +5677,8 @@ int ath11k_wmi_pull_fw_stats(struct ath11k_base *ab, struct sk_buff *skb,
  		struct ath11k_fw_stats_vdev *dst;
  
  		src = data;
@@ -551,7 +570,7 @@ Link: https://lore.kernel.org/r/20211215090944.19729-1-quic_wgong@quicinc.com
  
  		stats->stats_id = WMI_REQUEST_VDEV_STAT;
  
-@@ -5640,10 +5698,8 @@ int ath11k_wmi_pull_fw_stats(struct ath1
+@@ -5640,10 +5698,8 @@ int ath11k_wmi_pull_fw_stats(struct ath11k_base *ab, struct sk_buff *skb,
  		struct ath11k_fw_stats_bcn *dst;
  
  		src = data;
@@ -563,7 +582,7 @@ Link: https://lore.kernel.org/r/20211215090944.19729-1-quic_wgong@quicinc.com
  
  		stats->stats_id = WMI_REQUEST_BCN_STAT;
  
-@@ -5658,10 +5714,67 @@ int ath11k_wmi_pull_fw_stats(struct ath1
+@@ -5658,10 +5714,67 @@ int ath11k_wmi_pull_fw_stats(struct ath11k_base *ab, struct sk_buff *skb,
  		list_add_tail(&dst->list, &stats->bcn);
  	}
  
@@ -632,6 +651,8 @@ Link: https://lore.kernel.org/r/20211215090944.19729-1-quic_wgong@quicinc.com
  size_t ath11k_wmi_fw_stats_num_vdevs(struct list_head *head)
  {
  	struct ath11k_fw_stats_vdev *i;
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.h b/drivers/net/wireless/ath/ath11k/wmi.h
+index d79eb1b7d9c2..20aa7234fc72 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.h
 +++ b/drivers/net/wireless/ath/ath11k/wmi.h
 @@ -4439,6 +4439,17 @@ struct wmi_stats_event {
@@ -652,3 +673,6 @@ Link: https://lore.kernel.org/r/20211215090944.19729-1-quic_wgong@quicinc.com
  struct wmi_pdev_ctl_failsafe_chk_event {
  	u32 pdev_id;
  	u32 ctl_failsafe_status;
+-- 
+2.37.1
+

@@ -62,9 +62,11 @@ Link: https://lore.kernel.org/r/20220428022426.2927-1-quic_wgong@quicinc.com
  drivers/net/wireless/ath/ath11k/wmi.c | 11 ++++++-----
  1 file changed, 6 insertions(+), 5 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
+index 598ec061694f..1410114d1d5c 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -5794,9 +5794,9 @@ static int ath11k_wmi_tlv_rssi_chain_par
+@@ -5794,9 +5794,9 @@ static int ath11k_wmi_tlv_rssi_chain_parse(struct ath11k_base *ab,
  					   arvif->bssid,
  					   NULL);
  	if (!sta) {
@@ -77,7 +79,7 @@ Link: https://lore.kernel.org/r/20220428022426.2927-1-quic_wgong@quicinc.com
  		goto exit;
  	}
  
-@@ -5894,8 +5894,9 @@ static int ath11k_wmi_tlv_fw_stats_data_
+@@ -5894,8 +5894,9 @@ static int ath11k_wmi_tlv_fw_stats_data_parse(struct ath11k_base *ab,
  					   "wmi stats vdev id %d snr %d\n",
  					   src->vdev_id, src->beacon_snr);
  			} else {
@@ -89,3 +91,6 @@ Link: https://lore.kernel.org/r/20220428022426.2927-1-quic_wgong@quicinc.com
  			}
  		}
  
+-- 
+2.37.1
+

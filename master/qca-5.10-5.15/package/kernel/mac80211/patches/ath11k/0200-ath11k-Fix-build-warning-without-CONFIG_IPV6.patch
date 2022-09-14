@@ -20,9 +20,11 @@ Link: https://lore.kernel.org/r/20220411020843.10284-1-yuehaibing@huawei.com
  drivers/net/wireless/ath/ath11k/mac.c | 2 ++
  1 file changed, 2 insertions(+)
 
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index fe9dc26e84a3..f2188b2b80d5 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -8152,6 +8152,7 @@ static void ath11k_mac_op_sta_statistics
+@@ -8152,6 +8152,7 @@ static void ath11k_mac_op_sta_statistics(struct ieee80211_hw *hw,
  	}
  }
  
@@ -30,7 +32,7 @@ Link: https://lore.kernel.org/r/20220411020843.10284-1-yuehaibing@huawei.com
  static void ath11k_generate_ns_mc_addr(struct ath11k *ar,
  				       struct ath11k_arp_ns_offload *offload)
  {
-@@ -8246,6 +8247,7 @@ generate:
+@@ -8246,6 +8247,7 @@ static void ath11k_mac_op_ipv6_changed(struct ieee80211_hw *hw,
  	/* generate ns multicast address */
  	ath11k_generate_ns_mc_addr(ar, offload);
  }
@@ -38,3 +40,6 @@ Link: https://lore.kernel.org/r/20220411020843.10284-1-yuehaibing@huawei.com
  
  static void ath11k_mac_op_set_rekey_data(struct ieee80211_hw *hw,
  					 struct ieee80211_vif *vif,
+-- 
+2.37.1
+

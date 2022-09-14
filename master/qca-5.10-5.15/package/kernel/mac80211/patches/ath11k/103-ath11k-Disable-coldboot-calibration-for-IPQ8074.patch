@@ -11,9 +11,11 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
  drivers/net/wireless/ath/ath11k/core.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
+index ed9748aac91e..752cc6a91d49 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -80,7 +80,7 @@ static const struct ath11k_hw_params ath
+@@ -80,7 +80,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.supports_shadow_regs = false,
  		.idle_ps = false,
  		.supports_sta_ps = false,
@@ -22,3 +24,6 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
  		.fw_mem_mode = 0,
  		.num_vdevs = 16 + 1,
  		.num_peers = 512,
+-- 
+2.37.1
+

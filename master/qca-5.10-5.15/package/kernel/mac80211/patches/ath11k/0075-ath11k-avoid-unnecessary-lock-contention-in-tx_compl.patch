@@ -23,9 +23,11 @@ Link: https://lore.kernel.org/r/1630560820-21905-13-git-send-email-ppranees@code
  drivers/net/wireless/ath/ath11k/dp_tx.c | 32 +++++++++++--------------
  1 file changed, 14 insertions(+), 18 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/dp_tx.c b/drivers/net/wireless/ath/ath11k/dp_tx.c
+index 28a7e2c74832..88abd64e9047 100644
 --- a/drivers/net/wireless/ath/ath11k/dp_tx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_tx.c
-@@ -293,20 +293,18 @@ static void ath11k_dp_tx_free_txbuf(stru
+@@ -293,20 +293,18 @@ static void ath11k_dp_tx_free_txbuf(struct ath11k_base *ab, u8 mac_id,
  	struct sk_buff *msdu;
  	struct ath11k_skb_cb *skb_cb;
  
@@ -51,7 +53,7 @@ Link: https://lore.kernel.org/r/1630560820-21905-13-git-send-email-ppranees@code
  	dma_unmap_single(ab->dev, skb_cb->paddr, msdu->len, DMA_TO_DEVICE);
  	dev_kfree_skb_any(msdu);
  
-@@ -325,12 +323,13 @@ ath11k_dp_tx_htt_tx_complete_buf(struct
+@@ -325,12 +323,13 @@ ath11k_dp_tx_htt_tx_complete_buf(struct ath11k_base *ab,
  	struct ath11k_skb_cb *skb_cb;
  	struct ath11k *ar;
  
@@ -68,7 +70,7 @@ Link: https://lore.kernel.org/r/1630560820-21905-13-git-send-email-ppranees@code
  		return;
  	}
  
-@@ -339,9 +338,6 @@ ath11k_dp_tx_htt_tx_complete_buf(struct
+@@ -339,9 +338,6 @@ ath11k_dp_tx_htt_tx_complete_buf(struct ath11k_base *ab,
  
  	ar = skb_cb->ar;
  
@@ -78,7 +80,7 @@ Link: https://lore.kernel.org/r/1630560820-21905-13-git-send-email-ppranees@code
  	if (atomic_dec_and_test(&ar->dp.num_tx_pending))
  		wake_up(&ar->dp.tx_empty_waitq);
  
-@@ -584,16 +580,16 @@ void ath11k_dp_tx_completion_handler(str
+@@ -584,16 +580,16 @@ void ath11k_dp_tx_completion_handler(struct ath11k_base *ab, int ring_id)
  			continue;
  		}
  
@@ -100,3 +102,6 @@ Link: https://lore.kernel.org/r/1630560820-21905-13-git-send-email-ppranees@code
  
  		ar = ab->pdevs[mac_id].ar;
  
+-- 
+2.37.1
+

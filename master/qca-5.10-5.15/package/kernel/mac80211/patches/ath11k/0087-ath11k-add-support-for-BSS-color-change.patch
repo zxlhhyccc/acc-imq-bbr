@@ -33,6 +33,8 @@ Link: https://lore.kernel.org/r/1635178254-17732-1-git-send-email-quic_ramess@qu
  drivers/net/wireless/ath/ath11k/wmi.h  | 15 +++++
  5 files changed, 148 insertions(+), 6 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
+index 0e10ed4c9c2a..94cfa9c5026d 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
 @@ -256,6 +256,8 @@ struct ath11k_vif {
@@ -44,9 +46,11 @@ Link: https://lore.kernel.org/r/1635178254-17732-1-git-send-email-quic_ramess@qu
  	struct ieee80211_chanctx_conf chanctx;
  };
  
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index cf6c8f105e34..9ac682b339af 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -1236,6 +1236,26 @@ static int ath11k_mac_setup_bcn_tmpl(str
+@@ -1236,6 +1236,26 @@ static int ath11k_mac_setup_bcn_tmpl(struct ath11k_vif *arvif)
  	return ret;
  }
  
@@ -73,7 +77,7 @@ Link: https://lore.kernel.org/r/1635178254-17732-1-git-send-email-quic_ramess@qu
  static void ath11k_control_beaconing(struct ath11k_vif *arvif,
  				     struct ieee80211_bss_conf *info)
  {
-@@ -2899,10 +2919,18 @@ static void ath11k_mac_op_bss_info_chang
+@@ -2899,10 +2919,18 @@ static void ath11k_mac_op_bss_info_changed(struct ieee80211_hw *hw,
  				   "Set staggered beacon mode for VDEV: %d\n",
  				   arvif->vdev_id);
  
@@ -96,7 +100,7 @@ Link: https://lore.kernel.org/r/1635178254-17732-1-git-send-email-quic_ramess@qu
  		if (vif->bss_conf.he_support) {
  			ret = ath11k_wmi_vdev_set_param_cmd(ar, arvif->vdev_id,
  							    WMI_VDEV_PARAM_BA_MODE,
-@@ -3118,6 +3146,25 @@ static void ath11k_mac_op_bss_info_chang
+@@ -3118,6 +3146,25 @@ static void ath11k_mac_op_bss_info_changed(struct ieee80211_hw *hw,
  			if (ret)
  				ath11k_warn(ar->ab, "failed to set bss color collision on vdev %i: %d\n",
  					    arvif->vdev_id,  ret);
@@ -122,7 +126,7 @@ Link: https://lore.kernel.org/r/1635178254-17732-1-git-send-email-quic_ramess@qu
  		} else if (vif->type == NL80211_IFTYPE_STATION) {
  			ret = ath11k_wmi_send_bss_color_change_enable_cmd(ar,
  									  arvif->vdev_id,
-@@ -7892,6 +7939,9 @@ static int __ath11k_mac_register(struct
+@@ -7892,6 +7939,9 @@ static int __ath11k_mac_register(struct ath11k *ar)
  
  	wiphy_ext_feature_set(ar->hw->wiphy, NL80211_EXT_FEATURE_CQM_RSSI_LIST);
  	wiphy_ext_feature_set(ar->hw->wiphy, NL80211_EXT_FEATURE_STA_TX_PWR);
@@ -132,17 +136,21 @@ Link: https://lore.kernel.org/r/1635178254-17732-1-git-send-email-quic_ramess@qu
  
  	ar->hw->wiphy->cipher_suites = cipher_suites;
  	ar->hw->wiphy->n_cipher_suites = ARRAY_SIZE(cipher_suites);
+diff --git a/drivers/net/wireless/ath/ath11k/mac.h b/drivers/net/wireless/ath/ath11k/mac.h
+index 254ca4acc8e8..f6f37e8c8c6a 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.h
 +++ b/drivers/net/wireless/ath/ath11k/mac.h
-@@ -155,4 +155,5 @@ enum ath11k_supported_bw ath11k_mac_mac8
+@@ -155,4 +155,5 @@ enum ath11k_supported_bw ath11k_mac_mac80211_bw_to_ath11k_bw(enum rate_info_bw b
  enum hal_encrypt_type ath11k_dp_tx_get_encrypt_type(u32 cipher);
  void ath11k_mac_handle_beacon(struct ath11k *ar, struct sk_buff *skb);
  void ath11k_mac_handle_beacon_miss(struct ath11k *ar, u32 vdev_id);
 +void ath11k_mac_bcn_tx_event(struct ath11k_vif *arvif);
  #endif
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
+index e0fe6262c767..c0267f9faa5e 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -128,6 +128,8 @@ static const struct wmi_tlv_policy wmi_t
+@@ -128,6 +128,8 @@ static const struct wmi_tlv_policy wmi_tlv_policies[] = {
  		.min_len = sizeof(struct wmi_probe_resp_tx_status_event) },
  	[WMI_TAG_VDEV_DELETE_RESP_EVENT] = {
  		.min_len = sizeof(struct wmi_vdev_delete_resp_event) },
@@ -151,7 +159,7 @@ Link: https://lore.kernel.org/r/1635178254-17732-1-git-send-email-quic_ramess@qu
  };
  
  #define PRIMAP(_hw_mode_) \
-@@ -1633,6 +1635,15 @@ int ath11k_wmi_bcn_tmpl(struct ath11k *a
+@@ -1633,6 +1635,15 @@ int ath11k_wmi_bcn_tmpl(struct ath11k *ar, u32 vdev_id,
  	void *ptr;
  	int ret, len;
  	size_t aligned_len = roundup(bcn->len, 4);
@@ -167,7 +175,7 @@ Link: https://lore.kernel.org/r/1635178254-17732-1-git-send-email-quic_ramess@qu
  
  	len = sizeof(*cmd) + sizeof(*bcn_prb_info) + TLV_HDR_SIZE + aligned_len;
  
-@@ -1645,8 +1656,12 @@ int ath11k_wmi_bcn_tmpl(struct ath11k *a
+@@ -1645,8 +1656,12 @@ int ath11k_wmi_bcn_tmpl(struct ath11k *ar, u32 vdev_id,
  			  FIELD_PREP(WMI_TLV_LEN, sizeof(*cmd) - TLV_HDR_SIZE);
  	cmd->vdev_id = vdev_id;
  	cmd->tim_ie_offset = offs->tim_offset;
@@ -182,10 +190,11 @@ Link: https://lore.kernel.org/r/1635178254-17732-1-git-send-email-quic_ramess@qu
  	cmd->buf_len = bcn->len;
  
  	ptr = skb->data + sizeof(*cmd);
-@@ -3452,6 +3467,53 @@ int ath11k_wmi_fils_discovery(struct ath
+@@ -3451,6 +3466,53 @@ int ath11k_wmi_fils_discovery(struct ath11k *ar, u32 vdev_id, u32 interval,
+ 	return ret;
  }
  
- static void
++static void
 +ath11k_wmi_obss_color_collision_event(struct ath11k_base *ab, struct sk_buff *skb)
 +{
 +	const void **tb;
@@ -232,11 +241,10 @@ Link: https://lore.kernel.org/r/1635178254-17732-1-git-send-email-quic_ramess@qu
 +	kfree(tb);
 +}
 +
-+static void
+ static void
  ath11k_fill_band_to_mac_param(struct ath11k_base  *soc,
  			      struct wmi_host_pdev_band_to_mac *band_to_mac)
- {
-@@ -6158,6 +6220,7 @@ static void ath11k_vdev_start_resp_event
+@@ -6158,6 +6220,7 @@ static void ath11k_vdev_start_resp_event(struct ath11k_base *ab, struct sk_buff
  
  static void ath11k_bcn_tx_status_event(struct ath11k_base *ab, struct sk_buff *skb)
  {
@@ -244,7 +252,7 @@ Link: https://lore.kernel.org/r/1635178254-17732-1-git-send-email-quic_ramess@qu
  	u32 vdev_id, tx_status;
  
  	if (ath11k_pull_bcn_tx_status_ev(ab, skb->data, skb->len,
-@@ -6165,6 +6228,14 @@ static void ath11k_bcn_tx_status_event(s
+@@ -6165,6 +6228,14 @@ static void ath11k_bcn_tx_status_event(struct ath11k_base *ab, struct sk_buff *s
  		ath11k_warn(ab, "failed to extract bcn tx status");
  		return;
  	}
@@ -259,7 +267,7 @@ Link: https://lore.kernel.org/r/1635178254-17732-1-git-send-email-quic_ramess@qu
  }
  
  static void ath11k_vdev_stopped_event(struct ath11k_base *ab, struct sk_buff *skb)
-@@ -7192,6 +7263,9 @@ static void ath11k_wmi_tlv_op_rx(struct
+@@ -7192,6 +7263,9 @@ static void ath11k_wmi_tlv_op_rx(struct ath11k_base *ab, struct sk_buff *skb)
  	case WMI_OFFLOAD_PROB_RESP_TX_STATUS_EVENTID:
  		ath11k_probe_resp_tx_status_event(ab, skb);
  		break;
@@ -269,6 +277,8 @@ Link: https://lore.kernel.org/r/1635178254-17732-1-git-send-email-quic_ramess@qu
  	/* add Unsupported events here */
  	case WMI_TBTTOFFSET_EXT_UPDATE_EVENTID:
  	case WMI_PEER_OPER_MODE_CHANGE_EVENTID:
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.h b/drivers/net/wireless/ath/ath11k/wmi.h
+index b5b9f2c22e2e..4eb06cb7f883 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.h
 +++ b/drivers/net/wireless/ath/ath11k/wmi.h
 @@ -774,6 +774,8 @@ enum wmi_tlv_event_id {
@@ -294,7 +304,7 @@ Link: https://lore.kernel.org/r/1635178254-17732-1-git-send-email-quic_ramess@qu
  struct wmi_obss_color_collision_cfg_params_cmd {
  	u32 tlv_header;
  	u32 vdev_id;
-@@ -4933,6 +4942,12 @@ struct wmi_bss_color_change_enable_param
+@@ -4933,6 +4942,12 @@ struct wmi_bss_color_change_enable_params_cmd {
  	u32 enable;
  } __packed;
  
@@ -307,3 +317,6 @@ Link: https://lore.kernel.org/r/1635178254-17732-1-git-send-email-quic_ramess@qu
  #define ATH11K_IPV4_TH_SEED_SIZE 5
  #define ATH11K_IPV6_TH_SEED_SIZE 11
  
+-- 
+2.37.1
+

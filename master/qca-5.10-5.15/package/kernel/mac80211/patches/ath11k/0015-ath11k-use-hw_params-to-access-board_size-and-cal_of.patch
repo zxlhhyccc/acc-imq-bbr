@@ -23,9 +23,11 @@ Link: https://lore.kernel.org/r/20210721201927.100369-2-jouni@codeaurora.org
  drivers/net/wireless/ath/ath11k/qmi.h  |  2 --
  4 files changed, 8 insertions(+), 10 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
+index 05e69666075a..8a18725fab9d 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -37,7 +37,7 @@ static const struct ath11k_hw_params ath
+@@ -37,7 +37,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.fw = {
  			.dir = "IPQ8074/hw2.0",
  			.board_size = 256 * 1024,
@@ -34,7 +36,7 @@ Link: https://lore.kernel.org/r/20210721201927.100369-2-jouni@codeaurora.org
  		},
  		.max_radios = 3,
  		.bdf_addr = 0x4B0C0000,
-@@ -89,7 +89,7 @@ static const struct ath11k_hw_params ath
+@@ -89,7 +89,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.fw = {
  			.dir = "IPQ6018/hw1.0",
  			.board_size = 256 * 1024,
@@ -43,7 +45,7 @@ Link: https://lore.kernel.org/r/20210721201927.100369-2-jouni@codeaurora.org
  		},
  		.max_radios = 2,
  		.bdf_addr = 0x4ABC0000,
-@@ -138,7 +138,7 @@ static const struct ath11k_hw_params ath
+@@ -138,7 +138,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.fw = {
  			.dir = "QCA6390/hw2.0",
  			.board_size = 256 * 1024,
@@ -52,7 +54,7 @@ Link: https://lore.kernel.org/r/20210721201927.100369-2-jouni@codeaurora.org
  		},
  		.max_radios = 3,
  		.bdf_addr = 0x4B0C0000,
-@@ -186,7 +186,7 @@ static const struct ath11k_hw_params ath
+@@ -186,7 +186,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.fw = {
  			.dir = "QCN9074/hw1.0",
  			.board_size = 256 * 1024,
@@ -61,7 +63,7 @@ Link: https://lore.kernel.org/r/20210721201927.100369-2-jouni@codeaurora.org
  		},
  		.max_radios = 1,
  		.single_pdev_only = false,
-@@ -234,7 +234,7 @@ static const struct ath11k_hw_params ath
+@@ -234,7 +234,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.fw = {
  			.dir = "WCN6855/hw2.0",
  			.board_size = 256 * 1024,
@@ -70,6 +72,8 @@ Link: https://lore.kernel.org/r/20210721201927.100369-2-jouni@codeaurora.org
  		},
  		.max_radios = 3,
  		.bdf_addr = 0x4B0C0000,
+diff --git a/drivers/net/wireless/ath/ath11k/hw.h b/drivers/net/wireless/ath/ath11k/hw.h
+index 6c35acaa048b..92e2a78c1d6d 100644
 --- a/drivers/net/wireless/ath/ath11k/hw.h
 +++ b/drivers/net/wireless/ath/ath11k/hw.h
 @@ -128,7 +128,7 @@ struct ath11k_hw_params {
@@ -81,9 +85,11 @@ Link: https://lore.kernel.org/r/20210721201927.100369-2-jouni@codeaurora.org
  	} fw;
  
  	const struct ath11k_hw_ops *hw_ops;
+diff --git a/drivers/net/wireless/ath/ath11k/qmi.c b/drivers/net/wireless/ath/ath11k/qmi.c
+index e4a65513a1bf..483da24b0ee4 100644
 --- a/drivers/net/wireless/ath/ath11k/qmi.c
 +++ b/drivers/net/wireless/ath/ath11k/qmi.c
-@@ -1953,7 +1953,7 @@ ath11k_qmi_prepare_bdf_download(struct a
+@@ -1953,7 +1953,7 @@ ath11k_qmi_prepare_bdf_download(struct ath11k_base *ab, int type,
  		fw_size = min_t(u32, ab->hw_params.fw.board_size,
  				fw_entry->size);
  
@@ -92,7 +98,7 @@ Link: https://lore.kernel.org/r/20210721201927.100369-2-jouni@codeaurora.org
  			    fw_entry->data, fw_size);
  
  		release_firmware(fw_entry);
-@@ -1979,7 +1979,7 @@ static int ath11k_qmi_load_bdf_fixed_add
+@@ -1979,7 +1979,7 @@ static int ath11k_qmi_load_bdf_fixed_addr(struct ath11k_base *ab)
  		return -ENOMEM;
  	memset(&resp, 0, sizeof(resp));
  
@@ -101,6 +107,8 @@ Link: https://lore.kernel.org/r/20210721201927.100369-2-jouni@codeaurora.org
  	if (!bdf_addr) {
  		ath11k_warn(ab, "failed ioremap for board file\n");
  		ret = -EIO;
+diff --git a/drivers/net/wireless/ath/ath11k/qmi.h b/drivers/net/wireless/ath/ath11k/qmi.h
+index 3d5930330703..30236c5d26e2 100644
 --- a/drivers/net/wireless/ath/ath11k/qmi.h
 +++ b/drivers/net/wireless/ath/ath11k/qmi.h
 @@ -13,8 +13,6 @@
@@ -112,3 +120,6 @@ Link: https://lore.kernel.org/r/20210721201927.100369-2-jouni@codeaurora.org
  #define ATH11K_QMI_WLANFW_MAX_BUILD_ID_LEN_V01	128
  #define ATH11K_QMI_WLFW_SERVICE_ID_V01		0x45
  #define ATH11K_QMI_WLFW_SERVICE_VERS_V01	0x01
+-- 
+2.37.1
+

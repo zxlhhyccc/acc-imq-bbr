@@ -98,9 +98,11 @@ Link: https://lore.kernel.org/r/20210823172159.GA25800@embeddedor
  drivers/net/wireless/ath/ath11k/wmi.h | 2 +-
  3 files changed, 4 insertions(+), 7 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/reg.c b/drivers/net/wireless/ath/ath11k/reg.c
+index f793324ad0b7..8606170ba80d 100644
 --- a/drivers/net/wireless/ath/ath11k/reg.c
 +++ b/drivers/net/wireless/ath/ath11k/reg.c
-@@ -97,7 +97,6 @@ int ath11k_reg_update_chan_list(struct a
+@@ -97,7 +97,6 @@ int ath11k_reg_update_chan_list(struct ath11k *ar)
  	struct channel_param *ch;
  	enum nl80211_band band;
  	int num_channels = 0;
@@ -108,7 +110,7 @@ Link: https://lore.kernel.org/r/20210823172159.GA25800@embeddedor
  	int i, ret;
  
  	bands = hw->wiphy->bands;
-@@ -117,10 +116,8 @@ int ath11k_reg_update_chan_list(struct a
+@@ -117,10 +116,8 @@ int ath11k_reg_update_chan_list(struct ath11k *ar)
  	if (WARN_ON(!num_channels))
  		return -EINVAL;
  
@@ -121,9 +123,11 @@ Link: https://lore.kernel.org/r/20210823172159.GA25800@embeddedor
  	if (!params)
  		return -ENOMEM;
  
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
+index aa2247cc8049..7de7bdaec483 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -2303,7 +2303,7 @@ int ath11k_wmi_send_scan_chan_list_cmd(s
+@@ -2303,7 +2303,7 @@ int ath11k_wmi_send_scan_chan_list_cmd(struct ath11k *ar,
  	u16 num_send_chans, num_sends = 0, max_chan_limit = 0;
  	u32 *reg1, *reg2;
  
@@ -132,6 +136,8 @@ Link: https://lore.kernel.org/r/20210823172159.GA25800@embeddedor
  	while (chan_list->nallchans) {
  		len = sizeof(*cmd) + TLV_HDR_SIZE;
  		max_chan_limit = (wmi->wmi_ab->max_msg_len[ar->pdev_idx] - len) /
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.h b/drivers/net/wireless/ath/ath11k/wmi.h
+index 39bfa233b83a..3d55c087ef75 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.h
 +++ b/drivers/net/wireless/ath/ath11k/wmi.h
 @@ -3659,7 +3659,7 @@ struct wmi_stop_scan_cmd {
@@ -143,3 +149,6 @@ Link: https://lore.kernel.org/r/20210823172159.GA25800@embeddedor
  };
  
  struct wmi_scan_chan_list_cmd {
+-- 
+2.37.1
+

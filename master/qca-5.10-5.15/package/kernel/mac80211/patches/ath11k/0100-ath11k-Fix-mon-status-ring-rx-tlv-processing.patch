@@ -21,9 +21,11 @@ Link: https://lore.kernel.org/r/1637249433-10316-1-git-send-email-akolli@codeaur
  drivers/net/wireless/ath/ath11k/dp_rx.c | 14 +++++++-------
  1 file changed, 7 insertions(+), 7 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
+index fcd7a6d27d12..40f1c8607389 100644
 --- a/drivers/net/wireless/ath/ath11k/dp_rx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
-@@ -3061,10 +3061,10 @@ int ath11k_dp_rx_process_mon_status(stru
+@@ -3061,10 +3061,10 @@ int ath11k_dp_rx_process_mon_status(struct ath11k_base *ab, int mac_id,
  	if (!num_buffs_reaped)
  		goto exit;
  
@@ -37,7 +39,7 @@ Link: https://lore.kernel.org/r/1637249433-10316-1-git-send-email-akolli@codeaur
  		if (ath11k_debugfs_is_pktlog_lite_mode_enabled(ar)) {
  			log_type = ATH11K_PKTLOG_TYPE_LITE_RX;
  			rx_buf_sz = DP_RX_BUFFER_SIZE_LITE;
-@@ -3092,10 +3092,7 @@ int ath11k_dp_rx_process_mon_status(stru
+@@ -3092,10 +3092,7 @@ int ath11k_dp_rx_process_mon_status(struct ath11k_base *ab, int mac_id,
  			ath11k_dbg(ab, ATH11K_DBG_DATA,
  				   "failed to find the peer with peer_id %d\n",
  				   ppdu_info.peer_id);
@@ -49,7 +51,7 @@ Link: https://lore.kernel.org/r/1637249433-10316-1-git-send-email-akolli@codeaur
  		}
  
  		arsta = (struct ath11k_sta *)peer->sta->drv_priv;
-@@ -3104,10 +3101,13 @@ int ath11k_dp_rx_process_mon_status(stru
+@@ -3104,10 +3101,13 @@ int ath11k_dp_rx_process_mon_status(struct ath11k_base *ab, int mac_id,
  		if (ath11k_debugfs_is_pktlog_peer_valid(ar, peer->addr))
  			trace_ath11k_htt_rxdesc(ar, skb->data, log_type, rx_buf_sz);
  
@@ -63,3 +65,6 @@ Link: https://lore.kernel.org/r/1637249433-10316-1-git-send-email-akolli@codeaur
  	}
  exit:
  	return num_buffs_reaped;
+-- 
+2.37.1
+

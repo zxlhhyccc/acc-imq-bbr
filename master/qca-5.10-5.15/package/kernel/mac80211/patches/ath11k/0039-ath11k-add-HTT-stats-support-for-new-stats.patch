@@ -44,6 +44,8 @@ Link: https://lore.kernel.org/r/20210913223148.208026-6-jouni@codeaurora.org
  drivers/net/wireless/ath/ath11k/debugfs_sta.c |   8 +-
  4 files changed, 548 insertions(+), 4 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/debugfs.h b/drivers/net/wireless/ath/ath11k/debugfs.h
+index e5346af71f24..ec743a015dc7 100644
 --- a/drivers/net/wireless/ath/ath11k/debugfs.h
 +++ b/drivers/net/wireless/ath/ath11k/debugfs.h
 @@ -38,6 +38,10 @@ enum ath11k_dbg_htt_ext_stats_type {
@@ -57,9 +59,11 @@ Link: https://lore.kernel.org/r/20210913223148.208026-6-jouni@codeaurora.org
  
  	/* keep this last */
  	ATH11K_DBG_HTT_NUM_EXT_STATS,
+diff --git a/drivers/net/wireless/ath/ath11k/debugfs_htt_stats.c b/drivers/net/wireless/ath/ath11k/debugfs_htt_stats.c
+index 9efce25a067e..4484235bcda4 100644
 --- a/drivers/net/wireless/ath/ath11k/debugfs_htt_stats.c
 +++ b/drivers/net/wireless/ath/ath11k/debugfs_htt_stats.c
-@@ -3639,6 +3639,334 @@ static inline void htt_print_backpressur
+@@ -3639,6 +3639,334 @@ static inline void htt_print_backpressure_stats_tlv_v(const u32 *tag_buf,
  	}
  }
  
@@ -394,7 +398,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-6-jouni@codeaurora.org
  static int ath11k_dbg_htt_ext_stats_parse(struct ath11k_base *ab,
  					  u16 tag, u16 len, const void *tag_buf,
  					  void *user_data)
-@@ -3990,6 +4318,30 @@ static int ath11k_dbg_htt_ext_stats_pars
+@@ -3990,6 +4318,30 @@ static int ath11k_dbg_htt_ext_stats_parse(struct ath11k_base *ab,
  	case HTT_STATS_RING_BACKPRESSURE_STATS_TAG:
  		htt_print_backpressure_stats_tlv_v(tag_buf, user_data);
  		break;
@@ -425,7 +429,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-6-jouni@codeaurora.org
  	default:
  		break;
  	}
-@@ -4077,8 +4429,7 @@ static ssize_t ath11k_write_htt_stats_ty
+@@ -4077,8 +4429,7 @@ static ssize_t ath11k_write_htt_stats_type(struct file *file,
  	if (type >= ATH11K_DBG_HTT_NUM_EXT_STATS)
  		return -E2BIG;
  
@@ -435,7 +439,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-6-jouni@codeaurora.org
  		return -EPERM;
  
  	ar->debug.htt_stats.type = type;
-@@ -4139,6 +4490,15 @@ static int ath11k_prep_htt_stats_cfg_par
+@@ -4139,6 +4490,15 @@ static int ath11k_prep_htt_stats_cfg_params(struct ath11k *ar, u8 type,
  	case ATH11K_DBG_HTT_EXT_STATS_TX_SOUNDING_INFO:
  		cfg_params->cfg0 = HTT_STAT_DEFAULT_CFG0_ACTIVE_VDEVS;
  		break;
@@ -451,7 +455,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-6-jouni@codeaurora.org
  	default:
  		break;
  	}
-@@ -4196,7 +4556,9 @@ static int ath11k_open_htt_stats(struct
+@@ -4196,7 +4556,9 @@ static int ath11k_open_htt_stats(struct inode *inode, struct file *file)
  	u8 type = ar->debug.htt_stats.type;
  	int ret;
  
@@ -462,6 +466,8 @@ Link: https://lore.kernel.org/r/20210913223148.208026-6-jouni@codeaurora.org
  		return -EPERM;
  
  	mutex_lock(&ar->conf_mutex);
+diff --git a/drivers/net/wireless/ath/ath11k/debugfs_htt_stats.h b/drivers/net/wireless/ath/ath11k/debugfs_htt_stats.h
+index 95ab8505ae5f..dc210c54d131 100644
 --- a/drivers/net/wireless/ath/ath11k/debugfs_htt_stats.h
 +++ b/drivers/net/wireless/ath/ath11k/debugfs_htt_stats.h
 @@ -102,6 +102,14 @@ enum htt_tlv_tag_t {
@@ -650,9 +656,11 @@ Link: https://lore.kernel.org/r/20210913223148.208026-6-jouni@codeaurora.org
  #ifdef CPTCFG_ATH11K_DEBUGFS
  
  void ath11k_debugfs_htt_stats_init(struct ath11k *ar);
+diff --git a/drivers/net/wireless/ath/ath11k/debugfs_sta.c b/drivers/net/wireless/ath/ath11k/debugfs_sta.c
+index 270c0edbb10f..fecd9718f5ce 100644
 --- a/drivers/net/wireless/ath/ath11k/debugfs_sta.c
 +++ b/drivers/net/wireless/ath/ath11k/debugfs_sta.c
-@@ -419,15 +419,21 @@ ath11k_dbg_sta_open_htt_peer_stats(struc
+@@ -419,15 +419,21 @@ ath11k_dbg_sta_open_htt_peer_stats(struct inode *inode, struct file *file)
  	struct ath11k_sta *arsta = (struct ath11k_sta *)sta->drv_priv;
  	struct ath11k *ar = arsta->arvif->ar;
  	struct debug_htt_stats_req *stats_req;
@@ -675,3 +683,6 @@ Link: https://lore.kernel.org/r/20210913223148.208026-6-jouni@codeaurora.org
  	memcpy(stats_req->peer_addr, sta->addr, ETH_ALEN);
  	ret = ath11k_debugfs_htt_stats_req(ar);
  	mutex_unlock(&ar->conf_mutex);
+-- 
+2.37.1
+

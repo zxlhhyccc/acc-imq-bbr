@@ -18,9 +18,11 @@ Link: https://lore.kernel.org/r/1636561290-18966-1-git-send-email-quic_periyasa@
  drivers/net/wireless/ath/ath11k/ce.c | 16 ++++++++++------
  1 file changed, 10 insertions(+), 6 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/ce.c b/drivers/net/wireless/ath/ath11k/ce.c
+index de8b632b058c..4249c2e94da9 100644
 --- a/drivers/net/wireless/ath/ath11k/ce.c
 +++ b/drivers/net/wireless/ath/ath11k/ce.c
-@@ -953,6 +953,7 @@ int ath11k_ce_init_pipes(struct ath11k_b
+@@ -953,6 +953,7 @@ int ath11k_ce_init_pipes(struct ath11k_base *ab)
  void ath11k_ce_free_pipes(struct ath11k_base *ab)
  {
  	struct ath11k_ce_pipe *pipe;
@@ -28,7 +30,7 @@ Link: https://lore.kernel.org/r/1636561290-18966-1-git-send-email-quic_periyasa@
  	int desc_sz;
  	int i;
  
-@@ -964,22 +965,24 @@ void ath11k_ce_free_pipes(struct ath11k_
+@@ -964,22 +965,24 @@ void ath11k_ce_free_pipes(struct ath11k_base *ab)
  
  		if (pipe->src_ring) {
  			desc_sz = ath11k_hal_ce_get_desc_size(HAL_CE_DESC_SRC);
@@ -57,7 +59,7 @@ Link: https://lore.kernel.org/r/1636561290-18966-1-git-send-email-quic_periyasa@
  			kfree(pipe->dest_ring);
  			pipe->dest_ring = NULL;
  		}
-@@ -987,11 +990,12 @@ void ath11k_ce_free_pipes(struct ath11k_
+@@ -987,11 +990,12 @@ void ath11k_ce_free_pipes(struct ath11k_base *ab)
  		if (pipe->status_ring) {
  			desc_sz =
  			  ath11k_hal_ce_get_desc_size(HAL_CE_DESC_DST_STATUS);
@@ -72,3 +74,6 @@ Link: https://lore.kernel.org/r/1636561290-18966-1-git-send-email-quic_periyasa@
  			kfree(pipe->status_ring);
  			pipe->status_ring = NULL;
  		}
+-- 
+2.37.1
+

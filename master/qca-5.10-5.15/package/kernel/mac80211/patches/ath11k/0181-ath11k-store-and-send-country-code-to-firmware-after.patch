@@ -21,9 +21,11 @@ Link: https://lore.kernel.org/r/20220324011856.11014-1-quic_wgong@quicinc.com
  drivers/net/wireless/ath/ath11k/reg.c  | 1 +
  4 files changed, 11 insertions(+)
 
+diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
+index 3ccb9259feea..52f90eb01ec2 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -1404,6 +1404,7 @@ static void ath11k_update_11d(struct wor
+@@ -1404,6 +1404,7 @@ static void ath11k_update_11d(struct work_struct *work)
  		pdev = &ab->pdevs[i];
  		ar = pdev->ar;
  
@@ -31,6 +33,8 @@ Link: https://lore.kernel.org/r/20220324011856.11014-1-quic_wgong@quicinc.com
  		ret = ath11k_wmi_send_set_current_country_cmd(ar, &set_current_param);
  		if (ret)
  			ath11k_warn(ar->ab,
+diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
+index 41001ec174e2..b4d58e01fffa 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
 @@ -671,6 +671,7 @@ struct ath11k {
@@ -41,9 +45,11 @@ Link: https://lore.kernel.org/r/20220324011856.11014-1-quic_wgong@quicinc.com
  };
  
  struct ath11k_band_cap {
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index 7b5ea1f1c810..c09eebbb2982 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -7964,6 +7964,14 @@ ath11k_mac_op_reconfig_complete(struct i
+@@ -7964,6 +7964,14 @@ ath11k_mac_op_reconfig_complete(struct ieee80211_hw *hw,
  		ar->state = ATH11K_STATE_ON;
  		ieee80211_wake_queues(ar->hw);
  
@@ -58,9 +64,11 @@ Link: https://lore.kernel.org/r/20220324011856.11014-1-quic_wgong@quicinc.com
  		if (ab->is_reset) {
  			recovery_count = atomic_inc_return(&ab->recovery_count);
  			ath11k_dbg(ab, ATH11K_DBG_BOOT,
+diff --git a/drivers/net/wireless/ath/ath11k/reg.c b/drivers/net/wireless/ath/ath11k/reg.c
+index 35c33661ee91..657fdb6a017d 100644
 --- a/drivers/net/wireless/ath/ath11k/reg.c
 +++ b/drivers/net/wireless/ath/ath11k/reg.c
-@@ -81,6 +81,7 @@ ath11k_reg_notifier(struct wiphy *wiphy,
+@@ -81,6 +81,7 @@ ath11k_reg_notifier(struct wiphy *wiphy, struct regulatory_request *request)
  	 */
  	if (ar->ab->hw_params.current_cc_support) {
  		memcpy(&set_current_param.alpha2, request->alpha2, 2);
@@ -68,3 +76,6 @@ Link: https://lore.kernel.org/r/20220324011856.11014-1-quic_wgong@quicinc.com
  		ret = ath11k_wmi_send_set_current_country_cmd(ar, &set_current_param);
  		if (ret)
  			ath11k_warn(ar->ab,
+-- 
+2.37.1
+

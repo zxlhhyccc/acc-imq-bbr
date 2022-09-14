@@ -25,9 +25,11 @@ Link: https://lore.kernel.org/r/1630560820-21905-5-git-send-email-ppranees@codea
  drivers/net/wireless/ath/ath11k/dp_rx.c | 10 +++++++---
  1 file changed, 7 insertions(+), 3 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
+index f4ae948a6dd6..7c60f66077f5 100644
 --- a/drivers/net/wireless/ath/ath11k/dp_rx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
-@@ -2701,7 +2701,6 @@ try_again:
+@@ -2701,7 +2701,6 @@ int ath11k_dp_process_rx(struct ath11k_base *ab, int ring_id,
  				 DMA_FROM_DEVICE);
  
  		num_buffs_reaped[mac_id]++;
@@ -35,7 +37,7 @@ Link: https://lore.kernel.org/r/1630560820-21905-5-git-send-email-ppranees@codea
  
  		push_reason = FIELD_GET(HAL_REO_DEST_RING_INFO0_PUSH_REASON,
  					desc.info0);
-@@ -2728,10 +2727,15 @@ try_again:
+@@ -2728,10 +2727,15 @@ int ath11k_dp_process_rx(struct ath11k_base *ab, int ring_id,
  		rxcb->mac_id = mac_id;
  		__skb_queue_tail(&msdu_list, msdu);
  
@@ -53,3 +55,6 @@ Link: https://lore.kernel.org/r/1630560820-21905-5-git-send-email-ppranees@codea
  	}
  
  	/* Hw might have updated the head pointer after we cached it.
+-- 
+2.37.1
+

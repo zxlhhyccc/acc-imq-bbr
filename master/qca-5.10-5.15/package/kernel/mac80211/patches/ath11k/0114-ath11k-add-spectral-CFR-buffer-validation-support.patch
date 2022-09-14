@@ -24,6 +24,8 @@ Link: https://lore.kernel.org/r/1637312901-10279-2-git-send-email-quic_vnaralas@
  drivers/net/wireless/ath/ath11k/spectral.c | 14 ++++++++++
  3 files changed, 46 insertions(+)
 
+diff --git a/drivers/net/wireless/ath/ath11k/dbring.c b/drivers/net/wireless/ath/ath11k/dbring.c
+index de220a10bce3..eda67ebfc4c2 100644
 --- a/drivers/net/wireless/ath/ath11k/dbring.c
 +++ b/drivers/net/wireless/ath/ath11k/dbring.c
 @@ -6,6 +6,35 @@
@@ -62,7 +64,7 @@ Link: https://lore.kernel.org/r/1637312901-10279-2-git-send-email-quic_vnaralas@
  static int ath11k_dbring_bufs_replenish(struct ath11k *ar,
  					struct ath11k_dbring *ring,
  					struct ath11k_dbring_element *buff)
-@@ -26,6 +55,7 @@ static int ath11k_dbring_bufs_replenish(
+@@ -26,6 +55,7 @@ static int ath11k_dbring_bufs_replenish(struct ath11k *ar,
  
  	ptr_unaligned = buff->payload;
  	ptr_aligned = PTR_ALIGN(ptr_unaligned, ring->buf_align);
@@ -70,18 +72,22 @@ Link: https://lore.kernel.org/r/1637312901-10279-2-git-send-email-quic_vnaralas@
  	paddr = dma_map_single(ab->dev, ptr_aligned, ring->buf_sz,
  			       DMA_FROM_DEVICE);
  
+diff --git a/drivers/net/wireless/ath/ath11k/dbring.h b/drivers/net/wireless/ath/ath11k/dbring.h
+index 78a985faa0a1..ef906c687b8c 100644
 --- a/drivers/net/wireless/ath/ath11k/dbring.h
 +++ b/drivers/net/wireless/ath/ath11k/dbring.h
-@@ -76,4 +76,6 @@ int ath11k_dbring_get_cap(struct ath11k_
+@@ -76,4 +76,6 @@ int ath11k_dbring_get_cap(struct ath11k_base *ab,
  			  struct ath11k_dbring_cap *db_cap);
  void ath11k_dbring_srng_cleanup(struct ath11k *ar, struct ath11k_dbring *ring);
  void ath11k_dbring_buf_cleanup(struct ath11k *ar, struct ath11k_dbring *ring);
 +int ath11k_dbring_validate_buffer(struct ath11k *ar, void *data, u32 size);
 +
  #endif /* ATH11K_DBRING_H */
+diff --git a/drivers/net/wireless/ath/ath11k/spectral.c b/drivers/net/wireless/ath/ath11k/spectral.c
+index 3a0ac75a84bb..e997426a1b4b 100644
 --- a/drivers/net/wireless/ath/ath11k/spectral.c
 +++ b/drivers/net/wireless/ath/ath11k/spectral.c
-@@ -588,6 +588,7 @@ int ath11k_spectral_process_fft(struct a
+@@ -588,6 +588,7 @@ int ath11k_spectral_process_fft(struct ath11k *ar,
  	u16 length, freq;
  	u8 chan_width_mhz, bin_sz;
  	int ret;
@@ -89,7 +95,7 @@ Link: https://lore.kernel.org/r/1637312901-10279-2-git-send-email-quic_vnaralas@
  
  	lockdep_assert_held(&ar->spectral.lock);
  
-@@ -621,6 +622,13 @@ int ath11k_spectral_process_fft(struct a
+@@ -621,6 +622,13 @@ int ath11k_spectral_process_fft(struct ath11k *ar,
  		return -EINVAL;
  	}
  
@@ -103,7 +109,7 @@ Link: https://lore.kernel.org/r/1637312901-10279-2-git-send-email-quic_vnaralas@
  	ret = ath11k_spectral_pull_search(ar, data, &search);
  	if (ret) {
  		ath11k_warn(ab, "failed to pull search report %d\n", ret);
-@@ -754,6 +762,12 @@ static int ath11k_spectral_process_data(
+@@ -754,6 +762,12 @@ static int ath11k_spectral_process_data(struct ath11k *ar,
  				goto err;
  			}
  
@@ -116,3 +122,6 @@ Link: https://lore.kernel.org/r/1637312901-10279-2-git-send-email-quic_vnaralas@
  			summary = (struct spectral_summary_fft_report *)tlv;
  			ath11k_spectral_pull_summary(ar, &param->meta,
  						     summary, &summ_rpt);
+-- 
+2.37.1
+

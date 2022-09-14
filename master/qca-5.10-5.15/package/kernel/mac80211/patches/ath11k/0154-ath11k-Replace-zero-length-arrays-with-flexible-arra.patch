@@ -29,6 +29,8 @@ Link: https://lore.kernel.org/r/20220216194836.GA904035@embeddedor
  drivers/net/wireless/ath/ath11k/spectral.c |  2 +-
  5 files changed, 11 insertions(+), 11 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/ce.h b/drivers/net/wireless/ath/ath11k/ce.h
+index 8255b6cfab0c..9644ff909502 100644
 --- a/drivers/net/wireless/ath/ath11k/ce.h
 +++ b/drivers/net/wireless/ath/ath11k/ce.h
 @@ -145,7 +145,7 @@ struct ath11k_ce_ring {
@@ -40,6 +42,8 @@ Link: https://lore.kernel.org/r/20220216194836.GA904035@embeddedor
  };
  
  struct ath11k_ce_pipe {
+diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
+index 10846e9e871a..d2fc7a7a98f4 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
 @@ -815,7 +815,7 @@ struct ath11k_base {
@@ -51,6 +55,8 @@ Link: https://lore.kernel.org/r/20220216194836.GA904035@embeddedor
  };
  
  struct ath11k_fw_stats_pdev {
+diff --git a/drivers/net/wireless/ath/ath11k/dp.h b/drivers/net/wireless/ath/ath11k/dp.h
+index b6ec2d6a2bb6..e9dfa209098b 100644
 --- a/drivers/net/wireless/ath/ath11k/dp.h
 +++ b/drivers/net/wireless/ath/ath11k/dp.h
 @@ -1173,12 +1173,12 @@ struct ath11k_htt_ppdu_stats_msg {
@@ -95,6 +101,8 @@ Link: https://lore.kernel.org/r/20220216194836.GA904035@embeddedor
  } __packed;
  
  #define	HTT_MAC_ADDR_L32_0	GENMASK(7, 0)
+diff --git a/drivers/net/wireless/ath/ath11k/rx_desc.h b/drivers/net/wireless/ath/ath11k/rx_desc.h
+index 79c50804d7dc..26ecc1bcd9d5 100644
 --- a/drivers/net/wireless/ath/ath11k/rx_desc.h
 +++ b/drivers/net/wireless/ath/ath11k/rx_desc.h
 @@ -1445,7 +1445,7 @@ struct hal_rx_desc_ipq8074 {
@@ -124,6 +132,8 @@ Link: https://lore.kernel.org/r/20220216194836.GA904035@embeddedor
  } __packed;
  
  struct hal_rx_desc {
+diff --git a/drivers/net/wireless/ath/ath11k/spectral.c b/drivers/net/wireless/ath/ath11k/spectral.c
+index e997426a1b4b..516a7b4cd180 100644
 --- a/drivers/net/wireless/ath/ath11k/spectral.c
 +++ b/drivers/net/wireless/ath/ath11k/spectral.c
 @@ -107,7 +107,7 @@ struct spectral_search_fft_report {
@@ -135,3 +145,6 @@ Link: https://lore.kernel.org/r/20220216194836.GA904035@embeddedor
  } __packed;
  
  struct ath11k_spectral_search_report {
+-- 
+2.37.1
+

@@ -25,6 +25,8 @@ Link: https://lore.kernel.org/r/20210721162053.46290-4-jouni@codeaurora.org
  drivers/net/wireless/ath/ath11k/mac.c   | 150 ++++++++++++++++--------
  4 files changed, 110 insertions(+), 51 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
+index 774c092dda54..747d4fd6ca21 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
 @@ -199,7 +199,6 @@ enum ath11k_dev_flags {
@@ -35,9 +37,11 @@ Link: https://lore.kernel.org/r/20210721162053.46290-4-jouni@codeaurora.org
  	ATH11K_FLAG_MONITOR_CONF_ENABLED,
  	ATH11K_FLAG_MONITOR_STARTED,
  	ATH11K_FLAG_MONITOR_VDEV_CREATED,
+diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
+index 0ae6bebff801..03c69736aab8 100644
 --- a/drivers/net/wireless/ath/ath11k/dp_rx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
-@@ -5032,7 +5032,7 @@ int ath11k_dp_rx_process_mon_rings(struc
+@@ -5032,7 +5032,7 @@ int ath11k_dp_rx_process_mon_rings(struct ath11k_base *ab, int mac_id,
  	struct ath11k *ar = ath11k_ab_to_ar(ab, mac_id);
  	int ret = 0;
  
@@ -46,9 +50,11 @@ Link: https://lore.kernel.org/r/20210721162053.46290-4-jouni@codeaurora.org
  		ret = ath11k_dp_mon_process_rx(ab, mac_id, napi, budget);
  	else
  		ret = ath11k_dp_rx_process_mon_status(ab, mac_id, napi, budget);
+diff --git a/drivers/net/wireless/ath/ath11k/dp_tx.c b/drivers/net/wireless/ath/ath11k/dp_tx.c
+index 32f16f79161b..4c339ca5aef3 100644
 --- a/drivers/net/wireless/ath/ath11k/dp_tx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_tx.c
-@@ -1076,12 +1076,16 @@ int ath11k_dp_tx_htt_monitor_mode_ring_c
+@@ -1076,12 +1076,16 @@ int ath11k_dp_tx_htt_monitor_mode_ring_config(struct ath11k *ar, bool reset)
  
  	for (i = 0; i < ab->hw_params.num_rxmda_per_pdev; i++) {
  		ring_id = dp->rx_mon_status_refill_ring[i].refill_buf_ring.ring_id;
@@ -67,9 +73,11 @@ Link: https://lore.kernel.org/r/20210721162053.46290-4-jouni@codeaurora.org
  		ret = ath11k_dp_tx_htt_rx_filter_setup(ab, ring_id,
  						       dp->mac_id + i,
  						       HAL_RXDMA_MONITOR_STATUS,
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index b6d0f12aee40..f77671b22006 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -716,22 +716,6 @@ void ath11k_mac_peer_cleanup_all(struct
+@@ -716,22 +716,6 @@ void ath11k_mac_peer_cleanup_all(struct ath11k *ar)
  	ar->num_stations = 0;
  }
  
@@ -92,7 +100,7 @@ Link: https://lore.kernel.org/r/20210721162053.46290-4-jouni@codeaurora.org
  static inline int ath11k_mac_vdev_setup_sync(struct ath11k *ar)
  {
  	lockdep_assert_held(&ar->conf_mutex);
-@@ -2331,7 +2315,7 @@ static int ath11k_mac_config_obss_pd(str
+@@ -2331,7 +2315,7 @@ static int ath11k_mac_config_obss_pd(struct ath11k *ar,
  
  	/* Set and enable SRG/non-SRG OBSS PD Threshold */
  	param_id = WMI_PDEV_PARAM_SET_CMD_OBSS_PD_THRESHOLD;
@@ -101,7 +109,7 @@ Link: https://lore.kernel.org/r/20210721162053.46290-4-jouni@codeaurora.org
  		ret = ath11k_wmi_pdev_set_param(ar, param_id, 0, pdev_id);
  		if (ret)
  			ath11k_warn(ar->ab,
-@@ -5116,8 +5100,8 @@ static int ath11k_mac_op_add_interface(s
+@@ -5116,8 +5100,8 @@ static int ath11k_mac_op_add_interface(struct ieee80211_hw *hw,
  	}
  
  	if (ar->num_created_vdevs > (TARGET_NUM_VDEVS - 1)) {
@@ -112,7 +120,7 @@ Link: https://lore.kernel.org/r/20210721162053.46290-4-jouni@codeaurora.org
  		ret = -EBUSY;
  		goto err;
  	}
-@@ -5157,6 +5141,7 @@ static int ath11k_mac_op_add_interface(s
+@@ -5157,6 +5141,7 @@ static int ath11k_mac_op_add_interface(struct ieee80211_hw *hw,
  		break;
  	case NL80211_IFTYPE_MONITOR:
  		arvif->vdev_type = WMI_VDEV_TYPE_MONITOR;
@@ -120,7 +128,7 @@ Link: https://lore.kernel.org/r/20210721162053.46290-4-jouni@codeaurora.org
  		break;
  	default:
  		WARN_ON(1);
-@@ -5258,6 +5243,9 @@ static int ath11k_mac_op_add_interface(s
+@@ -5258,6 +5243,9 @@ static int ath11k_mac_op_add_interface(struct ieee80211_hw *hw,
  			goto err_peer_del;
  		}
  		break;
@@ -130,7 +138,7 @@ Link: https://lore.kernel.org/r/20210721162053.46290-4-jouni@codeaurora.org
  	default:
  		break;
  	}
-@@ -5278,6 +5266,16 @@ static int ath11k_mac_op_add_interface(s
+@@ -5278,6 +5266,16 @@ static int ath11k_mac_op_add_interface(struct ieee80211_hw *hw,
  
  	ath11k_dp_vdev_tx_attach(ar, arvif);
  
@@ -147,7 +155,7 @@ Link: https://lore.kernel.org/r/20210721162053.46290-4-jouni@codeaurora.org
  	mutex_unlock(&ar->conf_mutex);
  
  	return 0;
-@@ -5375,6 +5373,18 @@ static void ath11k_mac_op_remove_interfa
+@@ -5375,6 +5373,18 @@ static void ath11k_mac_op_remove_interface(struct ieee80211_hw *hw,
  	ath11k_dbg(ab, ATH11K_DBG_MAC, "vdev %pM deleted, vdev_id %d\n",
  		   vif->addr, arvif->vdev_id);
  
@@ -166,7 +174,7 @@ Link: https://lore.kernel.org/r/20210721162053.46290-4-jouni@codeaurora.org
  err_vdev_del:
  	spin_lock_bh(&ar->data_lock);
  	list_del(&arvif->list);
-@@ -5394,7 +5404,6 @@ err_vdev_del:
+@@ -5394,7 +5404,6 @@ static void ath11k_mac_op_remove_interface(struct ieee80211_hw *hw,
  
  	/* Recalc txpower for remaining vdev */
  	ath11k_mac_txpower_recalc(ar);
@@ -174,7 +182,7 @@ Link: https://lore.kernel.org/r/20210721162053.46290-4-jouni@codeaurora.org
  
  	/* TODO: recal traffic pause state based on the available vdevs */
  
-@@ -5417,8 +5426,6 @@ static void ath11k_mac_op_configure_filt
+@@ -5417,8 +5426,6 @@ static void ath11k_mac_op_configure_filter(struct ieee80211_hw *hw,
  					   u64 multicast)
  {
  	struct ath11k *ar = hw->priv;
@@ -183,7 +191,7 @@ Link: https://lore.kernel.org/r/20210721162053.46290-4-jouni@codeaurora.org
  
  	mutex_lock(&ar->conf_mutex);
  
-@@ -5426,23 +5433,6 @@ static void ath11k_mac_op_configure_filt
+@@ -5426,23 +5433,6 @@ static void ath11k_mac_op_configure_filter(struct ieee80211_hw *hw,
  	*total_flags &= SUPPORTED_FILTERS;
  	ar->filter_flags = *total_flags;
  
@@ -207,7 +215,7 @@ Link: https://lore.kernel.org/r/20210721162053.46290-4-jouni@codeaurora.org
  	mutex_unlock(&ar->conf_mutex);
  }
  
-@@ -5633,7 +5623,9 @@ ath11k_mac_vdev_start_restart(struct ath
+@@ -5633,7 +5623,9 @@ ath11k_mac_vdev_start_restart(struct ath11k_vif *arvif,
  		return ret;
  	}
  
@@ -218,7 +226,7 @@ Link: https://lore.kernel.org/r/20210721162053.46290-4-jouni@codeaurora.org
  	ath11k_dbg(ab, ATH11K_DBG_MAC,  "vdev %pM started, vdev_id %d\n",
  		   arvif->vif->addr, arvif->vdev_id);
  
-@@ -5761,12 +5753,16 @@ ath11k_mac_update_vif_chan(struct ath11k
+@@ -5761,12 +5753,16 @@ ath11k_mac_update_vif_chan(struct ath11k *ar,
  	struct ath11k_vif *arvif;
  	int ret;
  	int i;
@@ -235,7 +243,7 @@ Link: https://lore.kernel.org/r/20210721162053.46290-4-jouni@codeaurora.org
  		ath11k_dbg(ab, ATH11K_DBG_MAC,
  			   "mac chanctx switch vdev_id %i freq %u->%u width %d->%d\n",
  			   arvif->vdev_id,
-@@ -5787,6 +5783,8 @@ ath11k_mac_update_vif_chan(struct ath11k
+@@ -5787,6 +5783,8 @@ ath11k_mac_update_vif_chan(struct ath11k *ar,
  				    arvif->vdev_id, ret);
  			continue;
  		}
@@ -244,7 +252,7 @@ Link: https://lore.kernel.org/r/20210721162053.46290-4-jouni@codeaurora.org
  	}
  
  	/* All relevant vdevs are downed and associated channel resources
-@@ -5824,6 +5822,24 @@ ath11k_mac_update_vif_chan(struct ath11k
+@@ -5824,6 +5822,24 @@ ath11k_mac_update_vif_chan(struct ath11k *ar,
  			continue;
  		}
  	}
@@ -269,7 +277,7 @@ Link: https://lore.kernel.org/r/20210721162053.46290-4-jouni@codeaurora.org
  }
  
  static void
-@@ -5903,7 +5919,7 @@ static int ath11k_start_vdev_delay(struc
+@@ -5903,7 +5919,7 @@ static int ath11k_start_vdev_delay(struct ieee80211_hw *hw,
  	}
  
  	if (arvif->vdev_type == WMI_VDEV_TYPE_MONITOR) {
@@ -278,7 +286,7 @@ Link: https://lore.kernel.org/r/20210721162053.46290-4-jouni@codeaurora.org
  		if (ret) {
  			ath11k_warn(ab, "failed put monitor up: %d\n", ret);
  			return ret;
-@@ -5963,6 +5979,18 @@ ath11k_mac_op_assign_vif_chanctx(struct
+@@ -5963,6 +5979,18 @@ ath11k_mac_op_assign_vif_chanctx(struct ieee80211_hw *hw,
  		}
  	}
  
@@ -297,7 +305,7 @@ Link: https://lore.kernel.org/r/20210721162053.46290-4-jouni@codeaurora.org
  	ret = ath11k_mac_vdev_start(arvif, &ctx->def);
  	if (ret) {
  		ath11k_warn(ab, "failed to start vdev %i addr %pM on freq %d: %d\n",
-@@ -5970,14 +5998,19 @@ ath11k_mac_op_assign_vif_chanctx(struct
+@@ -5970,14 +5998,19 @@ ath11k_mac_op_assign_vif_chanctx(struct ieee80211_hw *hw,
  			    ctx->def.chan->center_freq, ret);
  		goto out;
  	}
@@ -322,7 +330,7 @@ Link: https://lore.kernel.org/r/20210721162053.46290-4-jouni@codeaurora.org
  	/* TODO: Setup ps and cts/rts protection */
  
  	ret = 0;
-@@ -6016,6 +6049,20 @@ ath11k_mac_op_unassign_vif_chanctx(struc
+@@ -6016,6 +6049,20 @@ ath11k_mac_op_unassign_vif_chanctx(struct ieee80211_hw *hw,
  			ath11k_peer_delete(ar, arvif->vdev_id, ar->mac_addr);
  	}
  
@@ -343,7 +351,7 @@ Link: https://lore.kernel.org/r/20210721162053.46290-4-jouni@codeaurora.org
  	ret = ath11k_mac_vdev_stop(arvif);
  	if (ret)
  		ath11k_warn(ab, "failed to stop vdev %i: %d\n",
-@@ -6027,6 +6074,16 @@ ath11k_mac_op_unassign_vif_chanctx(struc
+@@ -6027,6 +6074,16 @@ ath11k_mac_op_unassign_vif_chanctx(struct ieee80211_hw *hw,
  	    arvif->vdev_type == WMI_VDEV_TYPE_MONITOR)
  		ath11k_wmi_vdev_down(ar, arvif->vdev_id);
  
@@ -360,7 +368,7 @@ Link: https://lore.kernel.org/r/20210721162053.46290-4-jouni@codeaurora.org
  	mutex_unlock(&ar->conf_mutex);
  }
  
-@@ -7149,7 +7206,6 @@ int ath11k_mac_allocate(struct ath11k_ba
+@@ -7149,7 +7206,6 @@ int ath11k_mac_allocate(struct ath11k_base *ab)
  		INIT_WORK(&ar->wmi_mgmt_tx_work, ath11k_mgmt_over_wmi_tx_work);
  		skb_queue_head_init(&ar->wmi_mgmt_tx_queue);
  
@@ -368,3 +376,6 @@ Link: https://lore.kernel.org/r/20210721162053.46290-4-jouni@codeaurora.org
  		clear_bit(ATH11K_FLAG_MONITOR_STARTED, &ar->monitor_flags);
  
  		ar->monitor_vdev_id = -1;
+-- 
+2.37.1
+

@@ -18,9 +18,11 @@ Link: https://lore.kernel.org/r/20220111032224.14093-1-quic_alokad@quicinc.com
  drivers/net/wireless/ath/ath11k/hal_rx.h  |  8 +--
  3 files changed, 34 insertions(+), 64 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/debugfs.c b/drivers/net/wireless/ath/ath11k/debugfs.c
+index ca68cf63dd27..1484d733f88a 100644
 --- a/drivers/net/wireless/ath/ath11k/debugfs.c
 +++ b/drivers/net/wireless/ath/ath11k/debugfs.c
-@@ -664,6 +664,12 @@ static ssize_t ath11k_write_extd_rx_stat
+@@ -664,6 +664,12 @@ static ssize_t ath11k_write_extd_rx_stats(struct file *file,
  		goto exit;
  	}
  
@@ -33,6 +35,8 @@ Link: https://lore.kernel.org/r/20220111032224.14093-1-quic_alokad@quicinc.com
  	if (enable) {
  		rx_filter =  HTT_RX_FILTER_TLV_FLAGS_MPDU_START;
  		rx_filter |= HTT_RX_FILTER_TLV_FLAGS_PPDU_START;
+diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
+index 46d8ab71b59f..259e9709985b 100644
 --- a/drivers/net/wireless/ath/ath11k/dp_rx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
 @@ -20,6 +20,9 @@
@@ -45,7 +49,7 @@ Link: https://lore.kernel.org/r/20220111032224.14093-1-quic_alokad@quicinc.com
  static inline
  u8 *ath11k_dp_rx_h_80211_hdr(struct ath11k_base *ab, struct hal_rx_desc *desc)
  {
-@@ -3097,12 +3100,14 @@ int ath11k_dp_rx_process_mon_status(stru
+@@ -3097,12 +3100,14 @@ int ath11k_dp_rx_process_mon_status(struct ath11k_base *ab, int mac_id,
  	enum hal_rx_mon_status hal_status;
  	struct sk_buff *skb;
  	struct sk_buff_head skb_list;
@@ -61,7 +65,7 @@ Link: https://lore.kernel.org/r/20220111032224.14093-1-quic_alokad@quicinc.com
  
  	__skb_queue_head_init(&skb_list);
  
-@@ -3111,8 +3116,8 @@ int ath11k_dp_rx_process_mon_status(stru
+@@ -3111,8 +3116,8 @@ int ath11k_dp_rx_process_mon_status(struct ath11k_base *ab, int mac_id,
  	if (!num_buffs_reaped)
  		goto exit;
  
@@ -72,7 +76,7 @@ Link: https://lore.kernel.org/r/20220111032224.14093-1-quic_alokad@quicinc.com
  
  	while ((skb = __skb_dequeue(&skb_list))) {
  		if (ath11k_debugfs_is_pktlog_lite_mode_enabled(ar)) {
-@@ -3126,9 +3131,18 @@ int ath11k_dp_rx_process_mon_status(stru
+@@ -3126,9 +3131,18 @@ int ath11k_dp_rx_process_mon_status(struct ath11k_base *ab, int mac_id,
  		if (log_type)
  			trace_ath11k_htt_rxdesc(ar, skb->data, log_type, rx_buf_sz);
  
@@ -93,7 +97,7 @@ Link: https://lore.kernel.org/r/20220111032224.14093-1-quic_alokad@quicinc.com
  		    hal_status != HAL_RX_MON_STATUS_PPDU_DONE) {
  			dev_kfree_skb_any(skb);
  			continue;
-@@ -3136,17 +3150,17 @@ int ath11k_dp_rx_process_mon_status(stru
+@@ -3136,17 +3150,17 @@ int ath11k_dp_rx_process_mon_status(struct ath11k_base *ab, int mac_id,
  
  		rcu_read_lock();
  		spin_lock_bh(&ab->base_lock);
@@ -114,7 +118,7 @@ Link: https://lore.kernel.org/r/20220111032224.14093-1-quic_alokad@quicinc.com
  
  		if (ath11k_debugfs_is_pktlog_peer_valid(ar, peer->addr))
  			trace_ath11k_htt_rxdesc(ar, skb->data, log_type, rx_buf_sz);
-@@ -3156,8 +3170,8 @@ next_skb:
+@@ -3156,8 +3170,8 @@ int ath11k_dp_rx_process_mon_status(struct ath11k_base *ab, int mac_id,
  		rcu_read_unlock();
  
  		dev_kfree_skb_any(skb);
@@ -125,7 +129,7 @@ Link: https://lore.kernel.org/r/20220111032224.14093-1-quic_alokad@quicinc.com
  	}
  exit:
  	return num_buffs_reaped;
-@@ -5116,38 +5130,6 @@ static void ath11k_dp_rx_mon_dest_proces
+@@ -5116,38 +5130,6 @@ static void ath11k_dp_rx_mon_dest_process(struct ath11k *ar, int mac_id,
  	}
  }
  
@@ -164,7 +168,7 @@ Link: https://lore.kernel.org/r/20220111032224.14093-1-quic_alokad@quicinc.com
  static u32
  ath11k_dp_rx_full_mon_mpdu_pop(struct ath11k *ar,
  			       void *ring_entry, struct sk_buff **head_msdu,
-@@ -5499,22 +5481,6 @@ reap_status_ring:
+@@ -5499,22 +5481,6 @@ static int ath11k_dp_full_mon_process_rx(struct ath11k_base *ab, int mac_id,
  	return quota;
  }
  
@@ -187,7 +191,7 @@ Link: https://lore.kernel.org/r/20220111032224.14093-1-quic_alokad@quicinc.com
  int ath11k_dp_rx_process_mon_rings(struct ath11k_base *ab, int mac_id,
  				   struct napi_struct *napi, int budget)
  {
-@@ -5524,8 +5490,6 @@ int ath11k_dp_rx_process_mon_rings(struc
+@@ -5524,8 +5490,6 @@ int ath11k_dp_rx_process_mon_rings(struct ath11k_base *ab, int mac_id,
  	if (test_bit(ATH11K_FLAG_MONITOR_STARTED, &ar->monitor_flags) &&
  	    ab->hw_params.full_monitor_mode)
  		ret = ath11k_dp_full_mon_process_rx(ab, mac_id, napi, budget);
@@ -196,6 +200,8 @@ Link: https://lore.kernel.org/r/20220111032224.14093-1-quic_alokad@quicinc.com
  	else
  		ret = ath11k_dp_rx_process_mon_status(ab, mac_id, napi, budget);
  
+diff --git a/drivers/net/wireless/ath/ath11k/hal_rx.h b/drivers/net/wireless/ath/ath11k/hal_rx.h
+index 571054c6d7f8..7bba4f0411e1 100644
 --- a/drivers/net/wireless/ath/ath11k/hal_rx.h
 +++ b/drivers/net/wireless/ath/ath11k/hal_rx.h
 @@ -65,10 +65,6 @@ enum hal_rx_reception_type {
@@ -220,3 +226,6 @@ Link: https://lore.kernel.org/r/20220111032224.14093-1-quic_alokad@quicinc.com
  struct hal_sw_mon_ring_entries {
  	dma_addr_t mon_dst_paddr;
  	dma_addr_t mon_status_paddr;
+-- 
+2.37.1
+

@@ -20,9 +20,11 @@ Link: https://lore.kernel.org/r/20220506013614.1580274-2-quic_bqiang@quicinc.com
  drivers/net/wireless/ath/ath11k/wmi.c  |   4 +
  3 files changed, 120 insertions(+)
 
+diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
+index ad41bf8a16cd..c17779e10d67 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -1629,6 +1629,7 @@ static void ath11k_core_pre_reconfigure_
+@@ -1629,6 +1629,7 @@ static void ath11k_core_pre_reconfigure_recovery(struct ath11k_base *ab)
  		complete(&ar->completed_11d_scan);
  		complete(&ar->scan.started);
  		complete(&ar->scan.completed);
@@ -30,9 +32,11 @@ Link: https://lore.kernel.org/r/20220506013614.1580274-2-quic_bqiang@quicinc.com
  		complete(&ar->peer_assoc_done);
  		complete(&ar->peer_delete_done);
  		complete(&ar->install_key_done);
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index 8899e30640e7..81eb38aac5d5 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -8349,6 +8349,118 @@ exit:
+@@ -8349,6 +8349,118 @@ static int ath11k_mac_op_set_bios_sar_specs(struct ieee80211_hw *hw,
  	return ret;
  }
  
@@ -151,7 +155,7 @@ Link: https://lore.kernel.org/r/20220506013614.1580274-2-quic_bqiang@quicinc.com
  static const struct ieee80211_ops ath11k_ops = {
  	.tx				= ath11k_mac_op_tx,
  	.start                          = ath11k_mac_op_start,
-@@ -8401,6 +8513,8 @@ static const struct ieee80211_ops ath11k
+@@ -8401,6 +8513,8 @@ static const struct ieee80211_ops ath11k_ops = {
  #endif
  
  	.set_sar_specs			= ath11k_mac_op_set_bios_sar_specs,
@@ -160,7 +164,7 @@ Link: https://lore.kernel.org/r/20220506013614.1580274-2-quic_bqiang@quicinc.com
  };
  
  static void ath11k_mac_update_ch_list(struct ath11k *ar,
-@@ -8990,6 +9104,7 @@ int ath11k_mac_allocate(struct ath11k_ba
+@@ -8990,6 +9104,7 @@ int ath11k_mac_allocate(struct ath11k_base *ab)
  		init_completion(&ar->bss_survey_done);
  		init_completion(&ar->scan.started);
  		init_completion(&ar->scan.completed);
@@ -168,9 +172,11 @@ Link: https://lore.kernel.org/r/20220506013614.1580274-2-quic_bqiang@quicinc.com
  		init_completion(&ar->thermal.wmi_sync);
  
  		INIT_DELAYED_WORK(&ar->scan.timeout, ath11k_scan_timeout_work);
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
+index 63463b6c63be..0eb2e5ef45d2 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -5264,6 +5264,8 @@ static void ath11k_wmi_event_scan_starte
+@@ -5264,6 +5264,8 @@ static void ath11k_wmi_event_scan_started(struct ath11k *ar)
  		break;
  	case ATH11K_SCAN_STARTING:
  		ar->scan.state = ATH11K_SCAN_RUNNING;
@@ -179,7 +185,7 @@ Link: https://lore.kernel.org/r/20220506013614.1580274-2-quic_bqiang@quicinc.com
  		complete(&ar->scan.started);
  		break;
  	}
-@@ -5346,6 +5348,8 @@ static void ath11k_wmi_event_scan_foreig
+@@ -5346,6 +5348,8 @@ static void ath11k_wmi_event_scan_foreign_chan(struct ath11k *ar, u32 freq)
  	case ATH11K_SCAN_RUNNING:
  	case ATH11K_SCAN_ABORTING:
  		ar->scan_channel = ieee80211_get_channel(ar->hw->wiphy, freq);
@@ -188,3 +194,6 @@ Link: https://lore.kernel.org/r/20220506013614.1580274-2-quic_bqiang@quicinc.com
  		break;
  	}
  }
+-- 
+2.37.1
+

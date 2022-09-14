@@ -22,9 +22,11 @@ Link: https://lore.kernel.org/r/1630560820-21905-7-git-send-email-ppranees@codea
  drivers/net/wireless/ath/ath11k/dp_rx.c | 9 +++------
  1 file changed, 3 insertions(+), 6 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
+index 8dde2268646c..5a8ca9e064e9 100644
 --- a/drivers/net/wireless/ath/ath11k/dp_rx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
-@@ -2600,7 +2600,7 @@ free_out:
+@@ -2600,7 +2600,7 @@ static int ath11k_dp_rx_process_msdu(struct ath11k *ar,
  static void ath11k_dp_rx_process_received_packets(struct ath11k_base *ab,
  						  struct napi_struct *napi,
  						  struct sk_buff_head *msdu_list,
@@ -33,7 +35,7 @@ Link: https://lore.kernel.org/r/1630560820-21905-7-git-send-email-ppranees@codea
  {
  	struct sk_buff *msdu;
  	struct ath11k *ar;
-@@ -2635,7 +2635,6 @@ static void ath11k_dp_rx_process_receive
+@@ -2635,7 +2635,6 @@ static void ath11k_dp_rx_process_received_packets(struct ath11k_base *ab,
  		}
  
  		ath11k_dp_rx_deliver_msdu(ar, napi, msdu, &rx_status);
@@ -41,7 +43,7 @@ Link: https://lore.kernel.org/r/1630560820-21905-7-git-send-email-ppranees@codea
  	}
  
  	rcu_read_unlock();
-@@ -2652,7 +2651,6 @@ int ath11k_dp_process_rx(struct ath11k_b
+@@ -2652,7 +2651,6 @@ int ath11k_dp_process_rx(struct ath11k_base *ab, int ring_id,
  	int total_msdu_reaped = 0;
  	struct hal_srng *srng;
  	struct sk_buff *msdu;
@@ -49,7 +51,7 @@ Link: https://lore.kernel.org/r/1630560820-21905-7-git-send-email-ppranees@codea
  	bool done = false;
  	int buf_id, mac_id;
  	struct ath11k *ar;
-@@ -2759,8 +2757,7 @@ try_again:
+@@ -2759,8 +2757,7 @@ int ath11k_dp_process_rx(struct ath11k_base *ab, int ring_id,
  		if (!num_buffs_reaped[i])
  			continue;
  
@@ -59,7 +61,7 @@ Link: https://lore.kernel.org/r/1630560820-21905-7-git-send-email-ppranees@codea
  
  		ar = ab->pdevs[i].ar;
  		rx_ring = &ar->dp.rx_refill_buf_ring;
-@@ -2769,7 +2766,7 @@ try_again:
+@@ -2769,7 +2766,7 @@ int ath11k_dp_process_rx(struct ath11k_base *ab, int ring_id,
  					   ab->hw_params.hal_params->rx_buf_rbm);
  	}
  exit:
@@ -68,3 +70,6 @@ Link: https://lore.kernel.org/r/1630560820-21905-7-git-send-email-ppranees@codea
  }
  
  static void ath11k_dp_rx_update_peer_stats(struct ath11k_sta *arsta,
+-- 
+2.37.1
+

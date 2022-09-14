@@ -29,6 +29,8 @@ Link: https://lore.kernel.org/r/1644036628-5334-1-git-send-email-quic_periyasa@q
  drivers/net/wireless/ath/ath11k/peer.h |  10 +-
  5 files changed, 363 insertions(+), 24 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
+index 4ccfbe0879a5..3ccb9259feea 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
 @@ -1,7 +1,7 @@
@@ -40,7 +42,7 @@ Link: https://lore.kernel.org/r/1644036628-5334-1-git-send-email-quic_periyasa@q
   */
  
  #include <linux/module.h>
-@@ -1680,6 +1680,7 @@ struct ath11k_base *ath11k_core_alloc(st
+@@ -1680,6 +1680,7 @@ struct ath11k_base *ath11k_core_alloc(struct device *dev, size_t priv_size,
  		goto err_free_wq;
  
  	mutex_init(&ab->core_lock);
@@ -48,6 +50,8 @@ Link: https://lore.kernel.org/r/1644036628-5334-1-git-send-email-quic_periyasa@q
  	spin_lock_init(&ab->base_lock);
  	mutex_init(&ab->vdev_id_11d_lock);
  	init_completion(&ab->reset_complete);
+diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
+index 6b272eb8bb4a..41001ec174e2 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
 @@ -1,6 +1,7 @@
@@ -85,6 +89,8 @@ Link: https://lore.kernel.org/r/1644036628-5334-1-git-send-email-quic_periyasa@q
  	struct list_head peers;
  	wait_queue_head_t peer_mapping_wq;
  	u8 mac_addr[ETH_ALEN];
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index 7c7b37fbfd46..7b5ea1f1c810 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
 @@ -1,7 +1,7 @@
@@ -96,7 +102,7 @@ Link: https://lore.kernel.org/r/1644036628-5334-1-git-send-email-quic_periyasa@q
   */
  
  #include <net/mac80211.h>
-@@ -875,13 +875,16 @@ void ath11k_mac_peer_cleanup_all(struct
+@@ -875,13 +875,16 @@ void ath11k_mac_peer_cleanup_all(struct ath11k *ar)
  
  	lockdep_assert_held(&ar->conf_mutex);
  
@@ -113,7 +119,7 @@ Link: https://lore.kernel.org/r/1644036628-5334-1-git-send-email-quic_periyasa@q
  
  	ar->num_peers = 0;
  	ar->num_stations = 0;
-@@ -4560,6 +4563,7 @@ static int ath11k_mac_op_sta_state(struc
+@@ -4560,6 +4563,7 @@ static int ath11k_mac_op_sta_state(struct ieee80211_hw *hw,
  		}
  
  		ath11k_mac_dec_num_stations(arvif, sta);
@@ -121,7 +127,7 @@ Link: https://lore.kernel.org/r/1644036628-5334-1-git-send-email-quic_periyasa@q
  		spin_lock_bh(&ar->ab->base_lock);
  		peer = ath11k_peer_find(ar->ab, arvif->vdev_id, sta->addr);
  		if (skip_peer_delete && peer) {
-@@ -4567,12 +4571,14 @@ static int ath11k_mac_op_sta_state(struc
+@@ -4567,12 +4571,14 @@ static int ath11k_mac_op_sta_state(struct ieee80211_hw *hw,
  		} else if (peer && peer->sta == sta) {
  			ath11k_warn(ar->ab, "Found peer entry %pM n vdev %i after it was supposedly removed\n",
  				    vif->addr, arvif->vdev_id);
@@ -136,7 +142,7 @@ Link: https://lore.kernel.org/r/1644036628-5334-1-git-send-email-quic_periyasa@q
  
  		kfree(arsta->tx_stats);
  		arsta->tx_stats = NULL;
-@@ -8581,6 +8587,8 @@ void ath11k_mac_unregister(struct ath11k
+@@ -8581,6 +8587,8 @@ void ath11k_mac_unregister(struct ath11k_base *ab)
  
  		__ath11k_mac_unregister(ar);
  	}
@@ -145,7 +151,7 @@ Link: https://lore.kernel.org/r/1644036628-5334-1-git-send-email-quic_periyasa@q
  }
  
  static int __ath11k_mac_register(struct ath11k *ar)
-@@ -8809,6 +8817,10 @@ int ath11k_mac_register(struct ath11k_ba
+@@ -8809,6 +8817,10 @@ int ath11k_mac_register(struct ath11k_base *ab)
  	ab->cc_freq_hz = IPQ8074_CC_FREQ_HERTZ;
  	ab->free_vdev_map = (1LL << (ab->num_radios * TARGET_NUM_VDEVS(ab))) - 1;
  
@@ -156,7 +162,7 @@ Link: https://lore.kernel.org/r/1644036628-5334-1-git-send-email-quic_periyasa@q
  	for (i = 0; i < ab->num_radios; i++) {
  		pdev = &ab->pdevs[i];
  		ar = pdev->ar;
-@@ -8838,6 +8850,8 @@ err_cleanup:
+@@ -8838,6 +8850,8 @@ int ath11k_mac_register(struct ath11k_base *ab)
  		__ath11k_mac_unregister(ar);
  	}
  
@@ -165,6 +171,8 @@ Link: https://lore.kernel.org/r/1644036628-5334-1-git-send-email-quic_periyasa@q
  	return ret;
  }
  
+diff --git a/drivers/net/wireless/ath/ath11k/peer.c b/drivers/net/wireless/ath/ath11k/peer.c
+index 392985b873bf..9e22aaf34b88 100644
 --- a/drivers/net/wireless/ath/ath11k/peer.c
 +++ b/drivers/net/wireless/ath/ath11k/peer.c
 @@ -1,23 +1,22 @@
@@ -195,7 +203,7 @@ Link: https://lore.kernel.org/r/1644036628-5334-1-git-send-email-quic_periyasa@q
  			continue;
  
  		return peer;
-@@ -26,15 +25,15 @@ struct ath11k_peer *ath11k_peer_find(str
+@@ -26,15 +25,15 @@ struct ath11k_peer *ath11k_peer_find(struct ath11k_base *ab, int vdev_id,
  	return NULL;
  }
  
@@ -214,7 +222,7 @@ Link: https://lore.kernel.org/r/1644036628-5334-1-git-send-email-quic_periyasa@q
  			continue;
  		if (!ether_addr_equal(peer->addr, addr))
  			continue;
-@@ -52,14 +51,13 @@ struct ath11k_peer *ath11k_peer_find_by_
+@@ -52,14 +51,13 @@ struct ath11k_peer *ath11k_peer_find_by_addr(struct ath11k_base *ab,
  
  	lockdep_assert_held(&ab->base_lock);
  
@@ -234,7 +242,7 @@ Link: https://lore.kernel.org/r/1644036628-5334-1-git-send-email-quic_periyasa@q
  }
  
  struct ath11k_peer *ath11k_peer_find_by_id(struct ath11k_base *ab,
-@@ -69,11 +67,13 @@ struct ath11k_peer *ath11k_peer_find_by_
+@@ -69,11 +67,13 @@ struct ath11k_peer *ath11k_peer_find_by_id(struct ath11k_base *ab,
  
  	lockdep_assert_held(&ab->base_lock);
  
@@ -252,7 +260,7 @@ Link: https://lore.kernel.org/r/1644036628-5334-1-git-send-email-quic_periyasa@q
  }
  
  struct ath11k_peer *ath11k_peer_find_by_vdev_id(struct ath11k_base *ab,
-@@ -99,7 +99,7 @@ void ath11k_peer_unmap_event(struct ath1
+@@ -99,7 +99,7 @@ void ath11k_peer_unmap_event(struct ath11k_base *ab, u16 peer_id)
  
  	spin_lock_bh(&ab->base_lock);
  
@@ -261,7 +269,7 @@ Link: https://lore.kernel.org/r/1644036628-5334-1-git-send-email-quic_periyasa@q
  	if (!peer) {
  		ath11k_warn(ab, "peer-unmap-event: unknown peer id %d\n",
  			    peer_id);
-@@ -167,6 +167,76 @@ static int ath11k_wait_for_peer_common(s
+@@ -167,6 +167,76 @@ static int ath11k_wait_for_peer_common(struct ath11k_base *ab, int vdev_id,
  	return 0;
  }
  
@@ -338,7 +346,7 @@ Link: https://lore.kernel.org/r/1644036628-5334-1-git-send-email-quic_periyasa@q
  void ath11k_peer_cleanup(struct ath11k *ar, u32 vdev_id)
  {
  	struct ath11k_peer *peer, *tmp;
-@@ -174,6 +244,7 @@ void ath11k_peer_cleanup(struct ath11k *
+@@ -174,6 +244,7 @@ void ath11k_peer_cleanup(struct ath11k *ar, u32 vdev_id)
  
  	lockdep_assert_held(&ar->conf_mutex);
  
@@ -346,7 +354,7 @@ Link: https://lore.kernel.org/r/1644036628-5334-1-git-send-email-quic_periyasa@q
  	spin_lock_bh(&ab->base_lock);
  	list_for_each_entry_safe(peer, tmp, &ab->peers, list) {
  		if (peer->vdev_id != vdev_id)
-@@ -182,12 +253,14 @@ void ath11k_peer_cleanup(struct ath11k *
+@@ -182,12 +253,14 @@ void ath11k_peer_cleanup(struct ath11k *ar, u32 vdev_id)
  		ath11k_warn(ab, "removing stale peer %pM from vdev_id %d\n",
  			    peer->addr, vdev_id);
  
@@ -361,7 +369,7 @@ Link: https://lore.kernel.org/r/1644036628-5334-1-git-send-email-quic_periyasa@q
  }
  
  static int ath11k_wait_for_peer_deleted(struct ath11k *ar, int vdev_id, const u8 *addr)
-@@ -220,14 +293,35 @@ int ath11k_wait_for_peer_delete_done(str
+@@ -220,14 +293,35 @@ int ath11k_wait_for_peer_delete_done(struct ath11k *ar, u32 vdev_id,
  static int __ath11k_peer_delete(struct ath11k *ar, u32 vdev_id, const u8 *addr)
  {
  	int ret;
@@ -398,7 +406,7 @@ Link: https://lore.kernel.org/r/1644036628-5334-1-git-send-email-quic_periyasa@q
  			    "failed to delete peer vdev_id %d addr %pM ret %d\n",
  			    vdev_id, addr, ret);
  		return ret;
-@@ -276,7 +370,7 @@ int ath11k_peer_create(struct ath11k *ar
+@@ -276,7 +370,7 @@ int ath11k_peer_create(struct ath11k *ar, struct ath11k_vif *arvif,
  	}
  
  	spin_lock_bh(&ar->ab->base_lock);
@@ -407,7 +415,7 @@ Link: https://lore.kernel.org/r/1644036628-5334-1-git-send-email-quic_periyasa@q
  	if (peer) {
  		spin_unlock_bh(&ar->ab->base_lock);
  		return -EINVAL;
-@@ -296,11 +390,13 @@ int ath11k_peer_create(struct ath11k *ar
+@@ -296,11 +390,13 @@ int ath11k_peer_create(struct ath11k *ar, struct ath11k_vif *arvif,
  	if (ret)
  		return ret;
  
@@ -421,7 +429,7 @@ Link: https://lore.kernel.org/r/1644036628-5334-1-git-send-email-quic_periyasa@q
  		ath11k_warn(ar->ab, "failed to find peer %pM on vdev %i after creation\n",
  			    param->peer_addr, param->vdev_id);
  
-@@ -308,6 +404,13 @@ int ath11k_peer_create(struct ath11k *ar
+@@ -308,6 +404,13 @@ int ath11k_peer_create(struct ath11k *ar, struct ath11k_vif *arvif,
  		goto cleanup;
  	}
  
@@ -435,7 +443,7 @@ Link: https://lore.kernel.org/r/1644036628-5334-1-git-send-email-quic_periyasa@q
  	peer->pdev_idx = ar->pdev_idx;
  	peer->sta = sta;
  
-@@ -332,6 +435,7 @@ int ath11k_peer_create(struct ath11k *ar
+@@ -332,6 +435,7 @@ int ath11k_peer_create(struct ath11k *ar, struct ath11k_vif *arvif,
  	ar->num_peers++;
  
  	spin_unlock_bh(&ar->ab->base_lock);
@@ -443,7 +451,7 @@ Link: https://lore.kernel.org/r/1644036628-5334-1-git-send-email-quic_periyasa@q
  
  	return 0;
  
-@@ -343,3 +447,201 @@ cleanup:
+@@ -343,3 +447,201 @@ int ath11k_peer_create(struct ath11k *ar, struct ath11k_vif *arvif,
  
  	return ret;
  }
@@ -645,6 +653,8 @@ Link: https://lore.kernel.org/r/1644036628-5334-1-git-send-email-quic_periyasa@q
 +
 +	mutex_unlock(&ab->tbl_mtx_lock);
 +}
+diff --git a/drivers/net/wireless/ath/ath11k/peer.h b/drivers/net/wireless/ath/ath11k/peer.h
+index 63fe5665badf..6dd17bafe3a0 100644
 --- a/drivers/net/wireless/ath/ath11k/peer.h
 +++ b/drivers/net/wireless/ath/ath11k/peer.h
 @@ -1,6 +1,7 @@
@@ -667,7 +677,7 @@ Link: https://lore.kernel.org/r/1644036628-5334-1-git-send-email-quic_periyasa@q
  	/* Info used in MMIC verification of
  	 * RX fragments
  	 */
-@@ -47,5 +53,7 @@ int ath11k_wait_for_peer_delete_done(str
+@@ -47,5 +53,7 @@ int ath11k_wait_for_peer_delete_done(struct ath11k *ar, u32 vdev_id,
  				     const u8 *addr);
  struct ath11k_peer *ath11k_peer_find_by_vdev_id(struct ath11k_base *ab,
  						int vdev_id);
@@ -676,3 +686,6 @@ Link: https://lore.kernel.org/r/1644036628-5334-1-git-send-email-quic_periyasa@q
 +void ath11k_peer_rhash_tbl_destroy(struct ath11k_base *ab);
 +int ath11k_peer_rhash_delete(struct ath11k_base *ab, struct ath11k_peer *peer);
  #endif /* _PEER_H_ */
+-- 
+2.37.1
+

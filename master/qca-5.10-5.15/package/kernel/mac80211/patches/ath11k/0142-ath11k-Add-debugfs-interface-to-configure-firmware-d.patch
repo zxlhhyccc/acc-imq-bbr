@@ -66,6 +66,8 @@ Link: https://lore.kernel.org/r/1642405103-32302-1-git-send-email-quic_seevalam@
  drivers/net/wireless/ath/ath11k/wmi.h     |  18 ++++
  5 files changed, 265 insertions(+)
 
+diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
+index 4eda15c56b04..08d30f9d25c3 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
 @@ -441,6 +441,8 @@ struct ath11k_dbg_htt_stats {
@@ -86,9 +88,11 @@ Link: https://lore.kernel.org/r/1642405103-32302-1-git-send-email-quic_seevalam@
  };
  
  struct ath11k_per_peer_tx_stats {
+diff --git a/drivers/net/wireless/ath/ath11k/debugfs.c b/drivers/net/wireless/ath/ath11k/debugfs.c
+index 1484d733f88a..041b13560218 100644
 --- a/drivers/net/wireless/ath/ath11k/debugfs.c
 +++ b/drivers/net/wireless/ath/ath11k/debugfs.c
-@@ -874,6 +874,69 @@ static const struct file_operations fops
+@@ -874,6 +874,69 @@ static const struct file_operations fops_soc_dp_stats = {
  	.llseek = default_llseek,
  };
  
@@ -158,7 +162,7 @@ Link: https://lore.kernel.org/r/1642405103-32302-1-git-send-email-quic_seevalam@
  int ath11k_debugfs_pdev_create(struct ath11k_base *ab)
  {
  	if (test_bit(ATH11K_FLAG_REGISTERED, &ab->dev_flags))
-@@ -1140,6 +1203,9 @@ int ath11k_debugfs_register(struct ath11
+@@ -1140,6 +1203,9 @@ int ath11k_debugfs_register(struct ath11k *ar)
  	debugfs_create_file("pktlog_filter", 0644,
  			    ar->debug.debugfs_pdev, ar,
  			    &fops_pktlog_filter);
@@ -168,6 +172,8 @@ Link: https://lore.kernel.org/r/1642405103-32302-1-git-send-email-quic_seevalam@
  
  	if (ar->hw->wiphy->bands[NL80211_BAND_5GHZ]) {
  		debugfs_create_file("dfs_simulate_radar", 0200,
+diff --git a/drivers/net/wireless/ath/ath11k/debugfs.h b/drivers/net/wireless/ath/ath11k/debugfs.h
+index 71525d786bdf..3cfe444acb75 100644
 --- a/drivers/net/wireless/ath/ath11k/debugfs.h
 +++ b/drivers/net/wireless/ath/ath11k/debugfs.h
 @@ -108,6 +108,130 @@ enum ath11k_dbg_aggr_mode {
@@ -301,9 +307,11 @@ Link: https://lore.kernel.org/r/1642405103-32302-1-git-send-email-quic_seevalam@
  #ifdef CPTCFG_ATH11K_DEBUGFS
  int ath11k_debugfs_soc_create(struct ath11k_base *ab);
  void ath11k_debugfs_soc_destroy(struct ath11k_base *ab);
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
+index 6b68ccf65e39..5b2d8a0e71ee 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -7798,6 +7798,59 @@ int ath11k_wmi_simulate_radar(struct ath
+@@ -7798,6 +7798,59 @@ int ath11k_wmi_simulate_radar(struct ath11k *ar)
  	return ath11k_wmi_send_unit_test_cmd(ar, wmi_ut, dfs_args);
  }
  
@@ -363,6 +371,8 @@ Link: https://lore.kernel.org/r/1642405103-32302-1-git-send-email-quic_seevalam@
  int ath11k_wmi_connect(struct ath11k_base *ab)
  {
  	u32 i;
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.h b/drivers/net/wireless/ath/ath11k/wmi.h
+index 2f26ec1a8aa3..1d5bd1ebf37c 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.h
 +++ b/drivers/net/wireless/ath/ath11k/wmi.h
 @@ -12,6 +12,7 @@
@@ -395,10 +405,13 @@ Link: https://lore.kernel.org/r/1642405103-32302-1-git-send-email-quic_seevalam@
  #define WMI_MAX_MEM_REQS 32
  
  #define MAX_RADIOS 3
-@@ -5582,4 +5598,6 @@ int ath11k_wmi_wow_host_wakeup_ind(struc
+@@ -5582,4 +5598,6 @@ int ath11k_wmi_wow_host_wakeup_ind(struct ath11k *ar);
  int ath11k_wmi_wow_enable(struct ath11k *ar);
  int ath11k_wmi_scan_prob_req_oui(struct ath11k *ar,
  				 const u8 mac_addr[ETH_ALEN]);
 +int ath11k_wmi_fw_dbglog_cfg(struct ath11k *ar, u32 *module_id_bitmap,
 +			     struct ath11k_fw_dbglog *dbglog);
  #endif
+-- 
+2.37.1
+

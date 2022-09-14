@@ -25,9 +25,11 @@ Link: https://lore.kernel.org/r/20220429170502.20080-5-quic_mpubbise@quicinc.com
  drivers/net/wireless/ath/ath11k/pcic.c | 54 +++++++++-----------------
  3 files changed, 35 insertions(+), 35 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
+index 7912c1d3f0d5..79a9b467fb97 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -108,6 +108,8 @@ static const struct ath11k_hw_params ath
+@@ -108,6 +108,8 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.fixed_mem_region = true,
  		.static_window_map = false,
  		.hybrid_bus_type = false,
@@ -36,7 +38,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-5-quic_mpubbise@quicinc.com
  	},
  	{
  		.hw_rev = ATH11K_HW_IPQ6018_HW10,
-@@ -181,6 +183,8 @@ static const struct ath11k_hw_params ath
+@@ -181,6 +183,8 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.fixed_mem_region = true,
  		.static_window_map = false,
  		.hybrid_bus_type = false,
@@ -45,7 +47,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-5-quic_mpubbise@quicinc.com
  	},
  	{
  		.name = "qca6390 hw2.0",
-@@ -253,6 +257,8 @@ static const struct ath11k_hw_params ath
+@@ -253,6 +257,8 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.fixed_mem_region = false,
  		.static_window_map = false,
  		.hybrid_bus_type = false,
@@ -54,7 +56,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-5-quic_mpubbise@quicinc.com
  	},
  	{
  		.name = "qcn9074 hw1.0",
-@@ -325,6 +331,8 @@ static const struct ath11k_hw_params ath
+@@ -325,6 +331,8 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.fixed_mem_region = false,
  		.static_window_map = true,
  		.hybrid_bus_type = false,
@@ -63,7 +65,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-5-quic_mpubbise@quicinc.com
  	},
  	{
  		.name = "wcn6855 hw2.0",
-@@ -397,6 +405,8 @@ static const struct ath11k_hw_params ath
+@@ -397,6 +405,8 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.fixed_mem_region = false,
  		.static_window_map = false,
  		.hybrid_bus_type = false,
@@ -72,7 +74,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-5-quic_mpubbise@quicinc.com
  	},
  	{
  		.name = "wcn6855 hw2.1",
-@@ -467,6 +477,8 @@ static const struct ath11k_hw_params ath
+@@ -467,6 +477,8 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.fixed_mem_region = false,
  		.static_window_map = false,
  		.hybrid_bus_type = false,
@@ -81,7 +83,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-5-quic_mpubbise@quicinc.com
  	},
  	{
  		.name = "wcn6750 hw1.0",
-@@ -534,6 +546,8 @@ static const struct ath11k_hw_params ath
+@@ -534,6 +546,8 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.fixed_mem_region = false,
  		.static_window_map = true,
  		.hybrid_bus_type = true,
@@ -90,6 +92,8 @@ Link: https://lore.kernel.org/r/20220429170502.20080-5-quic_mpubbise@quicinc.com
  	},
  };
  
+diff --git a/drivers/net/wireless/ath/ath11k/hw.h b/drivers/net/wireless/ath/ath11k/hw.h
+index 95be5c6e57a6..aa0fc8dba5df 100644
 --- a/drivers/net/wireless/ath/ath11k/hw.h
 +++ b/drivers/net/wireless/ath/ath11k/hw.h
 @@ -202,6 +202,8 @@ struct ath11k_hw_params {
@@ -101,9 +105,11 @@ Link: https://lore.kernel.org/r/20220429170502.20080-5-quic_mpubbise@quicinc.com
  };
  
  struct ath11k_hw_ops {
+diff --git a/drivers/net/wireless/ath/ath11k/pcic.c b/drivers/net/wireless/ath/ath11k/pcic.c
+index 7a920d65023f..46cf96d3e1d2 100644
 --- a/drivers/net/wireless/ath/ath11k/pcic.c
 +++ b/drivers/net/wireless/ath/ath11k/pcic.c
-@@ -134,16 +134,13 @@ EXPORT_SYMBOL(ath11k_pcic_init_msi_confi
+@@ -134,16 +134,13 @@ EXPORT_SYMBOL(ath11k_pcic_init_msi_config);
  static inline u32 ath11k_pcic_get_window_start(struct ath11k_base *ab,
  					       u32 offset)
  {
@@ -125,7 +131,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-5-quic_mpubbise@quicinc.com
  
  	return window_start;
  }
-@@ -162,19 +159,12 @@ void ath11k_pcic_write32(struct ath11k_b
+@@ -162,19 +159,12 @@ void ath11k_pcic_write32(struct ath11k_base *ab, u32 offset, u32 value)
  
  	if (offset < ATH11K_PCI_WINDOW_START) {
  		iowrite32(value, ab->mem  + offset);
@@ -151,7 +157,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-5-quic_mpubbise@quicinc.com
  	}
  
  	if (test_bit(ATH11K_FLAG_DEVICE_INIT_DONE, &ab->dev_flags) &&
-@@ -185,7 +175,8 @@ void ath11k_pcic_write32(struct ath11k_b
+@@ -185,7 +175,8 @@ void ath11k_pcic_write32(struct ath11k_base *ab, u32 offset, u32 value)
  
  u32 ath11k_pcic_read32(struct ath11k_base *ab, u32 offset)
  {
@@ -161,7 +167,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-5-quic_mpubbise@quicinc.com
  	int ret = 0;
  
  	/* for offset beyond BAR + 4K - 32, may
-@@ -197,19 +188,12 @@ u32 ath11k_pcic_read32(struct ath11k_bas
+@@ -197,19 +188,12 @@ u32 ath11k_pcic_read32(struct ath11k_base *ab, u32 offset)
  
  	if (offset < ATH11K_PCI_WINDOW_START) {
  		val = ioread32(ab->mem + offset);
@@ -187,3 +193,6 @@ Link: https://lore.kernel.org/r/20220429170502.20080-5-quic_mpubbise@quicinc.com
  	}
  
  	if (test_bit(ATH11K_FLAG_DEVICE_INIT_DONE, &ab->dev_flags) &&
+-- 
+2.37.1
+

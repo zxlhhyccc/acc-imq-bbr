@@ -83,9 +83,11 @@ Link: https://lore.kernel.org/r/20220319023543.14288-4-quic_wgong@quicinc.com
  drivers/net/wireless/ath/ath11k/hw.h   | 19 ++++++
  2 files changed, 78 insertions(+), 25 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
+index 52f90eb01ec2..40846f686ba4 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -723,7 +723,9 @@ static int ath11k_core_parse_bd_ie_board
+@@ -723,7 +723,9 @@ static int ath11k_core_parse_bd_ie_board(struct ath11k_base *ab,
  					 struct ath11k_board_data *bd,
  					 const void *buf, size_t buf_len,
  					 const char *boardname,
@@ -96,7 +98,7 @@ Link: https://lore.kernel.org/r/20220319023543.14288-4-quic_wgong@quicinc.com
  {
  	const struct ath11k_fw_ie *hdr;
  	bool name_match_found;
-@@ -733,7 +735,7 @@ static int ath11k_core_parse_bd_ie_board
+@@ -733,7 +735,7 @@ static int ath11k_core_parse_bd_ie_board(struct ath11k_base *ab,
  
  	name_match_found = false;
  
@@ -105,7 +107,7 @@ Link: https://lore.kernel.org/r/20220319023543.14288-4-quic_wgong@quicinc.com
  	while (buf_len > sizeof(struct ath11k_fw_ie)) {
  		hdr = buf;
  		board_ie_id = le32_to_cpu(hdr->id);
-@@ -744,48 +746,50 @@ static int ath11k_core_parse_bd_ie_board
+@@ -744,48 +746,50 @@ static int ath11k_core_parse_bd_ie_board(struct ath11k_base *ab,
  		buf += sizeof(*hdr);
  
  		if (buf_len < ALIGN(board_ie_len, 4)) {
@@ -170,7 +172,7 @@ Link: https://lore.kernel.org/r/20220319023543.14288-4-quic_wgong@quicinc.com
  		/* jump over the padding */
  		board_ie_len = ALIGN(board_ie_len, 4);
  
-@@ -802,7 +806,10 @@ out:
+@@ -802,7 +806,10 @@ static int ath11k_core_parse_bd_ie_board(struct ath11k_base *ab,
  
  static int ath11k_core_fetch_board_data_api_n(struct ath11k_base *ab,
  					      struct ath11k_board_data *bd,
@@ -182,7 +184,7 @@ Link: https://lore.kernel.org/r/20220319023543.14288-4-quic_wgong@quicinc.com
  {
  	size_t len, magic_len;
  	const u8 *data;
-@@ -867,22 +874,23 @@ static int ath11k_core_fetch_board_data_
+@@ -867,22 +874,23 @@ static int ath11k_core_fetch_board_data_api_n(struct ath11k_base *ab,
  			goto err;
  		}
  
@@ -211,7 +213,7 @@ Link: https://lore.kernel.org/r/20220319023543.14288-4-quic_wgong@quicinc.com
  		/* jump over the padding */
  		ie_len = ALIGN(ie_len, 4);
  
-@@ -893,7 +901,8 @@ static int ath11k_core_fetch_board_data_
+@@ -893,7 +901,8 @@ static int ath11k_core_fetch_board_data_api_n(struct ath11k_base *ab,
  out:
  	if (!bd->data || !bd->len) {
  		ath11k_dbg(ab, ATH11K_DBG_BOOT,
@@ -221,7 +223,7 @@ Link: https://lore.kernel.org/r/20220319023543.14288-4-quic_wgong@quicinc.com
  			   boardname, filepath);
  		ret = -ENODATA;
  		goto err;
-@@ -937,7 +946,10 @@ int ath11k_core_fetch_bdf(struct ath11k_
+@@ -937,7 +946,10 @@ int ath11k_core_fetch_bdf(struct ath11k_base *ab, struct ath11k_board_data *bd)
  	}
  
  	ab->bd_api = 2;
@@ -233,7 +235,7 @@ Link: https://lore.kernel.org/r/20220319023543.14288-4-quic_wgong@quicinc.com
  	if (!ret)
  		goto success;
  
-@@ -948,7 +960,10 @@ int ath11k_core_fetch_bdf(struct ath11k_
+@@ -948,7 +960,10 @@ int ath11k_core_fetch_bdf(struct ath11k_base *ab, struct ath11k_board_data *bd)
  		return ret;
  	}
  
@@ -245,7 +247,7 @@ Link: https://lore.kernel.org/r/20220319023543.14288-4-quic_wgong@quicinc.com
  	if (!ret)
  		goto success;
  
-@@ -975,13 +990,32 @@ success:
+@@ -975,13 +990,32 @@ int ath11k_core_fetch_bdf(struct ath11k_base *ab, struct ath11k_board_data *bd)
  
  int ath11k_core_fetch_regdb(struct ath11k_base *ab, struct ath11k_board_data *bd)
  {
@@ -278,6 +280,8 @@ Link: https://lore.kernel.org/r/20220319023543.14288-4-quic_wgong@quicinc.com
  	return ret;
  }
  
+diff --git a/drivers/net/wireless/ath/ath11k/hw.h b/drivers/net/wireless/ath/ath11k/hw.h
+index b92d5ab096e8..f0002d2a7aff 100644
 --- a/drivers/net/wireless/ath/ath11k/hw.h
 +++ b/drivers/net/wireless/ath/ath11k/hw.h
 @@ -291,9 +291,16 @@ enum ath11k_bd_ie_board_type {
@@ -297,7 +301,7 @@ Link: https://lore.kernel.org/r/20220319023543.14288-4-quic_wgong@quicinc.com
  };
  
  struct ath11k_hw_regs {
-@@ -361,4 +368,16 @@ extern const struct ath11k_hw_regs qca63
+@@ -361,4 +368,16 @@ extern const struct ath11k_hw_regs qca6390_regs;
  extern const struct ath11k_hw_regs qcn9074_regs;
  extern const struct ath11k_hw_regs wcn6855_regs;
  
@@ -314,3 +318,6 @@ Link: https://lore.kernel.org/r/20220319023543.14288-4-quic_wgong@quicinc.com
 +}
 +
  #endif
+-- 
+2.37.1
+

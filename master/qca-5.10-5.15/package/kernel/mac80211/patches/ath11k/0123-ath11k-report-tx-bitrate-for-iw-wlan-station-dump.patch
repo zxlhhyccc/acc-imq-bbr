@@ -36,6 +36,8 @@ Link: https://lore.kernel.org/r/20211217093722.5739-1-quic_wgong@quicinc.com
  drivers/net/wireless/ath/ath11k/mac.h         |   3 +
  10 files changed, 210 insertions(+), 133 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
+index f7dadb5495f4..9284152e4c11 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
 @@ -383,6 +383,7 @@ struct ath11k_sta {
@@ -46,9 +48,11 @@ Link: https://lore.kernel.org/r/20211217093722.5739-1-quic_wgong@quicinc.com
  	struct rate_info last_txrate;
  	u64 rx_duration;
  	u64 tx_duration;
+diff --git a/drivers/net/wireless/ath/ath11k/debugfs_sta.c b/drivers/net/wireless/ath/ath11k/debugfs_sta.c
+index fecd9718f5ce..1b1acbdf837a 100644
 --- a/drivers/net/wireless/ath/ath11k/debugfs_sta.c
 +++ b/drivers/net/wireless/ath/ath11k/debugfs_sta.c
-@@ -126,85 +126,9 @@ void ath11k_debugfs_sta_add_tx_stats(str
+@@ -126,85 +126,9 @@ void ath11k_debugfs_sta_add_tx_stats(struct ath11k_sta *arsta,
  }
  
  void ath11k_debugfs_sta_update_txcompl(struct ath11k *ar,
@@ -135,9 +139,11 @@ Link: https://lore.kernel.org/r/20211217093722.5739-1-quic_wgong@quicinc.com
  }
  
  static ssize_t ath11k_dbg_sta_dump_tx_stats(struct file *file,
+diff --git a/drivers/net/wireless/ath/ath11k/debugfs_sta.h b/drivers/net/wireless/ath/ath11k/debugfs_sta.h
+index 18dc65d9edcf..e6c11b3a40aa 100644
 --- a/drivers/net/wireless/ath/ath11k/debugfs_sta.h
 +++ b/drivers/net/wireless/ath/ath11k/debugfs_sta.h
-@@ -19,7 +19,6 @@ void ath11k_debugfs_sta_add_tx_stats(str
+@@ -19,7 +19,6 @@ void ath11k_debugfs_sta_add_tx_stats(struct ath11k_sta *arsta,
  				     struct ath11k_per_peer_tx_stats *peer_stats,
  				     u8 legacy_rate_idx);
  void ath11k_debugfs_sta_update_txcompl(struct ath11k *ar,
@@ -145,7 +151,7 @@ Link: https://lore.kernel.org/r/20211217093722.5739-1-quic_wgong@quicinc.com
  				       struct hal_tx_status *ts);
  
  #else /* CPTCFG_ATH11K_DEBUGFS */
-@@ -34,7 +33,6 @@ ath11k_debugfs_sta_add_tx_stats(struct a
+@@ -34,7 +33,6 @@ ath11k_debugfs_sta_add_tx_stats(struct ath11k_sta *arsta,
  }
  
  static inline void ath11k_debugfs_sta_update_txcompl(struct ath11k *ar,
@@ -153,9 +159,11 @@ Link: https://lore.kernel.org/r/20211217093722.5739-1-quic_wgong@quicinc.com
  						     struct hal_tx_status *ts)
  {
  }
+diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
+index ab681ca36e27..7889a11e8f41 100644
 --- a/drivers/net/wireless/ath/ath11k/dp_rx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
-@@ -1360,25 +1360,6 @@ int ath11k_dp_htt_tlv_iter(struct ath11k
+@@ -1360,25 +1360,6 @@ int ath11k_dp_htt_tlv_iter(struct ath11k_base *ab, const void *ptr, size_t len,
  	return 0;
  }
  
@@ -181,7 +189,7 @@ Link: https://lore.kernel.org/r/20211217093722.5739-1-quic_wgong@quicinc.com
  static void
  ath11k_update_per_peer_tx_stats(struct ath11k *ar,
  				struct htt_ppdu_stats *ppdu_stats, u8 user)
-@@ -1497,14 +1478,15 @@ ath11k_update_per_peer_tx_stats(struct a
+@@ -1497,14 +1478,15 @@ ath11k_update_per_peer_tx_stats(struct ath11k *ar,
  		arsta->txrate.mcs = mcs;
  		arsta->txrate.flags = RATE_INFO_FLAGS_HE_MCS;
  		arsta->txrate.he_dcm = dcm;
@@ -200,7 +208,7 @@ Link: https://lore.kernel.org/r/20211217093722.5739-1-quic_wgong@quicinc.com
  	arsta->txrate.bw = ath11k_mac_bw_to_mac80211_bw(bw);
  	arsta->tx_duration += tx_duration;
  	memcpy(&arsta->last_txrate, &arsta->txrate, sizeof(struct rate_info));
-@@ -2384,7 +2366,7 @@ static void ath11k_dp_rx_h_rate(struct a
+@@ -2384,7 +2366,7 @@ static void ath11k_dp_rx_h_rate(struct ath11k *ar, struct hal_rx_desc *rx_desc,
  		}
  		rx_status->encoding = RX_ENC_HE;
  		rx_status->nss = nss;
@@ -209,9 +217,11 @@ Link: https://lore.kernel.org/r/20211217093722.5739-1-quic_wgong@quicinc.com
  		rx_status->bw = ath11k_mac_bw_to_mac80211_bw(bw);
  		break;
  	}
+diff --git a/drivers/net/wireless/ath/ath11k/dp_tx.c b/drivers/net/wireless/ath/ath11k/dp_tx.c
+index 8560f3b33812..91d6244b6543 100644
 --- a/drivers/net/wireless/ath/ath11k/dp_tx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_tx.c
-@@ -415,6 +415,105 @@ static void ath11k_dp_tx_cache_peer_stat
+@@ -415,6 +415,105 @@ static void ath11k_dp_tx_cache_peer_stats(struct ath11k *ar,
  	}
  }
  
@@ -317,7 +327,7 @@ Link: https://lore.kernel.org/r/20211217093722.5739-1-quic_wgong@quicinc.com
  static void ath11k_dp_tx_complete_msdu(struct ath11k *ar,
  				       struct sk_buff *msdu,
  				       struct hal_tx_status *ts)
-@@ -460,7 +559,8 @@ static void ath11k_dp_tx_complete_msdu(s
+@@ -460,7 +559,8 @@ static void ath11k_dp_tx_complete_msdu(struct ath11k *ar,
  	    (info->flags & IEEE80211_TX_CTL_NO_ACK))
  		info->flags |= IEEE80211_TX_STAT_NOACK_TRANSMITTED;
  
@@ -327,7 +337,7 @@ Link: https://lore.kernel.org/r/20211217093722.5739-1-quic_wgong@quicinc.com
  		if (ts->flags & HAL_TX_STATUS_FLAGS_FIRST_MSDU) {
  			if (ar->last_ppdu_id == 0) {
  				ar->last_ppdu_id = ts->ppdu_id;
-@@ -468,12 +568,12 @@ static void ath11k_dp_tx_complete_msdu(s
+@@ -468,12 +568,12 @@ static void ath11k_dp_tx_complete_msdu(struct ath11k *ar,
  				   ar->cached_ppdu_id == ar->last_ppdu_id) {
  				ar->cached_ppdu_id = ar->last_ppdu_id;
  				ar->cached_stats.is_ampdu = true;
@@ -342,6 +352,8 @@ Link: https://lore.kernel.org/r/20211217093722.5739-1-quic_wgong@quicinc.com
  				memset(&ar->cached_stats, 0,
  				       sizeof(struct ath11k_per_peer_tx_stats));
  			}
+diff --git a/drivers/net/wireless/ath/ath11k/dp_tx.h b/drivers/net/wireless/ath/ath11k/dp_tx.h
+index e373dbccf417..e87d65bfbf06 100644
 --- a/drivers/net/wireless/ath/ath11k/dp_tx.h
 +++ b/drivers/net/wireless/ath/ath11k/dp_tx.h
 @@ -15,6 +15,7 @@ struct ath11k_dp_htt_wbm_tx_status {
@@ -352,9 +364,11 @@ Link: https://lore.kernel.org/r/20211217093722.5739-1-quic_wgong@quicinc.com
  int ath11k_dp_tx_htt_h2t_ver_req_msg(struct ath11k_base *ab);
  int ath11k_dp_tx(struct ath11k *ar, struct ath11k_vif *arvif,
  		 struct ath11k_sta *arsta, struct sk_buff *skb);
+diff --git a/drivers/net/wireless/ath/ath11k/hal_rx.c b/drivers/net/wireless/ath/ath11k/hal_rx.c
+index a749903e2a16..2330c7f44c9d 100644
 --- a/drivers/net/wireless/ath/ath11k/hal_rx.c
 +++ b/drivers/net/wireless/ath/ath11k/hal_rx.c
-@@ -1038,7 +1038,9 @@ ath11k_hal_rx_parse_mon_status_tlv(struc
+@@ -1038,7 +1038,9 @@ ath11k_hal_rx_parse_mon_status_tlv(struct ath11k_base *ab,
  
  		ru_tones = FIELD_GET(HAL_RX_HE_SIG_B1_MU_INFO_INFO0_RU_ALLOCATION,
  				     info0);
@@ -365,9 +379,11 @@ Link: https://lore.kernel.org/r/20211217093722.5739-1-quic_wgong@quicinc.com
  		ppdu_info->reception_type = HAL_RX_RECEPTION_TYPE_MU_MIMO;
  		break;
  	}
+diff --git a/drivers/net/wireless/ath/ath11k/hal_rx.h b/drivers/net/wireless/ath/ath11k/hal_rx.h
+index 8488020d3763..571054c6d7f8 100644
 --- a/drivers/net/wireless/ath/ath11k/hal_rx.h
 +++ b/drivers/net/wireless/ath/ath11k/hal_rx.h
-@@ -363,33 +363,6 @@ ath11k_hal_rx_parse_mon_status(struct at
+@@ -363,33 +363,6 @@ ath11k_hal_rx_parse_mon_status(struct ath11k_base *ab,
  			       struct hal_rx_mon_ppdu_info *ppdu_info,
  			       struct sk_buff *skb);
  
@@ -401,6 +417,8 @@ Link: https://lore.kernel.org/r/20211217093722.5739-1-quic_wgong@quicinc.com
  #define REO_QUEUE_DESC_MAGIC_DEBUG_PATTERN_0 0xDDBEEF
  #define REO_QUEUE_DESC_MAGIC_DEBUG_PATTERN_1 0xADBEEF
  #define REO_QUEUE_DESC_MAGIC_DEBUG_PATTERN_2 0xBDBEEF
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index 0e9d2f2e776a..dfe343d48847 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
 @@ -246,6 +246,93 @@ static const u32 ath11k_smps_map[] = {
@@ -497,7 +515,7 @@ Link: https://lore.kernel.org/r/20211217093722.5739-1-quic_wgong@quicinc.com
  u8 ath11k_mac_bw_to_mac80211_bw(u8 bw)
  {
  	u8 ret = 0;
-@@ -2541,8 +2628,12 @@ static void ath11k_peer_assoc_prepare(st
+@@ -2541,8 +2628,12 @@ static void ath11k_peer_assoc_prepare(struct ath11k *ar,
  				      struct peer_assoc_params *arg,
  				      bool reassoc)
  {
@@ -510,7 +528,7 @@ Link: https://lore.kernel.org/r/20211217093722.5739-1-quic_wgong@quicinc.com
  	memset(arg, 0, sizeof(*arg));
  
  	reinit_completion(&ar->peer_assoc_done);
-@@ -2559,6 +2650,8 @@ static void ath11k_peer_assoc_prepare(st
+@@ -2559,6 +2650,8 @@ static void ath11k_peer_assoc_prepare(struct ath11k *ar,
  	ath11k_peer_assoc_h_qos(ar, vif, sta, arg);
  	ath11k_peer_assoc_h_smps(sta, arg);
  
@@ -519,9 +537,11 @@ Link: https://lore.kernel.org/r/20211217093722.5739-1-quic_wgong@quicinc.com
  	/* TODO: amsdu_disable req? */
  }
  
+diff --git a/drivers/net/wireless/ath/ath11k/mac.h b/drivers/net/wireless/ath/ath11k/mac.h
+index 035d6738c20b..cab3356ec0dc 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.h
 +++ b/drivers/net/wireless/ath/ath11k/mac.h
-@@ -162,6 +162,9 @@ void ath11k_mac_drain_tx(struct ath11k *
+@@ -162,6 +162,9 @@ void ath11k_mac_drain_tx(struct ath11k *ar);
  void ath11k_mac_peer_cleanup_all(struct ath11k *ar);
  int ath11k_mac_tx_mgmt_pending_free(int buf_id, void *skb, void *ctx);
  u8 ath11k_mac_bw_to_mac80211_bw(u8 bw);
@@ -531,3 +551,6 @@ Link: https://lore.kernel.org/r/20211217093722.5739-1-quic_wgong@quicinc.com
  enum ath11k_supported_bw ath11k_mac_mac80211_bw_to_ath11k_bw(enum rate_info_bw bw);
  enum hal_encrypt_type ath11k_dp_tx_get_encrypt_type(u32 cipher);
  void ath11k_mac_handle_beacon(struct ath11k *ar, struct sk_buff *skb);
+-- 
+2.37.1
+

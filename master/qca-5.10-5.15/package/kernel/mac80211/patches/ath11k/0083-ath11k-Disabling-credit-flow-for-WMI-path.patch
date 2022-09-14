@@ -47,9 +47,11 @@ Link: https://lore.kernel.org/r/1635156494-20059-1-git-send-email-quic_ppranees@
  drivers/net/wireless/ath/ath11k/wmi.h  |  1 +
  8 files changed, 146 insertions(+), 35 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/ce.c b/drivers/net/wireless/ath/ath11k/ce.c
+index 3bc4242c1059..aaa7b05ff49d 100644
 --- a/drivers/net/wireless/ath/ath11k/ce.c
 +++ b/drivers/net/wireless/ath/ath11k/ce.c
-@@ -14,6 +14,7 @@ const struct ce_attr ath11k_host_ce_conf
+@@ -14,6 +14,7 @@ const struct ce_attr ath11k_host_ce_config_ipq8074[] = {
  		.src_nentries = 16,
  		.src_sz_max = 2048,
  		.dest_nentries = 0,
@@ -57,7 +59,7 @@ Link: https://lore.kernel.org/r/1635156494-20059-1-git-send-email-quic_ppranees@
  	},
  
  	/* CE1: target->host HTT + HTC control */
-@@ -40,6 +41,7 @@ const struct ce_attr ath11k_host_ce_conf
+@@ -40,6 +41,7 @@ const struct ce_attr ath11k_host_ce_config_ipq8074[] = {
  		.src_nentries = 32,
  		.src_sz_max = 2048,
  		.dest_nentries = 0,
@@ -65,7 +67,7 @@ Link: https://lore.kernel.org/r/1635156494-20059-1-git-send-email-quic_ppranees@
  	},
  
  	/* CE4: host->target HTT */
-@@ -73,6 +75,7 @@ const struct ce_attr ath11k_host_ce_conf
+@@ -73,6 +75,7 @@ const struct ce_attr ath11k_host_ce_config_ipq8074[] = {
  		.src_nentries = 32,
  		.src_sz_max = 2048,
  		.dest_nentries = 0,
@@ -73,7 +75,7 @@ Link: https://lore.kernel.org/r/1635156494-20059-1-git-send-email-quic_ppranees@
  	},
  
  	/* CE8: target autonomous hif_memcpy */
-@@ -89,6 +92,7 @@ const struct ce_attr ath11k_host_ce_conf
+@@ -89,6 +92,7 @@ const struct ce_attr ath11k_host_ce_config_ipq8074[] = {
  		.src_nentries = 32,
  		.src_sz_max = 2048,
  		.dest_nentries = 0,
@@ -81,7 +83,7 @@ Link: https://lore.kernel.org/r/1635156494-20059-1-git-send-email-quic_ppranees@
  	},
  
  	/* CE10: target->host HTT */
-@@ -142,6 +146,7 @@ const struct ce_attr ath11k_host_ce_conf
+@@ -142,6 +146,7 @@ const struct ce_attr ath11k_host_ce_config_qca6390[] = {
  		.src_nentries = 32,
  		.src_sz_max = 2048,
  		.dest_nentries = 0,
@@ -89,7 +91,7 @@ Link: https://lore.kernel.org/r/1635156494-20059-1-git-send-email-quic_ppranees@
  	},
  
  	/* CE4: host->target HTT */
-@@ -175,6 +180,7 @@ const struct ce_attr ath11k_host_ce_conf
+@@ -175,6 +180,7 @@ const struct ce_attr ath11k_host_ce_config_qca6390[] = {
  		.src_nentries = 32,
  		.src_sz_max = 2048,
  		.dest_nentries = 0,
@@ -97,7 +99,7 @@ Link: https://lore.kernel.org/r/1635156494-20059-1-git-send-email-quic_ppranees@
  	},
  
  	/* CE8: target autonomous hif_memcpy */
-@@ -220,6 +226,7 @@ const struct ce_attr ath11k_host_ce_conf
+@@ -220,6 +226,7 @@ const struct ce_attr ath11k_host_ce_config_qcn9074[] = {
  		.src_nentries = 32,
  		.src_sz_max = 2048,
  		.dest_nentries = 0,
@@ -105,7 +107,7 @@ Link: https://lore.kernel.org/r/1635156494-20059-1-git-send-email-quic_ppranees@
  	},
  
  	/* CE4: host->target HTT */
-@@ -489,18 +496,32 @@ err_unlock:
+@@ -489,18 +496,32 @@ static struct sk_buff *ath11k_ce_completed_send_next(struct ath11k_ce_pipe *pipe
  	return skb;
  }
  
@@ -140,7 +142,7 @@ Link: https://lore.kernel.org/r/1635156494-20059-1-git-send-email-quic_ppranees@
  	}
  }
  
-@@ -636,7 +657,7 @@ static int ath11k_ce_alloc_pipe(struct a
+@@ -636,7 +657,7 @@ static int ath11k_ce_alloc_pipe(struct ath11k_base *ab, int ce_id)
  	pipe->attr_flags = attr->flags;
  
  	if (attr->src_nentries) {
@@ -149,7 +151,7 @@ Link: https://lore.kernel.org/r/1635156494-20059-1-git-send-email-quic_ppranees@
  		nentries = roundup_pow_of_two(attr->src_nentries);
  		desc_sz = ath11k_hal_ce_get_desc_size(HAL_CE_DESC_SRC);
  		ring = ath11k_ce_alloc_ring(ab, nentries, desc_sz);
-@@ -667,9 +688,10 @@ static int ath11k_ce_alloc_pipe(struct a
+@@ -667,9 +688,10 @@ static int ath11k_ce_alloc_pipe(struct ath11k_base *ab, int ce_id)
  void ath11k_ce_per_engine_service(struct ath11k_base *ab, u16 ce_id)
  {
  	struct ath11k_ce_pipe *pipe = &ab->ce.ce_pipe[ce_id];
@@ -162,7 +164,7 @@ Link: https://lore.kernel.org/r/1635156494-20059-1-git-send-email-quic_ppranees@
  
  	if (pipe->recv_cb)
  		ath11k_ce_recv_process_cb(pipe);
-@@ -678,9 +700,10 @@ void ath11k_ce_per_engine_service(struct
+@@ -678,9 +700,10 @@ void ath11k_ce_per_engine_service(struct ath11k_base *ab, u16 ce_id)
  void ath11k_ce_poll_send_completed(struct ath11k_base *ab, u8 pipe_id)
  {
  	struct ath11k_ce_pipe *pipe = &ab->ce.ce_pipe[pipe_id];
@@ -175,6 +177,8 @@ Link: https://lore.kernel.org/r/1635156494-20059-1-git-send-email-quic_ppranees@
  }
  EXPORT_SYMBOL(ath11k_ce_per_engine_service);
  
+diff --git a/drivers/net/wireless/ath/ath11k/ce.h b/drivers/net/wireless/ath/ath11k/ce.h
+index 713f766cac22..8255b6cfab0c 100644
 --- a/drivers/net/wireless/ath/ath11k/ce.h
 +++ b/drivers/net/wireless/ath/ath11k/ce.h
 @@ -101,6 +101,7 @@ struct ce_attr {
@@ -194,9 +198,11 @@ Link: https://lore.kernel.org/r/1635156494-20059-1-git-send-email-quic_ppranees@
  	void (*recv_cb)(struct ath11k_base *, struct sk_buff *);
  
  	struct tasklet_struct intr_tq;
+diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
+index 5553c927320c..0fa72d627f24 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -82,6 +82,7 @@ static const struct ath11k_hw_params ath
+@@ -82,6 +82,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.hal_desc_sz = sizeof(struct hal_rx_desc_ipq8074),
  		.fix_l1ss = true,
  		.wakeup_mhi = false,
@@ -204,7 +210,7 @@ Link: https://lore.kernel.org/r/1635156494-20059-1-git-send-email-quic_ppranees@
  		.max_tx_ring = DP_TCL_NUM_RING_MAX,
  		.hal_params = &ath11k_hw_hal_params_ipq8074,
  		.supports_dynamic_smps_6ghz = false,
-@@ -135,6 +136,7 @@ static const struct ath11k_hw_params ath
+@@ -135,6 +136,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.hal_desc_sz = sizeof(struct hal_rx_desc_ipq8074),
  		.fix_l1ss = true,
  		.wakeup_mhi = false,
@@ -212,7 +218,7 @@ Link: https://lore.kernel.org/r/1635156494-20059-1-git-send-email-quic_ppranees@
  		.max_tx_ring = DP_TCL_NUM_RING_MAX,
  		.hal_params = &ath11k_hw_hal_params_ipq8074,
  		.supports_dynamic_smps_6ghz = false,
-@@ -187,6 +189,7 @@ static const struct ath11k_hw_params ath
+@@ -187,6 +189,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.hal_desc_sz = sizeof(struct hal_rx_desc_ipq8074),
  		.fix_l1ss = true,
  		.wakeup_mhi = true,
@@ -220,7 +226,7 @@ Link: https://lore.kernel.org/r/1635156494-20059-1-git-send-email-quic_ppranees@
  		.max_tx_ring = DP_TCL_NUM_RING_MAX_QCA6390,
  		.hal_params = &ath11k_hw_hal_params_qca6390,
  		.supports_dynamic_smps_6ghz = false,
-@@ -239,6 +242,7 @@ static const struct ath11k_hw_params ath
+@@ -239,6 +242,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.hal_desc_sz = sizeof(struct hal_rx_desc_qcn9074),
  		.fix_l1ss = true,
  		.wakeup_mhi = false,
@@ -228,7 +234,7 @@ Link: https://lore.kernel.org/r/1635156494-20059-1-git-send-email-quic_ppranees@
  		.max_tx_ring = DP_TCL_NUM_RING_MAX,
  		.hal_params = &ath11k_hw_hal_params_ipq8074,
  		.supports_dynamic_smps_6ghz = true,
-@@ -291,6 +295,7 @@ static const struct ath11k_hw_params ath
+@@ -291,6 +295,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.hal_desc_sz = sizeof(struct hal_rx_desc_wcn6855),
  		.fix_l1ss = false,
  		.wakeup_mhi = true,
@@ -236,9 +242,11 @@ Link: https://lore.kernel.org/r/1635156494-20059-1-git-send-email-quic_ppranees@
  		.max_tx_ring = DP_TCL_NUM_RING_MAX_QCA6390,
  		.hal_params = &ath11k_hw_hal_params_qca6390,
  		.supports_dynamic_smps_6ghz = false,
+diff --git a/drivers/net/wireless/ath/ath11k/htc.c b/drivers/net/wireless/ath/ath11k/htc.c
+index 54b1d34724d7..6913b7494b9b 100644
 --- a/drivers/net/wireless/ath/ath11k/htc.c
 +++ b/drivers/net/wireless/ath/ath11k/htc.c
-@@ -81,6 +81,8 @@ int ath11k_htc_send(struct ath11k_htc *h
+@@ -81,6 +81,8 @@ int ath11k_htc_send(struct ath11k_htc *htc,
  	struct ath11k_base *ab = htc->ab;
  	int credits = 0;
  	int ret;
@@ -247,7 +255,7 @@ Link: https://lore.kernel.org/r/1635156494-20059-1-git-send-email-quic_ppranees@
  
  	if (eid >= ATH11K_HTC_EP_COUNT) {
  		ath11k_warn(ab, "Invalid endpoint id: %d\n", eid);
-@@ -89,7 +91,7 @@ int ath11k_htc_send(struct ath11k_htc *h
+@@ -89,7 +91,7 @@ int ath11k_htc_send(struct ath11k_htc *htc,
  
  	skb_push(skb, sizeof(struct ath11k_htc_hdr));
  
@@ -256,7 +264,7 @@ Link: https://lore.kernel.org/r/1635156494-20059-1-git-send-email-quic_ppranees@
  		credits = DIV_ROUND_UP(skb->len, htc->target_credit_size);
  		spin_lock_bh(&htc->tx_lock);
  		if (ep->tx_credits < credits) {
-@@ -126,7 +128,7 @@ int ath11k_htc_send(struct ath11k_htc *h
+@@ -126,7 +128,7 @@ int ath11k_htc_send(struct ath11k_htc *htc,
  err_unmap:
  	dma_unmap_single(dev, skb_cb->paddr, skb->len, DMA_TO_DEVICE);
  err_credits:
@@ -265,7 +273,7 @@ Link: https://lore.kernel.org/r/1635156494-20059-1-git-send-email-quic_ppranees@
  		spin_lock_bh(&htc->tx_lock);
  		ep->tx_credits += credits;
  		ath11k_dbg(ab, ATH11K_DBG_HTC,
-@@ -203,23 +205,25 @@ static int ath11k_htc_process_trailer(st
+@@ -203,23 +205,25 @@ static int ath11k_htc_process_trailer(struct ath11k_htc *htc,
  			break;
  		}
  
@@ -306,7 +314,7 @@ Link: https://lore.kernel.org/r/1635156494-20059-1-git-send-email-quic_ppranees@
  		}
  
  		if (status)
-@@ -245,6 +249,29 @@ static void ath11k_htc_suspend_complete(
+@@ -245,6 +249,29 @@ static void ath11k_htc_suspend_complete(struct ath11k_base *ab, bool ack)
  	complete(&ab->htc_suspend);
  }
  
@@ -336,7 +344,7 @@ Link: https://lore.kernel.org/r/1635156494-20059-1-git-send-email-quic_ppranees@
  void ath11k_htc_rx_completion_handler(struct ath11k_base *ab,
  				      struct sk_buff *skb)
  {
-@@ -607,6 +634,11 @@ int ath11k_htc_connect_service(struct at
+@@ -607,6 +634,11 @@ int ath11k_htc_connect_service(struct ath11k_htc *htc,
  		disable_credit_flow_ctrl = true;
  	}
  
@@ -348,7 +356,7 @@ Link: https://lore.kernel.org/r/1635156494-20059-1-git-send-email-quic_ppranees@
  	req_msg->flags_len = FIELD_PREP(HTC_SVC_MSG_CONNECTIONFLAGS, flags);
  	req_msg->msg_svc_id |= FIELD_PREP(HTC_SVC_MSG_SERVICE_ID,
  					  conn_req->service_id);
-@@ -732,7 +764,10 @@ int ath11k_htc_start(struct ath11k_htc *
+@@ -732,7 +764,10 @@ int ath11k_htc_start(struct ath11k_htc *htc)
  	msg->msg_id = FIELD_PREP(HTC_MSG_MESSAGEID,
  				 ATH11K_HTC_MSG_SETUP_COMPLETE_EX_ID);
  
@@ -360,6 +368,8 @@ Link: https://lore.kernel.org/r/1635156494-20059-1-git-send-email-quic_ppranees@
  
  	status = ath11k_htc_send(htc, ATH11K_HTC_EP_0, skb);
  	if (status) {
+diff --git a/drivers/net/wireless/ath/ath11k/htc.h b/drivers/net/wireless/ath/ath11k/htc.h
+index 6c8a469d7f9d..f429b37cfdf7 100644
 --- a/drivers/net/wireless/ath/ath11k/htc.h
 +++ b/drivers/net/wireless/ath/ath11k/htc.h
 @@ -83,8 +83,8 @@ enum ath11k_htc_conn_flags {
@@ -382,7 +392,7 @@ Link: https://lore.kernel.org/r/1635156494-20059-1-git-send-email-quic_ppranees@
  struct ath11k_htc_setup_complete_extended {
  	u32 msg_id;
  	u32 flags;
-@@ -305,5 +307,6 @@ int ath11k_htc_send(struct ath11k_htc *h
+@@ -305,5 +307,6 @@ int ath11k_htc_send(struct ath11k_htc *htc, enum ath11k_htc_ep_id eid,
  struct sk_buff *ath11k_htc_alloc_skb(struct ath11k_base *ar, int size);
  void ath11k_htc_rx_completion_handler(struct ath11k_base *ar,
  				      struct sk_buff *skb);
@@ -390,6 +400,8 @@ Link: https://lore.kernel.org/r/1635156494-20059-1-git-send-email-quic_ppranees@
 +void ath11k_htc_tx_completion_handler(struct ath11k_base *ab,
 +				      struct sk_buff *skb);
  #endif
+diff --git a/drivers/net/wireless/ath/ath11k/hw.h b/drivers/net/wireless/ath/ath11k/hw.h
+index 039126edfb01..ba861bfe8fc8 100644
 --- a/drivers/net/wireless/ath/ath11k/hw.h
 +++ b/drivers/net/wireless/ath/ath11k/hw.h
 @@ -176,6 +176,7 @@ struct ath11k_hw_params {
@@ -400,9 +412,11 @@ Link: https://lore.kernel.org/r/1635156494-20059-1-git-send-email-quic_ppranees@
  	u8 max_tx_ring;
  	const struct ath11k_hw_hal_params *hal_params;
  	bool supports_dynamic_smps_6ghz;
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
+index d9638834054c..5b855a2f3088 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -267,21 +267,39 @@ int ath11k_wmi_cmd_send(struct ath11k_pd
+@@ -267,21 +267,39 @@ int ath11k_wmi_cmd_send(struct ath11k_pdev_wmi *wmi, struct sk_buff *skb,
  {
  	struct ath11k_wmi_base *wmi_sc = wmi->wmi_ab;
  	int ret = -EOPNOTSUPP;
@@ -419,21 +433,21 @@ Link: https://lore.kernel.org/r/1635156494-20059-1-git-send-email-quic_ppranees@
 +			if (ret && test_bit(ATH11K_FLAG_CRASH_FLUSH,
 +					    &wmi_sc->ab->dev_flags))
 +				ret = -ESHUTDOWN;
-+
+ 
+-		if (ret && test_bit(ATH11K_FLAG_CRASH_FLUSH, &wmi_sc->ab->dev_flags))
+-			ret = -ESHUTDOWN;
 +			(ret != -EAGAIN);
 +			}), WMI_SEND_TIMEOUT_HZ);
 +	} else {
 +		wait_event_timeout(wmi->tx_ce_desc_wq, ({
 +			ret = ath11k_wmi_cmd_send_nowait(wmi, skb, cmd_id);
  
--		if (ret && test_bit(ATH11K_FLAG_CRASH_FLUSH, &wmi_sc->ab->dev_flags))
--			ret = -ESHUTDOWN;
+-		(ret != -EAGAIN);
+-	}), WMI_SEND_TIMEOUT_HZ);
 +			if (ret && test_bit(ATH11K_FLAG_CRASH_FLUSH,
 +					    &wmi_sc->ab->dev_flags))
 +				ret = -ESHUTDOWN;
- 
--		(ret != -EAGAIN);
--	}), WMI_SEND_TIMEOUT_HZ);
++
 +			(ret != -ENOBUFS);
 +			}), WMI_SEND_TIMEOUT_HZ);
 +	}
@@ -448,7 +462,7 @@ Link: https://lore.kernel.org/r/1635156494-20059-1-git-send-email-quic_ppranees@
  	return ret;
  }
  
-@@ -5817,7 +5835,30 @@ static void ath11k_wmi_op_ep_tx_credits(
+@@ -5817,7 +5835,30 @@ static void ath11k_wmi_op_ep_tx_credits(struct ath11k_base *ab)
  static void ath11k_wmi_htc_tx_complete(struct ath11k_base *ab,
  				       struct sk_buff *skb)
  {
@@ -479,7 +493,7 @@ Link: https://lore.kernel.org/r/1635156494-20059-1-git-send-email-quic_ppranees@
  }
  
  static bool ath11k_reg_is_world_alpha(char *alpha)
-@@ -7208,6 +7249,7 @@ static int ath11k_connect_pdev_htc_servi
+@@ -7208,6 +7249,7 @@ static int ath11k_connect_pdev_htc_service(struct ath11k_base *ab,
  	ab->wmi_ab.wmi_endpoint_id[pdev_idx] = conn_resp.eid;
  	ab->wmi_ab.wmi[pdev_idx].eid = conn_resp.eid;
  	ab->wmi_ab.max_msg_len[pdev_idx] = conn_resp.max_msg_len;
@@ -487,6 +501,8 @@ Link: https://lore.kernel.org/r/1635156494-20059-1-git-send-email-quic_ppranees@
  
  	return 0;
  }
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.h b/drivers/net/wireless/ath/ath11k/wmi.h
+index 81d12405be54..b5b9f2c22e2e 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.h
 +++ b/drivers/net/wireless/ath/ath11k/wmi.h
 @@ -2522,6 +2522,7 @@ struct ath11k_pdev_wmi {
@@ -497,3 +513,6 @@ Link: https://lore.kernel.org/r/1635156494-20059-1-git-send-email-quic_ppranees@
  };
  
  struct vdev_create_params {
+-- 
+2.37.1
+

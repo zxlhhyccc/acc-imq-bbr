@@ -24,9 +24,11 @@ Link: https://lore.kernel.org/r/20220602122929.18896-1-quic_mpubbise@quicinc.com
  drivers/net/wireless/ath/ath11k/dp_rx.c | 5 +++--
  1 file changed, 3 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
+index e16beb96c37c..2148acf37071 100644
 --- a/drivers/net/wireless/ath/ath11k/dp_rx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
-@@ -835,8 +835,9 @@ void ath11k_peer_rx_tid_delete(struct at
+@@ -835,8 +835,9 @@ void ath11k_peer_rx_tid_delete(struct ath11k *ar,
  					HAL_REO_CMD_UPDATE_RX_QUEUE, &cmd,
  					ath11k_dp_rx_tid_del_func);
  	if (ret) {
@@ -38,3 +40,6 @@ Link: https://lore.kernel.org/r/20220602122929.18896-1-quic_mpubbise@quicinc.com
  		dma_unmap_single(ar->ab->dev, rx_tid->paddr, rx_tid->size,
  				 DMA_BIDIRECTIONAL);
  		kfree(rx_tid->vaddr);
+-- 
+2.37.1
+

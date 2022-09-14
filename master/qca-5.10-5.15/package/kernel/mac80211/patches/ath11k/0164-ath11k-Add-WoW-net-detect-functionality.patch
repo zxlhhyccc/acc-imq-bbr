@@ -23,6 +23,8 @@ Link: https://lore.kernel.org/r/1644308006-22784-3-git-send-email-quic_cjhuang@q
  drivers/net/wireless/ath/ath11k/wow.c  | 175 ++++++++++++++++++++++++-
  5 files changed, 510 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
+index 7b658d4c7d19..1f5e977aa976 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
 @@ -617,6 +617,7 @@ struct ath11k {
@@ -33,9 +35,11 @@ Link: https://lore.kernel.org/r/1644308006-22784-3-git-send-email-quic_cjhuang@q
  };
  
  struct ath11k_band_cap {
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index 2013e325956f..1bea2ddb4c37 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -8510,6 +8510,18 @@ static int __ath11k_mac_register(struct
+@@ -8510,6 +8510,18 @@ static int __ath11k_mac_register(struct ath11k *ar)
  			NL80211_FEATURE_SCAN_RANDOM_MAC_ADDR;
  	}
  
@@ -54,9 +58,11 @@ Link: https://lore.kernel.org/r/1644308006-22784-3-git-send-email-quic_cjhuang@q
  	ret = ath11k_wow_init(ar);
  	if (ret) {
  		ath11k_warn(ar->ab, "failed to init wow: %d\n", ret);
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
+index 25222293f162..d4d34b932e0b 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -8393,3 +8393,157 @@ int ath11k_wmi_wow_del_pattern(struct at
+@@ -8393,3 +8393,157 @@ int ath11k_wmi_wow_del_pattern(struct ath11k *ar, u32 vdev_id, u32 pattern_id)
  
  	return ath11k_wmi_cmd_send(ar->wmi, skb, WMI_WOW_DEL_WAKE_PATTERN_CMDID);
  }
@@ -214,6 +220,8 @@ Link: https://lore.kernel.org/r/1644308006-22784-3-git-send-email-quic_cjhuang@q
 +	return ath11k_wmi_cmd_send(ar->wmi, skb, WMI_NETWORK_LIST_OFFLOAD_CONFIG_CMDID);
 +}
 +
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.h b/drivers/net/wireless/ath/ath11k/wmi.h
+index b82f432a3d95..9150e0555c6d 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.h
 +++ b/drivers/net/wireless/ath/ath11k/wmi.h
 @@ -5616,6 +5616,173 @@ struct wmi_wow_del_pattern_cmd {
@@ -390,7 +398,7 @@ Link: https://lore.kernel.org/r/1644308006-22784-3-git-send-email-quic_cjhuang@q
  int ath11k_wmi_cmd_send(struct ath11k_pdev_wmi *wmi, struct sk_buff *skb,
  			u32 cmd_id);
  struct sk_buff *ath11k_wmi_alloc_skb(struct ath11k_wmi_base *wmi_sc, u32 len);
-@@ -5777,6 +5944,8 @@ int ath11k_wmi_scan_prob_req_oui(struct
+@@ -5777,6 +5944,8 @@ int ath11k_wmi_scan_prob_req_oui(struct ath11k *ar,
  				 const u8 mac_addr[ETH_ALEN]);
  int ath11k_wmi_fw_dbglog_cfg(struct ath11k *ar, u32 *module_id_bitmap,
  			     struct ath11k_fw_dbglog *dbglog);
@@ -399,9 +407,11 @@ Link: https://lore.kernel.org/r/1644308006-22784-3-git-send-email-quic_cjhuang@q
  int ath11k_wmi_wow_del_pattern(struct ath11k *ar, u32 vdev_id, u32 pattern_id);
  int ath11k_wmi_wow_add_pattern(struct ath11k *ar, u32 vdev_id, u32 pattern_id,
  			       const u8 *pattern, const u8 *mask,
+diff --git a/drivers/net/wireless/ath/ath11k/wow.c b/drivers/net/wireless/ath/ath11k/wow.c
+index 837dab469ab2..5f3aa0b7eb9b 100644
 --- a/drivers/net/wireless/ath/ath11k/wow.c
 +++ b/drivers/net/wireless/ath/ath11k/wow.c
-@@ -228,6 +228,101 @@ static void ath11k_wow_convert_8023_to_8
+@@ -228,6 +228,101 @@ static void ath11k_wow_convert_8023_to_80211(struct cfg80211_pkt_pattern *new,
  	}
  }
  
@@ -503,7 +513,7 @@ Link: https://lore.kernel.org/r/1644308006-22784-3-git-send-email-quic_cjhuang@q
  static int ath11k_vif_wow_set_wakeups(struct ath11k_vif *arvif,
  				      struct cfg80211_wowlan *wowlan)
  {
-@@ -261,6 +356,26 @@ static int ath11k_vif_wow_set_wakeups(st
+@@ -261,6 +356,26 @@ static int ath11k_vif_wow_set_wakeups(struct ath11k_vif *arvif,
  
  		if (wowlan->magic_pkt)
  			__set_bit(WOW_MAGIC_PKT_RECVD_EVENT, &wow_mask);
@@ -530,7 +540,7 @@ Link: https://lore.kernel.org/r/1644308006-22784-3-git-send-email-quic_cjhuang@q
  		break;
  	default:
  		break;
-@@ -354,6 +469,51 @@ static int ath11k_wow_set_wakeups(struct
+@@ -354,6 +469,51 @@ static int ath11k_wow_set_wakeups(struct ath11k *ar,
  	return 0;
  }
  
@@ -582,7 +592,7 @@ Link: https://lore.kernel.org/r/1644308006-22784-3-git-send-email-quic_cjhuang@q
  int ath11k_wow_op_suspend(struct ieee80211_hw *hw,
  			  struct cfg80211_wowlan *wowlan)
  {
-@@ -439,8 +599,16 @@ int ath11k_wow_op_resume(struct ieee8021
+@@ -439,8 +599,16 @@ int ath11k_wow_op_resume(struct ieee80211_hw *hw)
  	ath11k_hif_irq_enable(ar->ab);
  
  	ret = ath11k_wow_wakeup(ar->ab);
@@ -612,3 +622,6 @@ Link: https://lore.kernel.org/r/1644308006-22784-3-git-send-email-quic_cjhuang@q
  	ar->wow.max_num_patterns = ATH11K_WOW_PATTERNS;
  	ar->wow.wowlan_support.n_patterns = ar->wow.max_num_patterns;
  	ar->hw->wiphy->wowlan = &ar->wow.wowlan_support;
+-- 
+2.37.1
+

@@ -22,9 +22,11 @@ Link: https://lore.kernel.org/r/20210913180246.193388-3-jouni@codeaurora.org
  drivers/net/wireless/ath/ath11k/pci.c | 4 +++-
  1 file changed, 3 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/pci.c b/drivers/net/wireless/ath/ath11k/pci.c
+index 7d0be9388f89..d1f5c097e4e5 100644
 --- a/drivers/net/wireless/ath/ath11k/pci.c
 +++ b/drivers/net/wireless/ath/ath11k/pci.c
-@@ -434,6 +434,8 @@ static void ath11k_pci_force_wake(struct
+@@ -434,6 +434,8 @@ static void ath11k_pci_force_wake(struct ath11k_base *ab)
  
  static void ath11k_pci_sw_reset(struct ath11k_base *ab, bool power_on)
  {
@@ -33,7 +35,7 @@ Link: https://lore.kernel.org/r/20210913180246.193388-3-jouni@codeaurora.org
  	if (power_on) {
  		ath11k_pci_enable_ltssm(ab);
  		ath11k_pci_clear_all_intrs(ab);
-@@ -443,9 +445,9 @@ static void ath11k_pci_sw_reset(struct a
+@@ -443,9 +445,9 @@ static void ath11k_pci_sw_reset(struct ath11k_base *ab, bool power_on)
  	}
  
  	ath11k_mhi_clear_vector(ab);
@@ -44,3 +46,6 @@ Link: https://lore.kernel.org/r/20210913180246.193388-3-jouni@codeaurora.org
  }
  
  int ath11k_pci_get_msi_irq(struct device *dev, unsigned int vector)
+-- 
+2.37.1
+

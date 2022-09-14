@@ -46,6 +46,8 @@ Link: https://lore.kernel.org/r/20220131031043.1295-2-alokad@codeaurora.org
  drivers/net/wireless/ath/ath11k/mac.c     |   7 +
  4 files changed, 245 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
+index 04f9b9505d37..10846e9e871a 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
 @@ -263,6 +263,9 @@ struct ath11k_vif {
@@ -58,9 +60,11 @@ Link: https://lore.kernel.org/r/20220131031043.1295-2-alokad@codeaurora.org
  };
  
  struct ath11k_vif_iter {
+diff --git a/drivers/net/wireless/ath/ath11k/debugfs.c b/drivers/net/wireless/ath/ath11k/debugfs.c
+index 041b13560218..d2e2a9ff0ffa 100644
 --- a/drivers/net/wireless/ath/ath11k/debugfs.c
 +++ b/drivers/net/wireless/ath/ath11k/debugfs.c
-@@ -1222,3 +1222,225 @@ int ath11k_debugfs_register(struct ath11
+@@ -1222,3 +1222,225 @@ int ath11k_debugfs_register(struct ath11k *ar)
  void ath11k_debugfs_unregister(struct ath11k *ar)
  {
  }
@@ -286,9 +290,11 @@ Link: https://lore.kernel.org/r/20220131031043.1295-2-alokad@codeaurora.org
 +	debugfs_remove_recursive(arvif->debugfs_twt);
 +	arvif->debugfs_twt = NULL;
 +}
+diff --git a/drivers/net/wireless/ath/ath11k/debugfs.h b/drivers/net/wireless/ath/ath11k/debugfs.h
+index 3cfe444acb75..ef8ed57bb820 100644
 --- a/drivers/net/wireless/ath/ath11k/debugfs.h
 +++ b/drivers/net/wireless/ath/ath11k/debugfs.h
-@@ -276,6 +276,9 @@ static inline int ath11k_debugfs_rx_filt
+@@ -276,6 +276,9 @@ static inline int ath11k_debugfs_rx_filter(struct ath11k *ar)
  	return ar->debug.rx_filter;
  }
  
@@ -298,7 +304,7 @@ Link: https://lore.kernel.org/r/20220131031043.1295-2-alokad@codeaurora.org
  #else
  static inline int ath11k_debugfs_soc_create(struct ath11k_base *ab)
  {
-@@ -349,6 +352,15 @@ static inline int ath11k_debugfs_get_fw_
+@@ -349,6 +352,15 @@ static inline int ath11k_debugfs_get_fw_stats(struct ath11k *ar,
  	return 0;
  }
  
@@ -315,9 +321,11 @@ Link: https://lore.kernel.org/r/20220131031043.1295-2-alokad@codeaurora.org
 +#endif /* CPTCFG_ATH11K_DEBUGFS*/
  
  #endif /* _ATH11K_DEBUGFS_H_ */
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index 64c8155d0939..a9f353745510 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -6361,6 +6361,10 @@ static int ath11k_mac_op_add_interface(s
+@@ -6361,6 +6361,10 @@ static int ath11k_mac_op_add_interface(struct ieee80211_hw *hw,
  		}
  	}
  
@@ -328,7 +336,7 @@ Link: https://lore.kernel.org/r/20220131031043.1295-2-alokad@codeaurora.org
  	mutex_unlock(&ar->conf_mutex);
  
  	return 0;
-@@ -6395,6 +6399,7 @@ err_vdev_del:
+@@ -6395,6 +6399,7 @@ static int ath11k_mac_op_add_interface(struct ieee80211_hw *hw,
  	spin_unlock_bh(&ar->data_lock);
  
  err:
@@ -336,7 +344,7 @@ Link: https://lore.kernel.org/r/20220131031043.1295-2-alokad@codeaurora.org
  	mutex_unlock(&ar->conf_mutex);
  
  	return ret;
-@@ -6493,6 +6498,8 @@ err_vdev_del:
+@@ -6493,6 +6498,8 @@ static void ath11k_mac_op_remove_interface(struct ieee80211_hw *hw,
  	/* Recalc txpower for remaining vdev */
  	ath11k_mac_txpower_recalc(ar);
  
@@ -345,3 +353,6 @@ Link: https://lore.kernel.org/r/20220131031043.1295-2-alokad@codeaurora.org
  	/* TODO: recal traffic pause state based on the available vdevs */
  
  	mutex_unlock(&ar->conf_mutex);
+-- 
+2.37.1
+

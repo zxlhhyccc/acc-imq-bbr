@@ -26,6 +26,8 @@ Link: https://lore.kernel.org/r/20220329150221.21907-1-quic_kathirve@quicinc.com
  drivers/net/wireless/ath/ath11k/wmi.h | 12 ++----------
  1 file changed, 2 insertions(+), 10 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.h b/drivers/net/wireless/ath/ath11k/wmi.h
+index 925b8003feae..c9ffefea549c 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.h
 +++ b/drivers/net/wireless/ath/ath11k/wmi.h
 @@ -3089,9 +3089,6 @@ enum scan_dwelltime_adaptive_mode {
@@ -68,3 +70,6 @@ Link: https://lore.kernel.org/r/20220329150221.21907-1-quic_kathirve@quicinc.com
  	struct element_info extraie;
  	struct element_info htcap;
  	struct element_info vhtcap;
+-- 
+2.37.1
+

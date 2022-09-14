@@ -23,6 +23,8 @@ Link: https://lore.kernel.org/r/20220429170502.20080-6-quic_mpubbise@quicinc.com
  drivers/net/wireless/ath/ath11k/qmi.h |  24 ++++-
  2 files changed, 164 insertions(+), 4 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/qmi.c b/drivers/net/wireless/ath/ath11k/qmi.c
+index c89e76108237..ad422256f1c6 100644
 --- a/drivers/net/wireless/ath/ath11k/qmi.c
 +++ b/drivers/net/wireless/ath/ath11k/qmi.c
 @@ -13,6 +13,8 @@
@@ -34,7 +36,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-6-quic_mpubbise@quicinc.com
  
  #define SLEEP_CLOCK_SELECT_INTERNAL_BIT	0x02
  #define HOST_CSTATE_BIT			0x04
-@@ -749,6 +751,68 @@ static struct qmi_elem_info qmi_wlanfw_c
+@@ -749,6 +751,68 @@ static struct qmi_elem_info qmi_wlanfw_cap_req_msg_v01_ei[] = {
  	},
  };
  
@@ -103,7 +105,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-6-quic_mpubbise@quicinc.com
  static struct qmi_elem_info qmi_wlanfw_rf_chip_info_s_v01_ei[] = {
  	{
  		.data_type	= QMI_UNSIGNED_4_BYTE,
-@@ -2008,6 +2072,80 @@ static int ath11k_qmi_assign_target_mem_
+@@ -2008,6 +2072,80 @@ static int ath11k_qmi_assign_target_mem_chunk(struct ath11k_base *ab)
  	return 0;
  }
  
@@ -184,7 +186,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-6-quic_mpubbise@quicinc.com
  static int ath11k_qmi_request_target_cap(struct ath11k_base *ab)
  {
  	struct qmi_wlanfw_cap_req_msg_v01 req;
-@@ -2749,6 +2887,12 @@ static int ath11k_qmi_event_load_bdf(str
+@@ -2749,6 +2887,12 @@ static int ath11k_qmi_event_load_bdf(struct ath11k_qmi *qmi)
  		return ret;
  	}
  
@@ -197,6 +199,8 @@ Link: https://lore.kernel.org/r/20220429170502.20080-6-quic_mpubbise@quicinc.com
  	if (ab->hw_params.supports_regdb)
  		ath11k_qmi_load_bdf_qmi(ab, true);
  
+diff --git a/drivers/net/wireless/ath/ath11k/qmi.h b/drivers/net/wireless/ath/ath11k/qmi.h
+index e0201e184733..c24e6995cca3 100644
 --- a/drivers/net/wireless/ath/ath11k/qmi.h
 +++ b/drivers/net/wireless/ath/ath11k/qmi.h
 @@ -38,6 +38,8 @@
@@ -208,7 +212,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-6-quic_mpubbise@quicinc.com
  struct ath11k_base;
  
  enum ath11k_qmi_file_type {
-@@ -287,10 +289,12 @@ struct qmi_wlanfw_fw_cold_cal_done_ind_m
+@@ -287,10 +289,12 @@ struct qmi_wlanfw_fw_cold_cal_done_ind_msg_v01 {
  	char placeholder;
  };
  
@@ -244,3 +248,6 @@ Link: https://lore.kernel.org/r/20220429170502.20080-6-quic_mpubbise@quicinc.com
  #define QMI_WLANFW_BDF_DOWNLOAD_REQ_MSG_V01_MAX_LEN	6182
  #define QMI_WLANFW_BDF_DOWNLOAD_RESP_MSG_V01_MAX_LEN	7
  #define QMI_WLANFW_BDF_DOWNLOAD_RESP_V01		0x0025
+-- 
+2.37.1
+

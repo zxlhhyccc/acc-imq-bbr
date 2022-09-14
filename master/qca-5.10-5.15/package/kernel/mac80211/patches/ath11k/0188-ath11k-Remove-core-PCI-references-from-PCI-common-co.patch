@@ -34,9 +34,11 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
  drivers/net/wireless/ath/ath11k/pcic.h |   5 -
  8 files changed, 211 insertions(+), 134 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
+index 72ef3cb3d855..5f7f5b27ca9b 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -426,7 +426,6 @@ static const struct ath11k_hw_params ath
+@@ -426,7 +426,6 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.hal_params = &ath11k_hw_hal_params_qca6390,
  		.supports_dynamic_smps_6ghz = false,
  		.alloc_cacheable_memory = false,
@@ -44,6 +46,8 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
  		.supports_rssi_stats = true,
  		.fw_wmi_diag_event = true,
  		.current_cc_support = true,
+diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
+index 4e0861a94a14..fa299bfb4efc 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
 @@ -239,6 +239,8 @@ enum ath11k_dev_flags {
@@ -79,6 +83,8 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
  	} pci;
  
  	/* must be last */
+diff --git a/drivers/net/wireless/ath/ath11k/hw.h b/drivers/net/wireless/ath/ath11k/hw.h
+index f0002d2a7aff..001deb97b3d6 100644
 --- a/drivers/net/wireless/ath/ath11k/hw.h
 +++ b/drivers/net/wireless/ath/ath11k/hw.h
 @@ -1,6 +1,7 @@
@@ -89,9 +95,11 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
   */
  
  #ifndef ATH11K_HW_H
+diff --git a/drivers/net/wireless/ath/ath11k/mhi.c b/drivers/net/wireless/ath/ath11k/mhi.c
+index 5de255969364..1aa1e0f01b85 100644
 --- a/drivers/net/wireless/ath/ath11k/mhi.c
 +++ b/drivers/net/wireless/ath/ath11k/mhi.c
-@@ -273,10 +273,10 @@ static int ath11k_mhi_get_msi(struct ath
+@@ -273,10 +273,10 @@ static int ath11k_mhi_get_msi(struct ath11k_pci *ab_pci)
  	for (i = 0; i < num_vectors; i++) {
  		msi_data = base_vector;
  
@@ -104,7 +112,7 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
  	}
  
  	ab_pci->mhi_ctrl->irq = irq;
-@@ -408,7 +408,7 @@ int ath11k_mhi_register(struct ath11k_pc
+@@ -408,7 +408,7 @@ int ath11k_mhi_register(struct ath11k_pci *ab_pci)
  		return ret;
  	}
  
@@ -113,9 +121,11 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
  		mhi_ctrl->irq_flags = IRQF_SHARED | IRQF_NOBALANCING;
  
  	if (test_bit(ATH11K_FLAG_FIXED_MEM_RGN, &ab->dev_flags)) {
+diff --git a/drivers/net/wireless/ath/ath11k/pci.c b/drivers/net/wireless/ath/ath11k/pci.c
+index fd5487d7045e..3fd5b416a564 100644
 --- a/drivers/net/wireless/ath/ath11k/pci.c
 +++ b/drivers/net/wireless/ath/ath11k/pci.c
-@@ -36,6 +36,85 @@ static const struct pci_device_id ath11k
+@@ -36,6 +36,85 @@ static const struct pci_device_id ath11k_pci_id_table[] = {
  
  MODULE_DEVICE_TABLE(pci, ath11k_pci_id_table);
  
@@ -201,7 +211,7 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
  static const struct ath11k_bus_params ath11k_pci_bus_params = {
  	.mhi_support = true,
  	.m3_fw_support = true,
-@@ -318,8 +397,7 @@ static int ath11k_pci_alloc_msi(struct a
+@@ -318,8 +397,7 @@ static int ath11k_pci_alloc_msi(struct ath11k_pci *ab_pci)
  					    msi_config->total_vectors,
  					    PCI_IRQ_MSI);
  	if (num_vectors == msi_config->total_vectors) {
@@ -211,7 +221,7 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
  	} else {
  		num_vectors = pci_alloc_irq_vectors(ab_pci->pdev,
  						    1,
-@@ -329,9 +407,8 @@ static int ath11k_pci_alloc_msi(struct a
+@@ -329,9 +407,8 @@ static int ath11k_pci_alloc_msi(struct ath11k_pci *ab_pci)
  			ret = -EINVAL;
  			goto reset_msi_config;
  		}
@@ -222,7 +232,7 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
  		ath11k_dbg(ab, ATH11K_DBG_PCI, "request MSI one vector\n");
  	}
  	ath11k_info(ab, "MSI vectors: %d\n", num_vectors);
-@@ -487,13 +564,20 @@ static void ath11k_pci_aspm_disable(stru
+@@ -487,13 +564,20 @@ static void ath11k_pci_aspm_disable(struct ath11k_pci *ab_pci)
  	set_bit(ATH11K_PCI_ASPM_RESTORE, &ab_pci->flags);
  }
  
@@ -244,7 +254,7 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
  	ath11k_pci_sw_reset(ab_pci->ab, true);
  
  	/* Disable ASPM during firmware download due to problems switching
-@@ -520,14 +604,14 @@ static void ath11k_pci_power_down(struct
+@@ -520,14 +604,14 @@ static void ath11k_pci_power_down(struct ath11k_base *ab)
  	struct ath11k_pci *ab_pci = ath11k_pci_priv(ab);
  
  	/* restore aspm in case firmware bootup fails */
@@ -261,7 +271,7 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
  	ath11k_pci_sw_reset(ab_pci->ab, false);
  }
  
-@@ -559,8 +643,25 @@ static void ath11k_pci_hif_ce_irq_disabl
+@@ -559,8 +643,25 @@ static void ath11k_pci_hif_ce_irq_disable(struct ath11k_base *ab)
  	ath11k_pcic_ce_irq_disable_sync(ab);
  }
  
@@ -288,7 +298,7 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
  	.stop = ath11k_pcic_stop,
  	.read32 = ath11k_pcic_read32,
  	.write32 = ath11k_pcic_write32,
-@@ -592,6 +693,15 @@ static void ath11k_pci_read_hw_version(s
+@@ -592,6 +693,15 @@ static void ath11k_pci_read_hw_version(struct ath11k_base *ab, u32 *major, u32 *
  		   *major, *minor);
  }
  
@@ -304,7 +314,7 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
  static int ath11k_pci_probe(struct pci_dev *pdev,
  			    const struct pci_device_id *pci_dev)
  {
-@@ -654,9 +764,12 @@ static int ath11k_pci_probe(struct pci_d
+@@ -654,9 +764,12 @@ static int ath11k_pci_probe(struct pci_dev *pdev,
  			ret = -EOPNOTSUPP;
  			goto err_pci_free_region;
  		}
@@ -317,7 +327,7 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
  		ab->hw_rev = ATH11K_HW_QCN9074_HW10;
  		break;
  	case WCN6855_DEVICE_ID:
-@@ -685,6 +798,8 @@ unsupported_wcn6855_soc:
+@@ -685,6 +798,8 @@ static int ath11k_pci_probe(struct pci_dev *pdev,
  			ret = -EOPNOTSUPP;
  			goto err_pci_free_region;
  		}
@@ -326,7 +336,7 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
  		break;
  	default:
  		dev_err(&pdev->dev, "Unknown PCI device found: 0x%x\n",
-@@ -733,6 +848,12 @@ unsupported_wcn6855_soc:
+@@ -733,6 +848,12 @@ static int ath11k_pci_probe(struct pci_dev *pdev,
  		goto err_ce_free;
  	}
  
@@ -339,7 +349,7 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
  	/* kernel may allocate a dummy vector before request_irq and
  	 * then allocate a real vector when request_irq is called.
  	 * So get msi_data here again to avoid spurious interrupt
-@@ -741,16 +862,19 @@ unsupported_wcn6855_soc:
+@@ -741,16 +862,19 @@ static int ath11k_pci_probe(struct pci_dev *pdev,
  	ret = ath11k_pci_config_msi_data(ab_pci);
  	if (ret) {
  		ath11k_err(ab, "failed to config msi_data: %d\n", ret);
@@ -361,7 +371,7 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
  err_free_irq:
  	ath11k_pcic_free_irq(ab);
  
-@@ -780,7 +904,7 @@ static void ath11k_pci_remove(struct pci
+@@ -780,7 +904,7 @@ static void ath11k_pci_remove(struct pci_dev *pdev)
  	struct ath11k_base *ab = pci_get_drvdata(pdev);
  	struct ath11k_pci *ab_pci = ath11k_pci_priv(ab);
  
@@ -370,6 +380,8 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
  
  	if (test_bit(ATH11K_FLAG_QMI_FAIL, &ab->dev_flags)) {
  		ath11k_pci_power_down(ab);
+diff --git a/drivers/net/wireless/ath/ath11k/pci.h b/drivers/net/wireless/ath/ath11k/pci.h
+index c9cae48d784e..16a000b9cc5e 100644
 --- a/drivers/net/wireless/ath/ath11k/pci.h
 +++ b/drivers/net/wireless/ath/ath11k/pci.h
 @@ -54,9 +54,7 @@
@@ -391,12 +403,14 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
  };
  
  static inline struct ath11k_pci *ath11k_pci_priv(struct ath11k_base *ab)
-@@ -83,4 +79,5 @@ static inline struct ath11k_pci *ath11k_
+@@ -83,4 +79,5 @@ static inline struct ath11k_pci *ath11k_pci_priv(struct ath11k_base *ab)
  	return (struct ath11k_pci *)ab->drv_priv;
  }
  
 +int ath11k_pci_get_msi_irq(struct ath11k_base *ab, unsigned int vector);
  #endif
+diff --git a/drivers/net/wireless/ath/ath11k/pcic.c b/drivers/net/wireless/ath/ath11k/pcic.c
+index c743095387f1..63c678aea29e 100644
 --- a/drivers/net/wireless/ath/ath11k/pcic.c
 +++ b/drivers/net/wireless/ath/ath11k/pcic.c
 @@ -4,7 +4,6 @@
@@ -407,7 +421,7 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
  #include "core.h"
  #include "pcic.h"
  #include "debug.h"
-@@ -132,29 +131,6 @@ int ath11k_pcic_init_msi_config(struct a
+@@ -132,29 +131,6 @@ int ath11k_pcic_init_msi_config(struct ath11k_base *ab)
  }
  EXPORT_SYMBOL(ath11k_pcic_init_msi_config);
  
@@ -437,7 +451,7 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
  static inline u32 ath11k_pcic_get_window_start(struct ath11k_base *ab,
  					       u32 offset)
  {
-@@ -174,17 +150,15 @@ static inline u32 ath11k_pcic_get_window
+@@ -174,17 +150,15 @@ static inline u32 ath11k_pcic_get_window_start(struct ath11k_base *ab,
  
  void ath11k_pcic_write32(struct ath11k_base *ab, u32 offset, u32 value)
  {
@@ -459,7 +473,7 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
  
  	if (offset < ATH11K_PCI_WINDOW_START) {
  		iowrite32(value, ab->mem  + offset);
-@@ -194,38 +168,32 @@ void ath11k_pcic_write32(struct ath11k_b
+@@ -194,38 +168,32 @@ void ath11k_pcic_write32(struct ath11k_base *ab, u32 offset, u32 value)
  		else
  			window_start = ATH11K_PCI_WINDOW_START;
  
@@ -508,7 +522,7 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
  
  	if (offset < ATH11K_PCI_WINDOW_START) {
  		val = ioread32(ab->mem + offset);
-@@ -235,34 +203,23 @@ u32 ath11k_pcic_read32(struct ath11k_bas
+@@ -235,34 +203,23 @@ u32 ath11k_pcic_read32(struct ath11k_base *ab, u32 offset)
  		else
  			window_start = ATH11K_PCI_WINDOW_START;
  
@@ -549,7 +563,7 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
  void ath11k_pcic_get_msi_address(struct ath11k_base *ab, u32 *msi_addr_lo,
  				 u32 *msi_addr_hi)
  {
-@@ -343,13 +300,12 @@ void ath11k_pcic_free_irq(struct ath11k_
+@@ -343,13 +300,12 @@ void ath11k_pcic_free_irq(struct ath11k_base *ab)
  
  static void ath11k_pcic_ce_irq_enable(struct ath11k_base *ab, u16 ce_id)
  {
@@ -564,7 +578,7 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
  		return;
  
  	irq_idx = ATH11K_PCI_IRQ_CE0_OFFSET + ce_id;
-@@ -358,13 +314,12 @@ static void ath11k_pcic_ce_irq_enable(st
+@@ -358,13 +314,12 @@ static void ath11k_pcic_ce_irq_enable(struct ath11k_base *ab, u16 ce_id)
  
  static void ath11k_pcic_ce_irq_disable(struct ath11k_base *ab, u16 ce_id)
  {
@@ -579,7 +593,7 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
  		return;
  
  	irq_idx = ATH11K_PCI_IRQ_CE0_OFFSET + ce_id;
-@@ -429,13 +384,13 @@ static irqreturn_t ath11k_pcic_ce_interr
+@@ -429,13 +384,13 @@ static irqreturn_t ath11k_pcic_ce_interrupt_handler(int irq, void *arg)
  
  static void ath11k_pcic_ext_grp_disable(struct ath11k_ext_irq_grp *irq_grp)
  {
@@ -595,7 +609,7 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
  		return;
  
  	for (i = 0; i < irq_grp->num_irq; i++)
-@@ -463,13 +418,13 @@ static void __ath11k_pcic_ext_irq_disabl
+@@ -463,13 +418,13 @@ static void __ath11k_pcic_ext_irq_disable(struct ath11k_base *sc)
  
  static void ath11k_pcic_ext_grp_enable(struct ath11k_ext_irq_grp *irq_grp)
  {
@@ -611,7 +625,7 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
  		return;
  
  	for (i = 0; i < irq_grp->num_irq; i++)
-@@ -557,11 +512,22 @@ static irqreturn_t ath11k_pcic_ext_inter
+@@ -557,11 +512,22 @@ static irqreturn_t ath11k_pcic_ext_interrupt_handler(int irq, void *arg)
  	return IRQ_HANDLED;
  }
  
@@ -635,7 +649,7 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
  
  	ret = ath11k_pcic_get_user_msi_assignment(ab, "DP", &num_vectors,
  						  &user_base_data,
-@@ -569,6 +535,10 @@ static int ath11k_pcic_ext_irq_config(st
+@@ -569,6 +535,10 @@ static int ath11k_pcic_ext_irq_config(struct ath11k_base *ab)
  	if (ret < 0)
  		return ret;
  
@@ -646,7 +660,7 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
  	for (i = 0; i < ATH11K_EXT_IRQ_GRP_NUM_MAX; i++) {
  		struct ath11k_ext_irq_grp *irq_grp = &ab->ext_irq_grp[i];
  		u32 num_irq = 0;
-@@ -596,7 +566,10 @@ static int ath11k_pcic_ext_irq_config(st
+@@ -596,7 +566,10 @@ static int ath11k_pcic_ext_irq_config(struct ath11k_base *ab)
  		for (j = 0; j < irq_grp->num_irq; j++) {
  			int irq_idx = irq_grp->irqs[j];
  			int vector = (i % num_vectors) + base_vector;
@@ -658,7 +672,7 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
  
  			ab->irq_num[irq_idx] = irq;
  
-@@ -605,8 +578,7 @@ static int ath11k_pcic_ext_irq_config(st
+@@ -605,8 +578,7 @@ static int ath11k_pcic_ext_irq_config(struct ath11k_base *ab)
  
  			irq_set_status_flags(irq, IRQ_DISABLE_UNLAZY);
  			ret = request_irq(irq, ath11k_pcic_ext_interrupt_handler,
@@ -668,7 +682,7 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
  			if (ret) {
  				ath11k_err(ab, "failed request irq %d: %d\n",
  					   vector, ret);
-@@ -619,35 +591,24 @@ static int ath11k_pcic_ext_irq_config(st
+@@ -619,35 +591,24 @@ static int ath11k_pcic_ext_irq_config(struct ath11k_base *ab)
  	return 0;
  }
  
@@ -708,7 +722,7 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
  
  	/* Configure CE irqs */
  	for (i = 0, msi_data_idx = 0; i < ab->hw_params.ce_count; i++) {
-@@ -655,7 +616,10 @@ int ath11k_pcic_config_irq(struct ath11k
+@@ -655,7 +616,10 @@ int ath11k_pcic_config_irq(struct ath11k_base *ab)
  			continue;
  
  		msi_data = (msi_data_idx % msi_data_count) + msi_irq_start;
@@ -720,7 +734,7 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
  		ce_pipe = &ab->ce.ce_pipe[i];
  
  		irq_idx = ATH11K_PCI_IRQ_CE0_OFFSET + i;
-@@ -663,12 +627,11 @@ int ath11k_pcic_config_irq(struct ath11k
+@@ -663,12 +627,11 @@ int ath11k_pcic_config_irq(struct ath11k_base *ab)
  		tasklet_setup(&ce_pipe->intr_tq, ath11k_pcic_ce_tasklet);
  
  		ret = request_irq(irq, ath11k_pcic_ce_interrupt_handler,
@@ -735,7 +749,7 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
  		}
  
  		ab->irq_num[irq_idx] = irq;
-@@ -679,13 +642,9 @@ int ath11k_pcic_config_irq(struct ath11k
+@@ -679,13 +642,9 @@ int ath11k_pcic_config_irq(struct ath11k_base *ab)
  
  	ret = ath11k_pcic_ext_irq_config(ab);
  	if (ret)
@@ -750,7 +764,7 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
  }
  
  void ath11k_pcic_ce_irqs_enable(struct ath11k_base *ab)
-@@ -730,17 +689,7 @@ void ath11k_pcic_stop(struct ath11k_base
+@@ -730,17 +689,7 @@ void ath11k_pcic_stop(struct ath11k_base *ab)
  
  int ath11k_pcic_start(struct ath11k_base *ab)
  {
@@ -769,6 +783,8 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
  
  	ath11k_pcic_ce_irqs_enable(ab);
  	ath11k_ce_rx_post_buf(ab);
+diff --git a/drivers/net/wireless/ath/ath11k/pcic.h b/drivers/net/wireless/ath/ath11k/pcic.h
+index 34e8c069d6e4..c53d86289a8e 100644
 --- a/drivers/net/wireless/ath/ath11k/pcic.h
 +++ b/drivers/net/wireless/ath/ath11k/pcic.h
 @@ -8,7 +8,6 @@
@@ -787,7 +803,7 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
  void ath11k_pcic_write32(struct ath11k_base *ab, u32 offset, u32 value);
  u32 ath11k_pcic_read32(struct ath11k_base *ab, u32 offset);
  void ath11k_pcic_get_msi_address(struct ath11k_base *ab, u32 *msi_addr_lo,
-@@ -44,8 +42,5 @@ int ath11k_pcic_map_service_to_pipe(stru
+@@ -44,8 +42,5 @@ int ath11k_pcic_map_service_to_pipe(struct ath11k_base *ab, u16 service_id,
  				    u8 *ul_pipe, u8 *dl_pipe);
  void ath11k_pcic_ce_irqs_enable(struct ath11k_base *ab);
  void ath11k_pcic_ce_irq_disable_sync(struct ath11k_base *ab);
@@ -796,3 +812,6 @@ Link: https://lore.kernel.org/r/20220328055714.6449-6-quic_mpubbise@quicinc.com
 -				      const struct cpumask *m);
  int ath11k_pcic_init_msi_config(struct ath11k_base *ab);
  #endif
+-- 
+2.37.1
+

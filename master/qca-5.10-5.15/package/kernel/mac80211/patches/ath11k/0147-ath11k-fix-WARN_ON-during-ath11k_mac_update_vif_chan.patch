@@ -19,9 +19,11 @@ Link: https://lore.kernel.org/r/1644416019-820-1-git-send-email-quic_vnaralas@qu
  drivers/net/wireless/ath/ath11k/mac.c | 32 ++++++++++++++++++++++-----
  1 file changed, 26 insertions(+), 6 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index a9f353745510..8b6126c730c4 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -6863,13 +6863,33 @@ ath11k_mac_update_vif_chan(struct ath11k
+@@ -6863,13 +6863,33 @@ ath11k_mac_update_vif_chan(struct ath11k *ar,
  		if (WARN_ON(!arvif->is_started))
  			continue;
  
@@ -61,3 +63,6 @@ Link: https://lore.kernel.org/r/1644416019-820-1-git-send-email-quic_vnaralas@qu
  			continue;
  		}
  
+-- 
+2.37.1
+

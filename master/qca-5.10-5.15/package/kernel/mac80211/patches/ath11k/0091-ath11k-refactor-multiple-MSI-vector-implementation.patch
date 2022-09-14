@@ -17,9 +17,11 @@ Link: https://lore.kernel.org/r/20211026041705.5167-1-bqiang@codeaurora.org
  drivers/net/wireless/ath/ath11k/pci.h |  3 ++
  2 files changed, 43 insertions(+), 8 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/pci.c b/drivers/net/wireless/ath/ath11k/pci.c
+index 6e8d4d89dcb4..d3fad47a968d 100644
 --- a/drivers/net/wireless/ath/ath11k/pci.c
 +++ b/drivers/net/wireless/ath/ath11k/pci.c
-@@ -486,11 +486,11 @@ int ath11k_pci_get_user_msi_assignment(s
+@@ -486,11 +486,11 @@ int ath11k_pci_get_user_msi_assignment(struct ath11k_pci *ab_pci, char *user_nam
  	for (idx = 0; idx < msi_config->total_users; idx++) {
  		if (strcmp(user_name, msi_config->users[idx].name) == 0) {
  			*num_vectors = msi_config->users[idx].num_vectors;
@@ -35,7 +37,7 @@ Link: https://lore.kernel.org/r/20211026041705.5167-1-bqiang@codeaurora.org
  				   user_name, *num_vectors, *user_base_data,
  				   *base_vector);
  
-@@ -561,16 +561,30 @@ static void ath11k_pci_free_irq(struct a
+@@ -561,16 +561,30 @@ static void ath11k_pci_free_irq(struct ath11k_base *ab)
  
  static void ath11k_pci_ce_irq_enable(struct ath11k_base *ab, u16 ce_id)
  {
@@ -66,7 +68,7 @@ Link: https://lore.kernel.org/r/20211026041705.5167-1-bqiang@codeaurora.org
  	irq_idx = ATH11K_PCI_IRQ_CE0_OFFSET + ce_id;
  	disable_irq_nosync(ab->irq_num[irq_idx]);
  }
-@@ -630,8 +644,15 @@ static irqreturn_t ath11k_pci_ce_interru
+@@ -630,8 +644,15 @@ static irqreturn_t ath11k_pci_ce_interrupt_handler(int irq, void *arg)
  
  static void ath11k_pci_ext_grp_disable(struct ath11k_ext_irq_grp *irq_grp)
  {
@@ -82,7 +84,7 @@ Link: https://lore.kernel.org/r/20211026041705.5167-1-bqiang@codeaurora.org
  	for (i = 0; i < irq_grp->num_irq; i++)
  		disable_irq_nosync(irq_grp->ab->irq_num[irq_grp->irqs[i]]);
  }
-@@ -657,8 +678,15 @@ static void __ath11k_pci_ext_irq_disable
+@@ -657,8 +678,15 @@ static void __ath11k_pci_ext_irq_disable(struct ath11k_base *sc)
  
  static void ath11k_pci_ext_grp_enable(struct ath11k_ext_irq_grp *irq_grp)
  {
@@ -98,7 +100,7 @@ Link: https://lore.kernel.org/r/20211026041705.5167-1-bqiang@codeaurora.org
  	for (i = 0; i < irq_grp->num_irq; i++)
  		enable_irq(irq_grp->ab->irq_num[irq_grp->irqs[i]]);
  }
-@@ -742,6 +770,7 @@ static irqreturn_t ath11k_pci_ext_interr
+@@ -742,6 +770,7 @@ static irqreturn_t ath11k_pci_ext_interrupt_handler(int irq, void *arg)
  
  static int ath11k_pci_ext_irq_config(struct ath11k_base *ab)
  {
@@ -106,7 +108,7 @@ Link: https://lore.kernel.org/r/20211026041705.5167-1-bqiang@codeaurora.org
  	int i, j, ret, num_vectors = 0;
  	u32 user_base_data = 0, base_vector = 0;
  
-@@ -788,16 +817,15 @@ static int ath11k_pci_ext_irq_config(str
+@@ -788,16 +817,15 @@ static int ath11k_pci_ext_irq_config(struct ath11k_base *ab)
  
  			irq_set_status_flags(irq, IRQ_DISABLE_UNLAZY);
  			ret = request_irq(irq, ath11k_pci_ext_interrupt_handler,
@@ -125,7 +127,7 @@ Link: https://lore.kernel.org/r/20211026041705.5167-1-bqiang@codeaurora.org
  	}
  
  	return 0;
-@@ -805,6 +833,7 @@ static int ath11k_pci_ext_irq_config(str
+@@ -805,6 +833,7 @@ static int ath11k_pci_ext_irq_config(struct ath11k_base *ab)
  
  static int ath11k_pci_config_irq(struct ath11k_base *ab)
  {
@@ -133,7 +135,7 @@ Link: https://lore.kernel.org/r/20211026041705.5167-1-bqiang@codeaurora.org
  	struct ath11k_ce_pipe *ce_pipe;
  	u32 msi_data_start;
  	u32 msi_data_count, msi_data_idx;
-@@ -832,7 +861,7 @@ static int ath11k_pci_config_irq(struct
+@@ -832,7 +861,7 @@ static int ath11k_pci_config_irq(struct ath11k_base *ab)
  		tasklet_setup(&ce_pipe->intr_tq, ath11k_pci_ce_tasklet);
  
  		ret = request_irq(irq, ath11k_pci_ce_interrupt_handler,
@@ -142,7 +144,7 @@ Link: https://lore.kernel.org/r/20211026041705.5167-1-bqiang@codeaurora.org
  				  ce_pipe);
  		if (ret) {
  			ath11k_err(ab, "failed to request irq %d: %d\n",
-@@ -926,6 +955,9 @@ static int ath11k_pci_alloc_msi(struct a
+@@ -926,6 +955,9 @@ static int ath11k_pci_alloc_msi(struct ath11k_pci *ab_pci)
  			return -EINVAL;
  		else
  			return num_vectors;
@@ -152,6 +154,8 @@ Link: https://lore.kernel.org/r/20211026041705.5167-1-bqiang@codeaurora.org
  	}
  	ath11k_pci_msi_disable(ab_pci);
  
+diff --git a/drivers/net/wireless/ath/ath11k/pci.h b/drivers/net/wireless/ath/ath11k/pci.h
+index f3e645891d19..61d67b20a0eb 100644
 --- a/drivers/net/wireless/ath/ath11k/pci.h
 +++ b/drivers/net/wireless/ath/ath11k/pci.h
 @@ -68,6 +68,7 @@ enum ath11k_pci_flags {
@@ -171,3 +175,6 @@ Link: https://lore.kernel.org/r/20211026041705.5167-1-bqiang@codeaurora.org
  };
  
  static inline struct ath11k_pci *ath11k_pci_priv(struct ath11k_base *ab)
+-- 
+2.37.1
+

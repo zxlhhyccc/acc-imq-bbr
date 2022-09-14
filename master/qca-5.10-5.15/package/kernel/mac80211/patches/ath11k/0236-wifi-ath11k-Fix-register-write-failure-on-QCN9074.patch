@@ -59,9 +59,11 @@ Link: https://lore.kernel.org/r/20220608062954.27792-1-quic_mpubbise@quicinc.com
  drivers/net/wireless/ath/ath11k/pcic.h |  2 +
  6 files changed, 128 insertions(+), 69 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/ahb.c b/drivers/net/wireless/ath/ath11k/ahb.c
+index d7d33d5cdfc5..c47414710138 100644
 --- a/drivers/net/wireless/ath/ath11k/ahb.c
 +++ b/drivers/net/wireless/ath/ath11k/ahb.c
-@@ -140,8 +140,53 @@ ath11k_ahb_get_msi_irq_wcn6750(struct at
+@@ -140,8 +140,53 @@ ath11k_ahb_get_msi_irq_wcn6750(struct ath11k_base *ab, unsigned int vector)
  	return ab->pci.msi.irqs[vector];
  }
  
@@ -115,7 +117,7 @@ Link: https://lore.kernel.org/r/20220608062954.27792-1-quic_mpubbise@quicinc.com
  };
  
  static inline u32 ath11k_ahb_read32(struct ath11k_base *ab, u32 offset)
-@@ -971,11 +1016,16 @@ static int ath11k_ahb_probe(struct platf
+@@ -971,11 +1016,16 @@ static int ath11k_ahb_probe(struct platform_device *pdev)
  	}
  
  	ab->hif.ops = hif_ops;
@@ -133,9 +135,11 @@ Link: https://lore.kernel.org/r/20220608062954.27792-1-quic_mpubbise@quicinc.com
  	ret = ath11k_core_pre_init(ab);
  	if (ret)
  		goto err_core_free;
+diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
+index c150e6c8bf9c..c0548da30678 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -108,8 +108,6 @@ static const struct ath11k_hw_params ath
+@@ -108,8 +108,6 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.fixed_mem_region = true,
  		.static_window_map = false,
  		.hybrid_bus_type = false,
@@ -144,7 +148,7 @@ Link: https://lore.kernel.org/r/20220608062954.27792-1-quic_mpubbise@quicinc.com
  		.fixed_fw_mem = false,
  		.support_off_channel_tx = false,
  	},
-@@ -185,8 +183,6 @@ static const struct ath11k_hw_params ath
+@@ -185,8 +183,6 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.fixed_mem_region = true,
  		.static_window_map = false,
  		.hybrid_bus_type = false,
@@ -153,7 +157,7 @@ Link: https://lore.kernel.org/r/20220608062954.27792-1-quic_mpubbise@quicinc.com
  		.fixed_fw_mem = false,
  		.support_off_channel_tx = false,
  	},
-@@ -261,8 +257,6 @@ static const struct ath11k_hw_params ath
+@@ -261,8 +257,6 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.fixed_mem_region = false,
  		.static_window_map = false,
  		.hybrid_bus_type = false,
@@ -162,7 +166,7 @@ Link: https://lore.kernel.org/r/20220608062954.27792-1-quic_mpubbise@quicinc.com
  		.fixed_fw_mem = false,
  		.support_off_channel_tx = true,
  	},
-@@ -337,8 +331,6 @@ static const struct ath11k_hw_params ath
+@@ -337,8 +331,6 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.fixed_mem_region = false,
  		.static_window_map = true,
  		.hybrid_bus_type = false,
@@ -171,7 +175,7 @@ Link: https://lore.kernel.org/r/20220608062954.27792-1-quic_mpubbise@quicinc.com
  		.fixed_fw_mem = false,
  		.support_off_channel_tx = false,
  	},
-@@ -413,8 +405,6 @@ static const struct ath11k_hw_params ath
+@@ -413,8 +405,6 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.fixed_mem_region = false,
  		.static_window_map = false,
  		.hybrid_bus_type = false,
@@ -180,7 +184,7 @@ Link: https://lore.kernel.org/r/20220608062954.27792-1-quic_mpubbise@quicinc.com
  		.fixed_fw_mem = false,
  		.support_off_channel_tx = true,
  	},
-@@ -487,8 +477,6 @@ static const struct ath11k_hw_params ath
+@@ -487,8 +477,6 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.fixed_mem_region = false,
  		.static_window_map = false,
  		.hybrid_bus_type = false,
@@ -189,7 +193,7 @@ Link: https://lore.kernel.org/r/20220608062954.27792-1-quic_mpubbise@quicinc.com
  		.fixed_fw_mem = false,
  		.support_off_channel_tx = true,
  	},
-@@ -561,8 +549,6 @@ static const struct ath11k_hw_params ath
+@@ -561,8 +549,6 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.fixed_mem_region = false,
  		.static_window_map = true,
  		.hybrid_bus_type = true,
@@ -198,6 +202,8 @@ Link: https://lore.kernel.org/r/20220608062954.27792-1-quic_mpubbise@quicinc.com
  		.fixed_fw_mem = true,
  		.support_off_channel_tx = false,
  	},
+diff --git a/drivers/net/wireless/ath/ath11k/hw.h b/drivers/net/wireless/ath/ath11k/hw.h
+index d05f2e942d47..89ab1d40a8f3 100644
 --- a/drivers/net/wireless/ath/ath11k/hw.h
 +++ b/drivers/net/wireless/ath/ath11k/hw.h
 @@ -202,8 +202,6 @@ struct ath11k_hw_params {
@@ -209,9 +215,11 @@ Link: https://lore.kernel.org/r/20220608062954.27792-1-quic_mpubbise@quicinc.com
  	bool fixed_fw_mem;
  	bool support_off_channel_tx;
  };
+diff --git a/drivers/net/wireless/ath/ath11k/pci.c b/drivers/net/wireless/ath/ath11k/pci.c
+index 487a303b3077..5bd34a6273d9 100644
 --- a/drivers/net/wireless/ath/ath11k/pci.c
 +++ b/drivers/net/wireless/ath/ath11k/pci.c
-@@ -50,6 +50,22 @@ static void ath11k_pci_bus_release(struc
+@@ -50,6 +50,22 @@ static void ath11k_pci_bus_release(struct ath11k_base *ab)
  	mhi_device_put(ab_pci->mhi_ctrl->mhi_dev);
  }
  
@@ -240,14 +248,14 @@ Link: https://lore.kernel.org/r/20220608062954.27792-1-quic_mpubbise@quicinc.com
  	struct ath11k_pci *ab_pci = ath11k_pci_priv(ab);
 -	u32 window_start = ATH11K_PCI_WINDOW_START;
 +	u32 window_start;
-+
-+	window_start = ath11k_pci_get_window_start(ab, offset);
  
 -	spin_lock_bh(&ab_pci->window_lock);
 -	ath11k_pci_select_window(ab_pci, offset);
 -	iowrite32(value, ab->mem + window_start +
 -		  (offset & ATH11K_PCI_WINDOW_RANGE_MASK));
 -	spin_unlock_bh(&ab_pci->window_lock);
++	window_start = ath11k_pci_get_window_start(ab, offset);
++
 +	if (window_start == ATH11K_PCI_WINDOW_START) {
 +		spin_lock_bh(&ab_pci->window_lock);
 +		ath11k_pci_select_window(ab_pci, offset);
@@ -266,14 +274,14 @@ Link: https://lore.kernel.org/r/20220608062954.27792-1-quic_mpubbise@quicinc.com
 -	u32 window_start = ATH11K_PCI_WINDOW_START;
 -	u32 val;
 +	u32 window_start, val;
-+
-+	window_start = ath11k_pci_get_window_start(ab, offset);
  
 -	spin_lock_bh(&ab_pci->window_lock);
 -	ath11k_pci_select_window(ab_pci, offset);
 -	val = ioread32(ab->mem + window_start +
 -		       (offset & ATH11K_PCI_WINDOW_RANGE_MASK));
 -	spin_unlock_bh(&ab_pci->window_lock);
++	window_start = ath11k_pci_get_window_start(ab, offset);
++
 +	if (window_start == ATH11K_PCI_WINDOW_START) {
 +		spin_lock_bh(&ab_pci->window_lock);
 +		ath11k_pci_select_window(ab_pci, offset);
@@ -287,7 +295,7 @@ Link: https://lore.kernel.org/r/20220608062954.27792-1-quic_mpubbise@quicinc.com
  
  	return val;
  }
-@@ -110,6 +139,8 @@ static const struct ath11k_pci_ops ath11
+@@ -110,6 +139,8 @@ static const struct ath11k_pci_ops ath11k_pci_ops_qca6390 = {
  };
  
  static const struct ath11k_pci_ops ath11k_pci_ops_qcn9074 = {
@@ -296,7 +304,7 @@ Link: https://lore.kernel.org/r/20220608062954.27792-1-quic_mpubbise@quicinc.com
  	.get_msi_irq = ath11k_pci_get_msi_irq,
  	.window_write32 = ath11k_pci_window_write32,
  	.window_read32 = ath11k_pci_window_read32,
-@@ -697,6 +728,7 @@ static int ath11k_pci_probe(struct pci_d
+@@ -697,6 +728,7 @@ static int ath11k_pci_probe(struct pci_dev *pdev,
  	struct ath11k_base *ab;
  	struct ath11k_pci *ab_pci;
  	u32 soc_hw_version_major, soc_hw_version_minor, addr;
@@ -304,7 +312,7 @@ Link: https://lore.kernel.org/r/20220608062954.27792-1-quic_mpubbise@quicinc.com
  	int ret;
  
  	ab = ath11k_core_alloc(&pdev->dev, sizeof(*ab_pci), ATH11K_BUS_PCI);
-@@ -754,10 +786,10 @@ static int ath11k_pci_probe(struct pci_d
+@@ -754,10 +786,10 @@ static int ath11k_pci_probe(struct pci_dev *pdev,
  			goto err_pci_free_region;
  		}
  
@@ -317,7 +325,7 @@ Link: https://lore.kernel.org/r/20220608062954.27792-1-quic_mpubbise@quicinc.com
  		ab->hw_rev = ATH11K_HW_QCN9074_HW10;
  		break;
  	case WCN6855_DEVICE_ID:
-@@ -787,7 +819,7 @@ unsupported_wcn6855_soc:
+@@ -787,7 +819,7 @@ static int ath11k_pci_probe(struct pci_dev *pdev,
  			goto err_pci_free_region;
  		}
  
@@ -326,7 +334,7 @@ Link: https://lore.kernel.org/r/20220608062954.27792-1-quic_mpubbise@quicinc.com
  		break;
  	default:
  		dev_err(&pdev->dev, "Unknown PCI device found: 0x%x\n",
-@@ -796,6 +828,12 @@ unsupported_wcn6855_soc:
+@@ -796,6 +828,12 @@ static int ath11k_pci_probe(struct pci_dev *pdev,
  		goto err_pci_free_region;
  	}
  
@@ -339,9 +347,11 @@ Link: https://lore.kernel.org/r/20220608062954.27792-1-quic_mpubbise@quicinc.com
  	ret = ath11k_pcic_init_msi_config(ab);
  	if (ret) {
  		ath11k_err(ab, "failed to init msi config: %d\n", ret);
+diff --git a/drivers/net/wireless/ath/ath11k/pcic.c b/drivers/net/wireless/ath/ath11k/pcic.c
+index cf12b98c480d..1adf20ebef27 100644
 --- a/drivers/net/wireless/ath/ath11k/pcic.c
 +++ b/drivers/net/wireless/ath/ath11k/pcic.c
-@@ -140,23 +140,8 @@ int ath11k_pcic_init_msi_config(struct a
+@@ -140,23 +140,8 @@ int ath11k_pcic_init_msi_config(struct ath11k_base *ab)
  }
  EXPORT_SYMBOL(ath11k_pcic_init_msi_config);
  
@@ -365,7 +375,7 @@ Link: https://lore.kernel.org/r/20220608062954.27792-1-quic_mpubbise@quicinc.com
  	int ret = 0;
  
  	/* for offset beyond BAR + 4K - 32, may
-@@ -166,15 +151,10 @@ void ath11k_pcic_write32(struct ath11k_b
+@@ -166,15 +151,10 @@ void ath11k_pcic_write32(struct ath11k_base *ab, u32 offset, u32 value)
  	    offset >= ATH11K_PCI_ACCESS_ALWAYS_OFF && ab->pci.ops->wakeup)
  		ret = ab->pci.ops->wakeup(ab);
  
@@ -394,7 +404,7 @@ Link: https://lore.kernel.org/r/20220608062954.27792-1-quic_mpubbise@quicinc.com
  
  	/* for offset beyond BAR + 4K - 32, may
  	 * need to wakeup the device to access.
-@@ -196,15 +175,10 @@ u32 ath11k_pcic_read32(struct ath11k_bas
+@@ -196,15 +175,10 @@ u32 ath11k_pcic_read32(struct ath11k_base *ab, u32 offset)
  	    offset >= ATH11K_PCI_ACCESS_ALWAYS_OFF && ab->pci.ops->wakeup)
  		ret = ab->pci.ops->wakeup(ab);
  
@@ -412,7 +422,7 @@ Link: https://lore.kernel.org/r/20220608062954.27792-1-quic_mpubbise@quicinc.com
  
  	if (test_bit(ATH11K_FLAG_DEVICE_INIT_DONE, &ab->dev_flags) &&
  	    offset >= ATH11K_PCI_ACCESS_ALWAYS_OFF && ab->pci.ops->release &&
-@@ -516,11 +490,6 @@ static irqreturn_t ath11k_pcic_ext_inter
+@@ -516,11 +490,6 @@ static irqreturn_t ath11k_pcic_ext_interrupt_handler(int irq, void *arg)
  static int
  ath11k_pcic_get_msi_irq(struct ath11k_base *ab, unsigned int vector)
  {
@@ -424,7 +434,7 @@ Link: https://lore.kernel.org/r/20220608062954.27792-1-quic_mpubbise@quicinc.com
  	return ab->pci.ops->get_msi_irq(ab, vector);
  }
  
-@@ -746,3 +715,19 @@ int ath11k_pcic_map_service_to_pipe(stru
+@@ -746,3 +715,19 @@ int ath11k_pcic_map_service_to_pipe(struct ath11k_base *ab, u16 service_id,
  	return 0;
  }
  EXPORT_SYMBOL(ath11k_pcic_map_service_to_pipe);
@@ -444,12 +454,17 @@ Link: https://lore.kernel.org/r/20220608062954.27792-1-quic_mpubbise@quicinc.com
 +	return 0;
 +}
 +EXPORT_SYMBOL(ath11k_pcic_register_pci_ops);
+diff --git a/drivers/net/wireless/ath/ath11k/pcic.h b/drivers/net/wireless/ath/ath11k/pcic.h
+index c53d86289a8e..0afbb34510db 100644
 --- a/drivers/net/wireless/ath/ath11k/pcic.h
 +++ b/drivers/net/wireless/ath/ath11k/pcic.h
-@@ -43,4 +43,6 @@ int ath11k_pcic_map_service_to_pipe(stru
+@@ -43,4 +43,6 @@ int ath11k_pcic_map_service_to_pipe(struct ath11k_base *ab, u16 service_id,
  void ath11k_pcic_ce_irqs_enable(struct ath11k_base *ab);
  void ath11k_pcic_ce_irq_disable_sync(struct ath11k_base *ab);
  int ath11k_pcic_init_msi_config(struct ath11k_base *ab);
 +int ath11k_pcic_register_pci_ops(struct ath11k_base *ab,
 +				 const struct ath11k_pci_ops *pci_ops);
  #endif
+-- 
+2.37.1
+

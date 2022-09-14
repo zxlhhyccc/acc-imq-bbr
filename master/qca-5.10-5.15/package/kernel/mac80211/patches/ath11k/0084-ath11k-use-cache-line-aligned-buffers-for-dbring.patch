@@ -23,9 +23,11 @@ Link: https://lore.kernel.org/r/1635831693-15962-1-git-send-email-quic_ramess@qu
  drivers/net/wireless/ath/ath11k/dbring.h |  2 +-
  2 files changed, 13 insertions(+), 5 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/dbring.c b/drivers/net/wireless/ath/ath11k/dbring.c
+index fd98ba5b1130..de220a10bce3 100644
 --- a/drivers/net/wireless/ath/ath11k/dbring.c
 +++ b/drivers/net/wireless/ath/ath11k/dbring.c
-@@ -87,17 +87,23 @@ static int ath11k_dbring_fill_bufs(struc
+@@ -87,17 +87,23 @@ static int ath11k_dbring_fill_bufs(struct ath11k *ar,
  	req_entries = min(num_free, ring->bufs_max);
  	num_remain = req_entries;
  	align = ring->buf_align;
@@ -51,7 +53,7 @@ Link: https://lore.kernel.org/r/1635831693-15962-1-git-send-email-quic_ramess@qu
  			kfree(buff);
  			break;
  		}
-@@ -282,7 +288,7 @@ int ath11k_dbring_buffer_release_event(s
+@@ -282,7 +288,7 @@ int ath11k_dbring_buffer_release_event(struct ath11k_base *ab,
  
  	srng = &ab->hal.srng_list[ring->refill_srng.ring_id];
  	num_entry = ev->fixed.num_buf_release_entry;
@@ -60,7 +62,7 @@ Link: https://lore.kernel.org/r/1635831693-15962-1-git-send-email-quic_ramess@qu
  	num_buff_reaped = 0;
  
  	spin_lock_bh(&srng->lock);
-@@ -319,7 +325,8 @@ int ath11k_dbring_buffer_release_event(s
+@@ -319,7 +325,8 @@ int ath11k_dbring_buffer_release_event(struct ath11k_base *ab,
  			ring->handler(ar, &handler_data);
  		}
  
@@ -70,7 +72,7 @@ Link: https://lore.kernel.org/r/1635831693-15962-1-git-send-email-quic_ramess@qu
  		ath11k_dbring_bufs_replenish(ar, ring, buff);
  	}
  
-@@ -346,6 +353,7 @@ void ath11k_dbring_buf_cleanup(struct at
+@@ -346,6 +353,7 @@ void ath11k_dbring_buf_cleanup(struct ath11k *ar, struct ath11k_dbring *ring)
  		idr_remove(&ring->bufs_idr, buf_id);
  		dma_unmap_single(ar->ab->dev, buff->paddr,
  				 ring->buf_sz, DMA_FROM_DEVICE);
@@ -78,6 +80,8 @@ Link: https://lore.kernel.org/r/1635831693-15962-1-git-send-email-quic_ramess@qu
  		kfree(buff);
  	}
  
+diff --git a/drivers/net/wireless/ath/ath11k/dbring.h b/drivers/net/wireless/ath/ath11k/dbring.h
+index f7fce9ef9c36..78a985faa0a1 100644
 --- a/drivers/net/wireless/ath/ath11k/dbring.h
 +++ b/drivers/net/wireless/ath/ath11k/dbring.h
 @@ -13,7 +13,7 @@
@@ -89,3 +93,6 @@ Link: https://lore.kernel.org/r/1635831693-15962-1-git-send-email-quic_ramess@qu
  };
  
  struct ath11k_dbring_data {
+-- 
+2.37.1
+

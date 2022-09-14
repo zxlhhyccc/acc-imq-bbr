@@ -58,9 +58,11 @@ Link: https://lore.kernel.org/r/20220427120033.1046759-1-quic_bqiang@quicinc.com
  drivers/net/wireless/ath/ath11k/wmi.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
+index 3c0ac1e29479..598ec061694f 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -7844,7 +7844,7 @@ static void ath11k_wmi_gtk_offload_statu
+@@ -7844,7 +7844,7 @@ static void ath11k_wmi_gtk_offload_status_event(struct ath11k_base *ab,
  	replay_ctr_be = cpu_to_be64(replay_ctr);
  
  	ieee80211_gtk_rekey_notify(arvif->vif, arvif->bssid,
@@ -69,3 +71,6 @@ Link: https://lore.kernel.org/r/20220427120033.1046759-1-quic_bqiang@quicinc.com
  
  	kfree(tb);
  }
+-- 
+2.37.1
+

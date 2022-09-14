@@ -17,9 +17,11 @@ Link: https://lore.kernel.org/r/20220401173042.17467-4-kvalo@kernel.org
  drivers/net/wireless/ath/ath11k/mhi.c | 16 +++++++++-------
  1 file changed, 9 insertions(+), 7 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/mhi.c b/drivers/net/wireless/ath/ath11k/mhi.c
+index defdf641df0b..c44df17719f6 100644
 --- a/drivers/net/wireless/ath/ath11k/mhi.c
 +++ b/drivers/net/wireless/ath/ath11k/mhi.c
-@@ -467,22 +467,24 @@ void ath11k_mhi_unregister(struct ath11k
+@@ -467,22 +467,24 @@ void ath11k_mhi_unregister(struct ath11k_pci *ab_pci)
  
  int ath11k_mhi_start(struct ath11k_pci *ab_pci)
  {
@@ -51,3 +53,6 @@ Link: https://lore.kernel.org/r/20220401173042.17467-4-kvalo@kernel.org
  }
  
  void ath11k_mhi_stop(struct ath11k_pci *ab_pci)
+-- 
+2.37.1
+

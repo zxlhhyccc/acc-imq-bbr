@@ -34,9 +34,11 @@ Link: https://lore.kernel.org/r/20211129025613.21594-1-quic_bqiang@quicinc.com
  drivers/net/wireless/ath/ath11k/pci.c  | 16 +++++++-
  4 files changed, 69 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
+index 0fa72d627f24..e8305f27855a 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -301,6 +301,59 @@ static const struct ath11k_hw_params ath
+@@ -301,6 +301,59 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.supports_dynamic_smps_6ghz = false,
  		.alloc_cacheable_memory = false,
  	},
@@ -96,6 +98,8 @@ Link: https://lore.kernel.org/r/20211129025613.21594-1-quic_bqiang@quicinc.com
  };
  
  int ath11k_core_suspend(struct ath11k_base *ab)
+diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
+index 819be48bb42a..76028914e6da 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
 @@ -117,6 +117,7 @@ enum ath11k_hw_rev {
@@ -106,9 +110,11 @@ Link: https://lore.kernel.org/r/20211129025613.21594-1-quic_bqiang@quicinc.com
  };
  
  enum ath11k_firmware_mode {
+diff --git a/drivers/net/wireless/ath/ath11k/mhi.c b/drivers/net/wireless/ath/ath11k/mhi.c
+index 3602a353bab9..1786ea3ea800 100644
 --- a/drivers/net/wireless/ath/ath11k/mhi.c
 +++ b/drivers/net/wireless/ath/ath11k/mhi.c
-@@ -368,6 +368,7 @@ int ath11k_mhi_register(struct ath11k_pc
+@@ -368,6 +368,7 @@ int ath11k_mhi_register(struct ath11k_pci *ab_pci)
  		break;
  	case ATH11K_HW_QCA6390_HW20:
  	case ATH11K_HW_WCN6855_HW20:
@@ -116,6 +122,8 @@ Link: https://lore.kernel.org/r/20211129025613.21594-1-quic_bqiang@quicinc.com
  		ath11k_mhi_config = &ath11k_mhi_config_qca6390;
  		break;
  	default:
+diff --git a/drivers/net/wireless/ath/ath11k/pci.c b/drivers/net/wireless/ath/ath11k/pci.c
+index 76efa67fe633..ffa7d5e13a36 100644
 --- a/drivers/net/wireless/ath/ath11k/pci.c
 +++ b/drivers/net/wireless/ath/ath11k/pci.c
 @@ -26,7 +26,7 @@
@@ -127,7 +135,7 @@ Link: https://lore.kernel.org/r/20211129025613.21594-1-quic_bqiang@quicinc.com
  #define TCSR_SOC_HW_VERSION_MINOR_MASK	GENMASK(7, 0)
  
  /* BAR0 + 4k is always accessible, and no
-@@ -1415,9 +1415,21 @@ static int ath11k_pci_probe(struct pci_d
+@@ -1415,9 +1415,21 @@ static int ath11k_pci_probe(struct pci_dev *pdev,
  					   &soc_hw_version_minor);
  		switch (soc_hw_version_major) {
  		case 2:
@@ -150,3 +158,6 @@ Link: https://lore.kernel.org/r/20211129025613.21594-1-quic_bqiang@quicinc.com
  			dev_err(&pdev->dev, "Unsupported WCN6855 SOC hardware version: %d %d\n",
  				soc_hw_version_major, soc_hw_version_minor);
  			ret = -EOPNOTSUPP;
+-- 
+2.37.1
+

@@ -23,9 +23,11 @@ Link: https://lore.kernel.org/r/20220429170502.20080-8-quic_mpubbise@quicinc.com
  drivers/net/wireless/ath/ath11k/hw.h   |  10 ++
  5 files changed, 163 insertions(+), 13 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
+index d04e7db32ef4..cc4f4a051425 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -496,8 +496,10 @@ static const struct ath11k_hw_params ath
+@@ -496,8 +496,10 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		},
  		.max_radios = 1,
  		.bdf_addr = 0x4B0C0000,
@@ -36,6 +38,8 @@ Link: https://lore.kernel.org/r/20220429170502.20080-8-quic_mpubbise@quicinc.com
  		.qmi_service_ins_id = ATH11K_QMI_WLFW_SERVICE_INS_ID_V01_WCN6750,
  		.host_ce_config = ath11k_host_ce_config_qca6390,
  		.ce_count = 9,
+diff --git a/drivers/net/wireless/ath/ath11k/hal.c b/drivers/net/wireless/ath/ath11k/hal.c
+index 2ec09ae90080..1dba7b9e0bda 100644
 --- a/drivers/net/wireless/ath/ath11k/hal.c
 +++ b/drivers/net/wireless/ath/ath11k/hal.c
 @@ -1,6 +1,7 @@
@@ -46,7 +50,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-8-quic_mpubbise@quicinc.com
   */
  #include <linux/dma-mapping.h>
  #include "hal_tx.h"
-@@ -1082,10 +1083,10 @@ static void ath11k_hal_srng_update_hp_tp
+@@ -1082,10 +1083,10 @@ static void ath11k_hal_srng_update_hp_tp_addr(struct ath11k_base *ab,
  	srng = &hal->srng_list[ring_id];
  
  	if (srng_config->ring_dir == HAL_SRNG_DIR_DST)
@@ -59,7 +63,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-8-quic_mpubbise@quicinc.com
  						   (unsigned long)ab->mem);
  }
  
-@@ -1120,7 +1121,7 @@ int ath11k_hal_srng_update_shadow_config
+@@ -1120,7 +1121,7 @@ int ath11k_hal_srng_update_shadow_config(struct ath11k_base *ab,
  	ath11k_dbg(ab, ATH11k_DBG_HAL,
  		   "target_reg %x, shadow reg 0x%x shadow_idx 0x%x, ring_type %d, ring num %d",
  		  target_reg,
@@ -68,7 +72,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-8-quic_mpubbise@quicinc.com
  		  shadow_cfg_idx,
  		  ring_type, ring_num);
  
-@@ -1193,12 +1194,12 @@ static int ath11k_hal_srng_create_config
+@@ -1193,12 +1194,12 @@ static int ath11k_hal_srng_create_config(struct ath11k_base *ab)
  	s->reg_start[1] = HAL_SEQ_WCSS_UMAC_REO_REG + HAL_REO_TCL_RING_HP(ab);
  
  	s = &hal->srng_config[HAL_REO_REINJECT];
@@ -85,6 +89,8 @@ Link: https://lore.kernel.org/r/20220429170502.20080-8-quic_mpubbise@quicinc.com
  
  	s = &hal->srng_config[HAL_REO_STATUS];
  	s->reg_start[0] = HAL_SEQ_WCSS_UMAC_REO_REG + HAL_REO_STATUS_RING_BASE_LSB(ab);
+diff --git a/drivers/net/wireless/ath/ath11k/hal.h b/drivers/net/wireless/ath/ath11k/hal.h
+index a7d9b4c551ad..1aadb1566df8 100644
 --- a/drivers/net/wireless/ath/ath11k/hal.h
 +++ b/drivers/net/wireless/ath/ath11k/hal.h
 @@ -1,6 +1,7 @@
@@ -133,6 +139,8 @@ Link: https://lore.kernel.org/r/20220429170502.20080-8-quic_mpubbise@quicinc.com
  
  /* CE ring R0 address */
  #define HAL_CE_DST_RING_BASE_LSB		0x00000000
+diff --git a/drivers/net/wireless/ath/ath11k/hw.c b/drivers/net/wireless/ath/ath11k/hw.c
+index 46449a18b5cb..a9f5c4e63d62 100644
 --- a/drivers/net/wireless/ath/ath11k/hw.c
 +++ b/drivers/net/wireless/ath/ath11k/hw.c
 @@ -1,6 +1,7 @@
@@ -143,7 +151,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-8-quic_mpubbise@quicinc.com
   */
  
  #include <linux/types.h>
-@@ -1014,6 +1015,13 @@ const struct ath11k_hw_ops wcn6855_ops =
+@@ -1014,6 +1015,13 @@ const struct ath11k_hw_ops wcn6855_ops = {
  	.rx_desc_mpdu_start_addr2 = ath11k_hw_wcn6855_rx_desc_mpdu_start_addr2,
  };
  
@@ -157,7 +165,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-8-quic_mpubbise@quicinc.com
  #define ATH11K_TX_RING_MASK_0 0x1
  #define ATH11K_TX_RING_MASK_1 0x2
  #define ATH11K_TX_RING_MASK_2 0x4
-@@ -1908,10 +1916,18 @@ const struct ath11k_hw_regs ipq8074_regs
+@@ -1908,10 +1916,18 @@ const struct ath11k_hw_regs ipq8074_regs = {
  	.hal_reo_tcl_ring_base_lsb = 0x000003fc,
  	.hal_reo_tcl_ring_hp = 0x00003058,
  
@@ -176,7 +184,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-8-quic_mpubbise@quicinc.com
  	/* WCSS relative address */
  	.hal_seq_wcss_umac_ce0_src_reg = 0x00a00000,
  	.hal_seq_wcss_umac_ce0_dst_reg = 0x00a01000,
-@@ -1932,6 +1948,9 @@ const struct ath11k_hw_regs ipq8074_regs
+@@ -1932,6 +1948,9 @@ const struct ath11k_hw_regs ipq8074_regs = {
  	/* PCIe base address */
  	.pcie_qserdes_sysclk_en_sel = 0x0,
  	.pcie_pcs_osc_dtct_config_base = 0x0,
@@ -186,7 +194,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-8-quic_mpubbise@quicinc.com
  };
  
  const struct ath11k_hw_regs qca6390_regs = {
-@@ -1979,10 +1998,18 @@ const struct ath11k_hw_regs qca6390_regs
+@@ -1979,10 +1998,18 @@ const struct ath11k_hw_regs qca6390_regs = {
  	.hal_reo_tcl_ring_base_lsb = 0x000003a4,
  	.hal_reo_tcl_ring_hp = 0x00003050,
  
@@ -205,7 +213,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-8-quic_mpubbise@quicinc.com
  	/* WCSS relative address */
  	.hal_seq_wcss_umac_ce0_src_reg = 0x00a00000,
  	.hal_seq_wcss_umac_ce0_dst_reg = 0x00a01000,
-@@ -2003,6 +2030,9 @@ const struct ath11k_hw_regs qca6390_regs
+@@ -2003,6 +2030,9 @@ const struct ath11k_hw_regs qca6390_regs = {
  	/* PCIe base address */
  	.pcie_qserdes_sysclk_en_sel = 0x01e0c0ac,
  	.pcie_pcs_osc_dtct_config_base = 0x01e0c628,
@@ -215,7 +223,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-8-quic_mpubbise@quicinc.com
  };
  
  const struct ath11k_hw_regs qcn9074_regs = {
-@@ -2050,10 +2080,18 @@ const struct ath11k_hw_regs qcn9074_regs
+@@ -2050,10 +2080,18 @@ const struct ath11k_hw_regs qcn9074_regs = {
  	.hal_reo_tcl_ring_base_lsb = 0x000003fc,
  	.hal_reo_tcl_ring_hp = 0x00003058,
  
@@ -234,7 +242,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-8-quic_mpubbise@quicinc.com
  	/* WCSS relative address */
  	.hal_seq_wcss_umac_ce0_src_reg = 0x01b80000,
  	.hal_seq_wcss_umac_ce0_dst_reg = 0x01b81000,
-@@ -2074,6 +2112,9 @@ const struct ath11k_hw_regs qcn9074_regs
+@@ -2074,6 +2112,9 @@ const struct ath11k_hw_regs qcn9074_regs = {
  	/* PCIe base address */
  	.pcie_qserdes_sysclk_en_sel = 0x01e0e0a8,
  	.pcie_pcs_osc_dtct_config_base = 0x01e0f45c,
@@ -244,7 +252,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-8-quic_mpubbise@quicinc.com
  };
  
  const struct ath11k_hw_regs wcn6855_regs = {
-@@ -2121,10 +2162,18 @@ const struct ath11k_hw_regs wcn6855_regs
+@@ -2121,10 +2162,18 @@ const struct ath11k_hw_regs wcn6855_regs = {
  	.hal_reo_tcl_ring_base_lsb = 0x00000454,
  	.hal_reo_tcl_ring_hp = 0x00003060,
  
@@ -263,7 +271,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-8-quic_mpubbise@quicinc.com
  	/* WCSS relative address */
  	.hal_seq_wcss_umac_ce0_src_reg = 0x1b80000,
  	.hal_seq_wcss_umac_ce0_dst_reg = 0x1b81000,
-@@ -2145,6 +2194,91 @@ const struct ath11k_hw_regs wcn6855_regs
+@@ -2145,6 +2194,91 @@ const struct ath11k_hw_regs wcn6855_regs = {
  	/* PCIe base address */
  	.pcie_qserdes_sysclk_en_sel = 0x01e0c0ac,
  	.pcie_pcs_osc_dtct_config_base = 0x01e0c628,
@@ -355,9 +363,11 @@ Link: https://lore.kernel.org/r/20220429170502.20080-8-quic_mpubbise@quicinc.com
  };
  
  const struct ath11k_hw_hal_params ath11k_hw_hal_params_ipq8074 = {
+diff --git a/drivers/net/wireless/ath/ath11k/hw.h b/drivers/net/wireless/ath/ath11k/hw.h
+index 50679e935e1e..09f07214128c 100644
 --- a/drivers/net/wireless/ath/ath11k/hw.h
 +++ b/drivers/net/wireless/ath/ath11k/hw.h
-@@ -254,6 +254,7 @@ extern const struct ath11k_hw_ops ipq601
+@@ -254,6 +254,7 @@ extern const struct ath11k_hw_ops ipq6018_ops;
  extern const struct ath11k_hw_ops qca6390_ops;
  extern const struct ath11k_hw_ops qcn9074_ops;
  extern const struct ath11k_hw_ops wcn6855_ops;
@@ -394,3 +404,6 @@ Link: https://lore.kernel.org/r/20220429170502.20080-8-quic_mpubbise@quicinc.com
  
  static inline const char *ath11k_bd_ie_type_str(enum ath11k_bd_ie_type type)
  {
+-- 
+2.37.1
+

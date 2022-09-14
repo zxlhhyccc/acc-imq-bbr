@@ -39,9 +39,11 @@ Link: https://lore.kernel.org/r/20210914164226.38843-3-jouni@codeaurora.org
  drivers/net/wireless/ath/ath11k/mac.c | 15 +++++++++------
  1 file changed, 9 insertions(+), 6 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index 61cc2211d9ae..0086f34e53ff 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -2992,18 +2992,21 @@ void __ath11k_mac_scan_finish(struct ath
+@@ -2992,18 +2992,21 @@ void __ath11k_mac_scan_finish(struct ath11k *ar)
  		break;
  	case ATH11K_SCAN_RUNNING:
  	case ATH11K_SCAN_ABORTING:
@@ -69,3 +71,6 @@ Link: https://lore.kernel.org/r/20210914164226.38843-3-jouni@codeaurora.org
  		ar->scan.state = ATH11K_SCAN_IDLE;
  		ar->scan_channel = NULL;
  		ar->scan.roc_freq = 0;
+-- 
+2.37.1
+

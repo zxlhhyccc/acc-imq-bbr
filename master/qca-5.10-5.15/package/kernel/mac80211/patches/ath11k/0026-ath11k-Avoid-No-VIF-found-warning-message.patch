@@ -30,9 +30,11 @@ Link: https://lore.kernel.org/r/20210721212029.142388-8-jouni@codeaurora.org
  drivers/net/wireless/ath/ath11k/mac.c | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index 88e71fd8942b..07fd85e92458 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -501,7 +501,8 @@ struct ath11k_vif *ath11k_mac_get_arvif_
+@@ -501,7 +501,8 @@ struct ath11k_vif *ath11k_mac_get_arvif_by_vdev_id(struct ath11k_base *ab,
  
  	for (i = 0; i < ab->num_radios; i++) {
  		pdev = rcu_dereference(ab->pdevs_active[i]);
@@ -42,3 +44,6 @@ Link: https://lore.kernel.org/r/20210721212029.142388-8-jouni@codeaurora.org
  			arvif = ath11k_mac_get_arvif(pdev->ar, vdev_id);
  			if (arvif)
  				return arvif;
+-- 
+2.37.1
+

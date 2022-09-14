@@ -24,9 +24,11 @@ Link: https://lore.kernel.org/r/20220506013614.1580274-4-quic_bqiang@quicinc.com
  drivers/net/wireless/ath/ath11k/wmi.c  | 17 ++++++++++++++++-
  3 files changed, 24 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
+index c17779e10d67..33f5bf818fb0 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -111,6 +111,7 @@ static const struct ath11k_hw_params ath
+@@ -111,6 +111,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.dp_window_idx = 0,
  		.ce_window_idx = 0,
  		.fixed_fw_mem = false,
@@ -34,7 +36,7 @@ Link: https://lore.kernel.org/r/20220506013614.1580274-4-quic_bqiang@quicinc.com
  	},
  	{
  		.hw_rev = ATH11K_HW_IPQ6018_HW10,
-@@ -187,6 +188,7 @@ static const struct ath11k_hw_params ath
+@@ -187,6 +188,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.dp_window_idx = 0,
  		.ce_window_idx = 0,
  		.fixed_fw_mem = false,
@@ -42,7 +44,7 @@ Link: https://lore.kernel.org/r/20220506013614.1580274-4-quic_bqiang@quicinc.com
  	},
  	{
  		.name = "qca6390 hw2.0",
-@@ -262,6 +264,7 @@ static const struct ath11k_hw_params ath
+@@ -262,6 +264,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.dp_window_idx = 0,
  		.ce_window_idx = 0,
  		.fixed_fw_mem = false,
@@ -50,7 +52,7 @@ Link: https://lore.kernel.org/r/20220506013614.1580274-4-quic_bqiang@quicinc.com
  	},
  	{
  		.name = "qcn9074 hw1.0",
-@@ -337,6 +340,7 @@ static const struct ath11k_hw_params ath
+@@ -337,6 +340,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.dp_window_idx = 3,
  		.ce_window_idx = 2,
  		.fixed_fw_mem = false,
@@ -58,7 +60,7 @@ Link: https://lore.kernel.org/r/20220506013614.1580274-4-quic_bqiang@quicinc.com
  	},
  	{
  		.name = "wcn6855 hw2.0",
-@@ -412,6 +416,7 @@ static const struct ath11k_hw_params ath
+@@ -412,6 +416,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.dp_window_idx = 0,
  		.ce_window_idx = 0,
  		.fixed_fw_mem = false,
@@ -66,7 +68,7 @@ Link: https://lore.kernel.org/r/20220506013614.1580274-4-quic_bqiang@quicinc.com
  	},
  	{
  		.name = "wcn6855 hw2.1",
-@@ -485,6 +490,7 @@ static const struct ath11k_hw_params ath
+@@ -485,6 +490,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.dp_window_idx = 0,
  		.ce_window_idx = 0,
  		.fixed_fw_mem = false,
@@ -74,7 +76,7 @@ Link: https://lore.kernel.org/r/20220506013614.1580274-4-quic_bqiang@quicinc.com
  	},
  	{
  		.name = "wcn6750 hw1.0",
-@@ -558,6 +564,7 @@ static const struct ath11k_hw_params ath
+@@ -558,6 +564,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.dp_window_idx = 1,
  		.ce_window_idx = 2,
  		.fixed_fw_mem = true,
@@ -82,6 +84,8 @@ Link: https://lore.kernel.org/r/20220506013614.1580274-4-quic_bqiang@quicinc.com
  	},
  };
  
+diff --git a/drivers/net/wireless/ath/ath11k/hw.h b/drivers/net/wireless/ath/ath11k/hw.h
+index 9fe37dd174a3..d05f2e942d47 100644
 --- a/drivers/net/wireless/ath/ath11k/hw.h
 +++ b/drivers/net/wireless/ath/ath11k/hw.h
 @@ -205,6 +205,7 @@ struct ath11k_hw_params {
@@ -92,9 +96,11 @@ Link: https://lore.kernel.org/r/20220506013614.1580274-4-quic_bqiang@quicinc.com
  };
  
  struct ath11k_hw_ops {
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
+index 0eb2e5ef45d2..84d1c7054013 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -625,10 +625,25 @@ struct sk_buff *ath11k_wmi_alloc_skb(str
+@@ -625,10 +625,25 @@ struct sk_buff *ath11k_wmi_alloc_skb(struct ath11k_wmi_base *wmi_sc, u32 len)
  	return skb;
  }
  
@@ -120,7 +126,7 @@ Link: https://lore.kernel.org/r/20220506013614.1580274-4-quic_bqiang@quicinc.com
  	struct wmi_mgmt_send_cmd *cmd;
  	struct wmi_tlv *frame_tlv;
  	struct sk_buff *skb;
-@@ -649,7 +664,7 @@ int ath11k_wmi_mgmt_send(struct ath11k *
+@@ -649,7 +664,7 @@ int ath11k_wmi_mgmt_send(struct ath11k *ar, u32 vdev_id, u32 buf_id,
  			  FIELD_PREP(WMI_TLV_LEN, sizeof(*cmd) - TLV_HDR_SIZE);
  	cmd->vdev_id = vdev_id;
  	cmd->desc_id = buf_id;
@@ -129,3 +135,6 @@ Link: https://lore.kernel.org/r/20220506013614.1580274-4-quic_bqiang@quicinc.com
  	cmd->paddr_lo = lower_32_bits(ATH11K_SKB_CB(frame)->paddr);
  	cmd->paddr_hi = upper_32_bits(ATH11K_SKB_CB(frame)->paddr);
  	cmd->frame_len = frame->len;
+-- 
+2.37.1
+

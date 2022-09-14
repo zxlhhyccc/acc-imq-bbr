@@ -22,6 +22,8 @@ Link: https://lore.kernel.org/r/20220112025400.2222-1-quic_bqiang@quicinc.com
  drivers/net/wireless/ath/ath11k/mac.c  | 18 ++++++++++++++++++
  2 files changed, 19 insertions(+)
 
+diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
+index 9e88ccca5ca7..4eda15c56b04 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
 @@ -603,6 +603,7 @@ struct ath11k {
@@ -32,9 +34,11 @@ Link: https://lore.kernel.org/r/20220112025400.2222-1-quic_bqiang@quicinc.com
  };
  
  struct ath11k_band_cap {
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index b847fd4dd514..99e380261179 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -2862,6 +2862,11 @@ static void ath11k_recalculate_mgmt_rate
+@@ -2862,6 +2862,11 @@ static void ath11k_recalculate_mgmt_rate(struct ath11k *ar,
  	if (ret)
  		ath11k_warn(ar->ab, "failed to set mgmt tx rate %d\n", ret);
  
@@ -46,7 +50,7 @@ Link: https://lore.kernel.org/r/20220112025400.2222-1-quic_bqiang@quicinc.com
  	vdev_param = WMI_VDEV_PARAM_BEACON_RATE;
  	ret = ath11k_wmi_vdev_set_param_cmd(ar, arvif->vdev_id, vdev_param,
  					    hw_rate_code);
-@@ -6967,6 +6972,19 @@ static int ath11k_start_vdev_delay(struc
+@@ -6967,6 +6972,19 @@ static int ath11k_start_vdev_delay(struct ieee80211_hw *hw,
  		return ret;
  	}
  
@@ -66,3 +70,6 @@ Link: https://lore.kernel.org/r/20220112025400.2222-1-quic_bqiang@quicinc.com
  	if (arvif->vdev_type == WMI_VDEV_TYPE_MONITOR) {
  		ret = ath11k_wmi_vdev_up(ar, arvif->vdev_id, 0, ar->mac_addr);
  		if (ret) {
+-- 
+2.37.1
+

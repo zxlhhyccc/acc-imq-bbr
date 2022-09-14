@@ -13,9 +13,11 @@ Link: https://lore.kernel.org/r/20211006083217.349596-1-colin.king@canonical.com
  drivers/net/wireless/ath/ath11k/mac.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index 88e71056e198..40fc1d8f945a 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -7102,7 +7102,7 @@ ath11k_mac_op_set_bitrate_mask(struct ie
+@@ -7102,7 +7102,7 @@ ath11k_mac_op_set_bitrate_mask(struct ieee80211_hw *hw,
  
  		if (!ath11k_mac_validate_vht_he_fixed_rate_settings(ar, band, mask))
  			ath11k_warn(ar->ab,
@@ -24,3 +26,6 @@ Link: https://lore.kernel.org/r/20211006083217.349596-1-colin.king@canonical.com
  		nss = min_t(u32, ar->num_tx_chains,
  			    max(max(ath11k_mac_max_ht_nss(ht_mcs_mask),
  				    ath11k_mac_max_vht_nss(vht_mcs_mask)),
+-- 
+2.37.1
+

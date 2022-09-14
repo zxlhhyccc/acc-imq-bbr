@@ -52,9 +52,11 @@ Link: https://lore.kernel.org/r/20220517103436.15867-1-johan+linaro@kernel.org
  drivers/net/wireless/ath/ath11k/core.c | 16 ++++++++--------
  1 file changed, 8 insertions(+), 8 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
+index eafdbd81862f..c150e6c8bf9c 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -1230,23 +1230,23 @@ static int ath11k_core_pdev_create(struc
+@@ -1230,23 +1230,23 @@ static int ath11k_core_pdev_create(struct ath11k_base *ab)
  		return ret;
  	}
  
@@ -84,7 +86,7 @@ Link: https://lore.kernel.org/r/20220517103436.15867-1-johan+linaro@kernel.org
  	}
  
  	ret = ath11k_spectral_init(ab);
-@@ -1259,10 +1259,10 @@ static int ath11k_core_pdev_create(struc
+@@ -1259,10 +1259,10 @@ static int ath11k_core_pdev_create(struct ath11k_base *ab)
  
  err_thermal_unregister:
  	ath11k_thermal_unregister(ab);
@@ -97,3 +99,6 @@ Link: https://lore.kernel.org/r/20220517103436.15867-1-johan+linaro@kernel.org
  err_pdev_debug:
  	ath11k_debugfs_pdev_destroy(ab);
  
+-- 
+2.37.1
+

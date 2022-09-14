@@ -20,9 +20,11 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  net/mac80211/agg-rx.c                            | 2 +-
  5 files changed, 11 insertions(+), 7 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index c872d0011820..e9c50ac4ef6f 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -8488,7 +8488,7 @@ static int __ath11k_mac_register(struct
+@@ -8488,7 +8488,7 @@ static int __ath11k_mac_register(struct ath11k *ar)
  	ar->hw->queues = ATH11K_HW_MAX_QUEUES;
  	ar->hw->wiphy->tx_queue_len = ATH11K_QUEUE_LEN;
  	ar->hw->offchannel_tx_hw_queue = ATH11K_HW_MAX_QUEUES - 1;
@@ -31,9 +33,11 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  
  	ar->hw->vif_data_size = sizeof(struct ath11k_vif);
  	ar->hw->sta_data_size = sizeof(struct ath11k_sta);
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/ops.c b/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
+index c77d98c88811..eeb81808db08 100644
 --- a/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
 +++ b/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
-@@ -761,12 +761,12 @@ iwl_op_mode_mvm_start(struct iwl_trans *
+@@ -761,12 +761,12 @@ iwl_op_mode_mvm_start(struct iwl_trans *trans, const struct iwl_cfg *cfg,
  	if (!hw)
  		return NULL;
  
@@ -48,9 +52,11 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  
  	op_mode = hw->priv;
  
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/init.c b/drivers/net/wireless/mediatek/mt76/mt7915/init.c
+index b171027e0cfa..1ae42ef147c8 100644
 --- a/drivers/net/wireless/mediatek/mt76/mt7915/init.c
 +++ b/drivers/net/wireless/mediatek/mt76/mt7915/init.c
-@@ -217,8 +217,8 @@ mt7915_init_wiphy(struct ieee80211_hw *h
+@@ -217,8 +217,8 @@ mt7915_init_wiphy(struct ieee80211_hw *hw)
  	struct wiphy *wiphy = hw->wiphy;
  
  	hw->queues = 4;
@@ -61,6 +67,8 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  	hw->netdev_features = NETIF_F_RXCSUM;
  
  	hw->radiotap_timestamp.units_pos =
+diff --git a/include/linux/ieee80211.h b/include/linux/ieee80211.h
+index a1a7eda35cb5..a39981041a71 100644
 --- a/include/linux/ieee80211.h
 +++ b/include/linux/ieee80211.h
 @@ -1023,6 +1023,8 @@ struct ieee80211_tpc_report_ie {
@@ -86,9 +94,11 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  
  
  /* Spatial Multiplexing Power Save Modes (for capability) */
+diff --git a/net/mac80211/agg-rx.c b/net/mac80211/agg-rx.c
+index ef729b1e39ea..e43176794149 100644
 --- a/net/mac80211/agg-rx.c
 +++ b/net/mac80211/agg-rx.c
-@@ -310,7 +310,7 @@ void ___ieee80211_start_rx_ba_session(st
+@@ -310,7 +310,7 @@ void ___ieee80211_start_rx_ba_session(struct sta_info *sta,
  	}
  
  	if (sta->sta.he_cap.has_he)
@@ -97,3 +107,6 @@ Signed-off-by: Johannes Berg <johannes.berg@intel.com>
  	else
  		max_buf_size = IEEE80211_MAX_AMPDU_BUF_HT;
  
+-- 
+2.37.1
+

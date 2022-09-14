@@ -20,9 +20,11 @@ Link: https://lore.kernel.org/r/20211011054919.77071-1-bqiang@codeaurora.org
  drivers/net/wireless/ath/ath11k/wmi.c | 2 ++
  1 file changed, 2 insertions(+)
 
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
+index 7c28f38cdae9..c3699bd0452c 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -2372,6 +2372,8 @@ int ath11k_wmi_send_scan_chan_list_cmd(s
+@@ -2372,6 +2372,8 @@ int ath11k_wmi_send_scan_chan_list_cmd(struct ath11k *ar,
  				chan_info->info |= WMI_CHAN_INFO_QUARTER_RATE;
  			if (tchan_info->psc_channel)
  				chan_info->info |= WMI_CHAN_INFO_PSC;
@@ -31,3 +33,6 @@ Link: https://lore.kernel.org/r/20211011054919.77071-1-bqiang@codeaurora.org
  
  			chan_info->info |= FIELD_PREP(WMI_CHAN_INFO_MODE,
  						      tchan_info->phy_mode);
+-- 
+2.37.1
+

@@ -31,9 +31,11 @@ Link: https://lore.kernel.org/r/20210322160253.4032422-5-arnd@kernel.org
  drivers/net/wireless/ath/ath11k/mac.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index 82fe3993d057..336ecc293a55 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -1406,7 +1406,7 @@ ath11k_peer_assoc_h_ht_masked(const u8 h
+@@ -1406,7 +1406,7 @@ ath11k_peer_assoc_h_ht_masked(const u8 ht_mcs_mask[IEEE80211_HT_MCS_MASK_LEN])
  }
  
  static bool
@@ -42,3 +44,6 @@ Link: https://lore.kernel.org/r/20210322160253.4032422-5-arnd@kernel.org
  {
  	int nss;
  
+-- 
+2.37.1
+

@@ -28,9 +28,11 @@ Link: https://lore.kernel.org/r/20210914163726.38604-3-jouni@codeaurora.org
  drivers/net/wireless/ath/ath11k/mac.c  | 3 ++-
  3 files changed, 8 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
+index b65c4c7b3094..91a3f7a66496 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -83,6 +83,7 @@ static const struct ath11k_hw_params ath
+@@ -83,6 +83,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.wakeup_mhi = false,
  		.max_tx_ring = DP_TCL_NUM_RING_MAX,
  		.hal_params = &ath11k_hw_hal_params_ipq8074,
@@ -38,7 +40,7 @@ Link: https://lore.kernel.org/r/20210914163726.38604-3-jouni@codeaurora.org
  	},
  	{
  		.hw_rev = ATH11K_HW_IPQ6018_HW10,
-@@ -133,6 +134,7 @@ static const struct ath11k_hw_params ath
+@@ -133,6 +134,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.wakeup_mhi = false,
  		.max_tx_ring = DP_TCL_NUM_RING_MAX,
  		.hal_params = &ath11k_hw_hal_params_ipq8074,
@@ -46,7 +48,7 @@ Link: https://lore.kernel.org/r/20210914163726.38604-3-jouni@codeaurora.org
  	},
  	{
  		.name = "qca6390 hw2.0",
-@@ -182,6 +184,7 @@ static const struct ath11k_hw_params ath
+@@ -182,6 +184,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.wakeup_mhi = true,
  		.max_tx_ring = DP_TCL_NUM_RING_MAX_QCA6390,
  		.hal_params = &ath11k_hw_hal_params_qca6390,
@@ -54,7 +56,7 @@ Link: https://lore.kernel.org/r/20210914163726.38604-3-jouni@codeaurora.org
  	},
  	{
  		.name = "qcn9074 hw1.0",
-@@ -231,6 +234,7 @@ static const struct ath11k_hw_params ath
+@@ -231,6 +234,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.wakeup_mhi = false,
  		.max_tx_ring = DP_TCL_NUM_RING_MAX,
  		.hal_params = &ath11k_hw_hal_params_ipq8074,
@@ -62,7 +64,7 @@ Link: https://lore.kernel.org/r/20210914163726.38604-3-jouni@codeaurora.org
  	},
  	{
  		.name = "wcn6855 hw2.0",
-@@ -280,6 +284,7 @@ static const struct ath11k_hw_params ath
+@@ -280,6 +284,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
  		.wakeup_mhi = true,
  		.max_tx_ring = DP_TCL_NUM_RING_MAX_QCA6390,
  		.hal_params = &ath11k_hw_hal_params_qca6390,
@@ -70,6 +72,8 @@ Link: https://lore.kernel.org/r/20210914163726.38604-3-jouni@codeaurora.org
  	},
  };
  
+diff --git a/drivers/net/wireless/ath/ath11k/hw.h b/drivers/net/wireless/ath/ath11k/hw.h
+index 5a21dac8dc91..9db79dcb5444 100644
 --- a/drivers/net/wireless/ath/ath11k/hw.h
 +++ b/drivers/net/wireless/ath/ath11k/hw.h
 @@ -177,6 +177,7 @@ struct ath11k_hw_params {
@@ -80,9 +84,11 @@ Link: https://lore.kernel.org/r/20210914163726.38604-3-jouni@codeaurora.org
  };
  
  struct ath11k_hw_ops {
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index d0ea6ea97418..8505ca4f8de5 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -7693,7 +7693,8 @@ static int __ath11k_mac_register(struct
+@@ -7693,7 +7693,8 @@ static int __ath11k_mac_register(struct ath11k *ar)
  	 * for each band for a dual band capable radio. It will be tricky to
  	 * handle it when the ht capability different for each band.
  	 */
@@ -92,3 +98,6 @@ Link: https://lore.kernel.org/r/20210914163726.38604-3-jouni@codeaurora.org
  		ar->hw->wiphy->features |= NL80211_FEATURE_DYNAMIC_SMPS;
  
  	ar->hw->wiphy->max_scan_ssids = WLAN_SCAN_PARAMS_MAX_SSID;
+-- 
+2.37.1
+

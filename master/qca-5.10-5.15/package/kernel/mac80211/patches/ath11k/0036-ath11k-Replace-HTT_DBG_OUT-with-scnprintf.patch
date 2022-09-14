@@ -17,6 +17,8 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  .../wireless/ath/ath11k/debugfs_htt_stats.c   | 3370 ++++++++---------
  1 file changed, 1683 insertions(+), 1687 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/debugfs_htt_stats.c b/drivers/net/wireless/ath/ath11k/debugfs_htt_stats.c
+index f2786ff124c3..efd7f0757df6 100644
 --- a/drivers/net/wireless/ath/ath11k/debugfs_htt_stats.c
 +++ b/drivers/net/wireless/ath/ath11k/debugfs_htt_stats.c
 @@ -10,9 +10,6 @@
@@ -29,7 +31,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  #define HTT_MAX_STRING_LEN 256
  #define HTT_MAX_PRINT_CHAR_PER_ELEM 15
  
-@@ -43,17 +40,17 @@ static inline void htt_print_stats_strin
+@@ -43,17 +40,17 @@ static inline void htt_print_stats_string_tlv(const void *tag_buf,
  
  	tag_len = tag_len >> 2;
  
@@ -51,7 +53,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -71,107 +68,107 @@ static inline void htt_print_tx_pdev_sta
+@@ -71,107 +68,107 @@ static inline void htt_print_tx_pdev_stats_cmn_tlv(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -260,7 +262,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -193,10 +190,10 @@ htt_print_tx_pdev_stats_urrn_tlv_v(const
+@@ -193,10 +190,10 @@ htt_print_tx_pdev_stats_urrn_tlv_v(const void *tag_buf,
  	char urrn_stats[HTT_MAX_STRING_LEN] = {0};
  	u16 num_elems = min_t(u16, (tag_len >> 2), HTT_TX_PDEV_MAX_URRN_STATS);
  
@@ -273,7 +275,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -218,10 +215,10 @@ htt_print_tx_pdev_stats_flush_tlv_v(cons
+@@ -218,10 +215,10 @@ htt_print_tx_pdev_stats_flush_tlv_v(const void *tag_buf,
  	char flush_errs[HTT_MAX_STRING_LEN] = {0};
  	u16 num_elems = min_t(u16, (tag_len >> 2), HTT_TX_PDEV_MAX_FLUSH_REASON_STATS);
  
@@ -286,7 +288,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -243,11 +240,11 @@ htt_print_tx_pdev_stats_sifs_tlv_v(const
+@@ -243,11 +240,11 @@ htt_print_tx_pdev_stats_sifs_tlv_v(const void *tag_buf,
  	char sifs_status[HTT_MAX_STRING_LEN] = {0};
  	u16 num_elems = min_t(u16, (tag_len >> 2), HTT_TX_PDEV_MAX_SIFS_BURST_STATS);
  
@@ -301,7 +303,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -269,10 +266,10 @@ htt_print_tx_pdev_stats_phy_err_tlv_v(co
+@@ -269,10 +266,10 @@ htt_print_tx_pdev_stats_phy_err_tlv_v(const void *tag_buf,
  	char phy_errs[HTT_MAX_STRING_LEN] = {0};
  	u16 num_elems = min_t(u16, (tag_len >> 2), HTT_TX_PDEV_MAX_PHY_ERR_STATS);
  
@@ -314,7 +316,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -294,12 +291,12 @@ htt_print_tx_pdev_stats_sifs_hist_tlv_v(
+@@ -294,12 +291,12 @@ htt_print_tx_pdev_stats_sifs_hist_tlv_v(const void *tag_buf,
  	char sifs_hist_status[HTT_MAX_STRING_LEN] = {0};
  	u16 num_elems = min_t(u16, (tag_len >> 2), HTT_TX_PDEV_MAX_SIFS_BURST_HIST_STATS);
  
@@ -331,7 +333,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -318,23 +315,23 @@ htt_print_tx_pdev_stats_tx_ppdu_stats_tl
+@@ -318,23 +315,23 @@ htt_print_tx_pdev_stats_tx_ppdu_stats_tlv_v(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -367,7 +369,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -357,20 +354,20 @@ htt_print_tx_pdev_stats_tried_mpdu_cnt_h
+@@ -357,20 +354,20 @@ htt_print_tx_pdev_stats_tried_mpdu_cnt_hist_tlv_v(const void *tag_buf,
  	u32  num_elements = ((tag_len - sizeof(htt_stats_buf->hist_bin_size)) >> 2);
  	u32  required_buffer_size = HTT_MAX_PRINT_CHAR_PER_ELEM * num_elements;
  
@@ -396,7 +398,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  	}
  
  	if (len >= buf_len)
-@@ -390,14 +387,14 @@ static inline void htt_print_hw_stats_in
+@@ -390,14 +387,14 @@ static inline void htt_print_hw_stats_intr_misc_tlv(const void *tag_buf,
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  	char hw_intr_name[HTT_STATS_MAX_HW_INTR_NAME_LEN + 1] = {0};
  
@@ -417,7 +419,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -417,13 +414,13 @@ htt_print_hw_stats_wd_timeout_tlv(const
+@@ -417,13 +414,13 @@ htt_print_hw_stats_wd_timeout_tlv(const void *tag_buf,
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  	char hw_module_name[HTT_STATS_MAX_HW_MODULE_NAME_LEN + 1] = {0};
  
@@ -436,7 +438,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -441,29 +438,29 @@ static inline void htt_print_hw_stats_pd
+@@ -441,29 +438,29 @@ static inline void htt_print_hw_stats_pdev_errs_tlv(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -489,7 +491,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -481,35 +478,34 @@ static inline void htt_print_msdu_flow_s
+@@ -481,35 +478,34 @@ static inline void htt_print_msdu_flow_stats_tlv(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -553,7 +555,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -528,38 +524,38 @@ static inline void htt_print_tx_tid_stat
+@@ -528,38 +524,38 @@ static inline void htt_print_tx_tid_stats_tlv(const void *tag_buf,
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  	char tid_name[MAX_HTT_TID_NAME + 1] = {0};
  
@@ -623,7 +625,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -578,42 +574,42 @@ static inline void htt_print_tx_tid_stat
+@@ -578,42 +574,42 @@ static inline void htt_print_tx_tid_stats_v1_tlv(const void *tag_buf,
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  	char tid_name[MAX_HTT_TID_NAME + 1] = {0};
  
@@ -701,7 +703,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -632,21 +628,21 @@ static inline void htt_print_rx_tid_stat
+@@ -632,21 +628,21 @@ static inline void htt_print_rx_tid_stats_tlv(const void *tag_buf,
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  	char tid_name[MAX_HTT_TID_NAME + 1] = {0};
  
@@ -737,7 +739,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -665,14 +661,14 @@ static inline void htt_print_counter_tlv
+@@ -665,14 +661,14 @@ static inline void htt_print_counter_tlv(const void *tag_buf,
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  	char counter_name[HTT_MAX_STRING_LEN] = {0};
  
@@ -756,7 +758,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -690,35 +686,35 @@ static inline void htt_print_peer_stats_
+@@ -690,35 +686,35 @@ static inline void htt_print_peer_stats_cmn_tlv(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -821,7 +823,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -736,29 +732,29 @@ static inline void htt_print_peer_detail
+@@ -736,29 +732,29 @@ static inline void htt_print_peer_details_tlv(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -874,7 +876,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -785,64 +781,64 @@ static inline void htt_print_tx_peer_rat
+@@ -785,64 +781,64 @@ static inline void htt_print_tx_peer_rate_stats_tlv(const void *tag_buf,
  			goto fail;
  	}
  
@@ -956,7 +958,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -880,63 +876,63 @@ static inline void htt_print_rx_peer_rat
+@@ -880,63 +876,63 @@ static inline void htt_print_rx_peer_rate_stats_tlv(const void *tag_buf,
  			goto fail;
  	}
  
@@ -1043,7 +1045,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -962,13 +958,13 @@ htt_print_tx_hwq_mu_mimo_sch_stats_tlv(c
+@@ -962,13 +958,13 @@ htt_print_tx_hwq_mu_mimo_sch_stats_tlv(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -1064,7 +1066,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -987,22 +983,22 @@ htt_print_tx_hwq_mu_mimo_mpdu_stats_tlv(
+@@ -987,22 +983,22 @@ htt_print_tx_hwq_mu_mimo_mpdu_stats_tlv(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -1103,7 +1105,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -1021,11 +1017,11 @@ htt_print_tx_hwq_mu_mimo_cmn_stats_tlv(c
+@@ -1021,11 +1017,11 @@ htt_print_tx_hwq_mu_mimo_cmn_stats_tlv(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -1120,7 +1122,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -1044,51 +1040,51 @@ htt_print_tx_hwq_stats_cmn_tlv(const voi
+@@ -1044,51 +1040,51 @@ htt_print_tx_hwq_stats_cmn_tlv(const void *tag_buf, struct debug_htt_stats_req *
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
  	/* TODO: HKDBG */
@@ -1217,7 +1219,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -1110,15 +1106,15 @@ htt_print_tx_hwq_difs_latency_stats_tlv_
+@@ -1110,15 +1106,15 @@ htt_print_tx_hwq_difs_latency_stats_tlv_v(const void *tag_buf,
  	u16 data_len = min_t(u16, (tag_len >> 2), HTT_TX_HWQ_MAX_DIFS_LATENCY_BINS);
  	char difs_latency_hist[HTT_MAX_STRING_LEN] = {0};
  
@@ -1239,7 +1241,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -1142,12 +1138,12 @@ htt_print_tx_hwq_cmd_result_stats_tlv_v(
+@@ -1142,12 +1138,12 @@ htt_print_tx_hwq_cmd_result_stats_tlv_v(const void *tag_buf,
  
  	data_len = min_t(u16, (tag_len >> 2), HTT_TX_HWQ_MAX_CMD_RESULT_STATS);
  
@@ -1255,7 +1257,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -1171,11 +1167,11 @@ htt_print_tx_hwq_cmd_stall_stats_tlv_v(c
+@@ -1171,11 +1167,11 @@ htt_print_tx_hwq_cmd_stall_stats_tlv_v(const void *tag_buf,
  
  	num_elems = min_t(u16, (tag_len >> 2), HTT_TX_HWQ_MAX_CMD_STALL_STATS);
  
@@ -1270,7 +1272,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -1199,11 +1195,11 @@ htt_print_tx_hwq_fes_result_stats_tlv_v(
+@@ -1199,11 +1195,11 @@ htt_print_tx_hwq_fes_result_stats_tlv_v(const void *tag_buf,
  
  	num_elems = min_t(u16, (tag_len >> 2), HTT_TX_HWQ_MAX_FES_RESULT_STATS);
  
@@ -1285,7 +1287,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -1227,21 +1223,21 @@ htt_print_tx_hwq_tried_mpdu_cnt_hist_tlv
+@@ -1227,21 +1223,21 @@ htt_print_tx_hwq_tried_mpdu_cnt_hist_tlv_v(const void *tag_buf,
  			    sizeof(htt_stats_buf->hist_bin_size)) >> 2);
  	u32  required_buffer_size = HTT_MAX_PRINT_CHAR_PER_ELEM * num_elements;
  
@@ -1316,7 +1318,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  	}
  
  	if (len >= buf_len)
-@@ -1265,18 +1261,18 @@ htt_print_tx_hwq_txop_used_cnt_hist_tlv_
+@@ -1265,18 +1261,18 @@ htt_print_tx_hwq_txop_used_cnt_hist_tlv_v(const void *tag_buf,
  	u32 num_elements = tag_len >> 2;
  	u32  required_buffer_size = HTT_MAX_PRINT_CHAR_PER_ELEM * num_elements;
  
@@ -1341,7 +1343,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  	}
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -1300,86 +1296,86 @@ static inline void htt_print_tx_sounding
+@@ -1300,86 +1296,86 @@ static inline void htt_print_tx_sounding_stats_tlv(const void *tag_buf,
  	const u32 *cbf_160 = htt_stats_buf->cbf_160;
  
  	if (htt_stats_buf->tx_sounding_mode == HTT_TX_AC_SOUNDING_MODE) {
@@ -1502,7 +1504,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  		}
  	}
  
-@@ -1400,31 +1396,31 @@ htt_print_tx_selfgen_cmn_stats_tlv(const
+@@ -1400,31 +1396,31 @@ htt_print_tx_selfgen_cmn_stats_tlv(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -1559,7 +1561,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -1443,21 +1439,21 @@ htt_print_tx_selfgen_ac_stats_tlv(const
+@@ -1443,21 +1439,21 @@ htt_print_tx_selfgen_ac_stats_tlv(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -1596,7 +1598,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -1476,37 +1472,37 @@ htt_print_tx_selfgen_ax_stats_tlv(const
+@@ -1476,37 +1472,37 @@ htt_print_tx_selfgen_ax_stats_tlv(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -1665,7 +1667,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -1525,21 +1521,21 @@ htt_print_tx_selfgen_ac_err_stats_tlv(co
+@@ -1525,21 +1521,21 @@ htt_print_tx_selfgen_ac_err_stats_tlv(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -1702,7 +1704,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -1558,37 +1554,37 @@ htt_print_tx_selfgen_ax_err_stats_tlv(co
+@@ -1558,37 +1554,37 @@ htt_print_tx_selfgen_ax_err_stats_tlv(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -1771,7 +1773,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -1608,35 +1604,35 @@ htt_print_tx_pdev_mu_mimo_sch_stats_tlv(
+@@ -1608,35 +1604,35 @@ htt_print_tx_pdev_mu_mimo_sch_stats_tlv(const void *tag_buf,
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  	u8 i;
  
@@ -1827,7 +1829,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -1657,114 +1653,114 @@ htt_print_tx_pdev_mu_mimo_mpdu_stats_tlv
+@@ -1657,114 +1653,114 @@ htt_print_tx_pdev_mu_mimo_mpdu_stats_tlv(const void *tag_buf,
  
  	if (htt_stats_buf->tx_sched_mode == HTT_STATS_TX_SCHED_MODE_MU_MIMO_AC) {
  		if (!htt_stats_buf->user_index)
@@ -2032,7 +2034,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  		}
  	}
  
-@@ -1788,12 +1784,12 @@ htt_print_sched_txq_cmd_posted_tlv_v(con
+@@ -1788,12 +1784,12 @@ htt_print_sched_txq_cmd_posted_tlv_v(const void *tag_buf,
  	char sched_cmd_posted[HTT_MAX_STRING_LEN] = {0};
  	u16 num_elements = min_t(u16, (tag_len >> 2), HTT_TX_PDEV_SCHED_TX_MODE_MAX);
  
@@ -2048,7 +2050,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -1815,12 +1811,12 @@ htt_print_sched_txq_cmd_reaped_tlv_v(con
+@@ -1815,12 +1811,12 @@ htt_print_sched_txq_cmd_reaped_tlv_v(const void *tag_buf,
  	char sched_cmd_reaped[HTT_MAX_STRING_LEN] = {0};
  	u16 num_elements = min_t(u16, (tag_len >> 2), HTT_TX_PDEV_SCHED_TX_MODE_MAX);
  
@@ -2064,7 +2066,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -1844,13 +1840,13 @@ htt_print_sched_txq_sched_order_su_tlv_v
+@@ -1844,13 +1840,13 @@ htt_print_sched_txq_sched_order_su_tlv_v(const void *tag_buf,
  	u32 sched_order_su_num_entries =
  		min_t(u32, (tag_len >> 2), HTT_TX_PDEV_NUM_SCHED_ORDER_LOG);
  
@@ -2082,7 +2084,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -1873,13 +1869,13 @@ htt_print_sched_txq_sched_ineligibility_
+@@ -1873,13 +1869,13 @@ htt_print_sched_txq_sched_ineligibility_tlv_v(const void *tag_buf,
  	/* each entry is u32, i.e. 4 bytes */
  	u32 sched_ineligibility_num_entries = tag_len >> 2;
  
@@ -2100,7 +2102,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -1898,54 +1894,54 @@ htt_print_tx_pdev_stats_sched_per_txq_tl
+@@ -1898,54 +1894,54 @@ htt_print_tx_pdev_stats_sched_per_txq_tlv(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -2203,7 +2205,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -1963,11 +1959,11 @@ static inline void htt_print_stats_tx_sc
+@@ -1963,11 +1959,11 @@ static inline void htt_print_stats_tx_sched_cmn_tlv(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -2220,7 +2222,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -1990,12 +1986,12 @@ htt_print_tx_tqm_gen_mpdu_stats_tlv_v(co
+@@ -1990,12 +1986,12 @@ htt_print_tx_tqm_gen_mpdu_stats_tlv_v(const void *tag_buf,
  	u16 num_elements = min_t(u16, (tag_len >> 2),
  				 HTT_TX_TQM_MAX_LIST_MPDU_END_REASON);
  
@@ -2236,7 +2238,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -2017,13 +2013,13 @@ htt_print_tx_tqm_list_mpdu_stats_tlv_v(c
+@@ -2017,13 +2013,13 @@ htt_print_tx_tqm_list_mpdu_stats_tlv_v(const void *tag_buf,
  	char list_mpdu_end_reason[HTT_MAX_STRING_LEN] = {0};
  	u16 num_elems = min_t(u16, (tag_len >> 2), HTT_TX_TQM_MAX_LIST_MPDU_END_REASON);
  
@@ -2254,7 +2256,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
  	else
-@@ -2045,12 +2041,12 @@ htt_print_tx_tqm_list_mpdu_cnt_tlv_v(con
+@@ -2045,12 +2041,12 @@ htt_print_tx_tqm_list_mpdu_cnt_tlv_v(const void *tag_buf,
  	u16 num_elems = min_t(u16, (tag_len >> 2),
  			      HTT_TX_TQM_MAX_LIST_MPDU_CNT_HISTOGRAM_BINS);
  
@@ -2270,7 +2272,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -2069,69 +2065,69 @@ htt_print_tx_tqm_pdev_stats_tlv_v(const
+@@ -2069,69 +2065,69 @@ htt_print_tx_tqm_pdev_stats_tlv_v(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -2403,7 +2405,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -2149,23 +2145,23 @@ static inline void htt_print_tx_tqm_cmn_
+@@ -2149,23 +2145,23 @@ static inline void htt_print_tx_tqm_cmn_stats_tlv(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -2444,7 +2446,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -2183,13 +2179,13 @@ static inline void htt_print_tx_tqm_erro
+@@ -2183,13 +2179,13 @@ static inline void htt_print_tx_tqm_error_stats_tlv(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -2465,7 +2467,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -2207,33 +2203,33 @@ static inline void htt_print_tx_tqm_cmdq
+@@ -2207,33 +2203,33 @@ static inline void htt_print_tx_tqm_cmdq_status_tlv(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -2526,7 +2528,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -2252,20 +2248,20 @@ htt_print_tx_de_eapol_packets_stats_tlv(
+@@ -2252,20 +2248,20 @@ htt_print_tx_de_eapol_packets_stats_tlv(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -2561,7 +2563,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -2284,34 +2280,34 @@ htt_print_tx_de_classify_failed_stats_tl
+@@ -2284,34 +2280,34 @@ htt_print_tx_de_classify_failed_stats_tlv(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -2624,7 +2626,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -2330,73 +2326,73 @@ htt_print_tx_de_classify_stats_tlv(const
+@@ -2330,73 +2326,73 @@ htt_print_tx_de_classify_stats_tlv(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -2765,7 +2767,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -2415,24 +2411,24 @@ htt_print_tx_de_classify_status_stats_tl
+@@ -2415,24 +2411,24 @@ htt_print_tx_de_classify_status_stats_tlv(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -2808,7 +2810,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -2451,14 +2447,14 @@ htt_print_tx_de_enqueue_packets_stats_tl
+@@ -2451,14 +2447,14 @@ htt_print_tx_de_enqueue_packets_stats_tlv(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -2831,7 +2833,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -2477,14 +2473,14 @@ htt_print_tx_de_enqueue_discard_stats_tl
+@@ -2477,14 +2473,14 @@ htt_print_tx_de_enqueue_discard_stats_tlv(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -2854,7 +2856,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -2502,17 +2498,17 @@ static inline void htt_print_tx_de_compl
+@@ -2502,17 +2498,17 @@ static inline void htt_print_tx_de_compl_stats_tlv(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -2883,7 +2885,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -2535,19 +2531,19 @@ htt_print_tx_de_fw2wbm_ring_full_hist_tl
+@@ -2535,19 +2531,19 @@ htt_print_tx_de_fw2wbm_ring_full_hist_tlv(const void *tag_buf,
  	u16  num_elements = tag_len >> 2;
  	u32  required_buffer_size = HTT_MAX_PRINT_CHAR_PER_ELEM * num_elements;
  
@@ -2910,7 +2912,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  	}
  
  	if (len >= buf_len)
-@@ -2566,21 +2562,21 @@ htt_print_tx_de_cmn_stats_tlv(const void
+@@ -2566,21 +2562,21 @@ htt_print_tx_de_cmn_stats_tlv(const void *tag_buf, struct debug_htt_stats_req *s
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -2947,7 +2949,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -2600,49 +2596,49 @@ static inline void htt_print_ring_if_sta
+@@ -2600,49 +2596,49 @@ static inline void htt_print_ring_if_stats_tlv(const void *tag_buf,
  	char low_wm_hit_count[HTT_MAX_STRING_LEN] = {0};
  	char high_wm_hit_count[HTT_MAX_STRING_LEN] = {0};
  
@@ -3034,7 +3036,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -2660,11 +2656,11 @@ static inline void htt_print_ring_if_cmn
+@@ -2660,11 +2656,11 @@ static inline void htt_print_ring_if_cmn_tlv(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -3051,7 +3053,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -2685,13 +2681,13 @@ static inline void htt_print_sfm_client_
+@@ -2685,13 +2681,13 @@ static inline void htt_print_sfm_client_user_tlv_v(const void *tag_buf,
  	char dwords_used_by_user_n[HTT_MAX_STRING_LEN] = {0};
  	u16 num_elems = tag_len >> 2;
  
@@ -3068,7 +3070,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -2709,21 +2705,21 @@ static inline void htt_print_sfm_client_
+@@ -2709,21 +2705,21 @@ static inline void htt_print_sfm_client_tlv(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -3105,7 +3107,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -2741,17 +2737,17 @@ static inline void htt_print_sfm_cmn_tlv
+@@ -2741,17 +2737,17 @@ static inline void htt_print_sfm_cmn_tlv(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -3134,7 +3136,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -2769,42 +2765,42 @@ static inline void htt_print_sring_stats
+@@ -2769,42 +2765,42 @@ static inline void htt_print_sring_stats_tlv(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -3213,7 +3215,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -2822,9 +2818,9 @@ static inline void htt_print_sring_cmn_t
+@@ -2822,9 +2818,9 @@ static inline void htt_print_sring_cmn_tlv(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -3226,7 +3228,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -2851,156 +2847,156 @@ static inline void htt_print_tx_pdev_rat
+@@ -2851,156 +2847,156 @@ static inline void htt_print_tx_pdev_rate_stats_tlv(const void *tag_buf,
  			goto fail;
  	}
  
@@ -3448,7 +3450,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -3045,202 +3041,202 @@ static inline void htt_print_rx_pdev_rat
+@@ -3045,202 +3041,202 @@ static inline void htt_print_rx_pdev_rate_stats_tlv(const void *tag_buf,
  			goto fail;
  	}
  
@@ -3578,8 +3580,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  	PRINT_ARRAY_TO_BUF(str_buf, htt_stats_buf->rx_pream,
  			   HTT_RX_PDEV_STATS_NUM_PREAMBLE_TYPES);
 -	len += HTT_DBG_OUT(buf + len, buf_len - len, "rx_pream = %s", str_buf);
-+	len += scnprintf(buf + len, buf_len - len, "rx_pream = %s\n", str_buf);
- 
+-
 -	len += HTT_DBG_OUT(buf + len, buf_len - len, "rx_11ax_su_ext = %u",
 -			   htt_stats_buf->rx_11ax_su_ext);
 -	len += HTT_DBG_OUT(buf + len, buf_len - len, "rx_11ac_mumimo = %u",
@@ -3590,6 +3591,8 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
 -			   htt_stats_buf->rx_11ax_ofdma);
 -	len += HTT_DBG_OUT(buf + len, buf_len - len, "txbf = %u",
 -			   htt_stats_buf->txbf);
++	len += scnprintf(buf + len, buf_len - len, "rx_pream = %s\n", str_buf);
++
 +	len += scnprintf(buf + len, buf_len - len, "rx_11ax_su_ext = %u\n",
 +			 htt_stats_buf->rx_11ax_su_ext);
 +	len += scnprintf(buf + len, buf_len - len, "rx_11ac_mumimo = %u\n",
@@ -3738,7 +3741,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -3268,34 +3264,34 @@ static inline void htt_print_rx_soc_fw_s
+@@ -3268,34 +3264,34 @@ static inline void htt_print_rx_soc_fw_stats_tlv(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -3801,7 +3804,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -3317,14 +3313,14 @@ htt_print_rx_soc_fw_refill_ring_empty_tl
+@@ -3317,14 +3313,14 @@ htt_print_rx_soc_fw_refill_ring_empty_tlv_v(const void *tag_buf,
  	char refill_ring_empty_cnt[HTT_MAX_STRING_LEN] = {0};
  	u16 num_elems = min_t(u16, (tag_len >> 2), HTT_RX_STATS_REFILL_MAX_RING);
  
@@ -3820,7 +3823,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -3347,14 +3343,14 @@ htt_print_rx_soc_fw_refill_ring_num_rxdm
+@@ -3347,14 +3343,14 @@ htt_print_rx_soc_fw_refill_ring_num_rxdma_err_tlv_v(const void *tag_buf,
  	char rxdma_err_cnt[HTT_MAX_STRING_LEN] = {0};
  	u16 num_elems = min_t(u16, (tag_len >> 2), HTT_RX_RXDMA_MAX_ERR_CODE);
  
@@ -3839,7 +3842,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -3376,14 +3372,14 @@ htt_print_rx_soc_fw_refill_ring_num_reo_
+@@ -3376,14 +3372,14 @@ htt_print_rx_soc_fw_refill_ring_num_reo_err_tlv_v(const void *tag_buf,
  	char reo_err_cnt[HTT_MAX_STRING_LEN] = {0};
  	u16 num_elems = min_t(u16, (tag_len >> 2), HTT_RX_REO_MAX_ERR_CODE);
  
@@ -3858,7 +3861,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -3402,27 +3398,27 @@ htt_print_rx_reo_debug_stats_tlv_v(const
+@@ -3402,27 +3398,27 @@ htt_print_rx_reo_debug_stats_tlv_v(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -3907,7 +3910,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -3444,14 +3440,14 @@ htt_print_rx_soc_fw_refill_ring_num_refi
+@@ -3444,14 +3440,14 @@ htt_print_rx_soc_fw_refill_ring_num_refill_tlv_v(const void *tag_buf,
  	char refill_ring_num_refill[HTT_MAX_STRING_LEN] = {0};
  	u16 num_elems = min_t(u16, (tag_len >> 2), HTT_RX_STATS_REFILL_MAX_RING);
  
@@ -3926,7 +3929,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -3471,110 +3467,110 @@ static inline void htt_print_rx_pdev_fw_
+@@ -3471,110 +3467,110 @@ static inline void htt_print_rx_pdev_fw_stats_tlv(const void *tag_buf,
  	char fw_ring_mgmt_subtype[HTT_MAX_STRING_LEN] = {0};
  	char fw_ring_ctrl_subtype[HTT_MAX_STRING_LEN] = {0};
  
@@ -4133,7 +4136,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -3594,14 +3590,14 @@ htt_print_rx_pdev_fw_ring_mpdu_err_tlv_v
+@@ -3594,14 +3590,14 @@ htt_print_rx_pdev_fw_ring_mpdu_err_tlv_v(const void *tag_buf,
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  	char fw_ring_mpdu_err[HTT_MAX_STRING_LEN] = {0};
  
@@ -4152,7 +4155,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -3623,12 +3619,12 @@ htt_print_rx_pdev_fw_mpdu_drop_tlv_v(con
+@@ -3623,12 +3619,12 @@ htt_print_rx_pdev_fw_mpdu_drop_tlv_v(const void *tag_buf,
  	char fw_mpdu_drop[HTT_MAX_STRING_LEN] = {0};
  	u16 num_elems = min_t(u16, (tag_len >> 2), HTT_RX_STATS_FW_DROP_REASON_MAX);
  
@@ -4167,7 +4170,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -3648,16 +3644,16 @@ htt_print_rx_pdev_fw_stats_phy_err_tlv(c
+@@ -3648,16 +3644,16 @@ htt_print_rx_pdev_fw_stats_phy_err_tlv(const void *tag_buf,
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  	char phy_errs[HTT_MAX_STRING_LEN] = {0};
  
@@ -4190,7 +4193,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -3676,20 +3672,20 @@ htt_print_pdev_cca_stats_hist_tlv(const
+@@ -3676,20 +3672,20 @@ htt_print_pdev_cca_stats_hist_tlv(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -4225,7 +4228,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -3708,16 +3704,16 @@ htt_print_pdev_stats_cca_counters_tlv(co
+@@ -3708,16 +3704,16 @@ htt_print_pdev_stats_cca_counters_tlv(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -4252,7 +4255,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -3735,32 +3731,32 @@ static inline void htt_print_hw_stats_wh
+@@ -3735,32 +3731,32 @@ static inline void htt_print_hw_stats_whal_tx_tlv(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -4311,7 +4314,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -3779,11 +3775,11 @@ htt_print_pdev_stats_twt_sessions_tlv(co
+@@ -3779,11 +3775,11 @@ htt_print_pdev_stats_twt_sessions_tlv(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -4328,7 +4331,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -3802,27 +3798,27 @@ htt_print_pdev_stats_twt_session_tlv(con
+@@ -3802,27 +3798,27 @@ htt_print_pdev_stats_twt_session_tlv(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -4377,7 +4380,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len)
  		buf[buf_len - 1] = 0;
-@@ -3841,21 +3837,21 @@ htt_print_pdev_obss_pd_stats_tlv_v(const
+@@ -3841,21 +3837,21 @@ htt_print_pdev_obss_pd_stats_tlv_v(const void *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -4407,7 +4410,7 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  			   htt_stats_buf->num_srg_ppdu_success);
  
  	if (len >= buf_len)
-@@ -3878,25 +3874,25 @@ static inline void htt_print_backpressur
+@@ -3878,25 +3874,25 @@ static inline void htt_print_backpressure_stats_tlv_v(const u32 *tag_buf,
  	u32 len = stats_req->buf_len;
  	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
  
@@ -4449,3 +4452,6 @@ Link: https://lore.kernel.org/r/20210913223148.208026-3-jouni@codeaurora.org
  
  	if (len >= buf_len) {
  		buf[buf_len - 1] = 0;
+-- 
+2.37.1
+

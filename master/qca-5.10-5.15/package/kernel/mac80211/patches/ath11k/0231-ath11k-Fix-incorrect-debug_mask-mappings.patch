@@ -20,6 +20,8 @@ Link: https://lore.kernel.org/r/20220602115621.15339-1-quic_mpubbise@quicinc.com
  drivers/net/wireless/ath/ath11k/debug.h | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/debug.h b/drivers/net/wireless/ath/ath11k/debug.h
+index fbbd5fe02aa8..91545640c47b 100644
 --- a/drivers/net/wireless/ath/ath11k/debug.h
 +++ b/drivers/net/wireless/ath/ath11k/debug.h
 @@ -23,8 +23,8 @@ enum ath11k_debug_mask {
@@ -33,3 +35,6 @@ Link: https://lore.kernel.org/r/20220602115621.15339-1-quic_mpubbise@quicinc.com
  	ATH11K_DBG_ANY		= 0xffffffff,
  };
  
+-- 
+2.37.1
+

@@ -16,9 +16,11 @@ Link: https://lore.kernel.org/r/20210913175510.193005-1-jouni@codeaurora.org
  include/linux/ieee80211.h | 1 +
  1 file changed, 1 insertion(+)
 
+diff --git a/include/linux/ieee80211.h b/include/linux/ieee80211.h
+index 694264503119..a1a7eda35cb5 100644
 --- a/include/linux/ieee80211.h
 +++ b/include/linux/ieee80211.h
-@@ -2084,6 +2084,7 @@ int ieee80211_get_vht_max_nss(struct iee
+@@ -2084,6 +2084,7 @@ int ieee80211_get_vht_max_nss(struct ieee80211_vht_cap *cap,
  
  #define IEEE80211_HE_VHT_MAX_AMPDU_FACTOR	20
  #define IEEE80211_HE_HT_MAX_AMPDU_FACTOR	16
@@ -26,3 +28,6 @@ Link: https://lore.kernel.org/r/20210913175510.193005-1-jouni@codeaurora.org
  
  /* 802.11ax HE PHY capabilities */
  #define IEEE80211_HE_PHY_CAP0_CHANNEL_WIDTH_SET_40MHZ_IN_2G		0x02
+-- 
+2.37.1
+

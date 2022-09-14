@@ -13,9 +13,11 @@ Link: https://lore.kernel.org/r/20220704030004.16484-1-jiaming@nfschina.com
  drivers/net/wireless/ath/ath11k/hal.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/hal.c b/drivers/net/wireless/ath/ath11k/hal.c
+index 1dba7b9e0bda..bda71ab5a1f2 100644
 --- a/drivers/net/wireless/ath/ath11k/hal.c
 +++ b/drivers/net/wireless/ath/ath11k/hal.c
-@@ -1165,7 +1165,7 @@ void ath11k_hal_srng_shadow_update_hp_tp
+@@ -1165,7 +1165,7 @@ void ath11k_hal_srng_shadow_update_hp_tp(struct ath11k_base *ab,
  	lockdep_assert_held(&srng->lock);
  
  	/* check whether the ring is emptry. Update the shadow
@@ -24,3 +26,6 @@ Link: https://lore.kernel.org/r/20220704030004.16484-1-jiaming@nfschina.com
  	 */
  	if (srng->ring_dir == HAL_SRNG_DIR_SRC &&
  	    *srng->u.src_ring.tp_addr != srng->u.src_ring.hp)
+-- 
+2.37.1
+

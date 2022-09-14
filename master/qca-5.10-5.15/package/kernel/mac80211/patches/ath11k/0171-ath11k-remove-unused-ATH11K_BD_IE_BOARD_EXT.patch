@@ -14,6 +14,8 @@ Link: https://lore.kernel.org/r/20220319023543.14288-2-quic_wgong@quicinc.com
  drivers/net/wireless/ath/ath11k/hw.h | 1 -
  1 file changed, 1 deletion(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/hw.h b/drivers/net/wireless/ath/ath11k/hw.h
+index debfcf193236..5681f571280f 100644
 --- a/drivers/net/wireless/ath/ath11k/hw.h
 +++ b/drivers/net/wireless/ath/ath11k/hw.h
 @@ -293,7 +293,6 @@ enum ath11k_bd_ie_board_type {
@@ -24,3 +26,6 @@ Link: https://lore.kernel.org/r/20220319023543.14288-2-quic_wgong@quicinc.com
  };
  
  struct ath11k_hw_regs {
+-- 
+2.37.1
+

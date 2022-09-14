@@ -18,9 +18,11 @@ Link: https://lore.kernel.org/r/20211201071745.17746-3-quic_wgong@quicinc.com
  drivers/net/wireless/ath/ath11k/wmi.h | 12 +++++++++
  2 files changed, 48 insertions(+)
 
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
+index 684705978159..36963809414f 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -2798,6 +2798,42 @@ out:
+@@ -2798,6 +2798,42 @@ ath11k_wmi_send_init_country_cmd(struct ath11k *ar,
  	return ret;
  }
  
@@ -63,6 +65,8 @@ Link: https://lore.kernel.org/r/20211201071745.17746-3-quic_wgong@quicinc.com
  int
  ath11k_wmi_send_thermal_mitigation_param_cmd(struct ath11k *ar,
  					     struct thermal_mitigation_params *param)
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.h b/drivers/net/wireless/ath/ath11k/wmi.h
+index 35f5432357f5..5b8158b425d7 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.h
 +++ b/drivers/net/wireless/ath/ath11k/wmi.h
 @@ -3769,6 +3769,16 @@ struct stats_request_params {
@@ -82,7 +86,7 @@ Link: https://lore.kernel.org/r/20211201071745.17746-3-quic_wgong@quicinc.com
  enum set_init_cc_type {
  	WMI_COUNTRY_INFO_TYPE_ALPHA,
  	WMI_COUNTRY_INFO_TYPE_COUNTRY_CODE,
-@@ -5432,6 +5442,8 @@ int ath11k_wmi_delba_send(struct ath11k
+@@ -5432,6 +5442,8 @@ int ath11k_wmi_delba_send(struct ath11k *ar, u32 vdev_id, const u8 *mac,
  			  u32 tid, u32 initiator, u32 reason);
  int ath11k_wmi_send_bcn_offload_control_cmd(struct ath11k *ar,
  					    u32 vdev_id, u32 bcn_ctrl_op);
@@ -91,3 +95,6 @@ Link: https://lore.kernel.org/r/20211201071745.17746-3-quic_wgong@quicinc.com
  int
  ath11k_wmi_send_init_country_cmd(struct ath11k *ar,
  				 struct wmi_init_country_params init_cc_param);
+-- 
+2.37.1
+

@@ -13,9 +13,11 @@ Link: https://lore.kernel.org/r/20211123090431.165103-1-colin.i.king@gmail.com
  drivers/net/wireless/ath/ath11k/wmi.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
+index 1bd2664f9e80..684705978159 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -3511,7 +3511,7 @@ ath11k_wmi_obss_color_collision_event(st
+@@ -3511,7 +3511,7 @@ ath11k_wmi_obss_color_collision_event(struct ath11k_base *ab, struct sk_buff *sk
  	case WMI_BSS_COLOR_FREE_SLOT_AVAILABLE:
  		break;
  	default:
@@ -24,3 +26,6 @@ Link: https://lore.kernel.org/r/20211123090431.165103-1-colin.i.king@gmail.com
  	}
  
  exit:
+-- 
+2.37.1
+

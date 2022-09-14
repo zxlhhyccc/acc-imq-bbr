@@ -18,9 +18,11 @@ Link: https://lore.kernel.org/r/1638948694-15582-1-git-send-email-quic_cjhuang@q
  drivers/net/wireless/ath/ath11k/wmi.h | 7 +++++++
  2 files changed, 14 insertions(+)
 
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index 6a7294bca870..3b31be6d79e4 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -2682,6 +2682,13 @@ static void ath11k_bss_assoc(struct ieee
+@@ -2682,6 +2682,13 @@ static void ath11k_bss_assoc(struct ieee80211_hw *hw,
  		ath11k_warn(ar->ab, "failed to set vdev %i OBSS PD parameters: %d\n",
  			    arvif->vdev_id, ret);
  
@@ -34,6 +36,8 @@ Link: https://lore.kernel.org/r/1638948694-15582-1-git-send-email-quic_cjhuang@q
  	ath11k_mac_11d_scan_stop_all(ar->ab);
  }
  
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.h b/drivers/net/wireless/ath/ath11k/wmi.h
+index aeaf89b28b57..d79eb1b7d9c2 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.h
 +++ b/drivers/net/wireless/ath/ath11k/wmi.h
 @@ -2169,6 +2169,13 @@ enum wmi_nss_ratio {
@@ -50,3 +54,6 @@ Link: https://lore.kernel.org/r/1638948694-15582-1-git-send-email-quic_cjhuang@q
  struct wmi_host_pdev_band_to_mac {
  	u32 pdev_id;
  	u32 start_freq;
+-- 
+2.37.1
+

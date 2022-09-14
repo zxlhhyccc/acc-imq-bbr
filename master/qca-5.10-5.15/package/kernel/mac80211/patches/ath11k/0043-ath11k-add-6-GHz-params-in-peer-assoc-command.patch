@@ -19,9 +19,11 @@ Link: https://lore.kernel.org/r/20210913175510.193005-2-jouni@codeaurora.org
  drivers/net/wireless/ath/ath11k/mac.c | 50 ++++++++++++++++++++++++++-
  1 file changed, 49 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index 0086f34e53ff..b4b7a5c2f867 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -2021,6 +2021,53 @@ static void ath11k_peer_assoc_h_he(struc
+@@ -2021,6 +2021,53 @@ static void ath11k_peer_assoc_h_he(struct ath11k *ar,
  		   arg->peer_bw_rxnss_override);
  }
  
@@ -75,7 +77,7 @@ Link: https://lore.kernel.org/r/20210913175510.193005-2-jouni@codeaurora.org
  static void ath11k_peer_assoc_h_smps(struct ieee80211_sta *sta,
  				     struct peer_assoc_params *arg)
  {
-@@ -2310,6 +2357,7 @@ static void ath11k_peer_assoc_prepare(st
+@@ -2310,6 +2357,7 @@ static void ath11k_peer_assoc_prepare(struct ath11k *ar,
  	ath11k_peer_assoc_h_ht(ar, vif, sta, arg);
  	ath11k_peer_assoc_h_vht(ar, vif, sta, arg);
  	ath11k_peer_assoc_h_he(ar, vif, sta, arg);
@@ -83,7 +85,7 @@ Link: https://lore.kernel.org/r/20210913175510.193005-2-jouni@codeaurora.org
  	ath11k_peer_assoc_h_qos(ar, vif, sta, arg);
  	ath11k_peer_assoc_h_smps(sta, arg);
  
-@@ -7619,7 +7667,7 @@ static int __ath11k_mac_register(struct
+@@ -7619,7 +7667,7 @@ static int __ath11k_mac_register(struct ath11k *ar)
  	if (cap->nss_ratio_enabled)
  		ieee80211_hw_set(ar->hw, SUPPORTS_VHT_EXT_NSS_BW);
  
@@ -92,3 +94,6 @@ Link: https://lore.kernel.org/r/20210913175510.193005-2-jouni@codeaurora.org
  		ieee80211_hw_set(ar->hw, AMPDU_AGGREGATION);
  		ieee80211_hw_set(ar->hw, TX_AMPDU_SETUP_IN_HW);
  		ieee80211_hw_set(ar->hw, SUPPORTS_REORDERING_BUFFER);
+-- 
+2.37.1
+

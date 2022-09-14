@@ -25,9 +25,11 @@ Link: https://lore.kernel.org/r/20210721212029.142388-5-jouni@codeaurora.org
  drivers/net/wireless/ath/ath11k/wmi.h | 1 +
  2 files changed, 3 insertions(+)
 
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
+index 499f59410af0..67b9c2d46e6f 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -884,6 +884,8 @@ int ath11k_wmi_vdev_start(struct ath11k
+@@ -884,6 +884,8 @@ int ath11k_wmi_vdev_start(struct ath11k *ar, struct wmi_vdev_start_req_arg *arg,
  	}
  
  	cmd->flags |= WMI_VDEV_START_LDPC_RX_ENABLED;
@@ -36,6 +38,8 @@ Link: https://lore.kernel.org/r/20210721212029.142388-5-jouni@codeaurora.org
  
  	ptr = skb->data + sizeof(*cmd);
  	chan = ptr;
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.h b/drivers/net/wireless/ath/ath11k/wmi.h
+index f4ab308cac97..b5799230dc5f 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.h
 +++ b/drivers/net/wireless/ath/ath11k/wmi.h
 @@ -2577,6 +2577,7 @@ struct wmi_vdev_down_cmd {
@@ -46,3 +50,6 @@ Link: https://lore.kernel.org/r/20210721212029.142388-5-jouni@codeaurora.org
  
  struct wmi_ssid {
  	u32 ssid_len;
+-- 
+2.37.1
+

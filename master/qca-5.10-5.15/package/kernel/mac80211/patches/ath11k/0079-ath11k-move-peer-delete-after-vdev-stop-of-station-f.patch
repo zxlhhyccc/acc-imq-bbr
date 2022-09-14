@@ -46,9 +46,11 @@ Link: https://lore.kernel.org/r/20211027093825.12167-1-quic_wgong@quicinc.com
  drivers/net/wireless/ath/ath11k/mac.c | 18 ++++++++++++++++++
  1 file changed, 18 insertions(+)
 
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index f52910d9e3c6..071e0fa610ec 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -4223,6 +4223,10 @@ static int ath11k_mac_op_sta_state(struc
+@@ -4223,6 +4223,10 @@ static int ath11k_mac_op_sta_state(struct ieee80211_hw *hw,
  		    new_state == IEEE80211_STA_NOTEXIST)) {
  		ath11k_dp_peer_cleanup(ar, arvif->vdev_id, sta->addr);
  
@@ -59,7 +61,7 @@ Link: https://lore.kernel.org/r/20211027093825.12167-1-quic_wgong@quicinc.com
  		ret = ath11k_peer_delete(ar, arvif->vdev_id, sta->addr);
  		if (ret)
  			ath11k_warn(ar->ab, "Failed to delete peer: %pM for VDEV: %d\n",
-@@ -4244,6 +4248,7 @@ static int ath11k_mac_op_sta_state(struc
+@@ -4244,6 +4248,7 @@ static int ath11k_mac_op_sta_state(struct ieee80211_hw *hw,
  		}
  		spin_unlock_bh(&ar->ab->base_lock);
  
@@ -67,10 +69,11 @@ Link: https://lore.kernel.org/r/20211027093825.12167-1-quic_wgong@quicinc.com
  		kfree(arsta->tx_stats);
  		arsta->tx_stats = NULL;
  
-@@ -6638,6 +6643,19 @@ ath11k_mac_op_unassign_vif_chanctx(struc
+@@ -6637,6 +6642,19 @@ ath11k_mac_op_unassign_vif_chanctx(struct ieee80211_hw *hw,
+ 
  	arvif->is_started = false;
  
- 	if (ab->hw_params.vdev_start_delay &&
++	if (ab->hw_params.vdev_start_delay &&
 +	    arvif->vdev_type == WMI_VDEV_TYPE_STA) {
 +		ret = ath11k_peer_delete(ar, arvif->vdev_id, arvif->bssid);
 +		if (ret)
@@ -83,7 +86,9 @@ Link: https://lore.kernel.org/r/20211027093825.12167-1-quic_wgong@quicinc.com
 +				   arvif->bssid, arvif->vdev_id);
 +	}
 +
-+	if (ab->hw_params.vdev_start_delay &&
+ 	if (ab->hw_params.vdev_start_delay &&
  	    arvif->vdev_type == WMI_VDEV_TYPE_MONITOR)
  		ath11k_wmi_vdev_down(ar, arvif->vdev_id);
- 
+-- 
+2.37.1
+

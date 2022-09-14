@@ -41,6 +41,8 @@ Link: https://lore.kernel.org/r/20220429170502.20080-10-quic_mpubbise@quicinc.co
  drivers/net/wireless/ath/ath11k/pcic.c   |  23 ++++
  4 files changed, 158 insertions(+), 13 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/Makefile b/drivers/net/wireless/ath/ath11k/Makefile
+index 0ebfe41d6143..cc47e0114595 100644
 --- a/drivers/net/wireless/ath/ath11k/Makefile
 +++ b/drivers/net/wireless/ath/ath11k/Makefile
 @@ -16,7 +16,8 @@ ath11k-y += core.o \
@@ -53,7 +55,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-10-quic_mpubbise@quicinc.co
  
  ath11k-$(CPTCFG_ATH11K_DEBUGFS) += debugfs.o debugfs_htt_stats.o debugfs_sta.o
  ath11k-$(CPTCFG_NL80211_TESTMODE) += testmode.o
-@@ -29,7 +30,7 @@ obj-$(CPTCFG_ATH11K_AHB) += ath11k_ahb.o
+@@ -29,7 +30,7 @@ obj-$(CONFIG_ATH11K_AHB) += ath11k_ahb.o
  ath11k_ahb-y += ahb.o
  
  obj-$(CPTCFG_ATH11K_PCI) += ath11k_pci.o
@@ -62,6 +64,8 @@ Link: https://lore.kernel.org/r/20220429170502.20080-10-quic_mpubbise@quicinc.co
  
  # for tracing framework to find trace.h
  CFLAGS_trace.o := -I$(src)
+diff --git a/drivers/net/wireless/ath/ath11k/ahb.c b/drivers/net/wireless/ath/ath11k/ahb.c
+index 49d79cfbf21c..050bda828966 100644
 --- a/drivers/net/wireless/ath/ath11k/ahb.c
 +++ b/drivers/net/wireless/ath/ath11k/ahb.c
 @@ -13,6 +13,7 @@
@@ -72,7 +76,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-10-quic_mpubbise@quicinc.co
  
  static const struct of_device_id ath11k_ahb_of_match[] = {
  	/* TODO: Should we change the compatible string to something similar
-@@ -24,6 +25,9 @@ static const struct of_device_id ath11k_
+@@ -24,6 +25,9 @@ static const struct of_device_id ath11k_ahb_of_match[] = {
  	{ .compatible = "qcom,ipq6018-wifi",
  	  .data = (void *)ATH11K_HW_IPQ6018_HW10,
  	},
@@ -99,7 +103,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-10-quic_mpubbise@quicinc.co
  static inline u32 ath11k_ahb_read32(struct ath11k_base *ab, u32 offset)
  {
  	return ioread32(ab->mem + offset);
-@@ -395,6 +409,9 @@ static void ath11k_ahb_free_irq(struct a
+@@ -395,6 +409,9 @@ static void ath11k_ahb_free_irq(struct ath11k_base *ab)
  	int irq_idx;
  	int i;
  
@@ -109,7 +113,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-10-quic_mpubbise@quicinc.co
  	for (i = 0; i < ab->hw_params.ce_count; i++) {
  		if (ath11k_ce_get_attr_flags(ab, i) & CE_ATTR_DIS_INTR)
  			continue;
-@@ -549,6 +566,9 @@ static int ath11k_ahb_config_irq(struct
+@@ -549,6 +566,9 @@ static int ath11k_ahb_config_irq(struct ath11k_base *ab)
  	int irq, irq_idx, i;
  	int ret;
  
@@ -119,7 +123,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-10-quic_mpubbise@quicinc.co
  	/* Configure CE irqs */
  	for (i = 0; i < ab->hw_params.ce_count; i++) {
  		struct ath11k_ce_pipe *ce_pipe = &ab->ce.ce_pipe[i];
-@@ -618,7 +638,7 @@ static int ath11k_ahb_map_service_to_pip
+@@ -618,7 +638,7 @@ static int ath11k_ahb_map_service_to_pipe(struct ath11k_base *ab, u16 service_id
  	return 0;
  }
  
@@ -128,7 +132,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-10-quic_mpubbise@quicinc.co
  	.start = ath11k_ahb_start,
  	.stop = ath11k_ahb_stop,
  	.read32 = ath11k_ahb_read32,
-@@ -630,6 +650,20 @@ static const struct ath11k_hif_ops ath11
+@@ -630,6 +650,20 @@ static const struct ath11k_hif_ops ath11k_ahb_hif_ops = {
  	.power_up = ath11k_ahb_power_up,
  };
  
@@ -149,7 +153,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-10-quic_mpubbise@quicinc.co
  static int ath11k_core_get_rproc(struct ath11k_base *ab)
  {
  	struct ath11k_ahb *ab_ahb = ath11k_ahb_priv(ab);
-@@ -652,12 +686,84 @@ static int ath11k_core_get_rproc(struct
+@@ -652,12 +686,84 @@ static int ath11k_core_get_rproc(struct ath11k_base *ab)
  	return 0;
  }
  
@@ -236,7 +240,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-10-quic_mpubbise@quicinc.co
  	int ret;
  
  	of_id = of_match_device(ath11k_ahb_of_match, &pdev->dev);
-@@ -666,10 +772,21 @@ static int ath11k_ahb_probe(struct platf
+@@ -666,10 +772,21 @@ static int ath11k_ahb_probe(struct platform_device *pdev)
  		return -EINVAL;
  	}
  
@@ -262,7 +266,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-10-quic_mpubbise@quicinc.co
  	}
  
  	ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
-@@ -685,13 +802,16 @@ static int ath11k_ahb_probe(struct platf
+@@ -685,13 +802,16 @@ static int ath11k_ahb_probe(struct platform_device *pdev)
  		return -ENOMEM;
  	}
  
@@ -283,6 +287,8 @@ Link: https://lore.kernel.org/r/20220429170502.20080-10-quic_mpubbise@quicinc.co
  	ret = ath11k_core_pre_init(ab);
  	if (ret)
  		goto err_core_free;
+diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
+index fdea44627125..95bca0b078b1 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
 @@ -950,6 +950,7 @@ struct ath11k_base {
@@ -293,9 +299,11 @@ Link: https://lore.kernel.org/r/20220429170502.20080-10-quic_mpubbise@quicinc.co
  			u32 addr_lo;
  			u32 addr_hi;
  		} msi;
+diff --git a/drivers/net/wireless/ath/ath11k/pcic.c b/drivers/net/wireless/ath/ath11k/pcic.c
+index 46cf96d3e1d2..cf12b98c480d 100644
 --- a/drivers/net/wireless/ath/ath11k/pcic.c
 +++ b/drivers/net/wireless/ath/ath11k/pcic.c
-@@ -106,6 +106,15 @@ static const struct ath11k_msi_config at
+@@ -106,6 +106,15 @@ static const struct ath11k_msi_config ath11k_msi_config[] = {
  		},
  		.hw_rev = ATH11K_HW_WCN6855_HW21,
  	},
@@ -311,7 +319,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-10-quic_mpubbise@quicinc.co
  };
  
  int ath11k_pcic_init_msi_config(struct ath11k_base *ab)
-@@ -172,6 +181,7 @@ void ath11k_pcic_write32(struct ath11k_b
+@@ -172,6 +181,7 @@ void ath11k_pcic_write32(struct ath11k_base *ab, u32 offset, u32 value)
  	    !ret)
  		ab->pci.ops->release(ab);
  }
@@ -319,7 +327,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-10-quic_mpubbise@quicinc.co
  
  u32 ath11k_pcic_read32(struct ath11k_base *ab, u32 offset)
  {
-@@ -203,6 +213,7 @@ u32 ath11k_pcic_read32(struct ath11k_bas
+@@ -203,6 +213,7 @@ u32 ath11k_pcic_read32(struct ath11k_base *ab, u32 offset)
  
  	return val;
  }
@@ -327,7 +335,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-10-quic_mpubbise@quicinc.co
  
  void ath11k_pcic_get_msi_address(struct ath11k_base *ab, u32 *msi_addr_lo,
  				 u32 *msi_addr_hi)
-@@ -210,6 +221,7 @@ void ath11k_pcic_get_msi_address(struct
+@@ -210,6 +221,7 @@ void ath11k_pcic_get_msi_address(struct ath11k_base *ab, u32 *msi_addr_lo,
  	*msi_addr_lo = ab->pci.msi.addr_lo;
  	*msi_addr_hi = ab->pci.msi.addr_hi;
  }
@@ -335,7 +343,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-10-quic_mpubbise@quicinc.co
  
  int ath11k_pcic_get_user_msi_assignment(struct ath11k_base *ab, char *user_name,
  					int *num_vectors, u32 *user_base_data,
-@@ -237,6 +249,7 @@ int ath11k_pcic_get_user_msi_assignment(
+@@ -237,6 +249,7 @@ int ath11k_pcic_get_user_msi_assignment(struct ath11k_base *ab, char *user_name,
  
  	return -EINVAL;
  }
@@ -343,7 +351,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-10-quic_mpubbise@quicinc.co
  
  void ath11k_pcic_get_ce_msi_idx(struct ath11k_base *ab, u32 ce_id, u32 *msi_idx)
  {
-@@ -253,6 +266,7 @@ void ath11k_pcic_get_ce_msi_idx(struct a
+@@ -253,6 +266,7 @@ void ath11k_pcic_get_ce_msi_idx(struct ath11k_base *ab, u32 ce_id, u32 *msi_idx)
  	}
  	*msi_idx = msi_data_idx;
  }
@@ -351,7 +359,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-10-quic_mpubbise@quicinc.co
  
  static void ath11k_pcic_free_ext_irq(struct ath11k_base *ab)
  {
-@@ -281,6 +295,7 @@ void ath11k_pcic_free_irq(struct ath11k_
+@@ -281,6 +295,7 @@ void ath11k_pcic_free_irq(struct ath11k_base *ab)
  
  	ath11k_pcic_free_ext_irq(ab);
  }
@@ -359,7 +367,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-10-quic_mpubbise@quicinc.co
  
  static void ath11k_pcic_ce_irq_enable(struct ath11k_base *ab, u16 ce_id)
  {
-@@ -431,6 +446,7 @@ void ath11k_pcic_ext_irq_enable(struct a
+@@ -431,6 +446,7 @@ void ath11k_pcic_ext_irq_enable(struct ath11k_base *ab)
  		ath11k_pcic_ext_grp_enable(irq_grp);
  	}
  }
@@ -367,7 +375,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-10-quic_mpubbise@quicinc.co
  
  static void ath11k_pcic_sync_ext_irqs(struct ath11k_base *ab)
  {
-@@ -451,6 +467,7 @@ void ath11k_pcic_ext_irq_disable(struct
+@@ -451,6 +467,7 @@ void ath11k_pcic_ext_irq_disable(struct ath11k_base *ab)
  	__ath11k_pcic_ext_irq_disable(ab);
  	ath11k_pcic_sync_ext_irqs(ab);
  }
@@ -375,7 +383,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-10-quic_mpubbise@quicinc.co
  
  static int ath11k_pcic_ext_grp_napi_poll(struct napi_struct *napi, int budget)
  {
-@@ -630,6 +647,7 @@ int ath11k_pcic_config_irq(struct ath11k
+@@ -630,6 +647,7 @@ int ath11k_pcic_config_irq(struct ath11k_base *ab)
  
  	return 0;
  }
@@ -383,7 +391,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-10-quic_mpubbise@quicinc.co
  
  void ath11k_pcic_ce_irqs_enable(struct ath11k_base *ab)
  {
-@@ -643,6 +661,7 @@ void ath11k_pcic_ce_irqs_enable(struct a
+@@ -643,6 +661,7 @@ void ath11k_pcic_ce_irqs_enable(struct ath11k_base *ab)
  		ath11k_pcic_ce_irq_enable(ab, i);
  	}
  }
@@ -391,7 +399,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-10-quic_mpubbise@quicinc.co
  
  static void ath11k_pcic_kill_tasklets(struct ath11k_base *ab)
  {
-@@ -664,12 +683,14 @@ void ath11k_pcic_ce_irq_disable_sync(str
+@@ -664,12 +683,14 @@ void ath11k_pcic_ce_irq_disable_sync(struct ath11k_base *ab)
  	ath11k_pcic_sync_ce_irqs(ab);
  	ath11k_pcic_kill_tasklets(ab);
  }
@@ -406,7 +414,7 @@ Link: https://lore.kernel.org/r/20220429170502.20080-10-quic_mpubbise@quicinc.co
  
  int ath11k_pcic_start(struct ath11k_base *ab)
  {
-@@ -680,6 +701,7 @@ int ath11k_pcic_start(struct ath11k_base
+@@ -680,6 +701,7 @@ int ath11k_pcic_start(struct ath11k_base *ab)
  
  	return 0;
  }
@@ -414,8 +422,11 @@ Link: https://lore.kernel.org/r/20220429170502.20080-10-quic_mpubbise@quicinc.co
  
  int ath11k_pcic_map_service_to_pipe(struct ath11k_base *ab, u16 service_id,
  				    u8 *ul_pipe, u8 *dl_pipe)
-@@ -723,3 +745,4 @@ int ath11k_pcic_map_service_to_pipe(stru
+@@ -723,3 +745,4 @@ int ath11k_pcic_map_service_to_pipe(struct ath11k_base *ab, u16 service_id,
  
  	return 0;
  }
 +EXPORT_SYMBOL(ath11k_pcic_map_service_to_pipe);
+-- 
+2.37.1
+

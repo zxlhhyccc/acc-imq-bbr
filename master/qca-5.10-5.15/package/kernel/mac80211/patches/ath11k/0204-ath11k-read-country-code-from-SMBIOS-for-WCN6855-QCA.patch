@@ -28,9 +28,11 @@ Link: https://lore.kernel.org/r/20220421023501.32167-1-quic_wgong@quicinc.com
  drivers/net/wireless/ath/ath11k/mac.c  | 11 ++++++++++
  3 files changed, 63 insertions(+), 4 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
+index d37c144244d6..616d6facf6c8 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -549,7 +549,7 @@ int ath11k_core_resume(struct ath11k_bas
+@@ -549,7 +549,7 @@ int ath11k_core_resume(struct ath11k_base *ab)
  }
  EXPORT_SYMBOL(ath11k_core_resume);
  
@@ -39,7 +41,7 @@ Link: https://lore.kernel.org/r/20220421023501.32167-1-quic_wgong@quicinc.com
  {
  	struct ath11k_base *ab = data;
  	const char *magic = ATH11K_SMBIOS_BDF_EXT_MAGIC;
-@@ -571,6 +571,28 @@ static void ath11k_core_check_bdfext(con
+@@ -571,6 +571,28 @@ static void ath11k_core_check_bdfext(const struct dmi_header *hdr, void *data)
  		return;
  	}
  
@@ -68,7 +70,7 @@ Link: https://lore.kernel.org/r/20220421023501.32167-1-quic_wgong@quicinc.com
  	if (!smbios->bdf_enabled) {
  		ath11k_dbg(ab, ATH11K_DBG_BOOT, "bdf variant name not found.\n");
  		return;
-@@ -610,7 +632,7 @@ static void ath11k_core_check_bdfext(con
+@@ -610,7 +632,7 @@ static void ath11k_core_check_bdfext(const struct dmi_header *hdr, void *data)
  int ath11k_core_check_smbios(struct ath11k_base *ab)
  {
  	ab->qmi.target.bdf_ext[0] = '\0';
@@ -77,6 +79,8 @@ Link: https://lore.kernel.org/r/20220421023501.32167-1-quic_wgong@quicinc.com
  
  	if (ab->qmi.target.bdf_ext[0] == '\0')
  		return -ENODATA;
+diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
+index fa299bfb4efc..7a505531acf9 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
 @@ -169,12 +169,38 @@ struct ath11k_ext_irq_grp {
@@ -120,9 +124,11 @@ Link: https://lore.kernel.org/r/20220421023501.32167-1-quic_wgong@quicinc.com
  
  #define HEHANDLE_CAP_PHYINFO_SIZE       3
  #define HECAP_PHYINFO_SIZE              9
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index f2188b2b80d5..7b73b0d52f56 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -8846,6 +8846,17 @@ static int __ath11k_mac_register(struct
+@@ -8846,6 +8846,17 @@ static int __ath11k_mac_register(struct ath11k *ar)
  		goto err_unregister_hw;
  	}
  
@@ -140,3 +146,6 @@ Link: https://lore.kernel.org/r/20220421023501.32167-1-quic_wgong@quicinc.com
  	ret = ath11k_debugfs_register(ar);
  	if (ret) {
  		ath11k_err(ar->ab, "debugfs registration failed: %d\n", ret);
+-- 
+2.37.1
+
