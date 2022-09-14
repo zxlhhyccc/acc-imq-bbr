@@ -1,7 +1,7 @@
-From 187368d2936edad6342151ae1ac34d95dc2de2c1 Mon Sep 17 00:00:00 2001
+From 3dbde4cec93b909ed1aa7148cbd8208293038cda Mon Sep 17 00:00:00 2001
 From: Chukun Pan <amadeus@jmu.edu.cn>
 Date: Fri, 1 Oct 2021 22:54:21 +0800
-Subject: [PATCH 03/44] arm64: dts: qcom: ipq8074: Add QUP5 I2C node
+Subject: [PATCH 03/11] arm64: dts: qcom: ipq8074: Add QUP5 I2C node
 
 Add node to support the QUP5 I2C controller inside of IPQ8074.
 It is exactly the same as QUP2 controllers.
@@ -14,11 +14,9 @@ Link: https://lore.kernel.org/r/20211001145421.18302-1-amadeus@jmu.edu.cn
  arch/arm64/boot/dts/qcom/ipq8074.dtsi | 15 +++++++++++++++
  1 file changed, 15 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/ipq8074.dtsi b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
-index 5acbacecbf4f..9e700963a1e3 100644
 --- a/arch/arm64/boot/dts/qcom/ipq8074.dtsi
 +++ b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
-@@ -430,6 +430,21 @@ blsp1_i2c3: i2c@78b7000 {
+@@ -430,6 +430,21 @@
  			status = "disabled";
  		};
  
@@ -40,6 +38,3 @@ index 5acbacecbf4f..9e700963a1e3 100644
  		blsp1_i2c6: i2c@78ba000 {
  			compatible = "qcom,i2c-qup-v2.2.1";
  			#address-cells = <1>;
--- 
-2.37.2
-
