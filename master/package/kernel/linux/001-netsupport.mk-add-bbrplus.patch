@@ -46,61 +46,7 @@ diff --git a/modules/netsupport.mk b/modules/netsupport.mk
 index 9b99aa1..ce8cf1e 100644
 --- a/modules/netsupport.mk
 +++ b/modules/netsupport.mk
-@@ -892,6 +892,22 @@ endef
- $(eval $(call KernelPackage,sched-flower))
- 
- 
-+define KernelPackage/sched-fq-pie
-+  SUBMENU:=$(NETWORK_SUPPORT_MENU)
-+  TITLE:=Flow Queue Proportional Integral Enhanced (FQ-PIE)
-+  DEPENDS:=+kmod-sched-core +kmod-sched-pie
-+  KCONFIG:=CONFIG_NET_SCH_FQ_PIE
-+  FILES:=$(LINUX_DIR)/net/sched/sch_fq_pie.ko
-+  AUTOLOAD:=$(call AutoProbe, sch_fq_pie)
-+endef
-+
-+define KernelPackage/sched-fq-pie/description
-+  A queuing discipline that combines Flow Queuing with the PIE AQM.
-+endef
-+
-+$(eval $(call KernelPackage,sched-fq-pie))
-+
-+
- define KernelPackage/sched-ipset
-   SUBMENU:=$(NETWORK_SUPPORT_MENU)
-   TITLE:=Traffic shaper ipset support
-@@ -922,6 +938,22 @@ endef
- $(eval $(call KernelPackage,sched-mqprio))
- 
- 
-+define KernelPackage/sched-pie
-+  SUBMENU:=$(NETWORK_SUPPORT_MENU)
-+  TITLE:=Proportional Integral controller-Enhanced AQM (PIE)
-+  DEPENDS:=+kmod-sched-core
-+  KCONFIG:=CONFIG_NET_SCH_PIE
-+  FILES:=$(LINUX_DIR)/net/sched/sch_pie.ko
-+  AUTOLOAD:=$(call AutoProbe, sch_pie)
-+endef
-+
-+define KernelPackage/sched-pie/description
-+  A control theoretic active queue management scheme.
-+endef
-+
-+$(eval $(call KernelPackage,sched-pie))
-+
-+
- define KernelPackage/sched-prio
-   SUBMENU:=$(NETWORK_SUPPORT_MENU)
-   TITLE:=Multi Band Priority Queueing (PRIO)
-@@ -979,7 +1011,6 @@ define KernelPackage/sched
- 	CONFIG_NET_SCH_SFQ \
- 	CONFIG_NET_SCH_TEQL \
- 	CONFIG_NET_SCH_FQ \
--	CONFIG_NET_SCH_PIE \
- 	CONFIG_NET_ACT_PEDIT \
- 	CONFIG_NET_ACT_SIMP \
- 	CONFIG_NET_ACT_CSUM \
-@@ -1029,6 +1060,123 @@ endef
+@@ -1060,6 +1060,123 @@ endef
  $(eval $(call KernelPackage,tcp-bbr))
  
  
@@ -224,7 +170,7 @@ index 9b99aa1..ce8cf1e 100644
  define KernelPackage/tcp-hybla
    SUBMENU:=$(NETWORK_SUPPORT_MENU)
    TITLE:=TCP-Hybla congestion control algorithm
-@@ -1423,3 +1571,67 @@ define KernelPackage/netconsole/description
+@@ -1454,3 +1571,67 @@ define KernelPackage/netconsole/description
  endef
  
  $(eval $(call KernelPackage,netconsole))
