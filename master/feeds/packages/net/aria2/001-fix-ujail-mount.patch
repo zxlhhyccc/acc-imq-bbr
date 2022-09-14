@@ -1,5 +1,5 @@
 diff --git a/files/aria2.init b/files/aria2.init
-index 41f0005..ead8c66 100755
+index deef307..0147d08 100755
 --- a/files/aria2.init
 +++ b/files/aria2.init
 @@ -168,6 +168,11 @@ aria2_start() {
@@ -14,12 +14,3 @@ index 41f0005..ead8c66 100755
  	_make_dir "$config_dir" || {
  		_err "Can't create config dir: $config_dir"
  		return 1
-@@ -341,7 +346,7 @@ aria2_start() {
- 		procd_set_param user "$user"
- 
- 	procd_add_jail "$NAME.$section" log
--	procd_add_jail_mount "$config_file"
-+	procd_add_jail_mount "$ca_certificate" "$certificate" "$rpc_certificate" "$rpc_private_key"
- 	procd_add_jail_mount_rw "$dir" "$config_dir" "$log"
- 	procd_close_instance
- }
