@@ -1,7 +1,7 @@
-From af9bd5108e9008bc5c39405d834c076279823a91 Mon Sep 17 00:00:00 2001
+From 9757a0d4e05b807074f6868ed594a9bf0111d74d Mon Sep 17 00:00:00 2001
 From: Robert Marko <robimarko@gmail.com>
 Date: Thu, 7 Oct 2021 13:58:46 +0200
-Subject: [PATCH 07/11] arm64: dts: qcom: ipq8074: add MDIO bus
+Subject: [PATCH 07/44] arm64: dts: qcom: ipq8074: add MDIO bus
 
 IPQ8074 uses an IPQ4019 compatible MDIO controller that is already
 supported in the kernel, so add the DT node in order to use it.

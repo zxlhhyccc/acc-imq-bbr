@@ -1,7 +1,7 @@
-From cbcdbf585ae995320bd2653d30633e40dc8c9f82 Mon Sep 17 00:00:00 2001
+From 3f3f712b16c7d374cfb079ca83684f12fda7884c Mon Sep 17 00:00:00 2001
 From: Robert Marko <robimarko@gmail.com>
 Date: Sun, 5 Sep 2021 18:58:16 +0200
-Subject: [PATCH 01/11] arm64: dts: qcom: ipq8074: add SPMI bus
+Subject: [PATCH 01/44] arm64: dts: qcom: ipq8074: add SPMI bus
 
 IPQ8074 uses SPMI for communication with the PMIC, so
 since its already supported add the DT node for it.
