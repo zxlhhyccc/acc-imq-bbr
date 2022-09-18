@@ -18,7 +18,7 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
 
 --- a/nss_core.c
 +++ b/nss_core.c
-@@ -1650,7 +1650,7 @@ static int32_t nss_core_handle_cause_que
+@@ -1656,7 +1656,7 @@ static int32_t nss_core_handle_cause_que
  		 *
  		 */
  		if (unlikely((buffer_type == N2H_BUFFER_CRYPTO_RESP))) {

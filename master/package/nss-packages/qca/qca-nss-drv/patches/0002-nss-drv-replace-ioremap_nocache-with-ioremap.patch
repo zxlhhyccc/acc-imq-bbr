@@ -128,7 +128,7 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
  		return -EFAULT;
 --- a/nss_hal/nss_hal.c
 +++ b/nss_hal/nss_hal.c
-@@ -73,9 +73,9 @@ int nss_hal_firmware_load(struct nss_ctx
+@@ -78,9 +78,9 @@ int nss_hal_firmware_load(struct nss_ctx
  	}
  
  
