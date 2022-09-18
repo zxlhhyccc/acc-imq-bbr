@@ -30,7 +30,7 @@ define KernelPackage/qca-nss-ecm
   FILES:=$(PKG_BUILD_DIR)/ecm.ko
   KCONFIG:=CONFIG_BRIDGE_NETFILTER=y \
 	CONFIG_NF_CONNTRACK_EVENTS=y \
-	CONFIG_NF_CONNTRACK_CHAIN_EVENTS=n \
+	CONFIG_NF_CONNTRACK_CHAIN_EVENTS=y \
 	CONFIG_NF_CONNTRACK_DSCPREMARK_EXT=n
 endef
 
@@ -47,7 +47,7 @@ define KernelPackage/qca-nss-ecm/install
 	$(INSTALL_DATA) ./files/qca-nss-ecm.uci $(1)/etc/config/ecm
 	$(INSTALL_DATA) ./files/qca-nss-ecm.defaults $(1)/etc/uci-defaults/99-qca-nss-ecm
 	$(INSTALL_BIN) ./files/qca-nss-ecm.sysctl $(1)/etc/sysctl.d/qca-nss-ecm.conf
-	echo 'net.netfilter.nf_conntrack_max=8192' >> $(1)/etc/sysctl.d/qca-nss-ecm.conf
+	echo 'net.netfilter.nf_conntrack_max=65535' >> $(1)/etc/sysctl.d/qca-nss-ecm.conf
 endef
 
 EXTRA_CFLAGS+=-I$(STAGING_DIR)/usr/include/qca-nss-drv
@@ -55,20 +55,23 @@ EXTRA_CFLAGS+=-I$(STAGING_DIR)/usr/include/qca-nss-drv
 ifneq (, $(findstring $(CONFIG_TARGET_BOARD), "ipq807x" "ipq60xx"))
 ECM_MAKE_OPTS+= ECM_FRONT_END_NSS_ENABLE=y \
 		ECM_NON_PORTED_SUPPORT_ENABLE=y \
+		ECM_IPV4_ENABLE=y \
 		ECM_IPV6_ENABLE=y \
 		ECM_CLASSIFIER_HYFI_ENABLE=n \
 		ECM_MULTICAST_ENABLE=n \
-		ECM_INTERFACE_IPSEC_ENABLE=n \
+		ECM_INTERFACE_IPSEC_ENABLE=y \
 		ECM_INTERFACE_PPTP_ENABLE=n \
 		ECM_INTERFACE_PPPOE_ENABLE=y \
 		ECM_INTERFACE_L2TPV2_ENABLE=n \
-		ECM_INTERFACE_GRE_TAP_ENABLE=n \
-		ECM_INTERFACE_GRE_TUN_ENABLE=n \
+		ECM_INTERFACE_GRE_TAP_ENABLE=y \
+		ECM_INTERFACE_GRE_TUN_ENABLE=y \
 		ECM_INTERFACE_SIT_ENABLE=n \
-		ECM_INTERFACE_TUNIPIP6_ENABLE=n \
+		ECM_INTERFACE_TUN6RD_ENABLE=y \
+		ECM_INTERFACE_TUNIPIP6_ENABLE=y \
 		ECM_INTERFACE_RAWIP_ENABLE=n \
 		ECM_INTERFACE_VLAN_ENABLE=y \
-		ECM_CLASSIFIER_MARK_ENABLE=y \
+		ECM_INTERFACE_WIFI_ENABLE=y \
+		ECM_CLASSIFIER_MARK_ENABLE=n \
 		ECM_CLASSIFIER_DSCP_ENABLE=n \
 		ECM_CLASSIFIER_PCC_ENABLE=n \
 		ECM_BAND_STEERING_ENABLE=n
