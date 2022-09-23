@@ -1,8 +1,8 @@
 diff --git a/Makefile b/Makefile
-index 9dbf91e..b3fd8d3 100644
+index 9d17e03..ec65730 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -17,6 +17,15 @@ PKG_MIRROR_HASH:=4df2c5ac8cb60e4df06a4ef9a87c3a5196f0a8739ee39e6a2587c15527612250
+@@ -17,6 +17,15 @@ PKG_MIRROR_HASH:=4df2c5ac8cb60e4df06a4ef9a87c3a5196f0a8739ee39e6a2587c1552761225
  PKG_MAINTAINER:=Jo-Philipp Wich <jo@mein.io>
  PKG_LICENSE:=GPL-2.0
  
@@ -60,7 +60,7 @@ index 9dbf91e..b3fd8d3 100644
  define Build/InstallDev
 diff --git a/patches/001-ralink.patch b/patches/001-ralink.patch
 new file mode 100644
-index 0000000..d65fe77
+index 0000000..a70b40c
 --- /dev/null
 +++ b/patches/001-ralink.patch
 @@ -0,0 +1,1537 @@
@@ -289,7 +289,7 @@ index 0000000..d65fe77
 + #endif
 +--- a/include/iwinfo.h
 ++++ b/include/iwinfo.h
-+@@ -306,6 +306,7 @@ extern const struct iwinfo_ops wext_ops;
++@@ -313,6 +313,7 @@ extern const struct iwinfo_ops wext_ops;
 + extern const struct iwinfo_ops madwifi_ops;
 + extern const struct iwinfo_ops nl80211_ops;
 + extern const struct iwinfo_ops wl_ops;
@@ -299,19 +299,19 @@ index 0000000..d65fe77
 + 
 +--- a/iwinfo_lib.c
 ++++ b/iwinfo_lib.c
-+@@ -339,6 +339,9 @@ static const struct iwinfo_ops *backends
++@@ -344,6 +344,9 @@ static const struct iwinfo_ops *backends
 + #ifdef USE_WL
 + 	&wl_ops,
 + #endif
 ++#ifdef USE_RA
 ++	&ra_ops,
 ++#endif
++ #ifdef USE_WEXT
 + 	&wext_ops,
-+ };
-+ 
++ #endif
 +--- a/iwinfo_lua.c
 ++++ b/iwinfo_lua.c
-+@@ -678,6 +678,35 @@ static int iwinfo_L_countrylist(lua_Stat
++@@ -684,6 +684,35 @@ static int iwinfo_L_countrylist(lua_State *L, int (*func)(const char *, char *,
 + 	return 1;
 + }
 + 
@@ -347,9 +347,9 @@ index 0000000..d65fe77
 + 
 + #ifdef USE_WL
 + /* Broadcom */
-+@@ -927,6 +956,41 @@ static const luaL_reg R_wext[] = {
-+ 	{ NULL, NULL }
++@@ -937,6 +966,41 @@ static const luaL_reg R_wext[] = {
 + };
++ #endif
 + 
 ++#ifdef USE_RA
 ++/* Ralink table */
@@ -389,7 +389,7 @@ index 0000000..d65fe77
 + /* Common */
 + static const luaL_reg R_common[] = {
 + 	{ "type", iwinfo_L_type },
-+@@ -938,6 +1002,15 @@ static const luaL_reg R_common[] = {
++@@ -948,6 +1012,15 @@ static const luaL_reg R_common[] = {
 + LUALIB_API int luaopen_iwinfo(lua_State *L) {
 + 	luaL_register(L, IWINFO_META, R_common);
 + 
@@ -1534,7 +1534,7 @@ index 0000000..d65fe77
 + 	struct iwinfo_freqlist_entry *e = NULL;
 +--- a/Makefile
 ++++ b/Makefile
-+@@ -34,6 +34,15 @@ ifneq ($(filter nl80211,$(IWINFO_BACKEND
++@@ -39,6 +39,15 @@ ifneq ($(filter nl80211,$(IWINFO_BACKEND
 + 	IWINFO_LIB_OBJ     += iwinfo_nl80211.o
 + endif
 + 
