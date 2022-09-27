@@ -1,5 +1,5 @@
 diff --git a/Makefile b/Makefile
-index 10e9bdf..8a033e7 100644
+index 8476204..6bd379d 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -39,7 +39,7 @@ endef
@@ -12,10 +12,10 @@ index 10e9bdf..8a033e7 100644
    VARIANT:=default
  endef
 diff --git a/files/ppp.sh b/files/ppp.sh
-index 7bbc497..67ae953 100755
+index 6d3a8e2..965be9d 100755
 --- a/files/ppp.sh
 +++ b/files/ppp.sh
-@@ -233,7 +233,15 @@ proto_pppoe_setup() {
+@@ -231,7 +231,15 @@ proto_pppoe_setup() {
  	json_get_var padi_attempts padi_attempts
  	json_get_var padi_timeout padi_timeout
  
