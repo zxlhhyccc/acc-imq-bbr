@@ -1114,7 +1114,7 @@
 +
 --- a/include/linux/netdevice.h
 +++ b/include/linux/netdevice.h
-@@ -2081,6 +2081,11 @@ struct net_device {
+@@ -2095,6 +2095,11 @@ struct net_device {
  /*
   * Cache lines mostly used on receive path (including eth_type_trans())
   */
@@ -1126,7 +1126,7 @@
  	/* Interface address info used in eth_type_trans() */
  	unsigned char		*dev_addr;
  
-@@ -4411,6 +4416,19 @@ static inline void netif_tx_unlock_bh(st
+@@ -4417,6 +4422,19 @@ static inline void netif_tx_unlock_bh(st
  	}						\
  }
  
@@ -1237,7 +1237,7 @@
  extern struct kmem_cache *skbuff_head_cache;
  
  void kfree_skb_partial(struct sk_buff *skb, bool head_stolen);
-@@ -4284,6 +4300,10 @@ static inline void __nf_copy(struct sk_b
+@@ -4292,6 +4308,10 @@ static inline void __nf_copy(struct sk_b
  	dst->_nfct = src->_nfct;
  	nf_conntrack_get(skb_nfct(src));
  #endif
@@ -1434,7 +1434,7 @@
  
  	/* Note : this field could be in headers_start/headers_end section
  	 * It is not yet because we do not want to have a 16 bit hole
-@@ -4312,6 +4387,13 @@ void __init skb_init(void)
+@@ -4311,6 +4386,13 @@ void __init skb_init(void)
  						0,
  						SLAB_HWCACHE_ALIGN|SLAB_PANIC,
  						NULL);
@@ -1464,7 +1464,7 @@
  			if (ret == 1)
 --- a/net/netfilter/Kconfig
 +++ b/net/netfilter/Kconfig
-@@ -922,6 +922,18 @@ config NETFILTER_XT_TARGET_LOG
+@@ -921,6 +921,18 @@ config NETFILTER_XT_TARGET_LOG
  
  	  To compile it as a module, choose M here.  If unsure, say N.
  
