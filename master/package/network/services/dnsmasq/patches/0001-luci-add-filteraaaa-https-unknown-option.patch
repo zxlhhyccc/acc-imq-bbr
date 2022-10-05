@@ -1,5 +1,5 @@
 diff --git a/htdocs/luci-static/resources/view/network/dhcp.js b/htdocs/luci-static/resources/view/network/dhcp.js
-index bf67785..2a2c61d 100644
+index 2c0a557..f70bc8b 100644
 --- a/htdocs/luci-static/resources/view/network/dhcp.js
 +++ b/htdocs/luci-static/resources/view/network/dhcp.js
 @@ -256,6 +256,29 @@ return view.extend({
@@ -54,7 +54,7 @@ index bf67785..2a2c61d 100644
  		o = s.taboption('advanced', form.Flag, 'quietdhcp',
  			_('Suppress logging'),
  			_('Suppress logging of the routine operation for the DHCP protocol.'));
-@@ -475,6 +513,13 @@ return view.extend({
+@@ -476,6 +514,13 @@ return view.extend({
  		o.datatype = 'range(0,10000)';
  		o.placeholder = 150;
  
