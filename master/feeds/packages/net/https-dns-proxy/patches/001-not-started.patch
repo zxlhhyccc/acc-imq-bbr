@@ -6,6 +6,6 @@ index 6b09301..e3a12b6 100644
  config main 'config'
 -	option update_dnsmasq_config '*'
 +	option update_dnsmasq_config '-'
+ 	option canary_domains_icloud '1'
+ 	option canary_domains_mozilla '1'
  	option force_dns '1'
- 	list force_dns_port '53'
- 	list force_dns_port '853'
