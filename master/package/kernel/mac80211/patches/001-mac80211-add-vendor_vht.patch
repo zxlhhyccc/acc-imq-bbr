@@ -1,25 +1,17 @@
 diff --git a/files/lib/netifd/wireless/mac80211.sh b/files/lib/netifd/wireless/mac80211.sh
-index 5d6ca7c..52d0f6f 100644
+index 66349f2..fa75c59 100644
 --- a/files/lib/netifd/wireless/mac80211.sh
 +++ b/files/lib/netifd/wireless/mac80211.sh
-@@ -137,7 +137,7 @@ mac80211_hostapd_setup_base() {
+@@ -140,7 +140,7 @@ mac80211_hostapd_setup_base() {
  	[ -n "$acs_exclude_dfs" ] && [ "$acs_exclude_dfs" -gt 0 ] &&
  		append base_cfg "acs_exclude_dfs=1" "$N"
  
--	json_get_vars noscan ht_coex min_tx_power:0
-+	json_get_vars noscan ht_coex vendor_vht min_tx_power:0
- 	json_get_values ht_capab_list ht_capab tx_burst
+-	json_get_vars noscan ht_coex min_tx_power:0 tx_burst
++	json_get_vars noscan ht_coex vendor_vht min_tx_power:0 tx_burst
+ 	json_get_values ht_capab_list ht_capab
  	json_get_values channel_list channels
  
-@@ -268,6 +268,7 @@ mac80211_hostapd_setup_base() {
- 				case "$channel" in
- 					36|40|44|48|52|56|60|64) idx=50;;
- 					100|104|108|112|116|120|124|128) idx=114;;
-+					149|153|157|161|165|169|173|177) idx=163;;
- 				esac
- 			fi
- 			enable_ac=1
-@@ -290,7 +291,7 @@ mac80211_hostapd_setup_base() {
+@@ -293,7 +293,7 @@ mac80211_hostapd_setup_base() {
  	}
  	[ "$hwmode" = "a" ] || enable_ac=0
  
@@ -28,28 +20,3 @@ index 5d6ca7c..52d0f6f 100644
  		json_get_vars \
  			rxldpc:1 \
  			short_gi_80:1 \
-@@ -426,14 +427,21 @@ mac80211_hostapd_setup_base() {
- 		he_mac_cap=${he_mac_cap:2}
- 
- 		append base_cfg "ieee80211ax=1" "$N"
-+
-+		if [ -n "$he_bss_color" ]; then
-+			append base_cfg "he_bss_color=$he_bss_color" "$N"
-+		else
-+			he_bss_color=$(head -1 /dev/urandom | tr -dc '0-9' | head -c2)
-+			he_bss_color=$(($he_bss_color % 63))
-+			he_bss_color=$(($he_bss_color + 1))
-+			append base_cfg "he_bss_color=$he_bss_color" "$N"
-+		fi
-+
- 		[ "$hwmode" = "a" ] && {
- 			append base_cfg "he_oper_chwidth=$vht_oper_chwidth" "$N"
- 			append base_cfg "he_oper_centr_freq_seg0_idx=$vht_center_seg0" "$N"
- 		}
- 
--		set_default he_bss_color 128
--		append base_cfg "he_bss_color=$he_bss_color" "$N"
--
- 		mac80211_add_he_capabilities \
- 			he_su_beamformer:${he_phy_cap:6:2}:0x80:$he_su_beamformer \
- 			he_su_beamformee:${he_phy_cap:8:2}:0x1:$he_su_beamformee \
