@@ -1,5 +1,5 @@
 diff --git a/files/lib/netifd/wireless/mac80211.sh b/files/lib/netifd/wireless/mac80211.sh
-index 66349f2..fa75c59 100644
+index ed28052..0ab76a8 100644
 --- a/files/lib/netifd/wireless/mac80211.sh
 +++ b/files/lib/netifd/wireless/mac80211.sh
 @@ -140,7 +140,7 @@ mac80211_hostapd_setup_base() {

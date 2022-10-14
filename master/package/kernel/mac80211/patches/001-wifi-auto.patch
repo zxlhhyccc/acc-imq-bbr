@@ -1,15 +1,23 @@
 diff --git a/files/lib/wifi/mac80211.sh b/files/lib/wifi/mac80211.sh
-index c0fbfbe..b9524fa 100644
+index 3ecd932..20dbed2 100644
 --- a/files/lib/wifi/mac80211.sh
 +++ b/files/lib/wifi/mac80211.sh
-@@ -174,8 +174,9 @@ detect_mac80211() {
- 			set wireless.radio${devidx}.channel=${channel}
- 			set wireless.radio${devidx}.band=${mode_band}
- 			set wireless.radio${devidx}.htmode=$htmode
--			set wireless.radio${devidx}.disabled=1
-+			set wireless.radio${devidx}.disabled=0
+@@ -199,14 +199,16 @@ detect_mac80211() {
+ 			set wireless.${name}.channel=${channel}
+ 			set wireless.${name}.band=${mode_band}
+ 			set wireless.${name}.htmode=$htmode
+-			set wireless.${name}.disabled=1
++			set wireless.${name}.disabled=0
++			set wireless.${name}.country=US
  
-+			set wireless.radio${devidx}.country=US
- 			set wireless.default_radio${devidx}=wifi-iface
- 			set wireless.default_radio${devidx}.device=radio${devidx}
- 			set wireless.default_radio${devidx}.network=lan
+ 			set wireless.default_${name}=wifi-iface
+ 			set wireless.default_${name}.device=${name}
+ 			set wireless.default_${name}.network=lan
+ 			set wireless.default_${name}.mode=ap
+ 			set wireless.default_${name}.ssid=OpenWrt
+-			set wireless.default_${name}.encryption=none
++			set wireless.default_${name}.encryption=psk2
++			set wireless.default_${name}.key=1234567890
+ EOF
+ 		uci -q commit wireless
+ 	done
