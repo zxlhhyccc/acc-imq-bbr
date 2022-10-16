@@ -98,7 +98,7 @@ diff --git a/net/mac80211/agg-rx.c b/net/mac80211/agg-rx.c
 index ef729b1e39ea..e43176794149 100644
 --- a/net/mac80211/agg-rx.c
 +++ b/net/mac80211/agg-rx.c
-@@ -310,7 +310,7 @@ void ___ieee80211_start_rx_ba_session(struct sta_info *sta,
+@@ -314,7 +314,7 @@ void ___ieee80211_start_rx_ba_session(struct sta_info *sta,
  	}
  
  	if (sta->sta.he_cap.has_he)
