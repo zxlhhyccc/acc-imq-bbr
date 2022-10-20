@@ -1,6 +1,8 @@
+diff --git a/files/adblock.init b/files/adblock.init
+index 732c8a6..52c35a0 100755
 --- a/files/adblock.init
 +++ b/files/adblock.init
-@@ -59,6 +59,7 @@ start_service() {
+@@ -48,6 +48,7 @@ start_service() {
  
  reload_service() {
  	rc_procd start_service reload
@@ -8,7 +10,7 @@
  }
  
  stop_service() {
-@@ -67,6 +68,7 @@ stop_service() {
+@@ -56,6 +57,7 @@ stop_service() {
  
  restart() {
  	rc_procd start_service restart
