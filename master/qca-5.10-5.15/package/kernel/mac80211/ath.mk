@@ -305,9 +305,9 @@ define KernelPackage/ath11k
   TITLE:=Qualcomm 802.11ax wireless chipset support (common code)
   URL:=https://wireless.wiki.kernel.org/en/users/drivers/ath11k
   DEPENDS+= +kmod-ath +@DRIVER_11N_SUPPORT +@DRIVER_11AC_SUPPORT +@DRIVER_11AX_SUPPORT \
-  +kmod-qcom-qmi-helpers +kmod-crypto-michael-mic +ATH11K_THERMAL:kmod-hwmon-core \
-  +ATH11K_THERMAL:kmod-thermal
-  FILES:=$(PKG_BUILD_DIR)/drivers/net/wireless/ath/ath11k/ath11k.ko
+  +kmod-crypto-michael-mic +ATH11K_THERMAL:kmod-hwmon-core +ATH11K_THERMAL:kmod-thermal
+  FILES:=$(PKG_BUILD_DIR)/drivers/soc/qcom/qmi_helpers.ko \
+  $(PKG_BUILD_DIR)/drivers/net/wireless/ath/ath11k/ath11k.ko
   AUTOLOAD:=$(call AutoProbe,ath11k)
   # Enable encapsulation/decapsulation offload by default
   MODPARAMS.ath11k:=frame_mode=2

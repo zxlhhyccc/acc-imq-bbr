@@ -1,10 +1,10 @@
 diff --git a/htdocs/luci-static/resources/view/network/dhcp.js b/htdocs/luci-static/resources/view/network/dhcp.js
-index 2c0a557..f70bc8b 100644
+index e193111..892424f 100644
 --- a/htdocs/luci-static/resources/view/network/dhcp.js
 +++ b/htdocs/luci-static/resources/view/network/dhcp.js
-@@ -256,6 +256,29 @@ return view.extend({
- 		s.tab('leases', _('Static Leases'));
- 		s.tab('hosts', _('Hostnames'));
+@@ -258,6 +258,29 @@ return view.extend({
+ 		s.tab('srvhosts', _('SRV'));
+ 		s.tab('mxhosts', _('MX'));
  		s.tab('ipsets', _('IP Sets'));
 +		s.tab('custom_domain', _('Custom Redirect Domain'));
 +
@@ -32,7 +32,7 @@ index 2c0a557..f70bc8b 100644
  
  		s.taboption('general', form.Flag, 'domainneeded',
  			_('Domain required'),
-@@ -368,6 +391,21 @@ return view.extend({
+@@ -373,6 +396,27 @@ return view.extend({
  		o.optional = true;
  		o.placeholder = '/etc/dnsmasq.hosts';
  
@@ -40,6 +40,12 @@ index 2c0a557..f70bc8b 100644
 +			_('Disable IPv6 DNS forwards'),
 +			_('Filter IPv6(AAAA) DNS Query Name Resolve'));
 +		o.optional = true;
++
++		o = s.taboption('advanced', form.Flag, 'filter_a',
++			_('Disable IPv4 DNS forwards'),
++			_('Filter IPv4(A) DNS Query Name Resolve'));
++		o.optional = true;
++		o.depends('filter_aaaa', '0');
 +
 +		o = s.taboption('advanced', form.Flag, 'filter_https',
 +			_('Disable HTTPS DNS Type forwards'),
@@ -54,7 +60,7 @@ index 2c0a557..f70bc8b 100644
  		o = s.taboption('advanced', form.Flag, 'quietdhcp',
  			_('Suppress logging'),
  			_('Suppress logging of the routine operation for the DHCP protocol.'));
-@@ -476,6 +514,13 @@ return view.extend({
+@@ -481,6 +525,13 @@ return view.extend({
  		o.datatype = 'range(0,10000)';
  		o.placeholder = 150;
  

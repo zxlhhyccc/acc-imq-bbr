@@ -12,10 +12,18 @@ index aa00766..5b58c84 100644
  		luci.util.shellquote(password),
  		luci.util.shellquote(username)
 diff --git a/root/usr/libexec/rpcd/luci b/root/usr/libexec/rpcd/luci
-index 17fb391..1e57426 100755
+index f124512..8b24080 100755
 --- a/root/usr/libexec/rpcd/luci
 +++ b/root/usr/libexec/rpcd/luci
-@@ -618,6 +618,37 @@ local methods = {
+@@ -214,6 +214,7 @@ local methods = {
+ 			rv.firewall4     = fs.access("/sbin/fw4")
+ 			rv.opkg          = fs.access("/bin/opkg")
+ 			rv.offloading    = fs.access("/sys/module/xt_FLOWOFFLOAD/refcnt") or fs.access("/sys/module/nft_flow_offload/refcnt")
++			rv.fullcone      = fs.access("/sys/module/xt_FULLCONENAT/refcnt") or fs.access("/sys/module/nft_fullcone/refcnt")
+ 			rv.br2684ctl     = fs.access("/usr/sbin/br2684ctl")
+ 			rv.swconfig      = fs.access("/sbin/swconfig")
+ 			rv.odhcpd        = fs.access("/usr/sbin/odhcpd")
+@@ -617,6 +618,71 @@ local methods = {
  			end
  			return { result = res }
  		end
@@ -31,6 +39,21 @@ index 17fb391..1e57426 100755
 +		end
 +	},
 +
++	getCPUInfo = {
++		call = function()
++			local sys = require "luci.sys"
++			local cpuinfo = {}
++
++			cpuinfo.cpuinfo = sys.exec("/sbin/cpuinfo")
++
++			if (cpuinfo.cpuinfo == nil) or (cpuinfo.cpuinfo == "") then
++				cpuinfo.cpuinfo = "? x ? (2.33MHz, 2.33°C)"
++			end
++
++			return cpuinfo
++		end
++	},
++
 +	getCPUUsage = {
 +		call = function()
 +			local sys = require "luci.sys"
@@ -38,6 +61,25 @@ index 17fb391..1e57426 100755
 +
 +			cpuusage.cpuusage = sys.exec("top -n1 | awk '/^CPU/ {printf(\"%d%\", 100 - $8)}'") or "6%"
 +			return cpuusage
++		end
++	},
++
++	getETHInfo = {
++		call = function()
++			local sys = require "luci.sys"
++			local rv = json.parse(sys.exec("/sbin/ethinfo")) or {}
++
++			return { ethinfo = rv }
++		end
++	},
++
++	getTempInfo = {
++		call = function()
++			local sys = require "luci.sys"
++			local tempinfo = {}
++
++			tempinfo.tempinfo = sys.exec("/sbin/tempinfo 2>/dev/null")
++			return tempinfo
 +		end
 +	},
 +
