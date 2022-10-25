@@ -1,8 +1,6 @@
-diff --git a/htdocs/luci-static/resources/view/status/include/10_system.js b/htdocs/luci-static/resources/view/status/include/10_system.js
-index ea8f2bb..62c14ef 100644
 --- a/htdocs/luci-static/resources/view/status/include/10_system.js
 +++ b/htdocs/luci-static/resources/view/status/include/10_system.js
-@@ -13,6 +13,16 @@ var callSystemInfo = rpc.declare({
+@@ -13,6 +13,26 @@ var callSystemInfo = rpc.declare({
  	method: 'info'
  });
  
@@ -11,46 +9,60 @@ index ea8f2bb..62c14ef 100644
 +	method: 'getCPUBench'
 +});
 +
++var callCPUInfo = rpc.declare({
++	object: 'luci',
++	method: 'getCPUInfo'
++});
++
 +var callCPUUsage = rpc.declare({
 +	object: 'luci',
 +	method: 'getCPUUsage'
 +});
 +
++var callTempInfo = rpc.declare({
++	object: 'luci',
++	method: 'getTempInfo'
++});
++
  return baseclass.extend({
  	title: _('System'),
  
-@@ -20,6 +30,8 @@ return baseclass.extend({
+@@ -20,6 +40,10 @@ return baseclass.extend({
  		return Promise.all([
  			L.resolveDefault(callSystemBoard(), {}),
  			L.resolveDefault(callSystemInfo(), {}),
 +			L.resolveDefault(callCPUBench(), {}),
++			L.resolveDefault(callCPUInfo(), {}),
 +			L.resolveDefault(callCPUUsage(), {}),
++			L.resolveDefault(callTempInfo(), {}),
  			fs.lines('/usr/lib/lua/luci/version.lua')
  		]);
  	},
-@@ -27,7 +39,9 @@ return baseclass.extend({
+@@ -27,7 +51,11 @@ return baseclass.extend({
  	render: function(data) {
  		var boardinfo   = data[0],
  		    systeminfo  = data[1],
 -		    luciversion = data[2];
 +		    cpubench    = data[2],
-+		    cpuusage    = data[3],
-+		    luciversion = data[4];
++		    cpuinfo     = data[3],
++		    cpuusage    = data[4],
++		    tempinfo    = data[5],
++		    luciversion = data[6];
  
  		luciversion = luciversion.filter(function(l) {
  			return l.match(/^\s*(luciname|luciversion)\s*=/);
-@@ -50,9 +64,25 @@ return baseclass.extend({
+@@ -50,10 +78,26 @@ return baseclass.extend({
  			);
  		}
  
 +		// TODO: This is ugly
 +		var projectlink = document.createElement('a');
-+		projectlink.append('Project OpenWrt');
++		projectlink.append('OpenWrt');
 +		projectlink.href = 'https://github.com/openwrt';
 +		projectlink.target = '_blank';
 +
 +		var corelink = document.createElement('a');
-+		corelink.append('OpenWrt Core');
++		corelink.append('Core');
 +		corelink.href = 'https://github.com/openwrt/openwrt';
 +		corelink.target = '_blank';
 +
@@ -62,11 +74,13 @@ index ea8f2bb..62c14ef 100644
  		var fields = [
  			_('Hostname'),         boardinfo.hostname,
 -			_('Model'),            boardinfo.model,
+-			_('Architecture'),     boardinfo.system,
 +			_('Model'),            boardinfo.model + cpubench.cpubench,
- 			_('Architecture'),     boardinfo.system,
++			_('Architecture'),     cpuinfo.cpuinfo || boardinfo.system,
  			_('Target Platform'),  (L.isObject(boardinfo.release) ? boardinfo.release.target : ''),
  			_('Firmware Version'), (L.isObject(boardinfo.release) ? boardinfo.release.description + ' / ' : '') + (luciversion || ''),
-@@ -63,7 +93,9 @@ return baseclass.extend({
+ 			_('Kernel Version'),   boardinfo.kernel,
+@@ -63,9 +107,16 @@ return baseclass.extend({
  				systeminfo.load[0] / 65535.0,
  				systeminfo.load[1] / 65535.0,
  				systeminfo.load[2] / 65535.0
@@ -76,4 +90,11 @@ index ea8f2bb..62c14ef 100644
 +			_('Source Code'),      sourcelink
  		];
  
++		if (tempinfo.tempinfo) {
++			fields.splice(6, 0, _('Temperature'));
++			fields.splice(7, 0, tempinfo.tempinfo);
++		}
++
  		var table = E('table', { 'class': 'table' });
+ 
+ 		for (var i = 0; i < fields.length; i += 2) {
