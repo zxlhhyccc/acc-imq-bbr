@@ -16,7 +16,7 @@
 +
 +	getCPUBench: {
 +		call: function() {
-+			return { cpubench: trim(readfile('/etc/bench.log') || '') };
++			return { cpubench: readfile('/etc/bench.log' || '') };
 +		}
 +	},
 +
@@ -41,7 +41,7 @@
 +
 +	getCPUUsage: {
 +		call: function() {
-+			const fd = popen('top -n1 | awk \'/^CPU/ {printf("%d%", 100 - $8)}\'')
++			const fd = popen('top -n1 | awk \'/^CPU/ {printf("%d%", 100 - $8)}\'');
 +			if (fd) {
 +				let cpuusage = fd.read('all');
 +				if (!cpuusage)
@@ -78,7 +78,7 @@
 +	getTempInfo: {
 +		call: function() {
 +			if (!access('/sbin/tempinfo'))
-+				return {}
++				return {};
 +
 +			const fd = popen('/sbin/tempinfo');
 +			if (fd) {
