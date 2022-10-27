@@ -87,7 +87,7 @@
  static inline u32
 --- a/drivers/net/wireless/realtek/rtw88/main.c
 +++ b/drivers/net/wireless/realtek/rtw88/main.c
-@@ -1839,7 +1839,6 @@ int rtw_core_init(struct rtw_dev *rtwdev
+@@ -1843,7 +1843,6 @@ int rtw_core_init(struct rtw_dev *rtwdev
  	skb_queue_head_init(&rtwdev->coex.queue);
  	skb_queue_head_init(&rtwdev->tx_report.queue);
  
