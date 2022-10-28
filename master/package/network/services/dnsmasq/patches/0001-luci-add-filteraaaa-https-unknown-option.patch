@@ -1,7 +1,5 @@
-diff --git a/dhcp.js b/dhcp.js
-index e46cbd8..932ba59 100644
---- a/dhcp.js
-+++ b/dhcp.js
+--- a/htdocs/luci-static/resources/view/network/dhcp.js
++++ b/htdocs/luci-static/resources/view/network/dhcp.js
 @@ -261,6 +261,29 @@ return view.extend({
  		s.tab('srvhosts', _('SRV'));
  		s.tab('mxhosts', _('MX'));
