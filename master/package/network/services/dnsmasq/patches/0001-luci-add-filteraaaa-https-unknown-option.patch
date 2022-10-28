@@ -1,14 +1,14 @@
-diff --git a/htdocs/luci-static/resources/view/network/dhcp.js b/htdocs/luci-static/resources/view/network/dhcp.js
-index e193111..892424f 100644
---- a/htdocs/luci-static/resources/view/network/dhcp.js
-+++ b/htdocs/luci-static/resources/view/network/dhcp.js
-@@ -258,6 +258,29 @@ return view.extend({
+diff --git a/dhcp.js b/dhcp.js
+index e46cbd8..932ba59 100644
+--- a/dhcp.js
++++ b/dhcp.js
+@@ -261,6 +261,29 @@ return view.extend({
  		s.tab('srvhosts', _('SRV'));
  		s.tab('mxhosts', _('MX'));
  		s.tab('ipsets', _('IP Sets'));
 +		s.tab('custom_domain', _('Custom Redirect Domain'));
 +
-+		o = s.taboption('custom_domain', form.SectionValue, 'domain', form.GridSection, 'domain', null,
++		o = s.taboption('custom_domain', form.SectionValue, '__domain__', form.GridSection, 'domain', null,
 +			_('Define a custom domain name and the corresponding PTR record'));
 +
 +		ss = o.subsection;
@@ -32,7 +32,7 @@ index e193111..892424f 100644
  
  		s.taboption('general', form.Flag, 'domainneeded',
  			_('Domain required'),
-@@ -373,6 +396,27 @@ return view.extend({
+@@ -436,6 +459,27 @@ return view.extend({
  		o.optional = true;
  		o.placeholder = '/etc/dnsmasq.hosts';
  
@@ -60,7 +60,7 @@ index e193111..892424f 100644
  		o = s.taboption('advanced', form.Flag, 'quietdhcp',
  			_('Suppress logging'),
  			_('Suppress logging of the routine operation for the DHCP protocol.'));
-@@ -481,6 +525,13 @@ return view.extend({
+@@ -544,6 +588,13 @@ return view.extend({
  		o.datatype = 'range(0,10000)';
  		o.placeholder = 150;
  
