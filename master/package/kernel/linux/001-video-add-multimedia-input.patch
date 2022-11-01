@@ -1,5 +1,3 @@
-diff --git a/modules/video.mk b/modules/video.mk
-index 431f077..c51f967 100644
 --- a/modules/video.mk
 +++ b/modules/video.mk
 @@ -221,6 +221,25 @@ endef
@@ -28,7 +26,23 @@ index 431f077..c51f967 100644
  define KernelPackage/drm
    SUBMENU:=$(VIDEO_MENU)
    TITLE:=Direct Rendering Manager (DRM) support
-@@ -372,6 +391,45 @@ endef
+@@ -256,7 +275,6 @@ endef
+ 
+ $(eval $(call KernelPackage,drm-ttm))
+ 
+-
+ define KernelPackage/drm-ttm-helper
+   SUBMENU:=$(VIDEO_MENU)
+   TITLE:=Helpers for ttm-based gem objects
+@@ -269,7 +287,6 @@ endef
+ 
+ $(eval $(call KernelPackage,drm-ttm-helper))
+ 
+-
+ define KernelPackage/drm-kms-helper
+   SUBMENU:=$(VIDEO_MENU)
+   TITLE:=CRTC helpers for KMS drivers
+@@ -386,6 +403,45 @@ endef
  
  $(eval $(call KernelPackage,drm-imx-ldb))
  
