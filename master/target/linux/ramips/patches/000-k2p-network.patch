@@ -1,3 +1,5 @@
+diff --git a/image/mt7621.mk b/image/mt7621.mk
+index 3ef4cf4..2fb5d09 100644
 --- a/image/mt7621.mk
 +++ b/image/mt7621.mk
 @@ -163,7 +163,7 @@ define Device/alfa-network_quad-e4g
