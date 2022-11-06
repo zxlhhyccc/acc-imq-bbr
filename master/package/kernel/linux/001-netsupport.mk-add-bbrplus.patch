@@ -43,10 +43,10 @@ index 0000000..b0a793d
 +net.core.default_qdisc=fq_codel
 +net.ipv4.tcp_congestion_control=tsunamio
 diff --git a/modules/netsupport.mk b/modules/netsupport.mk
-index 9b99aa1..ce8cf1e 100644
+index a8c343f..c192099 100644
 --- a/modules/netsupport.mk
 +++ b/modules/netsupport.mk
-@@ -1050,6 +1050,123 @@ endef
+@@ -1044,6 +1044,123 @@ endef
  $(eval $(call KernelPackage,tcp-bbr))
  
  
@@ -170,7 +170,7 @@ index 9b99aa1..ce8cf1e 100644
  define KernelPackage/tcp-hybla
    SUBMENU:=$(NETWORK_SUPPORT_MENU)
    TITLE:=TCP-Hybla congestion control algorithm
-@@ -1444,3 +1561,67 @@ define KernelPackage/netconsole/description
+@@ -1438,3 +1555,67 @@ define KernelPackage/netconsole/description
  endef
  
  $(eval $(call KernelPackage,netconsole))
