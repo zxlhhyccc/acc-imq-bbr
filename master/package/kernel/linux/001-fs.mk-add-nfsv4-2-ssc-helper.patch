@@ -1,5 +1,3 @@
-diff --git a/modules/fs.mk b/modules/fs.mk
-index 06c609b..308b8b0 100644
 --- a/modules/fs.mk
 +++ b/modules/fs.mk
 @@ -379,7 +379,7 @@ $(eval $(call KernelPackage,fs-netfs))
