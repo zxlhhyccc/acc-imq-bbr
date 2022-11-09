@@ -1,3 +1,5 @@
+diff --git a/files/dhcp.conf b/files/dhcp.conf
+index 8c42ef7..02366ce 100644
 --- a/files/dhcp.conf
 +++ b/files/dhcp.conf
 @@ -20,6 +20,13 @@ config dnsmasq
@@ -14,6 +16,8 @@
  	option ednspacket_max	1232
  
  config dhcp lan
+diff --git a/files/dnsmasq.init b/files/dnsmasq.init
+index c4ca3eb..6e06b5f 100755
 --- a/files/dnsmasq.init
 +++ b/files/dnsmasq.init
 @@ -8,6 +8,8 @@ PROG=/usr/sbin/dnsmasq
@@ -25,12 +29,12 @@
  ADD_WAN_FQDN=0
  ADD_LOCAL_FQDN=""
  
-@@ -960,8 +962,16 @@ dnsmasq_start()
+@@ -932,8 +934,16 @@ dnsmasq_start()
  	append_bool "$cfg" rapidcommit "--dhcp-rapid-commit"
  	append_bool "$cfg" scriptarp "--script-arp"
  
-+	append_bool "$cfg" filter_a "--filter-A"
-+	append_bool "$cfg" filter_aaaa "--filter-AAAA"
++	append_bool "$cfg" filter_a "--filter-a"
++	append_bool "$cfg" filter_aaaa "--filter-aaaa"
 +	append_bool "$cfg" filter_https "--filter-https"
 +	append_bool "$cfg" filter_unknown "--filter-unknown"
 +
@@ -42,7 +46,7 @@
  	append_parm "$cfg" cachesize "--cache-size"
  	append_parm "$cfg" dnsforwardmax "--dns-forward-max"
  	append_parm "$cfg" port "--port"
-@@ -1020,6 +1030,8 @@ dnsmasq_start()
+@@ -993,6 +1003,8 @@ dnsmasq_start()
  
  	config_get_bool ADD_LOCAL_DOMAIN "$cfg" add_local_domain 1
  	config_get_bool ADD_LOCAL_HOSTNAME "$cfg" add_local_hostname 1
@@ -51,7 +55,7 @@
  	config_get ADD_LOCAL_FQDN "$cfg" add_local_fqdn ""
  	config_get ADD_WAN_FQDN "$cfg" add_wan_fqdn 0
  
-@@ -1176,8 +1188,12 @@ dnsmasq_start()
+@@ -1150,8 +1162,12 @@ dnsmasq_start()
  		[ $ADD_LOCAL_DOMAIN -eq 1 ] && [ -n "$DOMAIN" ] && {
  			echo "search $DOMAIN" >> /tmp/resolv.conf
  		}
@@ -66,7 +70,7 @@
  		for DNS_SERVER in $DNS_SERVERS ; do
  			echo "nameserver $DNS_SERVER" >> /tmp/resolv.conf
  		done
-@@ -1206,6 +1222,27 @@ dnsmasq_start()
+@@ -1180,6 +1196,13 @@ dnsmasq_start()
  	esac
  
  	procd_close_instance
@@ -74,66 +78,43 @@
 +	config_get_bool dns_redirect "$cfg" dns_redirect 0
 +	config_get dns_port "$cfg" port 53
 +	if [ "$dns_redirect" = 1 ]; then
-+		if [ -e "$nftsets" ]; then
-+		cat <<-EOF > /tmp/dnsmasq-dns-redirect.nft
-+			table inet dnsmasq {
-+				chain prerouting {
-+					type nat hook prerouting priority -105; policy accept;
-+					meta nfproto {ipv4, ipv6} udp dport 53 counter redirect to :$dns_port comment "DNSMASQ";
-+				}
-+			}
-+		EOF
-+		nft -f /tmp/dnsmasq-dns-redirect.nft
-+		fi
-+
-+		if [ -e "$ipsets" ]; then
 +		iptables -t nat -A PREROUTING -m comment --comment "DNSMASQ" -p udp --dport 53 -j REDIRECT --to-ports $dns_port
 +		[ -n "$(command -v ip6tables)" ] && ip6tables -t nat -A PREROUTING -m comment --comment "DNSMASQ" -p udp --dport 53 -j REDIRECT --to-ports $dns_port
-+		fi
 +	fi
  }
  
  dnsmasq_stop()
-@@ -1223,6 +1260,25 @@ dnsmasq_stop()
+@@ -1197,6 +1220,13 @@ dnsmasq_stop()
  	rm -f ${BASEDHCPSTAMPFILE}.${cfg}.*.dhcp
  }
  
-+iptables_nftables_clear()
++iptables_clear()
 +{
-+	if [ -e "$nftsets" ]; then
-+	nft --check list table inet dnsmasq > /dev/null 2>&1
-+		if [ $? -eq "0" ]; then
-+			echo "Remove dnsmasq nat table"
-+			nft delete table inet dnsmasq
-+		fi
-+	fi
-+
-+	if [ -e "$ipsets" ]; then
-+		if [ $? -eq "0" ]; then
-+			config_get dns_port "$cfg" port 53
-+			iptables -t nat -D PREROUTING -m comment --comment "DNSMASQ" -p udp --dport 53 -j REDIRECT --to-ports $dns_port 2>"/dev/null"
-+			[ -n "$(command -v ip6tables)" ] && ip6tables -t nat -D PREROUTING -m comment --comment "DNSMASQ" -p udp --dport 53 -j REDIRECT --to-ports $dns_port 2>"/dev/null"
-+		fi
-+	fi
++	config_get dns_port "$cfg" port 53
++	iptables -t nat -D PREROUTING -m comment --comment "DNSMASQ" -p udp --dport 53 -j REDIRECT --to-ports $dns_port 2>"/dev/null"
++	[ -n "$(command -v ip6tables)" ] && ip6tables -t nat -D PREROUTING -m comment --comment "DNSMASQ" -p udp --dport 53 -j REDIRECT --to-ports $dns_port 2>"/dev/null"
 +}
 +
  add_interface_trigger()
  {
  	local interface ignore
-@@ -1293,6 +1349,7 @@ start_service() {
+@@ -1267,6 +1297,7 @@ start_service() {
  }
  
  reload_service() {
-+	iptables_nftables_clear
++	iptables_clear
  	rc_procd start_service "$@"
  	procd_send_signal dnsmasq "$@"
  }
-@@ -1319,4 +1376,5 @@ stop_service() {
+@@ -1293,4 +1324,5 @@ stop_service() {
  	else
  		config_foreach dnsmasq_stop dnsmasq
  	fi
-+	iptables_nftables_clear
++	iptables_clear
  }
+diff --git a/patches/300-DHCPv6-Honor-assigning-IPv6-address-based-on-MAC-add.patch b/patches/300-DHCPv6-Honor-assigning-IPv6-address-based-on-MAC-add.patch
+new file mode 100644
+index 0000000..4dd7e22
 --- /dev/null
 +++ b/patches/300-DHCPv6-Honor-assigning-IPv6-address-based-on-MAC-add.patch
 @@ -0,0 +1,166 @@
