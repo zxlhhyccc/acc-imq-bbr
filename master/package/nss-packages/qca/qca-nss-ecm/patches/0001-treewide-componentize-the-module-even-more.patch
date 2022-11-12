@@ -282,7 +282,7 @@ Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
  	return false;
  }
  
-@@ -6770,6 +6776,7 @@ static void ecm_interface_regenerate_con
+@@ -6766,6 +6772,7 @@ static void ecm_interface_regenerate_con
  		return;
  	}
  
@@ -290,7 +290,7 @@ Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
  	for (dir = 0; dir < ECM_DB_OBJ_DIR_MAX; dir++) {
  		/*
  		 * Re-generate all connections associated with this interface
-@@ -6785,6 +6792,7 @@ static void ecm_interface_regenerate_con
+@@ -6781,6 +6788,7 @@ static void ecm_interface_regenerate_con
  			ci[dir] = cin;
  		}
  	}

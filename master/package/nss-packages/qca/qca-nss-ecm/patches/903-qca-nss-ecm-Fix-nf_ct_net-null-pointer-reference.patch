@@ -1,0 +1,91 @@
+diff --git a/frontends/nss/ecm_nss_ported_ipv4.c b/frontends/nss/ecm_nss_ported_ipv4.c
+index 784bfc2..d0f10b8 100644
+--- a/frontends/nss/ecm_nss_ported_ipv4.c
++++ b/frontends/nss/ecm_nss_ported_ipv4.c
+@@ -346,8 +346,12 @@ static void ecm_nss_ported_ipv4_connection_accelerate(struct ecm_front_end_conne
+ 	ecm_db_direction_t ecm_dir;
+ 	ecm_front_end_acceleration_mode_t result_mode;
+ #if LINUX_VERSION_CODE > KERNEL_VERSION(5, 12, 0)
+-	struct net *net = nf_ct_net(ct);
+-	struct nf_tcp_net *tn = nf_tcp_pernet(net);
++	struct nf_tcp_net *tn;
++
++	if (ct) {
++		struct net *net = nf_ct_net(ct);
++		tn = nf_tcp_pernet(net);
++	}
+ #endif
+ 
+ 	DEBUG_CHECK_MAGIC(feci, ECM_FRONT_END_CONNECTION_INSTANCE_MAGIC, "%px: magic failed", feci);
+diff --git a/frontends/nss/ecm_nss_ported_ipv6.c b/frontends/nss/ecm_nss_ported_ipv6.c
+index e4cf0ef..0272b13 100644
+--- a/frontends/nss/ecm_nss_ported_ipv6.c
++++ b/frontends/nss/ecm_nss_ported_ipv6.c
+@@ -351,8 +351,12 @@ static void ecm_nss_ported_ipv6_connection_accelerate(struct ecm_front_end_conne
+ 	ip_addr_t dest_ip;
+ 	ecm_front_end_acceleration_mode_t result_mode;
+ #if LINUX_VERSION_CODE > KERNEL_VERSION(5, 12, 0)
+-	struct net *net = nf_ct_net(ct);
+-	struct nf_tcp_net *tn = nf_tcp_pernet(net);
++	struct nf_tcp_net *tn;
++
++	if (ct) {
++		struct net *net = nf_ct_net(ct);
++		tn = nf_tcp_pernet(net);
++	}
+ #endif
+ 
+ 	DEBUG_CHECK_MAGIC(feci, ECM_FRONT_END_CONNECTION_INSTANCE_MAGIC, "%px: magic failed", feci);
+diff --git a/frontends/sfe/ecm_sfe_ported_ipv4.c b/frontends/sfe/ecm_sfe_ported_ipv4.c
+index 2628285..288635f 100644
+--- a/frontends/sfe/ecm_sfe_ported_ipv4.c
++++ b/frontends/sfe/ecm_sfe_ported_ipv4.c
+@@ -365,13 +365,19 @@ static void ecm_sfe_ported_ipv4_connection_accelerate(struct ecm_front_end_conne
+ 	uint8_t dest_mac_xlate[ETH_ALEN];
+ 	ecm_db_direction_t ecm_dir;
+ #if LINUX_VERSION_CODE > KERNEL_VERSION(5, 12, 0)
+-	struct net *net = nf_ct_net(ct);
+-	struct nf_tcp_net *tn = nf_tcp_pernet(net);
++	struct nf_tcp_net *tn;
+ #endif
+ 	ecm_front_end_acceleration_mode_t result_mode;
+ 	uint32_t l2_accel_bits = (ECM_SFE_COMMON_FLOW_L2_ACCEL_ALLOWED | ECM_SFE_COMMON_RETURN_L2_ACCEL_ALLOWED);
+ 	ecm_sfe_common_l2_accel_check_callback_t l2_accel_check;
+ 
++#if LINUX_VERSION_CODE > KERNEL_VERSION(5, 12, 0)
++	if (ct) {
++		struct net *net = nf_ct_net(ct);
++		tn = nf_tcp_pernet(net);
++	}
++#endif
++
+ 	DEBUG_CHECK_MAGIC(feci, ECM_FRONT_END_CONNECTION_INSTANCE_MAGIC, "%px: magic failed", feci);
+ 
+ 	/*
+diff --git a/frontends/sfe/ecm_sfe_ported_ipv6.c b/frontends/sfe/ecm_sfe_ported_ipv6.c
+index 4d3ec18..ee6a21f 100644
+--- a/frontends/sfe/ecm_sfe_ported_ipv6.c
++++ b/frontends/sfe/ecm_sfe_ported_ipv6.c
+@@ -368,14 +368,20 @@ static void ecm_sfe_ported_ipv6_connection_accelerate(struct ecm_front_end_conne
+ 	bool rule_invalid;
+ 	ip_addr_t src_ip;
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(5, 12, 0)
+-	struct net *net = nf_ct_net(ct);
+-	struct nf_tcp_net *tn = nf_tcp_pernet(net);
++	struct nf_tcp_net *tn;
+ #endif
+ 	ip_addr_t dest_ip;
+ 	ecm_front_end_acceleration_mode_t result_mode;
+ 	uint32_t l2_accel_bits = (ECM_SFE_COMMON_FLOW_L2_ACCEL_ALLOWED | ECM_SFE_COMMON_RETURN_L2_ACCEL_ALLOWED);
+ 	ecm_sfe_common_l2_accel_check_callback_t l2_accel_check;
+ 
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 12, 0)
++	if (ct) {
++		struct net *net = nf_ct_net(ct);
++		tn = nf_tcp_pernet(net);
++	}
++#endif
++
+ 	DEBUG_CHECK_MAGIC(feci, ECM_FRONT_END_CONNECTION_INSTANCE_MAGIC, "%px: magic failed", feci);
+ 
+ 	/*

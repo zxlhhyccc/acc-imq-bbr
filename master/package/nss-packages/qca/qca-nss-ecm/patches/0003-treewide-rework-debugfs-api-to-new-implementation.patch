@@ -252,7 +252,7 @@ Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
  	if (!ecm_db_host_table) {
 --- a/ecm_db/ecm_db_iface.c
 +++ b/ecm_db/ecm_db_iface.c
-@@ -3688,11 +3688,8 @@ EXPORT_SYMBOL(ecm_db_iface_alloc);
+@@ -3689,11 +3689,8 @@ EXPORT_SYMBOL(ecm_db_iface_alloc);
   */
  bool ecm_db_iface_init(struct dentry *dentry)
  {
@@ -764,7 +764,7 @@ Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
  					NULL, &ecm_sfe_ipv6_accel_limit_mode_fops)) {
 --- a/frontends/sfe/ecm_sfe_non_ported_ipv4.c
 +++ b/frontends/sfe/ecm_sfe_non_ported_ipv4.c
-@@ -1860,11 +1860,8 @@ struct ecm_front_end_connection_instance
+@@ -1899,11 +1899,8 @@ struct ecm_front_end_connection_instance
   */
  bool ecm_sfe_non_ported_ipv4_debugfs_init(struct dentry *dentry)
  {
@@ -780,7 +780,7 @@ Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
  }
 --- a/frontends/sfe/ecm_sfe_non_ported_ipv6.c
 +++ b/frontends/sfe/ecm_sfe_non_ported_ipv6.c
-@@ -1684,11 +1684,8 @@ struct ecm_front_end_connection_instance
+@@ -1716,11 +1716,8 @@ struct ecm_front_end_connection_instance
   */
  bool ecm_sfe_non_ported_ipv6_debugfs_init(struct dentry *dentry)
  {
