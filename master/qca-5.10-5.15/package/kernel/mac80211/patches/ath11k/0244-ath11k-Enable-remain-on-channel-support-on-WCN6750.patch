@@ -1,0 +1,28 @@
+From 36893e45b1922f1c3ad91301724fafc4798f1e5f Mon Sep 17 00:00:00 2001
+From: Manikanta Pubbisetty <quic_mpubbise@quicinc.com>
+Date: Thu, 1 Sep 2022 13:36:56 +0530
+Subject: [PATCH] ath11k: Enable remain-on-channel support on WCN6750
+
+Enable remain on channel support on WCN6750 as it is needed for
+GAS, Passpoint.
+
+Tested-on: WCN6750 hw1.0 AHB WLAN.MSL.1.0.1-00887-QCAMSLSWPLZ-1
+
+Signed-off-by: Manikanta Pubbisetty <quic_mpubbise@quicinc.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220901080656.3450-1-quic_mpubbise@quicinc.com
+---
+ drivers/net/wireless/ath/ath11k/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/drivers/net/wireless/ath/ath11k/core.c
++++ b/drivers/net/wireless/ath/ath11k/core.c
+@@ -542,7 +542,7 @@ static const struct ath11k_hw_params ath
+ 		.static_window_map = true,
+ 		.hybrid_bus_type = true,
+ 		.fixed_fw_mem = true,
+-		.support_off_channel_tx = false,
++		.support_off_channel_tx = true,
+ 		.supports_multi_bssid = true,
+ 	},
+ };

@@ -33,11 +33,9 @@ Link: https://lore.kernel.org/r/20211013073704.15888-1-wgong@codeaurora.org
  drivers/net/wireless/ath/ath11k/mac.c | 4 ++++
  1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index 02f959ca5d65..e9dd79773240 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -4717,6 +4717,10 @@ ath11k_create_vht_cap(struct ath11k *ar, u32 rate_cap_tx_chainmask,
+@@ -4717,6 +4717,10 @@ ath11k_create_vht_cap(struct ath11k *ar,
  	vht_cap.vht_supported = 1;
  	vht_cap.cap = ar->pdev->cap.vht_cap;
  
@@ -48,6 +46,3 @@ index 02f959ca5d65..e9dd79773240 100644
  	ath11k_set_vht_txbf_cap(ar, &vht_cap.cap);
  
  	rxmcs_map = 0;
--- 
-2.37.1
-

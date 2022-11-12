@@ -17,11 +17,9 @@ Link: https://lore.kernel.org/r/20211118094848.7776-1-quic_wgong@quicinc.com
  drivers/net/wireless/ath/ath11k/wmi.c | 8 +++++++-
  1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
-index c0267f9faa5e..d8f50640d2b2 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -5927,7 +5927,13 @@ static void ath11k_wmi_htc_tx_complete(struct ath11k_base *ab,
+@@ -5927,7 +5927,13 @@ static void ath11k_wmi_htc_tx_complete(s
  
  static bool ath11k_reg_is_world_alpha(char *alpha)
  {
@@ -36,6 +34,3 @@ index c0267f9faa5e..d8f50640d2b2 100644
  }
  
  static int ath11k_reg_chan_list_event(struct ath11k_base *ab, struct sk_buff *skb)
--- 
-2.37.1
-

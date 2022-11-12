@@ -21,11 +21,9 @@ Link: https://lore.kernel.org/r/1630560820-21905-6-git-send-email-ppranees@codea
  drivers/net/wireless/ath/ath11k/dp_rx.c | 70 ++++++++++++-------------
  1 file changed, 34 insertions(+), 36 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
-index 7c60f66077f5..8dde2268646c 100644
 --- a/drivers/net/wireless/ath/ath11k/dp_rx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
-@@ -2600,13 +2600,11 @@ static int ath11k_dp_rx_process_msdu(struct ath11k *ar,
+@@ -2600,13 +2600,11 @@ free_out:
  static void ath11k_dp_rx_process_received_packets(struct ath11k_base *ab,
  						  struct napi_struct *napi,
  						  struct sk_buff_head *msdu_list,
@@ -40,7 +38,7 @@ index 7c60f66077f5..8dde2268646c 100644
  	int ret;
  
  	if (skb_queue_empty(msdu_list))
-@@ -2614,20 +2612,20 @@ static void ath11k_dp_rx_process_received_packets(struct ath11k_base *ab,
+@@ -2614,20 +2612,20 @@ static void ath11k_dp_rx_process_receive
  
  	rcu_read_lock();
  
@@ -73,7 +71,7 @@ index 7c60f66077f5..8dde2268646c 100644
  		ret = ath11k_dp_rx_process_msdu(ar, msdu, msdu_list, &rx_status);
  		if (ret) {
  			ath11k_dbg(ab, ATH11K_DBG_DATA,
-@@ -2649,7 +2647,7 @@ int ath11k_dp_process_rx(struct ath11k_base *ab, int ring_id,
+@@ -2649,7 +2647,7 @@ int ath11k_dp_process_rx(struct ath11k_b
  	struct ath11k_dp *dp = &ab->dp;
  	struct dp_rxdma_ring *rx_ring;
  	int num_buffs_reaped[MAX_RADIOS] = {0};
@@ -82,7 +80,7 @@ index 7c60f66077f5..8dde2268646c 100644
  	struct ath11k_skb_rxcb *rxcb;
  	int total_msdu_reaped = 0;
  	struct hal_srng *srng;
-@@ -2658,10 +2656,13 @@ int ath11k_dp_process_rx(struct ath11k_base *ab, int ring_id,
+@@ -2658,10 +2656,13 @@ int ath11k_dp_process_rx(struct ath11k_b
  	bool done = false;
  	int buf_id, mac_id;
  	struct ath11k *ar;
@@ -98,7 +96,7 @@ index 7c60f66077f5..8dde2268646c 100644
  
  	srng = &ab->hal.srng_list[dp->reo_dst_ring[ring_id].ring_id];
  
-@@ -2670,13 +2671,11 @@ int ath11k_dp_process_rx(struct ath11k_base *ab, int ring_id,
+@@ -2670,13 +2671,11 @@ int ath11k_dp_process_rx(struct ath11k_b
  	ath11k_hal_srng_access_begin(ab, srng);
  
  try_again:
@@ -116,7 +114,7 @@ index 7c60f66077f5..8dde2268646c 100644
  		buf_id = FIELD_GET(DP_RXDMA_BUF_COOKIE_BUF_ID,
  				   cookie);
  		mac_id = FIELD_GET(DP_RXDMA_BUF_COOKIE_PDEV_ID, cookie);
-@@ -2703,7 +2702,7 @@ int ath11k_dp_process_rx(struct ath11k_base *ab, int ring_id,
+@@ -2703,7 +2702,7 @@ try_again:
  		num_buffs_reaped[mac_id]++;
  
  		push_reason = FIELD_GET(HAL_REO_DEST_RING_INFO0_PUSH_REASON,
@@ -125,7 +123,7 @@ index 7c60f66077f5..8dde2268646c 100644
  		if (push_reason !=
  		    HAL_REO_DEST_RING_PUSH_REASON_ROUTING_INSTRUCTION) {
  			dev_kfree_skb_any(msdu);
-@@ -2711,21 +2710,21 @@ int ath11k_dp_process_rx(struct ath11k_base *ab, int ring_id,
+@@ -2711,21 +2710,21 @@ try_again:
  			continue;
  		}
  
@@ -154,7 +152,7 @@ index 7c60f66077f5..8dde2268646c 100644
  
  		if (rxcb->is_continuation) {
  			done = false;
-@@ -2760,16 +2759,15 @@ int ath11k_dp_process_rx(struct ath11k_base *ab, int ring_id,
+@@ -2760,16 +2759,15 @@ try_again:
  		if (!num_buffs_reaped[i])
  			continue;
  
@@ -174,6 +172,3 @@ index 7c60f66077f5..8dde2268646c 100644
  exit:
  	return budget - quota;
  }
--- 
-2.37.1
-

@@ -21,11 +21,9 @@ Link: https://lore.kernel.org/r/20210913180246.193388-2-jouni@codeaurora.org
  drivers/net/wireless/ath/ath11k/dp_rx.c | 18 ++++++++++++++++++
  1 file changed, 18 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
-index 58b19d18cece..75f6d55dca46 100644
 --- a/drivers/net/wireless/ath/ath11k/dp_rx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
-@@ -142,6 +142,18 @@ static u32 ath11k_dp_rx_h_attn_mpdu_err(struct rx_attention *attn)
+@@ -142,6 +142,18 @@ static u32 ath11k_dp_rx_h_attn_mpdu_err(
  	return errmap;
  }
  
@@ -44,7 +42,7 @@ index 58b19d18cece..75f6d55dca46 100644
  static u16 ath11k_dp_rx_h_msdu_start_msdu_len(struct ath11k_base *ab,
  					      struct hal_rx_desc *desc)
  {
-@@ -2525,6 +2537,12 @@ static int ath11k_dp_rx_process_msdu(struct ath11k *ar,
+@@ -2525,6 +2537,12 @@ static int ath11k_dp_rx_process_msdu(str
  	}
  
  	rx_desc = (struct hal_rx_desc *)msdu->data;
@@ -57,6 +55,3 @@ index 58b19d18cece..75f6d55dca46 100644
  	lrx_desc = (struct hal_rx_desc *)last_buf->data;
  	rx_attention = ath11k_dp_rx_get_attention(ab, lrx_desc);
  	if (!ath11k_dp_rx_h_attn_msdu_done(rx_attention)) {
--- 
-2.37.1
-

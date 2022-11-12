@@ -26,11 +26,9 @@ Link: https://lore.kernel.org/r/20220507184155.26939-1-colin.i.king@gmail.com
  drivers/net/wireless/ath/ath11k/mac.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index 81eb38aac5d5..76a9e4ecc501 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -1951,7 +1951,7 @@ static void ath11k_peer_assoc_h_vht(struct ath11k *ar,
+@@ -1951,7 +1951,7 @@ static void ath11k_peer_assoc_h_vht(stru
  	/* Calculate peer NSS capability from VHT capabilities if STA
  	 * supports VHT.
  	 */
@@ -39,7 +37,7 @@ index 81eb38aac5d5..76a9e4ecc501 100644
  		vht_mcs = __le16_to_cpu(vht_cap->vht_mcs.rx_mcs_map) >>
  			  (2 * i) & 3;
  
-@@ -2272,7 +2272,7 @@ static void ath11k_peer_assoc_h_he(struct ath11k *ar,
+@@ -2272,7 +2272,7 @@ static void ath11k_peer_assoc_h_he(struc
  	/* Calculate peer NSS capability from HE capabilities if STA
  	 * supports HE.
  	 */
@@ -48,6 +46,3 @@ index 81eb38aac5d5..76a9e4ecc501 100644
  		he_mcs = he_tx_mcs >> (2 * i) & 3;
  
  		/* In case of fixed rates, MCS Range in he_tx_mcs might have
--- 
-2.37.1
-

@@ -113,11 +113,9 @@ Link: https://lore.kernel.org/r/20220217084545.18844-1-quic_bqiang@quicinc.com
  drivers/net/wireless/ath/ath11k/mac.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index e9c50ac4ef6f..617c89699563 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -5586,7 +5586,7 @@ static int ath11k_mac_mgmt_tx(struct ath11k *ar, struct sk_buff *skb,
+@@ -5586,7 +5586,7 @@ static int ath11k_mac_mgmt_tx(struct ath
  
  	skb_queue_tail(q, skb);
  	atomic_inc(&ar->num_pending_mgmt_tx);
@@ -126,6 +124,3 @@ index e9c50ac4ef6f..617c89699563 100644
  
  	return 0;
  }
--- 
-2.37.1
-

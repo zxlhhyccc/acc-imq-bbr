@@ -17,11 +17,9 @@ Link: https://lore.kernel.org/r/20210722102054.43419-3-jouni@codeaurora.org
  drivers/net/wireless/ath/ath11k/mac.c | 6 ++++++
  1 file changed, 6 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index a116160c01db..c95befec16c2 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -7193,7 +7193,13 @@ static int ath11k_mac_op_get_survey(struct ieee80211_hw *hw, int idx,
+@@ -7193,7 +7193,13 @@ static int ath11k_mac_op_get_survey(stru
  
  	if (!sband)
  		sband = hw->wiphy->bands[NL80211_BAND_5GHZ];
@@ -35,6 +33,3 @@ index a116160c01db..c95befec16c2 100644
  	if (!sband || idx >= sband->n_channels) {
  		ret = -ENOENT;
  		goto exit;
--- 
-2.37.1
-

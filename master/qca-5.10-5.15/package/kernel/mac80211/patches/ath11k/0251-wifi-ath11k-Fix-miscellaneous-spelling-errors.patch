@@ -1,0 +1,316 @@
+From 3fecca0e7de885c71cf28065015832b78023aa6f Mon Sep 17 00:00:00 2001
+From: Jeff Johnson <quic_jjohnson@quicinc.com>
+Date: Fri, 9 Sep 2022 07:55:35 -0700
+Subject: [PATCH 251/252] wifi: ath11k: Fix miscellaneous spelling errors
+
+Fix misspellings flagged by 'codespell'.
+
+Signed-off-by: Jeff Johnson <quic_jjohnson@quicinc.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220909145535.20437-1-quic_jjohnson@quicinc.com
+---
+ drivers/net/wireless/ath/ath11k/ce.c                | 4 ++--
+ drivers/net/wireless/ath/ath11k/core.h              | 2 +-
+ drivers/net/wireless/ath/ath11k/debugfs_htt_stats.h | 4 ++--
+ drivers/net/wireless/ath/ath11k/dp.c                | 2 +-
+ drivers/net/wireless/ath/ath11k/dp.h                | 4 ++--
+ drivers/net/wireless/ath/ath11k/dp_rx.c             | 2 +-
+ drivers/net/wireless/ath/ath11k/dp_tx.c             | 2 +-
+ drivers/net/wireless/ath/ath11k/hal.c               | 2 +-
+ drivers/net/wireless/ath/ath11k/hal.h               | 6 +++---
+ drivers/net/wireless/ath/ath11k/hal_desc.h          | 8 ++++----
+ drivers/net/wireless/ath/ath11k/mac.c               | 4 ++--
+ drivers/net/wireless/ath/ath11k/qmi.c               | 2 +-
+ drivers/net/wireless/ath/ath11k/rx_desc.h           | 2 +-
+ drivers/net/wireless/ath/ath11k/thermal.c           | 2 +-
+ drivers/net/wireless/ath/ath11k/thermal.h           | 2 +-
+ drivers/net/wireless/ath/ath11k/wmi.c               | 2 +-
+ drivers/net/wireless/ath/ath11k/wmi.h               | 6 +++---
+ 17 files changed, 28 insertions(+), 28 deletions(-)
+
+--- a/drivers/net/wireless/ath/ath11k/ce.c
++++ b/drivers/net/wireless/ath/ath11k/ce.c
+@@ -250,7 +250,7 @@ const struct ce_attr ath11k_host_ce_conf
+ 
+ static bool ath11k_ce_need_shadow_fix(int ce_id)
+ {
+-	/* only ce4 needs shadow workaroud*/
++	/* only ce4 needs shadow workaround */
+ 	if (ce_id == 4)
+ 		return true;
+ 	return false;
+@@ -1042,7 +1042,7 @@ int ath11k_ce_alloc_pipes(struct ath11k_
+ 
+ 		ret = ath11k_ce_alloc_pipe(ab, i);
+ 		if (ret) {
+-			/* Free any parial successful allocation */
++			/* Free any partial successful allocation */
+ 			ath11k_ce_free_pipes(ab);
+ 			return ret;
+ 		}
+--- a/drivers/net/wireless/ath/ath11k/core.h
++++ b/drivers/net/wireless/ath/ath11k/core.h
+@@ -887,7 +887,7 @@ struct ath11k_base {
+ 
+ 	/* Below regd's are protected by ab->data_lock */
+ 	/* This is the regd set for every radio
+-	 * by the firmware during initializatin
++	 * by the firmware during initialization
+ 	 */
+ 	struct ieee80211_regdomain *default_regd[MAX_RADIOS];
+ 	/* This regd is set during dynamic country setting
+--- a/drivers/net/wireless/ath/ath11k/debugfs_htt_stats.h
++++ b/drivers/net/wireless/ath/ath11k/debugfs_htt_stats.h
+@@ -630,7 +630,7 @@ struct htt_tx_hwq_tried_mpdu_cnt_hist_tl
+  * completing the burst, we identify the txop used in the burst and
+  * incr the corresponding bin.
+  * Each bin represents 1ms & we have 10 bins in this histogram.
+- * they are deined in FW using the following macros
++ * they are defined in FW using the following macros
+  * #define WAL_MAX_TXOP_USED_CNT_HISTOGRAM 10
+  * #define WAL_TXOP_USED_HISTOGRAM_INTERVAL 1000 ( 1 ms )
+  */
+@@ -1897,7 +1897,7 @@ struct htt_phy_counters_tlv {
+ 	u32 phytx_abort_cnt;
+ 	/* number of times rx abort initiated by phy */
+ 	u32 phyrx_abort_cnt;
+-	/* number of rx defered count initiated by phy */
++	/* number of rx deferred count initiated by phy */
+ 	u32 phyrx_defer_abort_cnt;
+ 	/* number of sizing events generated at LSTF */
+ 	u32 rx_gain_adj_lstf_event_cnt;
+--- a/drivers/net/wireless/ath/ath11k/dp.c
++++ b/drivers/net/wireless/ath/ath11k/dp.c
+@@ -967,7 +967,7 @@ static void ath11k_dp_update_vdev_search
+ {
+ 	 /* When v2_map_support is true:for STA mode, enable address
+ 	  * search index, tcl uses ast_hash value in the descriptor.
+-	  * When v2_map_support is false: for STA mode, dont' enable
++	  * When v2_map_support is false: for STA mode, don't enable
+ 	  * address search index.
+ 	  */
+ 	switch (arvif->vdev_type) {
+--- a/drivers/net/wireless/ath/ath11k/dp.h
++++ b/drivers/net/wireless/ath/ath11k/dp.h
+@@ -303,7 +303,7 @@ struct ath11k_dp {
+ 
+ #define HTT_TX_WBM_COMP_STATUS_OFFSET 8
+ 
+-/* HTT tx completion is overlayed in wbm_release_ring */
++/* HTT tx completion is overlaid in wbm_release_ring */
+ #define HTT_TX_WBM_COMP_INFO0_STATUS		GENMASK(12, 9)
+ #define HTT_TX_WBM_COMP_INFO0_REINJECT_REASON	GENMASK(16, 13)
+ #define HTT_TX_WBM_COMP_INFO0_REINJECT_REASON	GENMASK(16, 13)
+@@ -470,7 +470,7 @@ enum htt_srng_ring_id {
+  *                     3'b010: 4 usec
+  *                     3'b011: 8 usec (default)
+  *                     3'b100: 16 usec
+- *                     Others: Reserverd
++ *                     Others: Reserved
+  *           b'19    - response_required:
+  *                     Host needs HTT_T2H_MSG_TYPE_SRING_SETUP_DONE as response
+  *           b'20:31 - reserved:  reserved for future use
+--- a/drivers/net/wireless/ath/ath11k/dp_rx.c
++++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
+@@ -2499,7 +2499,7 @@ static void ath11k_dp_rx_deliver_msdu(st
+ 
+ 	/* PN for multicast packets are not validate in HW,
+ 	 * so skip 802.3 rx path
+-	 * Also, fast_rx expectes the STA to be authorized, hence
++	 * Also, fast_rx expects the STA to be authorized, hence
+ 	 * eapol packets are sent in slow path.
+ 	 */
+ 	if (decap == DP_RX_DECAP_TYPE_ETHERNET2_DIX && !is_eapol &&
+--- a/drivers/net/wireless/ath/ath11k/dp_tx.c
++++ b/drivers/net/wireless/ath/ath11k/dp_tx.c
+@@ -745,7 +745,7 @@ int ath11k_dp_tx_send_reo_cmd(struct ath
+ 		return 0;
+ 
+ 	/* Can this be optimized so that we keep the pending command list only
+-	 * for tid delete command to free up the resoruce on the command status
++	 * for tid delete command to free up the resource on the command status
+ 	 * indication?
+ 	 */
+ 	dp_cmd = kzalloc(sizeof(*dp_cmd), GFP_ATOMIC);
+--- a/drivers/net/wireless/ath/ath11k/hal.c
++++ b/drivers/net/wireless/ath/ath11k/hal.c
+@@ -1164,7 +1164,7 @@ void ath11k_hal_srng_shadow_update_hp_tp
+ {
+ 	lockdep_assert_held(&srng->lock);
+ 
+-	/* check whether the ring is emptry. Update the shadow
++	/* check whether the ring is empty. Update the shadow
+ 	 * HP only when then ring isn't empty.
+ 	 */
+ 	if (srng->ring_dir == HAL_SRNG_DIR_SRC &&
+--- a/drivers/net/wireless/ath/ath11k/hal.h
++++ b/drivers/net/wireless/ath/ath11k/hal.h
+@@ -243,7 +243,7 @@ struct ath11k_base;
+ #define HAL_WBM0_RELEASE_RING_HP		0x000030c0
+ #define HAL_WBM1_RELEASE_RING_HP		0x000030c8
+ 
+-/* TCL ring feild mask and offset */
++/* TCL ring field mask and offset */
+ #define HAL_TCL1_RING_BASE_MSB_RING_SIZE		GENMASK(27, 8)
+ #define HAL_TCL1_RING_BASE_MSB_RING_BASE_ADDR_MSB	GENMASK(7, 0)
+ #define HAL_TCL1_RING_ID_ENTRY_SIZE			GENMASK(7, 0)
+@@ -268,7 +268,7 @@ struct ath11k_base;
+ #define HAL_TCL1_RING_FIELD_DSCP_TID_MAP6		GENMASK(20, 18)
+ #define HAL_TCL1_RING_FIELD_DSCP_TID_MAP7		GENMASK(23, 21)
+ 
+-/* REO ring feild mask and offset */
++/* REO ring field mask and offset */
+ #define HAL_REO1_RING_BASE_MSB_RING_SIZE		GENMASK(27, 8)
+ #define HAL_REO1_RING_BASE_MSB_RING_BASE_ADDR_MSB	GENMASK(7, 0)
+ #define HAL_REO1_RING_ID_RING_ID			GENMASK(15, 8)
+@@ -636,7 +636,7 @@ struct hal_srng {
+ 	} u;
+ };
+ 
+-/* Interrupt mitigation - Batch threshold in terms of numer of frames */
++/* Interrupt mitigation - Batch threshold in terms of number of frames */
+ #define HAL_SRNG_INT_BATCH_THRESHOLD_TX 256
+ #define HAL_SRNG_INT_BATCH_THRESHOLD_RX 128
+ #define HAL_SRNG_INT_BATCH_THRESHOLD_OTHER 1
+--- a/drivers/net/wireless/ath/ath11k/hal_desc.h
++++ b/drivers/net/wireless/ath/ath11k/hal_desc.h
+@@ -607,7 +607,7 @@ struct rx_msdu_desc {
+  *
+  * msdu_continuation
+  *		When set, this MSDU buffer was not able to hold the entire MSDU.
+- *		The next buffer will therefor contain additional information
++ *		The next buffer will therefore contain additional information
+  *		related to this MSDU.
+  *
+  * msdu_length
+@@ -643,7 +643,7 @@ struct rx_msdu_desc {
+  *
+  * da_idx_timeout
+  *		Indicates, an unsuccessful MAC destination address search due
+- *		to the expiration of search timer fot this MSDU.
++ *		to the expiration of search timer for this MSDU.
+  */
+ 
+ enum hal_reo_dest_ring_buffer_type {
+@@ -1678,7 +1678,7 @@ struct hal_wbm_release_ring {
+  *	Producer: SW/TQM/RXDMA/REO/SWITCH
+  *	Consumer: WBM/SW/FW
+  *
+- * HTT tx status is overlayed on wbm_release ring on 4-byte words 2, 3, 4 and 5
++ * HTT tx status is overlaid on wbm_release ring on 4-byte words 2, 3, 4 and 5
+  * for software based completions.
+  *
+  * buf_addr_info
+@@ -2159,7 +2159,7 @@ struct hal_reo_status_hdr {
+  *		commands.
+  *
+  * execution_time (in us)
+- *		The amount of time REO took to excecute the command. Note that
++ *		The amount of time REO took to execute the command. Note that
+  *		this time does not include the duration of the command waiting
+  *		in the command ring, before the execution started.
+  *
+--- a/drivers/net/wireless/ath/ath11k/mac.c
++++ b/drivers/net/wireless/ath/ath11k/mac.c
+@@ -3058,7 +3058,7 @@ static int ath11k_mac_config_obss_pd(str
+ 		return ret;
+ 	}
+ 
+-	/* Enable all patial BSSID mask for SRG */
++	/* Enable all partial BSSID mask for SRG */
+ 	ret = ath11k_wmi_pdev_srg_obss_bssid_enable_bitmap(ar, bitmap);
+ 	if (ret) {
+ 		ath11k_warn(ar->ab,
+@@ -3076,7 +3076,7 @@ static int ath11k_mac_config_obss_pd(str
+ 		return ret;
+ 	}
+ 
+-	/* Enable all patial BSSID mask for non-SRG */
++	/* Enable all partial BSSID mask for non-SRG */
+ 	ret = ath11k_wmi_pdev_non_srg_obss_bssid_enable_bitmap(ar, bitmap);
+ 	if (ret) {
+ 		ath11k_warn(ar->ab,
+--- a/drivers/net/wireless/ath/ath11k/qmi.c
++++ b/drivers/net/wireless/ath/ath11k/qmi.c
+@@ -1879,7 +1879,7 @@ static int ath11k_qmi_respond_fw_mem_req
+ 
+ 	/* For QCA6390 by default FW requests a block of ~4M contiguous
+ 	 * DMA memory, it's hard to allocate from OS. So host returns
+-	 * failure to FW and FW will then request mulitple blocks of small
++	 * failure to FW and FW will then request multiple blocks of small
+ 	 * chunk size memory.
+ 	 */
+ 	if (!(ab->hw_params.fixed_mem_region ||
+--- a/drivers/net/wireless/ath/ath11k/rx_desc.h
++++ b/drivers/net/wireless/ath/ath11k/rx_desc.h
+@@ -877,7 +877,7 @@ struct rx_msdu_start_wcn6855 {
+  *
+  * l4_offset
+  *		Depending upon mode bit, this field either indicates the
+- *		L4 offset nin bytes from the start of RX_HEADER (only valid
++ *		L4 offset in bytes from the start of RX_HEADER (only valid
+  *		if either ipv4_proto or ipv6_proto is set to 1) or indicates
+  *		the offset in bytes to the start of TCP or UDP header from
+  *		the start of the IP header after decapsulation (Only valid if
+--- a/drivers/net/wireless/ath/ath11k/thermal.c
++++ b/drivers/net/wireless/ath/ath11k/thermal.c
+@@ -99,7 +99,7 @@ static ssize_t ath11k_thermal_show_temp(
+ 	temperature = ar->thermal.temperature;
+ 	spin_unlock_bh(&ar->data_lock);
+ 
+-	/* display in millidegree celcius */
++	/* display in millidegree Celsius */
+ 	ret = snprintf(buf, PAGE_SIZE, "%d\n", temperature * 1000);
+ out:
+ 	mutex_unlock(&ar->conf_mutex);
+--- a/drivers/net/wireless/ath/ath11k/thermal.h
++++ b/drivers/net/wireless/ath/ath11k/thermal.h
+@@ -19,7 +19,7 @@ struct ath11k_thermal {
+ 
+ 	/* protected by conf_mutex */
+ 	u32 throttle_state;
+-	/* temperature value in Celcius degree
++	/* temperature value in Celsius degree
+ 	 * protected by data_lock
+ 	 */
+ 	int temperature;
+--- a/drivers/net/wireless/ath/ath11k/wmi.c
++++ b/drivers/net/wireless/ath/ath11k/wmi.c
+@@ -416,7 +416,7 @@ ath11k_pull_mac_phy_cap_svc_ready_ext(st
+ 
+ 	/* tx/rx chainmask reported from fw depends on the actual hw chains used,
+ 	 * For example, for 4x4 capable macphys, first 4 chains can be used for first
+-	 * mac and the remaing 4 chains can be used for the second mac or vice-versa.
++	 * mac and the remaining 4 chains can be used for the second mac or vice-versa.
+ 	 * In this case, tx/rx chainmask 0xf will be advertised for first mac and 0xf0
+ 	 * will be advertised for second mac or vice-versa. Compute the shift value
+ 	 * for tx/rx chainmask which will be used to advertise supported ht/vht rates to
+--- a/drivers/net/wireless/ath/ath11k/wmi.h
++++ b/drivers/net/wireless/ath/ath11k/wmi.h
+@@ -17,7 +17,7 @@ struct ath11k_vif;
+ 
+ #define PSOC_HOST_MAX_NUM_SS (8)
+ 
+-/* defines to set Packet extension values whic can be 0 us, 8 usec or 16 usec */
++/* defines to set Packet extension values which can be 0 us, 8 usec or 16 usec */
+ #define MAX_HE_NSS               8
+ #define MAX_HE_MODULATION        8
+ #define MAX_HE_RU                4
+@@ -4482,7 +4482,7 @@ struct wmi_pdev_radar_ev {
+ } __packed;
+ 
+ struct wmi_pdev_temperature_event {
+-	/* temperature value in Celcius degree */
++	/* temperature value in Celsius degree */
+ 	s32 temp;
+ 	u32 pdev_id;
+ } __packed;
+@@ -4708,7 +4708,7 @@ enum wmi_sta_ps_param_tx_wake_threshold
+  */
+ enum wmi_sta_ps_param_pspoll_count {
+ 	WMI_STA_PS_PSPOLL_COUNT_NO_MAX = 0,
+-	/* Values greater than 0 indicate the maximum numer of PS-Poll frames
++	/* Values greater than 0 indicate the maximum number of PS-Poll frames
+ 	 * FW will send before waking up.
+ 	 */
+ };

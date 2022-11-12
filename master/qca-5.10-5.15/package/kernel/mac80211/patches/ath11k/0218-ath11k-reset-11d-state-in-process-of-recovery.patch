@@ -41,11 +41,9 @@ Link: https://lore.kernel.org/r/20220505034636.29582-1-quic_wgong@quicinc.com
  drivers/net/wireless/ath/ath11k/reg.c  | 3 +++
  3 files changed, 9 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
-index d7593f6a238c..ad41bf8a16cd 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -1625,6 +1625,7 @@ static void ath11k_core_pre_reconfigure_recovery(struct ath11k_base *ab)
+@@ -1625,6 +1625,7 @@ static void ath11k_core_pre_reconfigure_
  
  		ieee80211_stop_queues(ar->hw);
  		ath11k_mac_drain_tx(ar);
@@ -53,11 +51,9 @@ index d7593f6a238c..ad41bf8a16cd 100644
  		complete(&ar->completed_11d_scan);
  		complete(&ar->scan.started);
  		complete(&ar->scan.completed);
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index cae4780b05fd..17b65f82cdf5 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -6154,6 +6154,11 @@ void ath11k_mac_11d_scan_stop(struct ath11k *ar)
+@@ -6154,6 +6154,11 @@ void ath11k_mac_11d_scan_stop(struct ath
  	ath11k_dbg(ar->ab, ATH11K_DBG_MAC, "mac stop 11d vdev id %d\n",
  		   ar->vdev_id_11d_scan);
  
@@ -69,11 +65,9 @@ index cae4780b05fd..17b65f82cdf5 100644
  	if (ar->vdev_id_11d_scan != ATH11K_11D_INVALID_VDEV_ID) {
  		vdev_id = ar->vdev_id_11d_scan;
  
-diff --git a/drivers/net/wireless/ath/ath11k/reg.c b/drivers/net/wireless/ath/ath11k/reg.c
-index 2370f227cf57..5bc93848005e 100644
 --- a/drivers/net/wireless/ath/ath11k/reg.c
 +++ b/drivers/net/wireless/ath/ath11k/reg.c
-@@ -137,6 +137,9 @@ int ath11k_reg_update_chan_list(struct ath11k *ar, bool wait)
+@@ -137,6 +137,9 @@ int ath11k_reg_update_chan_list(struct a
  			   "reg hw scan wait left time %d\n", left);
  	}
  
@@ -83,6 +77,3 @@ index 2370f227cf57..5bc93848005e 100644
  	bands = hw->wiphy->bands;
  	for (band = 0; band < NUM_NL80211_BANDS; band++) {
  		if (!bands[band])
--- 
-2.37.1
-

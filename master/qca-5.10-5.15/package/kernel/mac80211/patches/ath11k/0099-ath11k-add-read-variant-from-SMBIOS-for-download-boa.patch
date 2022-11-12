@@ -19,8 +19,6 @@ Link: https://lore.kernel.org/r/20211118100033.8384-1-quic_wgong@quicinc.com
  drivers/net/wireless/ath/ath11k/qmi.c  |  4 ++
  3 files changed, 96 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
-index 0fa72d627f24..5a649a64bc27 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
 @@ -8,6 +8,9 @@
@@ -33,7 +31,7 @@ index 0fa72d627f24..5a649a64bc27 100644
  #include "core.h"
  #include "dp_tx.h"
  #include "dp_rx.h"
-@@ -384,6 +387,82 @@ int ath11k_core_resume(struct ath11k_base *ab)
+@@ -384,6 +387,82 @@ int ath11k_core_resume(struct ath11k_bas
  }
  EXPORT_SYMBOL(ath11k_core_resume);
  
@@ -116,8 +114,6 @@ index 0fa72d627f24..5a649a64bc27 100644
  int ath11k_core_check_dt(struct ath11k_base *ab)
  {
  	size_t max_len = sizeof(ab->qmi.target.bdf_ext);
-diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
-index 819be48bb42a..3e3660561607 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
 @@ -938,6 +938,18 @@ struct ath11k_fw_stats_bcn {
@@ -139,7 +135,7 @@ index 819be48bb42a..3e3660561607 100644
  extern const struct ce_pipe_config ath11k_target_ce_config_wlan_ipq8074[];
  extern const struct service_to_pipe ath11k_target_service_to_ce_map_wlan_ipq8074[];
  extern const struct service_to_pipe ath11k_target_service_to_ce_map_wlan_ipq6018[];
-@@ -959,6 +971,7 @@ int ath11k_core_fetch_bdf(struct ath11k_base *ath11k,
+@@ -959,6 +971,7 @@ int ath11k_core_fetch_bdf(struct ath11k_
  			  struct ath11k_board_data *bd);
  void ath11k_core_free_bdf(struct ath11k_base *ab, struct ath11k_board_data *bd);
  int ath11k_core_check_dt(struct ath11k_base *ath11k);
@@ -147,11 +143,9 @@ index 819be48bb42a..3e3660561607 100644
  
  void ath11k_core_halt(struct ath11k *ar);
  int ath11k_core_resume(struct ath11k_base *ab);
-diff --git a/drivers/net/wireless/ath/ath11k/qmi.c b/drivers/net/wireless/ath/ath11k/qmi.c
-index 25eb22cbeaeb..700a9c137018 100644
 --- a/drivers/net/wireless/ath/ath11k/qmi.c
 +++ b/drivers/net/wireless/ath/ath11k/qmi.c
-@@ -1991,6 +1991,10 @@ static int ath11k_qmi_request_target_cap(struct ath11k_base *ab)
+@@ -1991,6 +1991,10 @@ static int ath11k_qmi_request_target_cap
  		    ab->qmi.target.fw_build_timestamp,
  		    ab->qmi.target.fw_build_id);
  
@@ -162,6 +156,3 @@ index 25eb22cbeaeb..700a9c137018 100644
  	r = ath11k_core_check_dt(ab);
  	if (r)
  		ath11k_dbg(ab, ATH11K_DBG_QMI, "DT bdf variant name not set.\n");
--- 
-2.37.1
-

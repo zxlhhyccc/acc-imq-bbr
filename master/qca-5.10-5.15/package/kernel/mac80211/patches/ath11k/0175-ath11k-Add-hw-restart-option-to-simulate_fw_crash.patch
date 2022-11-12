@@ -21,11 +21,9 @@ Link: https://lore.kernel.org/r/20220228064606.8981-4-quic_wgong@quicinc.com
  drivers/net/wireless/ath/ath11k/debugfs.c | 4 ++++
  1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath11k/debugfs.c b/drivers/net/wireless/ath/ath11k/debugfs.c
-index 2c8a5c0c88c3..4f9b5c539afd 100644
 --- a/drivers/net/wireless/ath/ath11k/debugfs.c
 +++ b/drivers/net/wireless/ath/ath11k/debugfs.c
-@@ -594,6 +594,10 @@ static ssize_t ath11k_write_simulate_fw_crash(struct file *file,
+@@ -594,6 +594,10 @@ static ssize_t ath11k_write_simulate_fw_
  		ret = ath11k_wmi_force_fw_hang_cmd(ar,
  						   ATH11K_WMI_FW_HANG_ASSERT_TYPE,
  						   ATH11K_WMI_FW_HANG_DELAY);
@@ -36,6 +34,3 @@ index 2c8a5c0c88c3..4f9b5c539afd 100644
  	} else {
  		ret = -EINVAL;
  		goto exit;
--- 
-2.37.1
-

@@ -83,11 +83,9 @@ Link: https://lore.kernel.org/r/20220319023543.14288-4-quic_wgong@quicinc.com
  drivers/net/wireless/ath/ath11k/hw.h   | 19 ++++++
  2 files changed, 78 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
-index 52f90eb01ec2..40846f686ba4 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -723,7 +723,9 @@ static int ath11k_core_parse_bd_ie_board(struct ath11k_base *ab,
+@@ -723,7 +723,9 @@ static int ath11k_core_parse_bd_ie_board
  					 struct ath11k_board_data *bd,
  					 const void *buf, size_t buf_len,
  					 const char *boardname,
@@ -98,7 +96,7 @@ index 52f90eb01ec2..40846f686ba4 100644
  {
  	const struct ath11k_fw_ie *hdr;
  	bool name_match_found;
-@@ -733,7 +735,7 @@ static int ath11k_core_parse_bd_ie_board(struct ath11k_base *ab,
+@@ -733,7 +735,7 @@ static int ath11k_core_parse_bd_ie_board
  
  	name_match_found = false;
  
@@ -107,7 +105,7 @@ index 52f90eb01ec2..40846f686ba4 100644
  	while (buf_len > sizeof(struct ath11k_fw_ie)) {
  		hdr = buf;
  		board_ie_id = le32_to_cpu(hdr->id);
-@@ -744,48 +746,50 @@ static int ath11k_core_parse_bd_ie_board(struct ath11k_base *ab,
+@@ -744,48 +746,50 @@ static int ath11k_core_parse_bd_ie_board
  		buf += sizeof(*hdr);
  
  		if (buf_len < ALIGN(board_ie_len, 4)) {
@@ -172,7 +170,7 @@ index 52f90eb01ec2..40846f686ba4 100644
  		/* jump over the padding */
  		board_ie_len = ALIGN(board_ie_len, 4);
  
-@@ -802,7 +806,10 @@ static int ath11k_core_parse_bd_ie_board(struct ath11k_base *ab,
+@@ -802,7 +806,10 @@ out:
  
  static int ath11k_core_fetch_board_data_api_n(struct ath11k_base *ab,
  					      struct ath11k_board_data *bd,
@@ -184,7 +182,7 @@ index 52f90eb01ec2..40846f686ba4 100644
  {
  	size_t len, magic_len;
  	const u8 *data;
-@@ -867,22 +874,23 @@ static int ath11k_core_fetch_board_data_api_n(struct ath11k_base *ab,
+@@ -867,22 +874,23 @@ static int ath11k_core_fetch_board_data_
  			goto err;
  		}
  
@@ -213,7 +211,7 @@ index 52f90eb01ec2..40846f686ba4 100644
  		/* jump over the padding */
  		ie_len = ALIGN(ie_len, 4);
  
-@@ -893,7 +901,8 @@ static int ath11k_core_fetch_board_data_api_n(struct ath11k_base *ab,
+@@ -893,7 +901,8 @@ static int ath11k_core_fetch_board_data_
  out:
  	if (!bd->data || !bd->len) {
  		ath11k_dbg(ab, ATH11K_DBG_BOOT,
@@ -223,7 +221,7 @@ index 52f90eb01ec2..40846f686ba4 100644
  			   boardname, filepath);
  		ret = -ENODATA;
  		goto err;
-@@ -937,7 +946,10 @@ int ath11k_core_fetch_bdf(struct ath11k_base *ab, struct ath11k_board_data *bd)
+@@ -937,7 +946,10 @@ int ath11k_core_fetch_bdf(struct ath11k_
  	}
  
  	ab->bd_api = 2;
@@ -235,7 +233,7 @@ index 52f90eb01ec2..40846f686ba4 100644
  	if (!ret)
  		goto success;
  
-@@ -948,7 +960,10 @@ int ath11k_core_fetch_bdf(struct ath11k_base *ab, struct ath11k_board_data *bd)
+@@ -948,7 +960,10 @@ int ath11k_core_fetch_bdf(struct ath11k_
  		return ret;
  	}
  
@@ -247,7 +245,7 @@ index 52f90eb01ec2..40846f686ba4 100644
  	if (!ret)
  		goto success;
  
-@@ -975,13 +990,32 @@ int ath11k_core_fetch_bdf(struct ath11k_base *ab, struct ath11k_board_data *bd)
+@@ -975,13 +990,32 @@ success:
  
  int ath11k_core_fetch_regdb(struct ath11k_base *ab, struct ath11k_board_data *bd)
  {
@@ -280,8 +278,6 @@ index 52f90eb01ec2..40846f686ba4 100644
  	return ret;
  }
  
-diff --git a/drivers/net/wireless/ath/ath11k/hw.h b/drivers/net/wireless/ath/ath11k/hw.h
-index b92d5ab096e8..f0002d2a7aff 100644
 --- a/drivers/net/wireless/ath/ath11k/hw.h
 +++ b/drivers/net/wireless/ath/ath11k/hw.h
 @@ -291,9 +291,16 @@ enum ath11k_bd_ie_board_type {
@@ -301,7 +297,7 @@ index b92d5ab096e8..f0002d2a7aff 100644
  };
  
  struct ath11k_hw_regs {
-@@ -361,4 +368,16 @@ extern const struct ath11k_hw_regs qca6390_regs;
+@@ -361,4 +368,16 @@ extern const struct ath11k_hw_regs qca63
  extern const struct ath11k_hw_regs qcn9074_regs;
  extern const struct ath11k_hw_regs wcn6855_regs;
  
@@ -318,6 +314,3 @@ index b92d5ab096e8..f0002d2a7aff 100644
 +}
 +
  #endif
--- 
-2.37.1
-

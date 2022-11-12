@@ -18,11 +18,9 @@ Link: https://lore.kernel.org/r/1636609967-5114-1-git-send-email-quic_seevalam@q
  drivers/net/wireless/ath/ath11k/mac.c | 1 -
  1 file changed, 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index 765fd86df4a9..813e4d10d7d5 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -5977,7 +5977,6 @@ static void ath11k_mac_op_configure_filter(struct ieee80211_hw *hw,
+@@ -5977,7 +5977,6 @@ static void ath11k_mac_op_configure_filt
  
  	mutex_lock(&ar->conf_mutex);
  
@@ -30,6 +28,3 @@ index 765fd86df4a9..813e4d10d7d5 100644
  	*total_flags &= SUPPORTED_FILTERS;
  	ar->filter_flags = *total_flags;
  
--- 
-2.37.1
-

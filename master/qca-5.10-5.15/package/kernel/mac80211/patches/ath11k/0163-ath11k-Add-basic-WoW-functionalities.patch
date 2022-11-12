@@ -30,8 +30,6 @@ Link: https://lore.kernel.org/r/1644308006-22784-2-git-send-email-quic_cjhuang@q
  drivers/net/wireless/ath/ath11k/wow.h    |  45 +++
  10 files changed, 781 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/Makefile b/drivers/net/wireless/ath/ath11k/Makefile
-index c1fce4159f1f..444c00c2bce2 100644
 --- a/drivers/net/wireless/ath/ath11k/Makefile
 +++ b/drivers/net/wireless/ath/ath11k/Makefile
 @@ -16,14 +16,14 @@ ath11k-y += core.o \
@@ -51,11 +49,9 @@ index c1fce4159f1f..444c00c2bce2 100644
  
  obj-$(CPTCFG_ATH11K_AHB) += ath11k_ahb.o
  ath11k_ahb-y += ahb.o
-diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
-index e9970b4a67e3..ad22b703443d 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -428,13 +428,30 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -428,13 +428,30 @@ static const struct ath11k_hw_params ath
  	},
  };
  
@@ -86,7 +82,7 @@ index e9970b4a67e3..ad22b703443d 100644
  	/* TODO: there can frames in queues so for now add delay as a hack.
  	 * Need to implement to handle and remove this delay.
  	 */
-@@ -447,6 +464,12 @@ int ath11k_core_suspend(struct ath11k_base *ab)
+@@ -447,6 +464,12 @@ int ath11k_core_suspend(struct ath11k_ba
  		return ret;
  	}
  
@@ -120,8 +116,6 @@ index e9970b4a67e3..ad22b703443d 100644
  	ret = ath11k_hif_resume(ab);
  	if (ret) {
  		ath11k_warn(ab, "failed to resume hif during resume: %d\n", ret);
-diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
-index c0228e91a596..7b658d4c7d19 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
 @@ -23,6 +23,7 @@
@@ -142,11 +136,9 @@ index c0228e91a596..7b658d4c7d19 100644
  	struct ath11k_per_peer_tx_stats peer_tx_stats;
  	struct list_head ppdu_stats_info;
  	u32 ppdu_stat_list_depth;
-diff --git a/drivers/net/wireless/ath/ath11k/htc.c b/drivers/net/wireless/ath/ath11k/htc.c
-index 6913b7494b9b..069c29a4fac7 100644
 --- a/drivers/net/wireless/ath/ath11k/htc.c
 +++ b/drivers/net/wireless/ath/ath11k/htc.c
-@@ -272,6 +272,11 @@ void ath11k_htc_tx_completion_handler(struct ath11k_base *ab,
+@@ -272,6 +272,11 @@ void ath11k_htc_tx_completion_handler(st
  	ep_tx_complete(htc->ab, skb);
  }
  
@@ -158,7 +150,7 @@ index 6913b7494b9b..069c29a4fac7 100644
  void ath11k_htc_rx_completion_handler(struct ath11k_base *ab,
  				      struct sk_buff *skb)
  {
-@@ -376,6 +381,7 @@ void ath11k_htc_rx_completion_handler(struct ath11k_base *ab,
+@@ -376,6 +381,7 @@ void ath11k_htc_rx_completion_handler(st
  			ath11k_htc_suspend_complete(ab, false);
  			break;
  		case ATH11K_HTC_MSG_WAKEUP_FROM_SUSPEND_ID:
@@ -166,8 +158,6 @@ index 6913b7494b9b..069c29a4fac7 100644
  			break;
  		default:
  			ath11k_warn(ab, "ignoring unsolicited htc ep0 event %ld\n",
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index 617c89699563..2013e325956f 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
 @@ -16,6 +16,8 @@
@@ -179,7 +169,7 @@ index 617c89699563..2013e325956f 100644
  
  #define CHAN2G(_channel, _freq, _flags) { \
  	.band                   = NL80211_BAND_2GHZ, \
-@@ -7270,31 +7272,47 @@ static int ath11k_mac_op_set_frag_threshold(struct ieee80211_hw *hw, u32 value)
+@@ -7270,31 +7272,47 @@ static int ath11k_mac_op_set_frag_thresh
  	return -EOPNOTSUPP;
  }
  
@@ -241,7 +231,7 @@ index 617c89699563..2013e325956f 100644
  }
  
  static int
-@@ -8116,6 +8134,13 @@ static const struct ieee80211_ops ath11k_ops = {
+@@ -8116,6 +8134,13 @@ static const struct ieee80211_ops ath11k
  	.flush				= ath11k_mac_op_flush,
  	.sta_statistics			= ath11k_mac_op_sta_statistics,
  	CFG80211_TESTMODE_CMD(ath11k_tm_cmd)
@@ -255,7 +245,7 @@ index 617c89699563..2013e325956f 100644
  #ifdef CPTCFG_ATH11K_DEBUGFS
  	.sta_add_debugfs		= ath11k_debugfs_sta_op_add,
  #endif
-@@ -8485,6 +8510,12 @@ static int __ath11k_mac_register(struct ath11k *ar)
+@@ -8485,6 +8510,12 @@ static int __ath11k_mac_register(struct
  			NL80211_FEATURE_SCAN_RANDOM_MAC_ADDR;
  	}
  
@@ -268,21 +258,17 @@ index 617c89699563..2013e325956f 100644
  	ar->hw->queues = ATH11K_HW_MAX_QUEUES;
  	ar->hw->wiphy->tx_queue_len = ATH11K_QUEUE_LEN;
  	ar->hw->offchannel_tx_hw_queue = ATH11K_HW_MAX_QUEUES - 1;
-diff --git a/drivers/net/wireless/ath/ath11k/mac.h b/drivers/net/wireless/ath/ath11k/mac.h
-index 0e6c870b09c8..045bf4fe1706 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.h
 +++ b/drivers/net/wireless/ath/ath11k/mac.h
-@@ -172,4 +172,5 @@ enum hal_encrypt_type ath11k_dp_tx_get_encrypt_type(u32 cipher);
+@@ -172,4 +172,5 @@ enum hal_encrypt_type ath11k_dp_tx_get_e
  void ath11k_mac_handle_beacon(struct ath11k *ar, struct sk_buff *skb);
  void ath11k_mac_handle_beacon_miss(struct ath11k *ar, u32 vdev_id);
  void ath11k_mac_bcn_tx_event(struct ath11k_vif *arvif);
 +int ath11k_mac_wait_tx_complete(struct ath11k *ar);
  #endif
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
-index b4f86c45d81f..25222293f162 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -8235,3 +8235,161 @@ int ath11k_wmi_scan_prob_req_oui(struct ath11k *ar,
+@@ -8235,3 +8235,161 @@ int ath11k_wmi_scan_prob_req_oui(struct
  
  	return ath11k_wmi_cmd_send(ar->wmi, skb, WMI_SCAN_PROB_REQ_OUI_CMDID);
  }
@@ -444,11 +430,9 @@ index b4f86c45d81f..25222293f162 100644
 +
 +	return ath11k_wmi_cmd_send(ar->wmi, skb, WMI_WOW_DEL_WAKE_PATTERN_CMDID);
 +}
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.h b/drivers/net/wireless/ath/ath11k/wmi.h
-index 587f42307250..b82f432a3d95 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.h
 +++ b/drivers/net/wireless/ath/ath11k/wmi.h
-@@ -5534,6 +5534,45 @@ static inline const char *wow_reason(enum wmi_wow_wake_reason reason)
+@@ -5534,6 +5534,45 @@ static inline const char *wow_reason(enu
  
  #undef C2S
  
@@ -534,7 +518,7 @@ index 587f42307250..b82f432a3d95 100644
  
  int ath11k_wmi_cmd_send(struct ath11k_pdev_wmi *wmi, struct sk_buff *skb,
  			u32 cmd_id);
-@@ -5714,4 +5777,11 @@ int ath11k_wmi_scan_prob_req_oui(struct ath11k *ar,
+@@ -5714,4 +5777,11 @@ int ath11k_wmi_scan_prob_req_oui(struct
  				 const u8 mac_addr[ETH_ALEN]);
  int ath11k_wmi_fw_dbglog_cfg(struct ath11k *ar, u32 *module_id_bitmap,
  			     struct ath11k_fw_dbglog *dbglog);
@@ -546,8 +530,6 @@ index 587f42307250..b82f432a3d95 100644
 +				    enum wmi_wow_wakeup_event event,
 +				    u32 enable);
  #endif
-diff --git a/drivers/net/wireless/ath/ath11k/wow.c b/drivers/net/wireless/ath/ath11k/wow.c
-index 43c62e99dd0e..837dab469ab2 100644
 --- a/drivers/net/wireless/ath/ath11k/wow.c
 +++ b/drivers/net/wireless/ath/ath11k/wow.c
 @@ -6,12 +6,22 @@
@@ -573,7 +555,7 @@ index 43c62e99dd0e..837dab469ab2 100644
  int ath11k_wow_enable(struct ath11k_base *ab)
  {
  	struct ath11k *ar = ath11k_ab_to_ar(ab, 0);
-@@ -71,3 +81,407 @@ int ath11k_wow_wakeup(struct ath11k_base *ab)
+@@ -71,3 +81,407 @@ int ath11k_wow_wakeup(struct ath11k_base
  
  	return 0;
  }
@@ -981,8 +963,6 @@ index 43c62e99dd0e..837dab469ab2 100644
 +
 +	return 0;
 +}
-diff --git a/drivers/net/wireless/ath/ath11k/wow.h b/drivers/net/wireless/ath/ath11k/wow.h
-index dabc4ee63cf6..553ba850d910 100644
 --- a/drivers/net/wireless/ath/ath11k/wow.h
 +++ b/drivers/net/wireless/ath/ath11k/wow.h
 @@ -3,8 +3,53 @@
@@ -1039,6 +1019,3 @@ index dabc4ee63cf6..553ba850d910 100644
 +
 +#endif /* CONFIG_PM */
 +#endif /* _WOW_H_ */
--- 
-2.37.1
-

@@ -19,11 +19,9 @@ Link: https://lore.kernel.org/r/20210721201927.100369-3-jouni@codeaurora.org
  drivers/net/wireless/ath/ath11k/qmi.c | 248 +++++++++++---------------
  1 file changed, 101 insertions(+), 147 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/qmi.c b/drivers/net/wireless/ath/ath11k/qmi.c
-index 483da24b0ee4..421814cbfc4e 100644
 --- a/drivers/net/wireless/ath/ath11k/qmi.c
 +++ b/drivers/net/wireless/ath/ath11k/qmi.c
-@@ -1917,98 +1917,72 @@ static int ath11k_qmi_request_target_cap(struct ath11k_base *ab)
+@@ -1917,98 +1917,72 @@ out:
  	return ret;
  }
  
@@ -163,7 +161,7 @@ index 483da24b0ee4..421814cbfc4e 100644
  
  		ath11k_dbg(ab, ATH11K_DBG_QMI, "qmi bdf download req fixed addr type %d\n",
  			   type);
-@@ -2019,54 +1993,59 @@ static int ath11k_qmi_load_bdf_fixed_addr(struct ath11k_base *ab)
+@@ -2019,54 +1993,59 @@ static int ath11k_qmi_load_bdf_fixed_add
  				       qmi_wlanfw_bdf_download_req_msg_v01_ei, req);
  		if (ret < 0) {
  			qmi_txn_cancel(&txn);
@@ -246,7 +244,7 @@ index 483da24b0ee4..421814cbfc4e 100644
  	if (bd.len >= SELFMAG && memcmp(bd.data, ELFMAG, SELFMAG) == 0)
  		bdf_type = ATH11K_QMI_BDF_TYPE_ELF;
  	else
-@@ -2074,67 +2053,45 @@ static int ath11k_qmi_load_bdf_qmi(struct ath11k_base *ab)
+@@ -2074,67 +2053,45 @@ static int ath11k_qmi_load_bdf_qmi(struc
  
  	ath11k_dbg(ab, ATH11K_DBG_QMI, "qmi bdf_type %d\n", bdf_type);
  
@@ -345,7 +343,7 @@ index 483da24b0ee4..421814cbfc4e 100644
  	return ret;
  }
  
-@@ -2519,10 +2476,7 @@ static int ath11k_qmi_event_load_bdf(struct ath11k_qmi *qmi)
+@@ -2519,10 +2476,7 @@ static int ath11k_qmi_event_load_bdf(str
  		return ret;
  	}
  
@@ -357,6 +355,3 @@ index 483da24b0ee4..421814cbfc4e 100644
  	if (ret < 0) {
  		ath11k_warn(ab, "failed to load board data file: %d\n", ret);
  		return ret;
--- 
-2.37.1
-

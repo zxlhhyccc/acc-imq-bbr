@@ -24,11 +24,9 @@ Link: https://lore.kernel.org/r/1645079195-13564-1-git-send-email-quic_seevalam@
  drivers/net/wireless/ath/ath11k/qmi.c | 6 +++++-
  1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/qmi.c b/drivers/net/wireless/ath/ath11k/qmi.c
-index d4d831566a89..04e966830c18 100644
 --- a/drivers/net/wireless/ath/ath11k/qmi.c
 +++ b/drivers/net/wireless/ath/ath11k/qmi.c
-@@ -2960,7 +2960,11 @@ static void ath11k_qmi_driver_event_work(struct work_struct *work)
+@@ -2960,7 +2960,11 @@ static void ath11k_qmi_driver_event_work
  				clear_bit(ATH11K_FLAG_CRASH_FLUSH,
  					  &ab->dev_flags);
  				clear_bit(ATH11K_FLAG_RECOVERY, &ab->dev_flags);
@@ -41,6 +39,3 @@ index d4d831566a89..04e966830c18 100644
  				set_bit(ATH11K_FLAG_REGISTERED, &ab->dev_flags);
  			}
  
--- 
-2.37.1
-

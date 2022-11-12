@@ -33,11 +33,9 @@ Link: https://lore.kernel.org/r/20211011055602.77342-1-bqiang@codeaurora.org
  drivers/net/wireless/ath/ath11k/qmi.c  | 4 ++++
  3 files changed, 11 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
-index 8fb6c80caf18..2ab5bb3d8d0d 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -100,6 +100,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -100,6 +100,7 @@ static const struct ath11k_hw_params ath
  		.fw_wmi_diag_event = false,
  		.current_cc_support = false,
  		.dbr_debug_support = true,
@@ -45,7 +43,7 @@ index 8fb6c80caf18..2ab5bb3d8d0d 100644
  	},
  	{
  		.hw_rev = ATH11K_HW_IPQ6018_HW10,
-@@ -166,6 +167,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -166,6 +167,7 @@ static const struct ath11k_hw_params ath
  		.fw_wmi_diag_event = false,
  		.current_cc_support = false,
  		.dbr_debug_support = true,
@@ -53,7 +51,7 @@ index 8fb6c80caf18..2ab5bb3d8d0d 100644
  	},
  	{
  		.name = "qca6390 hw2.0",
-@@ -231,6 +233,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -231,6 +233,7 @@ static const struct ath11k_hw_params ath
  		.fw_wmi_diag_event = true,
  		.current_cc_support = true,
  		.dbr_debug_support = false,
@@ -61,7 +59,7 @@ index 8fb6c80caf18..2ab5bb3d8d0d 100644
  	},
  	{
  		.name = "qcn9074 hw1.0",
-@@ -296,6 +299,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -296,6 +299,7 @@ static const struct ath11k_hw_params ath
  		.fw_wmi_diag_event = false,
  		.current_cc_support = false,
  		.dbr_debug_support = true,
@@ -69,7 +67,7 @@ index 8fb6c80caf18..2ab5bb3d8d0d 100644
  	},
  	{
  		.name = "wcn6855 hw2.0",
-@@ -361,6 +365,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -361,6 +365,7 @@ static const struct ath11k_hw_params ath
  		.fw_wmi_diag_event = true,
  		.current_cc_support = true,
  		.dbr_debug_support = false,
@@ -77,7 +75,7 @@ index 8fb6c80caf18..2ab5bb3d8d0d 100644
  	},
  	{
  		.name = "wcn6855 hw2.1",
-@@ -425,6 +430,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -425,6 +430,7 @@ static const struct ath11k_hw_params ath
  		.fw_wmi_diag_event = true,
  		.current_cc_support = true,
  		.dbr_debug_support = false,
@@ -85,8 +83,6 @@ index 8fb6c80caf18..2ab5bb3d8d0d 100644
  	},
  };
  
-diff --git a/drivers/net/wireless/ath/ath11k/hw.h b/drivers/net/wireless/ath/ath11k/hw.h
-index 5681f571280f..b92d5ab096e8 100644
 --- a/drivers/net/wireless/ath/ath11k/hw.h
 +++ b/drivers/net/wireless/ath/ath11k/hw.h
 @@ -194,6 +194,7 @@ struct ath11k_hw_params {
@@ -97,8 +93,6 @@ index 5681f571280f..b92d5ab096e8 100644
  };
  
  struct ath11k_hw_ops {
-diff --git a/drivers/net/wireless/ath/ath11k/qmi.c b/drivers/net/wireless/ath/ath11k/qmi.c
-index ec110fe81378..ffb8aa7dfb02 100644
 --- a/drivers/net/wireless/ath/ath11k/qmi.c
 +++ b/drivers/net/wireless/ath/ath11k/qmi.c
 @@ -15,6 +15,7 @@
@@ -109,7 +103,7 @@ index ec110fe81378..ffb8aa7dfb02 100644
  
  #define FW_BUILD_ID_MASK "QC_IMAGE_VERSION_STRING="
  
-@@ -1676,6 +1677,9 @@ static int ath11k_qmi_host_cap_send(struct ath11k_base *ab)
+@@ -1676,6 +1677,9 @@ static int ath11k_qmi_host_cap_send(stru
  		req.nm_modem |= SLEEP_CLOCK_SELECT_INTERNAL_BIT;
  	}
  
@@ -119,6 +113,3 @@ index ec110fe81378..ffb8aa7dfb02 100644
  	ath11k_dbg(ab, ATH11K_DBG_QMI, "qmi host cap request\n");
  
  	ret = qmi_txn_init(&ab->qmi.handle, &txn,
--- 
-2.37.1
-

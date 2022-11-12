@@ -18,11 +18,9 @@ Link: https://lore.kernel.org/r/20220401173042.17467-2-kvalo@kernel.org
  drivers/net/wireless/ath/ath11k/pci.h |   2 +-
  3 files changed, 11 insertions(+), 198 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mhi.c b/drivers/net/wireless/ath/ath11k/mhi.c
-index 1aa1e0f01b85..6ad91c600d0e 100644
 --- a/drivers/net/wireless/ath/ath11k/mhi.c
 +++ b/drivers/net/wireless/ath/ath11k/mhi.c
-@@ -465,195 +465,17 @@ void ath11k_mhi_unregister(struct ath11k_pci *ab_pci)
+@@ -465,195 +465,17 @@ void ath11k_mhi_unregister(struct ath11k
  	mhi_free_controller(mhi_ctrl);
  }
  
@@ -220,7 +218,7 @@ index 1aa1e0f01b85..6ad91c600d0e 100644
  	if (ret)
  		goto out;
  
-@@ -665,16 +487,20 @@ int ath11k_mhi_start(struct ath11k_pci *ab_pci)
+@@ -665,16 +487,20 @@ out:
  
  void ath11k_mhi_stop(struct ath11k_pci *ab_pci)
  {
@@ -245,8 +243,6 @@ index 1aa1e0f01b85..6ad91c600d0e 100644
 +	 */
 +	mhi_pm_resume_force(ab_pci->mhi_ctrl);
  }
-diff --git a/drivers/net/wireless/ath/ath11k/mhi.h b/drivers/net/wireless/ath/ath11k/mhi.h
-index 488dada5d31c..5dd024f879c4 100644
 --- a/drivers/net/wireless/ath/ath11k/mhi.h
 +++ b/drivers/net/wireless/ath/ath11k/mhi.h
 @@ -16,19 +16,6 @@
@@ -269,8 +265,6 @@ index 488dada5d31c..5dd024f879c4 100644
  int ath11k_mhi_start(struct ath11k_pci *ar_pci);
  void ath11k_mhi_stop(struct ath11k_pci *ar_pci);
  int ath11k_mhi_register(struct ath11k_pci *ar_pci);
-diff --git a/drivers/net/wireless/ath/ath11k/pci.h b/drivers/net/wireless/ath/ath11k/pci.h
-index 16a000b9cc5e..e9a01f344ec6 100644
 --- a/drivers/net/wireless/ath/ath11k/pci.h
 +++ b/drivers/net/wireless/ath/ath11k/pci.h
 @@ -63,7 +63,7 @@ struct ath11k_pci {
@@ -282,6 +276,3 @@ index 16a000b9cc5e..e9a01f344ec6 100644
  	u32 register_window;
  
  	/* protects register_window above */
--- 
-2.37.1
-

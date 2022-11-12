@@ -16,11 +16,9 @@ Link: https://lore.kernel.org/r/20220209060012.32478-2-quic_wgong@quicinc.com
  drivers/net/wireless/ath/ath11k/qmi.h | 1 +
  2 files changed, 6 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath11k/qmi.c b/drivers/net/wireless/ath/ath11k/qmi.c
-index d0701e8eca9c..1144e828cf5c 100644
 --- a/drivers/net/wireless/ath/ath11k/qmi.c
 +++ b/drivers/net/wireless/ath/ath11k/qmi.c
-@@ -3025,3 +3025,8 @@ void ath11k_qmi_deinit_service(struct ath11k_base *ab)
+@@ -3025,3 +3025,8 @@ void ath11k_qmi_deinit_service(struct at
  }
  EXPORT_SYMBOL(ath11k_qmi_deinit_service);
  
@@ -29,17 +27,12 @@ index d0701e8eca9c..1144e828cf5c 100644
 +	ath11k_qmi_free_target_mem_chunk(ab);
 +	ath11k_qmi_m3_free(ab);
 +}
-diff --git a/drivers/net/wireless/ath/ath11k/qmi.h b/drivers/net/wireless/ath/ath11k/qmi.h
-index ba2eff4d59cb..61678de56ac7 100644
 --- a/drivers/net/wireless/ath/ath11k/qmi.h
 +++ b/drivers/net/wireless/ath/ath11k/qmi.h
-@@ -492,5 +492,6 @@ void ath11k_qmi_event_work(struct work_struct *work);
+@@ -492,5 +492,6 @@ void ath11k_qmi_event_work(struct work_s
  void ath11k_qmi_msg_recv_work(struct work_struct *work);
  void ath11k_qmi_deinit_service(struct ath11k_base *ab);
  int ath11k_qmi_init_service(struct ath11k_base *ab);
 +void ath11k_qmi_free_resource(struct ath11k_base *ab);
  
  #endif
--- 
-2.37.1
-

@@ -20,11 +20,9 @@ Link: https://lore.kernel.org/r/20210804181217.88751-4-jouni@codeaurora.org
  drivers/net/wireless/ath/ath11k/wmi.c | 22 +++++++++++-----------
  1 file changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
-index 63417a2383e6..6eba5b2e636e 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -407,18 +407,18 @@ ath11k_pull_mac_phy_cap_svc_ready_ext(struct ath11k_pdev_wmi *wmi_handle,
+@@ -407,18 +407,18 @@ ath11k_pull_mac_phy_cap_svc_ready_ext(st
  		       sizeof(u32) * PSOC_HOST_MAX_PHY_SIZE);
  		memcpy(&cap_band->he_ppet, &mac_phy_caps->he_ppet5g,
  		       sizeof(struct ath11k_ppe_threshold));
@@ -54,6 +52,3 @@ index 63417a2383e6..6eba5b2e636e 100644
  
  	return 0;
  }
--- 
-2.37.1
-

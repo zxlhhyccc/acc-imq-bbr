@@ -32,11 +32,9 @@ Link: https://lore.kernel.org/r/1630560820-21905-3-git-send-email-ppranees@codea
  drivers/net/wireless/ath/ath11k/hw.h   |  1 +
  6 files changed, 67 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
-index 6a44e32148b1..5553c927320c 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -85,6 +85,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -85,6 +85,7 @@ static const struct ath11k_hw_params ath
  		.max_tx_ring = DP_TCL_NUM_RING_MAX,
  		.hal_params = &ath11k_hw_hal_params_ipq8074,
  		.supports_dynamic_smps_6ghz = false,
@@ -44,7 +42,7 @@ index 6a44e32148b1..5553c927320c 100644
  	},
  	{
  		.hw_rev = ATH11K_HW_IPQ6018_HW10,
-@@ -137,6 +138,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -137,6 +138,7 @@ static const struct ath11k_hw_params ath
  		.max_tx_ring = DP_TCL_NUM_RING_MAX,
  		.hal_params = &ath11k_hw_hal_params_ipq8074,
  		.supports_dynamic_smps_6ghz = false,
@@ -52,7 +50,7 @@ index 6a44e32148b1..5553c927320c 100644
  	},
  	{
  		.name = "qca6390 hw2.0",
-@@ -188,6 +190,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -188,6 +190,7 @@ static const struct ath11k_hw_params ath
  		.max_tx_ring = DP_TCL_NUM_RING_MAX_QCA6390,
  		.hal_params = &ath11k_hw_hal_params_qca6390,
  		.supports_dynamic_smps_6ghz = false,
@@ -60,7 +58,7 @@ index 6a44e32148b1..5553c927320c 100644
  	},
  	{
  		.name = "qcn9074 hw1.0",
-@@ -239,6 +242,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -239,6 +242,7 @@ static const struct ath11k_hw_params ath
  		.max_tx_ring = DP_TCL_NUM_RING_MAX,
  		.hal_params = &ath11k_hw_hal_params_ipq8074,
  		.supports_dynamic_smps_6ghz = true,
@@ -68,7 +66,7 @@ index 6a44e32148b1..5553c927320c 100644
  	},
  	{
  		.name = "wcn6855 hw2.0",
-@@ -290,6 +294,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -290,6 +294,7 @@ static const struct ath11k_hw_params ath
  		.max_tx_ring = DP_TCL_NUM_RING_MAX_QCA6390,
  		.hal_params = &ath11k_hw_hal_params_qca6390,
  		.supports_dynamic_smps_6ghz = false,
@@ -76,11 +74,9 @@ index 6a44e32148b1..5553c927320c 100644
  	},
  };
  
-diff --git a/drivers/net/wireless/ath/ath11k/dp.c b/drivers/net/wireless/ath/ath11k/dp.c
-index 8baaeeb8cf82..8058b56028de 100644
 --- a/drivers/net/wireless/ath/ath11k/dp.c
 +++ b/drivers/net/wireless/ath/ath11k/dp.c
-@@ -101,8 +101,11 @@ void ath11k_dp_srng_cleanup(struct ath11k_base *ab, struct dp_srng *ring)
+@@ -101,8 +101,11 @@ void ath11k_dp_srng_cleanup(struct ath11
  	if (!ring->vaddr_unaligned)
  		return;
  
@@ -94,7 +90,7 @@ index 8baaeeb8cf82..8058b56028de 100644
  
  	ring->vaddr_unaligned = NULL;
  }
-@@ -222,6 +225,7 @@ int ath11k_dp_srng_setup(struct ath11k_base *ab, struct dp_srng *ring,
+@@ -222,6 +225,7 @@ int ath11k_dp_srng_setup(struct ath11k_b
  	int entry_sz = ath11k_hal_srng_get_entrysize(ab, type);
  	int max_entries = ath11k_hal_srng_get_max_entries(ab, type);
  	int ret;
@@ -102,7 +98,7 @@ index 8baaeeb8cf82..8058b56028de 100644
  
  	if (max_entries < 0 || entry_sz < 0)
  		return -EINVAL;
-@@ -230,9 +234,28 @@ int ath11k_dp_srng_setup(struct ath11k_base *ab, struct dp_srng *ring,
+@@ -230,9 +234,28 @@ int ath11k_dp_srng_setup(struct ath11k_b
  		num_entries = max_entries;
  
  	ring->size = (num_entries * entry_sz) + HAL_RING_BASE_ALIGN - 1;
@@ -134,7 +130,7 @@ index 8baaeeb8cf82..8058b56028de 100644
  	if (!ring->vaddr_unaligned)
  		return -ENOMEM;
  
-@@ -292,6 +315,11 @@ int ath11k_dp_srng_setup(struct ath11k_base *ab, struct dp_srng *ring,
+@@ -292,6 +315,11 @@ int ath11k_dp_srng_setup(struct ath11k_b
  		return -EINVAL;
  	}
  
@@ -146,8 +142,6 @@ index 8baaeeb8cf82..8058b56028de 100644
  	ret = ath11k_hal_srng_setup(ab, type, ring_num, mac_id, &params);
  	if (ret < 0) {
  		ath11k_warn(ab, "failed to setup srng: %d ring_id %d\n",
-diff --git a/drivers/net/wireless/ath/ath11k/dp.h b/drivers/net/wireless/ath/ath11k/dp.h
-index f524d19aca34..a4c36a9be338 100644
 --- a/drivers/net/wireless/ath/ath11k/dp.h
 +++ b/drivers/net/wireless/ath/ath11k/dp.h
 @@ -64,6 +64,7 @@ struct dp_srng {
@@ -158,11 +152,9 @@ index f524d19aca34..a4c36a9be338 100644
  };
  
  struct dp_rxdma_ring {
-diff --git a/drivers/net/wireless/ath/ath11k/hal.c b/drivers/net/wireless/ath/ath11k/hal.c
-index 5dbf5596c9e8..1832d13654a8 100644
 --- a/drivers/net/wireless/ath/ath11k/hal.c
 +++ b/drivers/net/wireless/ath/ath11k/hal.c
-@@ -627,6 +627,21 @@ u32 *ath11k_hal_srng_dst_peek(struct ath11k_base *ab, struct hal_srng *srng)
+@@ -627,6 +627,21 @@ u32 *ath11k_hal_srng_dst_peek(struct ath
  	return NULL;
  }
  
@@ -184,7 +176,7 @@ index 5dbf5596c9e8..1832d13654a8 100644
  u32 *ath11k_hal_srng_dst_get_next_entry(struct ath11k_base *ab,
  					struct hal_srng *srng)
  {
-@@ -642,6 +657,10 @@ u32 *ath11k_hal_srng_dst_get_next_entry(struct ath11k_base *ab,
+@@ -642,6 +657,10 @@ u32 *ath11k_hal_srng_dst_get_next_entry(
  	srng->u.dst_ring.tp = (srng->u.dst_ring.tp + srng->entry_size) %
  			      srng->ring_size;
  
@@ -195,7 +187,7 @@ index 5dbf5596c9e8..1832d13654a8 100644
  	return desc;
  }
  
-@@ -775,11 +794,16 @@ void ath11k_hal_srng_access_begin(struct ath11k_base *ab, struct hal_srng *srng)
+@@ -775,11 +794,16 @@ void ath11k_hal_srng_access_begin(struct
  {
  	lockdep_assert_held(&srng->lock);
  
@@ -214,8 +206,6 @@ index 5dbf5596c9e8..1832d13654a8 100644
  }
  
  /* Update cached ring head/tail pointers to HW. ath11k_hal_srng_access_begin()
-diff --git a/drivers/net/wireless/ath/ath11k/hal.h b/drivers/net/wireless/ath/ath11k/hal.h
-index 7fdcd8bbf7e9..a7d9b4c551ad 100644
 --- a/drivers/net/wireless/ath/ath11k/hal.h
 +++ b/drivers/net/wireless/ath/ath11k/hal.h
 @@ -513,6 +513,7 @@ enum hal_srng_dir {
@@ -226,8 +216,6 @@ index 7fdcd8bbf7e9..a7d9b4c551ad 100644
  #define HAL_SRNG_FLAGS_LMAC_RING		0x80000000
  
  #define HAL_SRNG_TLV_HDR_TAG		GENMASK(9, 1)
-diff --git a/drivers/net/wireless/ath/ath11k/hw.h b/drivers/net/wireless/ath/ath11k/hw.h
-index 6aa966ea782b..039126edfb01 100644
 --- a/drivers/net/wireless/ath/ath11k/hw.h
 +++ b/drivers/net/wireless/ath/ath11k/hw.h
 @@ -179,6 +179,7 @@ struct ath11k_hw_params {
@@ -238,6 +226,3 @@ index 6aa966ea782b..039126edfb01 100644
  };
  
  struct ath11k_hw_ops {
--- 
-2.37.1
-

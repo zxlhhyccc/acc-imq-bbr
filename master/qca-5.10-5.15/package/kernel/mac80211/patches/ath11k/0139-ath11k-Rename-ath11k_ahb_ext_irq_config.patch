@@ -13,11 +13,9 @@ Link: https://lore.kernel.org/r/1642583893-21485-1-git-send-email-quic_vnaralas@
  drivers/net/wireless/ath/ath11k/ahb.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/ahb.c b/drivers/net/wireless/ath/ath11k/ahb.c
-index 24bd0520926b..f407d4af2074 100644
 --- a/drivers/net/wireless/ath/ath11k/ahb.c
 +++ b/drivers/net/wireless/ath/ath11k/ahb.c
-@@ -468,7 +468,7 @@ static irqreturn_t ath11k_ahb_ext_interrupt_handler(int irq, void *arg)
+@@ -468,7 +468,7 @@ static irqreturn_t ath11k_ahb_ext_interr
  	return IRQ_HANDLED;
  }
  
@@ -26,7 +24,7 @@ index 24bd0520926b..f407d4af2074 100644
  {
  	struct ath11k_hw_params *hw = &ab->hw_params;
  	int i, j;
-@@ -576,7 +576,7 @@ static int ath11k_ahb_config_irq(struct ath11k_base *ab)
+@@ -576,7 +576,7 @@ static int ath11k_ahb_config_irq(struct
  	}
  
  	/* Configure external interrupts */
@@ -35,6 +33,3 @@ index 24bd0520926b..f407d4af2074 100644
  
  	return ret;
  }
--- 
-2.37.1
-

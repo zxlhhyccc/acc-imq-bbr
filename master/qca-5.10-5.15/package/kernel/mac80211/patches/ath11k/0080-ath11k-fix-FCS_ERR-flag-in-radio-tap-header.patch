@@ -19,8 +19,6 @@ Link: https://lore.kernel.org/r/1635164060-18423-1-git-send-email-quic_ppranees@
  drivers/net/wireless/ath/ath11k/dp_rx.c | 14 ++++++++++++--
  1 file changed, 12 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
-index 3223d6d22628..fcd7a6d27d12 100644
 --- a/drivers/net/wireless/ath/ath11k/dp_rx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
 @@ -4826,7 +4826,7 @@ static struct sk_buff *
@@ -32,7 +30,7 @@ index 3223d6d22628..fcd7a6d27d12 100644
  {
  	struct ath11k_base *ab = ar->ab;
  	struct sk_buff *msdu, *prev_buf;
-@@ -4836,12 +4836,17 @@ ath11k_dp_rx_mon_merg_msdus(struct ath11k *ar,
+@@ -4836,12 +4836,17 @@ ath11k_dp_rx_mon_merg_msdus(struct ath11
  	u8 *dest, decap_format;
  	struct ieee80211_hdr_3addr *wh;
  	struct rx_attention *rx_attention;
@@ -50,7 +48,7 @@ index 3223d6d22628..fcd7a6d27d12 100644
  
  	if (ath11k_dp_rxdesc_get_mpdulen_err(rx_attention))
  		return NULL;
-@@ -4930,9 +4935,10 @@ static int ath11k_dp_rx_mon_deliver(struct ath11k *ar, u32 mac_id,
+@@ -4930,9 +4935,10 @@ static int ath11k_dp_rx_mon_deliver(stru
  	struct ath11k_pdev_dp *dp = &ar->dp;
  	struct sk_buff *mon_skb, *skb_next, *header;
  	struct ieee80211_rx_status *rxs = &dp->rx_status;
@@ -62,7 +60,7 @@ index 3223d6d22628..fcd7a6d27d12 100644
  
  	if (!mon_skb)
  		goto mon_deliver_fail;
-@@ -4940,6 +4946,10 @@ static int ath11k_dp_rx_mon_deliver(struct ath11k *ar, u32 mac_id,
+@@ -4940,6 +4946,10 @@ static int ath11k_dp_rx_mon_deliver(stru
  	header = mon_skb;
  
  	rxs->flag = 0;
@@ -73,6 +71,3 @@ index 3223d6d22628..fcd7a6d27d12 100644
  	do {
  		skb_next = mon_skb->next;
  		if (!skb_next)
--- 
-2.37.1
-

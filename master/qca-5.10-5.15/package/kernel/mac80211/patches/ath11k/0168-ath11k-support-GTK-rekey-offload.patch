@@ -19,8 +19,6 @@ Link: https://lore.kernel.org/r/1644308006-22784-7-git-send-email-quic_cjhuang@q
  drivers/net/wireless/ath/ath11k/wow.c  |  46 +++++++++-
  5 files changed, 258 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
-index 4ba12de44415..e556beb945ac 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
 @@ -230,6 +230,13 @@ struct ath11k_arp_ns_offload {
@@ -45,11 +43,9 @@ index 4ba12de44415..e556beb945ac 100644
  
  #ifdef CPTCFG_ATH11K_DEBUGFS
  	struct dentry *debugfs_twt;
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index 4c2e6fba5ae1..784323c823ac 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -2757,6 +2757,7 @@ static void ath11k_bss_assoc(struct ieee80211_hw *hw,
+@@ -2757,6 +2757,7 @@ static void ath11k_bss_assoc(struct ieee
  	}
  
  	arvif->is_up = true;
@@ -57,7 +53,7 @@ index 4c2e6fba5ae1..784323c823ac 100644
  
  	ath11k_dbg(ar->ab, ATH11K_DBG_MAC,
  		   "mac vdev %d up (associated) bssid %pM aid %d\n",
-@@ -2814,6 +2815,8 @@ static void ath11k_bss_disassoc(struct ieee80211_hw *hw,
+@@ -2814,6 +2815,8 @@ static void ath11k_bss_disassoc(struct i
  
  	arvif->is_up = false;
  
@@ -66,7 +62,7 @@ index 4c2e6fba5ae1..784323c823ac 100644
  	cancel_delayed_work_sync(&arvif->connection_loss_work);
  }
  
-@@ -8212,6 +8215,39 @@ static void ath11k_mac_op_ipv6_changed(struct ieee80211_hw *hw,
+@@ -8212,6 +8215,39 @@ generate:
  	ath11k_generate_ns_mc_addr(ar, offload);
  }
  
@@ -106,7 +102,7 @@ index 4c2e6fba5ae1..784323c823ac 100644
  static const struct ieee80211_ops ath11k_ops = {
  	.tx				= ath11k_mac_op_tx,
  	.start                          = ath11k_mac_op_start,
-@@ -8226,6 +8262,7 @@ static const struct ieee80211_ops ath11k_ops = {
+@@ -8226,6 +8262,7 @@ static const struct ieee80211_ops ath11k
  	.hw_scan                        = ath11k_mac_op_hw_scan,
  	.cancel_hw_scan                 = ath11k_mac_op_cancel_hw_scan,
  	.set_key                        = ath11k_mac_op_set_key,
@@ -114,11 +110,9 @@ index 4c2e6fba5ae1..784323c823ac 100644
  	.sta_state                      = ath11k_mac_op_sta_state,
  	.sta_set_4addr                  = ath11k_mac_op_sta_set_4addr,
  	.sta_set_txpwr			= ath11k_mac_op_sta_set_txpwr,
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
-index 828f9cacbe57..7f97c26bffd9 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -7765,6 +7765,56 @@ static void ath11k_wmi_twt_add_dialog_event(struct ath11k_base *ab,
+@@ -7765,6 +7765,56 @@ exit:
  	kfree(tb);
  }
  
@@ -175,7 +169,7 @@ index 828f9cacbe57..7f97c26bffd9 100644
  static void ath11k_wmi_tlv_op_rx(struct ath11k_base *ab, struct sk_buff *skb)
  {
  	struct wmi_cmd_hdr *cmd_hdr;
-@@ -7896,6 +7946,9 @@ static void ath11k_wmi_tlv_op_rx(struct ath11k_base *ab, struct sk_buff *skb)
+@@ -7896,6 +7946,9 @@ static void ath11k_wmi_tlv_op_rx(struct
  	case WMI_DIAG_EVENTID:
  		ath11k_wmi_diag_event(ab, skb);
  		break;
@@ -185,7 +179,7 @@ index 828f9cacbe57..7f97c26bffd9 100644
  	/* TODO: Add remaining events */
  	default:
  		ath11k_dbg(ab, ATH11K_DBG_WMI, "Unknown eventid: 0x%x\n", id);
-@@ -8735,3 +8788,69 @@ int ath11k_wmi_arp_ns_offload(struct ath11k *ar,
+@@ -8735,3 +8788,69 @@ int ath11k_wmi_arp_ns_offload(struct ath
  
  	return ath11k_wmi_cmd_send(ar->wmi, skb, WMI_SET_ARP_NS_OFFLOAD_CMDID);
  }
@@ -255,8 +249,6 @@ index 828f9cacbe57..7f97c26bffd9 100644
 +		   arvif->vdev_id);
 +	return ath11k_wmi_cmd_send(ar->wmi, skb, WMI_GTK_OFFLOAD_CMDID);
 +}
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.h b/drivers/net/wireless/ath/ath11k/wmi.h
-index e2d03c3b422c..925b8003feae 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.h
 +++ b/drivers/net/wireless/ath/ath11k/wmi.h
 @@ -5840,6 +5840,51 @@ struct wmi_set_arp_ns_offload_cmd {
@@ -311,7 +303,7 @@ index e2d03c3b422c..925b8003feae 100644
  int ath11k_wmi_cmd_send(struct ath11k_pdev_wmi *wmi, struct sk_buff *skb,
  			u32 cmd_id);
  struct sk_buff *ath11k_wmi_alloc_skb(struct ath11k_wmi_base *wmi_sc, u32 len);
-@@ -6014,5 +6059,9 @@ int ath11k_wmi_hw_data_filter_cmd(struct ath11k *ar, u32 vdev_id,
+@@ -6014,5 +6059,9 @@ int ath11k_wmi_hw_data_filter_cmd(struct
  				  u32 filter_bitmap, bool enable);
  int ath11k_wmi_arp_ns_offload(struct ath11k *ar,
  			      struct ath11k_vif *arvif, bool enable);
@@ -321,8 +313,6 @@ index e2d03c3b422c..925b8003feae 100644
 +				 struct ath11k_vif *arvif);
  
  #endif
-diff --git a/drivers/net/wireless/ath/ath11k/wow.c b/drivers/net/wireless/ath/ath11k/wow.c
-index bc6a4d3d6d7c..93714df834b2 100644
 --- a/drivers/net/wireless/ath/ath11k/wow.c
 +++ b/drivers/net/wireless/ath/ath11k/wow.c
 @@ -17,7 +17,9 @@
@@ -336,7 +326,7 @@ index bc6a4d3d6d7c..93714df834b2 100644
  	.pattern_min_len = WOW_MIN_PATTERN_SIZE,
  	.pattern_max_len = WOW_MAX_PATTERN_SIZE,
  	.max_pkt_offset = WOW_MAX_PKT_OFFSET,
-@@ -582,6 +584,41 @@ static int ath11k_wow_arp_ns_offload(struct ath11k *ar, bool enable)
+@@ -582,6 +584,41 @@ static int ath11k_wow_arp_ns_offload(str
  	return 0;
  }
  
@@ -378,20 +368,17 @@ index bc6a4d3d6d7c..93714df834b2 100644
  static int ath11k_wow_protocol_offload(struct ath11k *ar, bool enable)
  {
  	int ret;
-@@ -593,6 +630,13 @@ static int ath11k_wow_protocol_offload(struct ath11k *ar, bool enable)
+@@ -592,6 +629,13 @@ static int ath11k_wow_protocol_offload(s
+ 			    enable, ret);
  		return ret;
  	}
- 
++
 +	ret = ath11k_gtk_rekey_offload(ar, enable);
 +	if (ret) {
 +		ath11k_warn(ar->ab, "failed to offload gtk rekey %d %d\n",
 +			    enable, ret);
 +		return ret;
 +	}
-+
+ 
  	return 0;
  }
- 
--- 
-2.37.1
-

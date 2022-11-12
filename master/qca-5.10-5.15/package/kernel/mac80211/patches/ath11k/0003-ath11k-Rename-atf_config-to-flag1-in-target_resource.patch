@@ -18,11 +18,9 @@ Link: https://lore.kernel.org/r/20210720214922.118078-1-jouni@codeaurora.org
  drivers/net/wireless/ath/ath11k/wmi.h | 2 +-
  2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
-index b11070cf159c..e81b11b893ce 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -3497,7 +3497,7 @@ ath11k_wmi_copy_resource_config(struct wmi_resource_config *wmi_cfg,
+@@ -3497,7 +3497,7 @@ ath11k_wmi_copy_resource_config(struct w
  	wmi_cfg->bpf_instruction_size = tg_cfg->bpf_instruction_size;
  	wmi_cfg->max_bssid_rx_filters = tg_cfg->max_bssid_rx_filters;
  	wmi_cfg->use_pdev_id = tg_cfg->use_pdev_id;
@@ -31,8 +29,6 @@ index b11070cf159c..e81b11b893ce 100644
  	wmi_cfg->peer_map_unmap_v2_support = tg_cfg->peer_map_unmap_v2_support;
  	wmi_cfg->sched_params = tg_cfg->sched_params;
  	wmi_cfg->twt_ap_pdev_count = tg_cfg->twt_ap_pdev_count;
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.h b/drivers/net/wireless/ath/ath11k/wmi.h
-index 0b7d337b3693..6dc2e50e18f7 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.h
 +++ b/drivers/net/wireless/ath/ath11k/wmi.h
 @@ -5015,7 +5015,7 @@ struct target_resource_config {
@@ -44,6 +40,3 @@ index 0b7d337b3693..6dc2e50e18f7 100644
  	u32 iphdr_pad_config;
  	u32 qwrap_config:16,
  	    alloc_frag_desc_for_data_pkt:16;
--- 
-2.37.1
-

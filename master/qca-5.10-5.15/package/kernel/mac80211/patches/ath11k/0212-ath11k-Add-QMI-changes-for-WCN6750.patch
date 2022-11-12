@@ -34,11 +34,9 @@ Link: https://lore.kernel.org/r/20220429170502.20080-7-quic_mpubbise@quicinc.com
  drivers/net/wireless/ath/ath11k/qmi.c  | 76 ++++++++++++++++----------
  3 files changed, 56 insertions(+), 28 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
-index 79a9b467fb97..d04e7db32ef4 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -110,6 +110,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -110,6 +110,7 @@ static const struct ath11k_hw_params ath
  		.hybrid_bus_type = false,
  		.dp_window_idx = 0,
  		.ce_window_idx = 0,
@@ -46,7 +44,7 @@ index 79a9b467fb97..d04e7db32ef4 100644
  	},
  	{
  		.hw_rev = ATH11K_HW_IPQ6018_HW10,
-@@ -185,6 +186,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -185,6 +186,7 @@ static const struct ath11k_hw_params ath
  		.hybrid_bus_type = false,
  		.dp_window_idx = 0,
  		.ce_window_idx = 0,
@@ -54,7 +52,7 @@ index 79a9b467fb97..d04e7db32ef4 100644
  	},
  	{
  		.name = "qca6390 hw2.0",
-@@ -259,6 +261,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -259,6 +261,7 @@ static const struct ath11k_hw_params ath
  		.hybrid_bus_type = false,
  		.dp_window_idx = 0,
  		.ce_window_idx = 0,
@@ -62,7 +60,7 @@ index 79a9b467fb97..d04e7db32ef4 100644
  	},
  	{
  		.name = "qcn9074 hw1.0",
-@@ -333,6 +336,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -333,6 +336,7 @@ static const struct ath11k_hw_params ath
  		.hybrid_bus_type = false,
  		.dp_window_idx = 3,
  		.ce_window_idx = 2,
@@ -70,7 +68,7 @@ index 79a9b467fb97..d04e7db32ef4 100644
  	},
  	{
  		.name = "wcn6855 hw2.0",
-@@ -407,6 +411,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -407,6 +411,7 @@ static const struct ath11k_hw_params ath
  		.hybrid_bus_type = false,
  		.dp_window_idx = 0,
  		.ce_window_idx = 0,
@@ -78,7 +76,7 @@ index 79a9b467fb97..d04e7db32ef4 100644
  	},
  	{
  		.name = "wcn6855 hw2.1",
-@@ -479,6 +484,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -479,6 +484,7 @@ static const struct ath11k_hw_params ath
  		.hybrid_bus_type = false,
  		.dp_window_idx = 0,
  		.ce_window_idx = 0,
@@ -86,7 +84,7 @@ index 79a9b467fb97..d04e7db32ef4 100644
  	},
  	{
  		.name = "wcn6750 hw1.0",
-@@ -548,6 +554,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -548,6 +554,7 @@ static const struct ath11k_hw_params ath
  		.hybrid_bus_type = true,
  		.dp_window_idx = 1,
  		.ce_window_idx = 2,
@@ -94,8 +92,6 @@ index 79a9b467fb97..d04e7db32ef4 100644
  	},
  };
  
-diff --git a/drivers/net/wireless/ath/ath11k/hw.h b/drivers/net/wireless/ath/ath11k/hw.h
-index aa0fc8dba5df..50679e935e1e 100644
 --- a/drivers/net/wireless/ath/ath11k/hw.h
 +++ b/drivers/net/wireless/ath/ath11k/hw.h
 @@ -204,6 +204,7 @@ struct ath11k_hw_params {
@@ -106,11 +102,9 @@ index aa0fc8dba5df..50679e935e1e 100644
  };
  
  struct ath11k_hw_ops {
-diff --git a/drivers/net/wireless/ath/ath11k/qmi.c b/drivers/net/wireless/ath/ath11k/qmi.c
-index ad422256f1c6..d1e945074bc1 100644
 --- a/drivers/net/wireless/ath/ath11k/qmi.c
 +++ b/drivers/net/wireless/ath/ath11k/qmi.c
-@@ -1799,10 +1799,6 @@ static int ath11k_qmi_fw_ind_register_send(struct ath11k_base *ab)
+@@ -1799,10 +1799,6 @@ static int ath11k_qmi_fw_ind_register_se
  	req->client_id = QMI_WLANFW_CLIENT_ID;
  	req->fw_ready_enable_valid = 1;
  	req->fw_ready_enable = 1;
@@ -121,7 +115,7 @@ index ad422256f1c6..d1e945074bc1 100644
  	req->cal_done_enable_valid = 1;
  	req->cal_done_enable = 1;
  	req->fw_init_done_enable_valid = 1;
-@@ -1811,6 +1807,17 @@ static int ath11k_qmi_fw_ind_register_send(struct ath11k_base *ab)
+@@ -1811,6 +1807,17 @@ static int ath11k_qmi_fw_ind_register_se
  	req->pin_connect_result_enable_valid = 0;
  	req->pin_connect_result_enable = 0;
  
@@ -139,7 +133,7 @@ index ad422256f1c6..d1e945074bc1 100644
  	ret = qmi_txn_init(handle, &txn,
  			   qmi_wlanfw_ind_register_resp_msg_v01_ei, resp);
  	if (ret < 0)
-@@ -2840,27 +2847,6 @@ ath11k_qmi_driver_event_post(struct ath11k_qmi *qmi,
+@@ -2840,27 +2847,6 @@ ath11k_qmi_driver_event_post(struct ath1
  	return 0;
  }
  
@@ -167,7 +161,7 @@ index ad422256f1c6..d1e945074bc1 100644
  static int ath11k_qmi_event_mem_request(struct ath11k_qmi *qmi)
  {
  	struct ath11k_base *ab = qmi->ab;
-@@ -2902,9 +2888,33 @@ static int ath11k_qmi_event_load_bdf(struct ath11k_qmi *qmi)
+@@ -2902,9 +2888,33 @@ static int ath11k_qmi_event_load_bdf(str
  		return ret;
  	}
  
@@ -203,13 +197,13 @@ index ad422256f1c6..d1e945074bc1 100644
  		return ret;
  	}
  
-@@ -3104,8 +3114,18 @@ static void ath11k_qmi_driver_event_work(struct work_struct *work)
+@@ -3104,8 +3114,18 @@ static void ath11k_qmi_driver_event_work
  			break;
  		case ATH11K_QMI_EVENT_FW_MEM_READY:
  			ret = ath11k_qmi_event_load_bdf(qmi);
 -			if (ret < 0)
 +			if (ret < 0) {
- 				set_bit(ATH11K_FLAG_QMI_FAIL, &ab->dev_flags);
++				set_bit(ATH11K_FLAG_QMI_FAIL, &ab->dev_flags);
 +				break;
 +			}
 +
@@ -217,12 +211,9 @@ index ad422256f1c6..d1e945074bc1 100644
 +			if (ret < 0) {
 +				ath11k_warn(ab,
 +					    "failed to send qmi m3 info req: %d\n", ret);
-+				set_bit(ATH11K_FLAG_QMI_FAIL, &ab->dev_flags);
+ 				set_bit(ATH11K_FLAG_QMI_FAIL, &ab->dev_flags);
 +			}
 +
  			break;
  		case ATH11K_QMI_EVENT_FW_READY:
  			clear_bit(ATH11K_FLAG_QMI_FAIL, &ab->dev_flags);
--- 
-2.37.1
-

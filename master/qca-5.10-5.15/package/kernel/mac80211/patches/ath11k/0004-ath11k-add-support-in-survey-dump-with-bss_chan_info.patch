@@ -20,11 +20,9 @@ Link: https://lore.kernel.org/r/20210720214922.118078-2-jouni@codeaurora.org
  drivers/net/wireless/ath/ath11k/wmi.h | 2 ++
  2 files changed, 4 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath11k/hw.c b/drivers/net/wireless/ath/ath11k/hw.c
-index 3e92cc7cfe4c..932918d3fdaa 100644
 --- a/drivers/net/wireless/ath/ath11k/hw.c
 +++ b/drivers/net/wireless/ath/ath11k/hw.c
-@@ -97,6 +97,7 @@ static void ath11k_init_wmi_config_qca6390(struct ath11k_base *ab,
+@@ -97,6 +97,7 @@ static void ath11k_init_wmi_config_qca63
  	config->num_multicast_filter_entries = 0x20;
  	config->num_wow_filters = 0x16;
  	config->num_keep_alive_pattern = 0;
@@ -32,7 +30,7 @@ index 3e92cc7cfe4c..932918d3fdaa 100644
  }
  
  static void ath11k_hw_ipq8074_reo_setup(struct ath11k_base *ab)
-@@ -197,6 +198,7 @@ static void ath11k_init_wmi_config_ipq8074(struct ath11k_base *ab,
+@@ -197,6 +198,7 @@ static void ath11k_init_wmi_config_ipq80
  	config->peer_map_unmap_v2_support = 1;
  	config->twt_ap_pdev_count = ab->num_radios;
  	config->twt_ap_sta_count = 1000;
@@ -40,8 +38,6 @@ index 3e92cc7cfe4c..932918d3fdaa 100644
  }
  
  static int ath11k_hw_mac_id_to_pdev_id_ipq8074(struct ath11k_hw_params *hw,
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.h b/drivers/net/wireless/ath/ath11k/wmi.h
-index 6dc2e50e18f7..799b3bd96a27 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.h
 +++ b/drivers/net/wireless/ath/ath11k/wmi.h
 @@ -2244,6 +2244,8 @@ struct wmi_init_cmd {
@@ -53,6 +49,3 @@ index 6dc2e50e18f7..799b3bd96a27 100644
  struct wmi_resource_config {
  	u32 tlv_header;
  	u32 num_vdevs;
--- 
-2.37.1
-

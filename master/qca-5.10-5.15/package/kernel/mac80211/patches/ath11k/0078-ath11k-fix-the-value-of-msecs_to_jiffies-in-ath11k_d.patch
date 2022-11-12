@@ -15,11 +15,9 @@ Link: https://lore.kernel.org/r/20211026032014.27010-1-quic_wgong@quicinc.com
  drivers/net/wireless/ath/ath11k/debugfs.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/debugfs.c b/drivers/net/wireless/ath/ath11k/debugfs.c
-index 80afd35337a1..dba055d085be 100644
 --- a/drivers/net/wireless/ath/ath11k/debugfs.c
 +++ b/drivers/net/wireless/ath/ath11k/debugfs.c
-@@ -195,7 +195,7 @@ static int ath11k_debugfs_fw_stats_request(struct ath11k *ar,
+@@ -195,7 +195,7 @@ static int ath11k_debugfs_fw_stats_reque
  	 * received 'update stats' event, we keep a 3 seconds timeout in case,
  	 * fw_stats_done is not marked yet
  	 */
@@ -28,6 +26,3 @@ index 80afd35337a1..dba055d085be 100644
  
  	ath11k_debugfs_fw_stats_reset(ar);
  
--- 
-2.37.1
-

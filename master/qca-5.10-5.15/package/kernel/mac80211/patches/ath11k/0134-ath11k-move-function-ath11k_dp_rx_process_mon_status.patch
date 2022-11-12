@@ -14,8 +14,6 @@ Link: https://lore.kernel.org/r/20220111032224.14093-2-quic_alokad@quicinc.com
  drivers/net/wireless/ath/ath11k/dp_rx.c | 171 ++++++++++++------------
  1 file changed, 84 insertions(+), 87 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
-index 259e9709985b..89b77b94bb20 100644
 --- a/drivers/net/wireless/ath/ath11k/dp_rx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
 @@ -20,9 +20,6 @@
@@ -28,7 +26,7 @@ index 259e9709985b..89b77b94bb20 100644
  static inline
  u8 *ath11k_dp_rx_h_80211_hdr(struct ath11k_base *ab, struct hal_rx_desc *desc)
  {
-@@ -3093,90 +3090,6 @@ static int ath11k_dp_rx_reap_mon_status_ring(struct ath11k_base *ab, int mac_id,
+@@ -3093,90 +3090,6 @@ move_next:
  	return num_buffs_reaped;
  }
  
@@ -119,7 +117,7 @@ index 259e9709985b..89b77b94bb20 100644
  static void ath11k_dp_rx_frag_timer(struct timer_list *timer)
  {
  	struct dp_rx_tid *rx_tid = from_timer(rx_tid, timer, frag_timer);
-@@ -5130,6 +5043,90 @@ static void ath11k_dp_rx_mon_dest_process(struct ath11k *ar, int mac_id,
+@@ -5130,6 +5043,90 @@ static void ath11k_dp_rx_mon_dest_proces
  	}
  }
  
@@ -210,6 +208,3 @@ index 259e9709985b..89b77b94bb20 100644
  static u32
  ath11k_dp_rx_full_mon_mpdu_pop(struct ath11k *ar,
  			       void *ring_entry, struct sk_buff **head_msdu,
--- 
-2.37.1
-

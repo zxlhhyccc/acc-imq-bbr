@@ -21,11 +21,9 @@ Link: https://lore.kernel.org/r/1630560820-21905-11-git-send-email-ppranees@code
  drivers/net/wireless/ath/ath11k/dp.c | 9 ++++-----
  1 file changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/dp.c b/drivers/net/wireless/ath/ath11k/dp.c
-index 56b4cebbc6a5..81b0b2baa461 100644
 --- a/drivers/net/wireless/ath/ath11k/dp.c
 +++ b/drivers/net/wireless/ath/ath11k/dp.c
-@@ -771,13 +771,12 @@ int ath11k_dp_service_srng(struct ath11k_base *ab,
+@@ -771,13 +771,12 @@ int ath11k_dp_service_srng(struct ath11k
  	const struct ath11k_hw_hal_params *hal_params;
  	int grp_id = irq_grp->grp_id;
  	int work_done = 0;
@@ -43,6 +41,3 @@ index 56b4cebbc6a5..81b0b2baa461 100644
  	}
  
  	if (ab->hw_params.ring_mask->rx_err[grp_id]) {
--- 
-2.37.1
-

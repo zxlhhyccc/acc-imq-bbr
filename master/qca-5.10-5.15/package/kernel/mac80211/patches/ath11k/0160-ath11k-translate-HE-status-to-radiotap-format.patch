@@ -17,11 +17,9 @@ Link: https://lore.kernel.org/r/20220217012112.31211-4-pradeepc@codeaurora.org
  drivers/net/wireless/ath/ath11k/hal_rx.c | 471 ++++++++++++++++++++---
  2 files changed, 438 insertions(+), 64 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
-index b2599cfff577..049774cc158c 100644
 --- a/drivers/net/wireless/ath/ath11k/dp_rx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
-@@ -4940,29 +4940,44 @@ ath11k_dp_rx_update_radiotap_he_mu(struct hal_rx_mon_ppdu_info *rx_status,
+@@ -4940,29 +4940,44 @@ ath11k_dp_rx_update_radiotap_he_mu(struc
  	rtap_buf[rtap_len] = rx_status->he_RU[3];
  }
  
@@ -73,7 +71,7 @@ index b2599cfff577..049774cc158c 100644
  	rxs->mactime = ppduinfo->tsft;
  }
  
-@@ -5003,7 +5018,7 @@ static int ath11k_dp_rx_mon_deliver(struct ath11k *ar, u32 mac_id,
+@@ -5003,7 +5018,7 @@ static int ath11k_dp_rx_mon_deliver(stru
  		} else {
  			rxs->flag |= RX_FLAG_ALLOW_SAME_PN;
  		}
@@ -82,11 +80,9 @@ index b2599cfff577..049774cc158c 100644
  
  		ath11k_dp_rx_deliver_msdu(ar, napi, mon_skb, rxs);
  		mon_skb = skb_next;
-diff --git a/drivers/net/wireless/ath/ath11k/hal_rx.c b/drivers/net/wireless/ath/ath11k/hal_rx.c
-index a3b353a4b5f7..4bb1fbaed0c9 100644
 --- a/drivers/net/wireless/ath/ath11k/hal_rx.c
 +++ b/drivers/net/wireless/ath/ath11k/hal_rx.c
-@@ -453,10 +453,12 @@ void ath11k_hal_reo_status_queue_stats(struct ath11k_base *ab, u32 *reo_desc,
+@@ -453,10 +453,12 @@ void ath11k_hal_reo_status_queue_stats(s
  			     desc->info0));
  	ath11k_dbg(ab, ATH11k_DBG_HAL, "pn = [%08x, %08x, %08x, %08x]\n",
  		   desc->pn[0], desc->pn[1], desc->pn[2], desc->pn[3]);
@@ -101,7 +97,7 @@ index a3b353a4b5f7..4bb1fbaed0c9 100644
  		   desc->rx_bitmap[0], desc->rx_bitmap[1], desc->rx_bitmap[2],
  		   desc->rx_bitmap[3], desc->rx_bitmap[4], desc->rx_bitmap[5],
  		   desc->rx_bitmap[6], desc->rx_bitmap[7]);
-@@ -802,12 +804,75 @@ void ath11k_hal_reo_init_cmd_ring(struct ath11k_base *ab,
+@@ -802,12 +804,75 @@ void ath11k_hal_reo_init_cmd_ring(struct
  	}
  }
  
@@ -179,7 +175,7 @@ index a3b353a4b5f7..4bb1fbaed0c9 100644
  
  	switch (tlv_tag) {
  	case HAL_RX_PPDU_START: {
-@@ -828,6 +893,9 @@ ath11k_hal_rx_parse_mon_status_tlv(struct ath11k_base *ab,
+@@ -828,6 +893,9 @@ ath11k_hal_rx_parse_mon_status_tlv(struc
  		info0 = __le32_to_cpu(eu_stats->info0);
  		info1 = __le32_to_cpu(eu_stats->info1);
  
@@ -189,7 +185,7 @@ index a3b353a4b5f7..4bb1fbaed0c9 100644
  		ppdu_info->tid =
  			ffs(FIELD_GET(HAL_RX_PPDU_END_USER_STATS_INFO6_TID_BITMAP,
  				      __le32_to_cpu(eu_stats->info6))) - 1;
-@@ -851,6 +919,44 @@ ath11k_hal_rx_parse_mon_status_tlv(struct ath11k_base *ab,
+@@ -851,6 +919,44 @@ ath11k_hal_rx_parse_mon_status_tlv(struc
  		ppdu_info->num_mpdu_fcs_err =
  			FIELD_GET(HAL_RX_PPDU_END_USER_STATS_INFO0_MPDU_CNT_FCS_ERR,
  				  info0);
@@ -234,7 +230,7 @@ index a3b353a4b5f7..4bb1fbaed0c9 100644
  		break;
  	}
  	case HAL_PHYRX_HT_SIG: {
-@@ -949,50 +1055,151 @@ ath11k_hal_rx_parse_mon_status_tlv(struct ath11k_base *ab,
+@@ -949,50 +1055,151 @@ ath11k_hal_rx_parse_mon_status_tlv(struc
  		else
  			ppdu_info->reception_type =
  				HAL_RX_RECEPTION_TYPE_MU_MIMO;
@@ -414,7 +410,7 @@ index a3b353a4b5f7..4bb1fbaed0c9 100644
  		ppdu_info->reception_type = HAL_RX_RECEPTION_TYPE_SU;
  		break;
  	}
-@@ -1000,29 +1207,142 @@ ath11k_hal_rx_parse_mon_status_tlv(struct ath11k_base *ab,
+@@ -1000,29 +1207,142 @@ ath11k_hal_rx_parse_mon_status_tlv(struc
  		struct hal_rx_he_sig_a_mu_dl_info *he_sig_a_mu_dl =
  			(struct hal_rx_he_sig_a_mu_dl_info *)tlv_data;
  
@@ -428,10 +424,9 @@ index a3b353a4b5f7..4bb1fbaed0c9 100644
 -				  info0);
 -		cp_ltf = FIELD_GET(HAL_RX_HE_SIG_A_MU_DL_INFO_INFO0_CP_LTF_SIZE,
 -				   info0);
--
--		switch (cp_ltf) {
 +		ppdu_info->he_mu_flags = 1;
-+
+ 
+-		switch (cp_ltf) {
 +		ppdu_info->he_data1 = IEEE80211_RADIOTAP_HE_DATA1_FORMAT_MU;
 +		ppdu_info->he_data1 |=
 +			IEEE80211_RADIOTAP_HE_DATA1_BSS_COLOR_KNOWN |
@@ -569,7 +564,7 @@ index a3b353a4b5f7..4bb1fbaed0c9 100644
  
  		ppdu_info->is_stbc = info1 &
  				     HAL_RX_HE_SIG_A_MU_DL_INFO_INFO1_STBC;
-@@ -1040,7 +1360,7 @@ ath11k_hal_rx_parse_mon_status_tlv(struct ath11k_base *ab,
+@@ -1040,7 +1360,7 @@ ath11k_hal_rx_parse_mon_status_tlv(struc
  				     info0);
  		ppdu_info->ru_alloc =
  			ath11k_mac_phy_he_ru_to_nl80211_he_ru_alloc(ru_tones);
@@ -578,7 +573,7 @@ index a3b353a4b5f7..4bb1fbaed0c9 100644
  		ppdu_info->reception_type = HAL_RX_RECEPTION_TYPE_MU_MIMO;
  		break;
  	}
-@@ -1050,14 +1370,25 @@ ath11k_hal_rx_parse_mon_status_tlv(struct ath11k_base *ab,
+@@ -1050,14 +1370,25 @@ ath11k_hal_rx_parse_mon_status_tlv(struc
  
  		info0 = __le32_to_cpu(he_sig_b2_mu->info0);
  
@@ -610,7 +605,7 @@ index a3b353a4b5f7..4bb1fbaed0c9 100644
  		break;
  	}
  	case HAL_PHYRX_HE_SIG_B2_OFDMA: {
-@@ -1066,17 +1397,40 @@ ath11k_hal_rx_parse_mon_status_tlv(struct ath11k_base *ab,
+@@ -1066,17 +1397,40 @@ ath11k_hal_rx_parse_mon_status_tlv(struc
  
  		info0 = __le32_to_cpu(he_sig_b2_ofdma->info0);
  
@@ -655,7 +650,7 @@ index a3b353a4b5f7..4bb1fbaed0c9 100644
  		ppdu_info->reception_type = HAL_RX_RECEPTION_TYPE_MU_OFDMA;
  		break;
  	}
-@@ -1118,6 +1472,9 @@ ath11k_hal_rx_parse_mon_status_tlv(struct ath11k_base *ab,
+@@ -1118,6 +1472,9 @@ ath11k_hal_rx_parse_mon_status_tlv(struc
  		ppdu_info->rx_duration =
  			FIELD_GET(HAL_RX_PPDU_END_DURATION,
  				  __le32_to_cpu(ppdu_rx_duration->info0));
@@ -665,7 +660,7 @@ index a3b353a4b5f7..4bb1fbaed0c9 100644
  		break;
  	}
  	case HAL_DUMMY:
-@@ -1141,12 +1498,14 @@ ath11k_hal_rx_parse_mon_status(struct ath11k_base *ab,
+@@ -1141,12 +1498,14 @@ ath11k_hal_rx_parse_mon_status(struct at
  	enum hal_rx_mon_status hal_status = HAL_RX_MON_STATUS_BUF_DONE;
  	u16 tlv_tag;
  	u16 tlv_len;
@@ -680,7 +675,7 @@ index a3b353a4b5f7..4bb1fbaed0c9 100644
  		ptr += sizeof(*tlv);
  
  		/* The actual length of PPDU_END is the combined length of many PHY
-@@ -1158,7 +1517,7 @@ ath11k_hal_rx_parse_mon_status(struct ath11k_base *ab,
+@@ -1158,7 +1517,7 @@ ath11k_hal_rx_parse_mon_status(struct at
  			tlv_len = sizeof(struct hal_rx_rxpcu_classification_overview);
  
  		hal_status = ath11k_hal_rx_parse_mon_status_tlv(ab, ppdu_info,
@@ -689,6 +684,3 @@ index a3b353a4b5f7..4bb1fbaed0c9 100644
  		ptr += tlv_len;
  		ptr = PTR_ALIGN(ptr, HAL_TLV_ALIGN);
  
--- 
-2.37.1
-

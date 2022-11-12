@@ -14,8 +14,6 @@ Link: https://lore.kernel.org/r/20220301013246.2052570-1-lv.ruyi@zte.com.cn
  drivers/net/wireless/ath/ath11k/core.c | 1 -
  1 file changed, 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
-index 175da5e52bd4..e9970b4a67e3 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
 @@ -1417,7 +1417,6 @@ EXPORT_SYMBOL(ath11k_core_deinit);
@@ -26,6 +24,3 @@ index 175da5e52bd4..e9970b4a67e3 100644
  	destroy_workqueue(ab->workqueue);
  
  	kfree(ab);
--- 
-2.37.1
-

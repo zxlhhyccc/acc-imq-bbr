@@ -20,11 +20,9 @@ Link: https://lore.kernel.org/r/20210804181217.88751-2-jouni@codeaurora.org
  drivers/net/wireless/ath/ath11k/mac.c | 4 +++-
  1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index c95befec16c2..6327eed0b938 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -4556,7 +4556,9 @@ static void ath11k_mac_setup_ht_vht_cap(struct ath11k *ar,
+@@ -4556,7 +4556,9 @@ static void ath11k_mac_setup_ht_vht_cap(
  						    rate_cap_rx_chainmask);
  	}
  
@@ -35,6 +33,3 @@ index c95befec16c2..6327eed0b938 100644
  		band = &ar->mac.sbands[NL80211_BAND_5GHZ];
  		ht_cap = cap->band[NL80211_BAND_5GHZ].ht_cap_info;
  		if (ht_cap_info)
--- 
-2.37.1
-

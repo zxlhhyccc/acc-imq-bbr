@@ -1,0 +1,106 @@
+From 90aad48eb56f9191e2b30e27f74e2ac97ad93012 Mon Sep 17 00:00:00 2001
+From: Baochen Qiang <quic_bqiang@quicinc.com>
+Date: Wed, 7 Sep 2022 11:31:13 +0300
+Subject: [PATCH 245/250] wifi: ath11k: Split PCI write/read functions
+
+ath11k_pcic_write32/read32 tries to do wake up before doing actual
+write/read work, which means each time a u32 is written/read, wake
+up is performed. This is not necessary in case where we do a
+large amount of write/read, because only one time of wake up is needed.
+So split each one into two parts, the first part does wake up and
+release, and the second one does actual write/read work.
+
+Tested-on: QCA6390 hw2.0 PCI WLAN.HST.1.0.1-01740-QCAHSTSWPLZ_V2_TO_X86-1
+Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-01720.1-QCAHSPSWPL_V1_V2_SILICONZ_LITE-1
+
+Signed-off-by: Baochen Qiang <quic_bqiang@quicinc.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220802075533.1744-2-quic_bqiang@quicinc.com
+---
+ drivers/net/wireless/ath/ath11k/pcic.c | 50 ++++++++++++++++----------
+ 1 file changed, 32 insertions(+), 18 deletions(-)
+
+--- a/drivers/net/wireless/ath/ath11k/pcic.c
++++ b/drivers/net/wireless/ath/ath11k/pcic.c
+@@ -140,49 +140,63 @@ int ath11k_pcic_init_msi_config(struct a
+ }
+ EXPORT_SYMBOL(ath11k_pcic_init_msi_config);
+ 
++static void __ath11k_pcic_write32(struct ath11k_base *ab, u32 offset, u32 value)
++{
++	if (offset < ATH11K_PCI_WINDOW_START)
++		iowrite32(value, ab->mem  + offset);
++	else
++		ab->pci.ops->window_write32(ab, offset, value);
++}
++
+ void ath11k_pcic_write32(struct ath11k_base *ab, u32 offset, u32 value)
+ {
+ 	int ret = 0;
++	bool wakeup_required;
+ 
+ 	/* for offset beyond BAR + 4K - 32, may
+ 	 * need to wakeup the device to access.
+ 	 */
+-	if (test_bit(ATH11K_FLAG_DEVICE_INIT_DONE, &ab->dev_flags) &&
+-	    offset >= ATH11K_PCI_ACCESS_ALWAYS_OFF && ab->pci.ops->wakeup)
++	wakeup_required = test_bit(ATH11K_FLAG_DEVICE_INIT_DONE, &ab->dev_flags) &&
++			  offset >= ATH11K_PCI_ACCESS_ALWAYS_OFF;
++	if (wakeup_required && ab->pci.ops->wakeup)
+ 		ret = ab->pci.ops->wakeup(ab);
+ 
+-	if (offset < ATH11K_PCI_WINDOW_START)
+-		iowrite32(value, ab->mem  + offset);
+-	else
+-		ab->pci.ops->window_write32(ab, offset, value);
++	__ath11k_pcic_write32(ab, offset, value);
+ 
+-	if (test_bit(ATH11K_FLAG_DEVICE_INIT_DONE, &ab->dev_flags) &&
+-	    offset >= ATH11K_PCI_ACCESS_ALWAYS_OFF && ab->pci.ops->release &&
+-	    !ret)
++	if (wakeup_required && !ret && ab->pci.ops->release)
+ 		ab->pci.ops->release(ab);
+ }
+ EXPORT_SYMBOL(ath11k_pcic_write32);
+ 
++static u32 __ath11k_pcic_read32(struct ath11k_base *ab, u32 offset)
++{
++	u32 val;
++
++	if (offset < ATH11K_PCI_WINDOW_START)
++		val = ioread32(ab->mem + offset);
++	else
++		val = ab->pci.ops->window_read32(ab, offset);
++
++	return val;
++}
++
+ u32 ath11k_pcic_read32(struct ath11k_base *ab, u32 offset)
+ {
+ 	int ret = 0;
+ 	u32 val;
++	bool wakeup_required;
+ 
+ 	/* for offset beyond BAR + 4K - 32, may
+ 	 * need to wakeup the device to access.
+ 	 */
+-	if (test_bit(ATH11K_FLAG_DEVICE_INIT_DONE, &ab->dev_flags) &&
+-	    offset >= ATH11K_PCI_ACCESS_ALWAYS_OFF && ab->pci.ops->wakeup)
++	wakeup_required = test_bit(ATH11K_FLAG_DEVICE_INIT_DONE, &ab->dev_flags) &&
++			  offset >= ATH11K_PCI_ACCESS_ALWAYS_OFF;
++	if (wakeup_required && ab->pci.ops->wakeup)
+ 		ret = ab->pci.ops->wakeup(ab);
+ 
+-	if (offset < ATH11K_PCI_WINDOW_START)
+-		val = ioread32(ab->mem + offset);
+-	else
+-		val = ab->pci.ops->window_read32(ab, offset);
++	val = __ath11k_pcic_read32(ab, offset);
+ 
+-	if (test_bit(ATH11K_FLAG_DEVICE_INIT_DONE, &ab->dev_flags) &&
+-	    offset >= ATH11K_PCI_ACCESS_ALWAYS_OFF && ab->pci.ops->release &&
+-	    !ret)
++	if (wakeup_required && !ret && ab->pci.ops->release)
+ 		ab->pci.ops->release(ab);
+ 
+ 	return val;

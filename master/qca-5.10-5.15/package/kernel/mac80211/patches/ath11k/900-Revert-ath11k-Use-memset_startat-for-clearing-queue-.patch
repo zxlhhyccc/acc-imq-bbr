@@ -13,11 +13,9 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
  drivers/net/wireless/ath/ath11k/hal_rx.c | 13 +++++++------
  1 file changed, 7 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/hal_rx.c b/drivers/net/wireless/ath/ath11k/hal_rx.c
-index 7f39c6fb7408..49e5ba5ddd68 100644
 --- a/drivers/net/wireless/ath/ath11k/hal_rx.c
 +++ b/drivers/net/wireless/ath/ath11k/hal_rx.c
-@@ -29,7 +29,8 @@ static int ath11k_hal_reo_cmd_queue_stats(struct hal_tlv_hdr *tlv,
+@@ -29,7 +29,8 @@ static int ath11k_hal_reo_cmd_queue_stat
  		  FIELD_PREP(HAL_TLV_HDR_LEN, sizeof(*desc));
  
  	desc = (struct hal_reo_get_queue_stats *)tlv->value;
@@ -27,7 +25,7 @@ index 7f39c6fb7408..49e5ba5ddd68 100644
  
  	desc->cmd.info0 &= ~HAL_REO_CMD_HDR_INFO0_STATUS_REQUIRED;
  	if (cmd->flag & HAL_REO_CMD_FLG_NEED_STATUS)
-@@ -61,7 +62,8 @@ static int ath11k_hal_reo_cmd_flush_cache(struct ath11k_hal *hal, struct hal_tlv
+@@ -61,7 +62,8 @@ static int ath11k_hal_reo_cmd_flush_cach
  		  FIELD_PREP(HAL_TLV_HDR_LEN, sizeof(*desc));
  
  	desc = (struct hal_reo_flush_cache *)tlv->value;
@@ -37,7 +35,7 @@ index 7f39c6fb7408..49e5ba5ddd68 100644
  
  	desc->cmd.info0 &= ~HAL_REO_CMD_HDR_INFO0_STATUS_REQUIRED;
  	if (cmd->flag & HAL_REO_CMD_FLG_NEED_STATUS)
-@@ -99,7 +101,8 @@ static int ath11k_hal_reo_cmd_update_rx_queue(struct hal_tlv_hdr *tlv,
+@@ -99,7 +101,8 @@ static int ath11k_hal_reo_cmd_update_rx_
  		  FIELD_PREP(HAL_TLV_HDR_LEN, sizeof(*desc));
  
  	desc = (struct hal_reo_update_rx_queue *)tlv->value;
@@ -47,7 +45,7 @@ index 7f39c6fb7408..49e5ba5ddd68 100644
  
  	desc->cmd.info0 &= ~HAL_REO_CMD_HDR_INFO0_STATUS_REQUIRED;
  	if (cmd->flag & HAL_REO_CMD_FLG_NEED_STATUS)
-@@ -763,17 +766,15 @@ void ath11k_hal_reo_qdesc_setup(void *vaddr, int tid, u32 ba_window_size,
+@@ -763,17 +766,15 @@ void ath11k_hal_reo_qdesc_setup(void *va
  	 * size changes and also send WMI message to FW to change the REO
  	 * queue descriptor in Rx peer entry as part of dp_rx_tid_update.
  	 */
@@ -66,6 +64,3 @@ index 7f39c6fb7408..49e5ba5ddd68 100644
  	ath11k_hal_reo_set_desc_hdr(&ext_desc->desc_hdr, HAL_DESC_REO_OWNED,
  				    HAL_DESC_REO_QUEUE_EXT_DESC,
  				    REO_QUEUE_DESC_MAGIC_DEBUG_PATTERN_3);
--- 
-2.37.1
-

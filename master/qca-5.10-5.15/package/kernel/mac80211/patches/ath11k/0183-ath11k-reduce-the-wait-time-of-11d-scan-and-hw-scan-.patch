@@ -54,11 +54,9 @@ Link: https://lore.kernel.org/r/20220328035832.14122-1-quic_wgong@quicinc.com
  drivers/net/wireless/ath/ath11k/wmi.c  | 16 +++++-
  7 files changed, 84 insertions(+), 64 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
-index 40846f686ba4..72ef3cb3d855 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -1465,6 +1465,7 @@ static void ath11k_core_pre_reconfigure_recovery(struct ath11k_base *ab)
+@@ -1465,6 +1465,7 @@ static void ath11k_core_pre_reconfigure_
  
  		ieee80211_stop_queues(ar->hw);
  		ath11k_mac_drain_tx(ar);
@@ -66,8 +64,6 @@ index 40846f686ba4..72ef3cb3d855 100644
  		complete(&ar->scan.started);
  		complete(&ar->scan.completed);
  		complete(&ar->peer_assoc_done);
-diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
-index b4d58e01fffa..17a61d0d684e 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
 @@ -52,6 +52,8 @@
@@ -104,11 +100,9 @@ index b4d58e01fffa..17a61d0d684e 100644
  	bool regdom_set_by_user;
  	int hw_rate_code;
  	u8 twt_enabled;
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index c09eebbb2982..c7e19483f5bc 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -3627,26 +3627,6 @@ static int ath11k_mac_op_hw_scan(struct ieee80211_hw *hw,
+@@ -3627,26 +3627,6 @@ static int ath11k_mac_op_hw_scan(struct
  	if (ret)
  		goto exit;
  
@@ -135,7 +129,7 @@ index c09eebbb2982..c7e19483f5bc 100644
  	memset(&arg, 0, sizeof(arg));
  	ath11k_wmi_start_scan_init(ar, &arg);
  	arg.vdev_id = arvif->vdev_id;
-@@ -3712,6 +3692,10 @@ static int ath11k_mac_op_hw_scan(struct ieee80211_hw *hw,
+@@ -3712,6 +3692,10 @@ exit:
  		kfree(arg.extraie.ptr);
  
  	mutex_unlock(&ar->conf_mutex);
@@ -146,7 +140,7 @@ index c09eebbb2982..c7e19483f5bc 100644
  	return ret;
  }
  
-@@ -5866,7 +5850,7 @@ static int ath11k_mac_op_start(struct ieee80211_hw *hw)
+@@ -5866,7 +5850,7 @@ static int ath11k_mac_op_start(struct ie
  
  	/* TODO: Do we need to enable ANI? */
  
@@ -155,7 +149,7 @@ index c09eebbb2982..c7e19483f5bc 100644
  
  	ar->num_started_vdevs = 0;
  	ar->num_created_vdevs = 0;
-@@ -5933,6 +5917,11 @@ static void ath11k_mac_op_stop(struct ieee80211_hw *hw)
+@@ -5933,6 +5917,11 @@ static void ath11k_mac_op_stop(struct ie
  	cancel_work_sync(&ar->ab->update_11d_work);
  	cancel_work_sync(&ar->ab->rfkill_work);
  
@@ -167,7 +161,7 @@ index c09eebbb2982..c7e19483f5bc 100644
  	spin_lock_bh(&ar->data_lock);
  	list_for_each_entry_safe(ppdu_stats, tmp, &ar->ppdu_stats_info, list) {
  		list_del(&ppdu_stats->list);
-@@ -6103,7 +6092,7 @@ static bool ath11k_mac_vif_ap_active_any(struct ath11k_base *ab)
+@@ -6103,7 +6092,7 @@ static bool ath11k_mac_vif_ap_active_any
  	return false;
  }
  
@@ -176,7 +170,7 @@ index c09eebbb2982..c7e19483f5bc 100644
  {
  	struct wmi_11d_scan_start_params param;
  	int ret;
-@@ -6131,28 +6120,22 @@ void ath11k_mac_11d_scan_start(struct ath11k *ar, u32 vdev_id, bool wait)
+@@ -6131,28 +6120,22 @@ void ath11k_mac_11d_scan_start(struct at
  
  	ath11k_dbg(ar->ab, ATH11K_DBG_MAC, "mac start 11d scan\n");
  
@@ -212,7 +206,7 @@ index c09eebbb2982..c7e19483f5bc 100644
  	mutex_unlock(&ar->ab->vdev_id_11d_lock);
  }
  
-@@ -6175,12 +6158,15 @@ void ath11k_mac_11d_scan_stop(struct ath11k *ar)
+@@ -6175,12 +6158,15 @@ void ath11k_mac_11d_scan_stop(struct ath
  		vdev_id = ar->vdev_id_11d_scan;
  
  		ret = ath11k_wmi_send_11d_scan_stop_cmd(ar, vdev_id);
@@ -230,7 +224,7 @@ index c09eebbb2982..c7e19483f5bc 100644
  	}
  	mutex_unlock(&ar->ab->vdev_id_11d_lock);
  }
-@@ -6376,8 +6362,10 @@ static int ath11k_mac_op_add_interface(struct ieee80211_hw *hw,
+@@ -6376,8 +6362,10 @@ static int ath11k_mac_op_add_interface(s
  			goto err_peer_del;
  		}
  
@@ -243,7 +237,7 @@ index c09eebbb2982..c7e19483f5bc 100644
  		break;
  	case WMI_VDEV_TYPE_MONITOR:
  		set_bit(ATH11K_FLAG_MONITOR_VDEV_CREATED, &ar->monitor_flags);
-@@ -7237,7 +7225,7 @@ ath11k_mac_op_unassign_vif_chanctx(struct ieee80211_hw *hw,
+@@ -7237,7 +7225,7 @@ ath11k_mac_op_unassign_vif_chanctx(struc
  	}
  
  	if (arvif->vdev_type == WMI_VDEV_TYPE_STA)
@@ -252,7 +246,7 @@ index c09eebbb2982..c7e19483f5bc 100644
  
  	mutex_unlock(&ar->conf_mutex);
  }
-@@ -8927,8 +8915,7 @@ int ath11k_mac_allocate(struct ath11k_base *ab)
+@@ -8927,8 +8915,7 @@ int ath11k_mac_allocate(struct ath11k_ba
  		ar->monitor_vdev_id = -1;
  		clear_bit(ATH11K_FLAG_MONITOR_VDEV_CREATED, &ar->monitor_flags);
  		ar->vdev_id_11d_scan = ATH11K_11D_INVALID_VDEV_ID;
@@ -262,11 +256,9 @@ index c09eebbb2982..c7e19483f5bc 100644
  	}
  
  	return 0;
-diff --git a/drivers/net/wireless/ath/ath11k/mac.h b/drivers/net/wireless/ath/ath11k/mac.h
-index 045bf4fe1706..7f93e3a9ca23 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.h
 +++ b/drivers/net/wireless/ath/ath11k/mac.h
-@@ -130,7 +130,7 @@ extern const struct htt_rx_ring_tlv_filter ath11k_mac_mon_status_filter_default;
+@@ -130,7 +130,7 @@ extern const struct htt_rx_ring_tlv_filt
  #define ATH11K_SCAN_11D_INTERVAL		600000
  #define ATH11K_11D_INVALID_VDEV_ID		0xFFFF
  
@@ -275,11 +267,9 @@ index 045bf4fe1706..7f93e3a9ca23 100644
  void ath11k_mac_11d_scan_stop(struct ath11k *ar);
  void ath11k_mac_11d_scan_stop_all(struct ath11k_base *ab);
  
-diff --git a/drivers/net/wireless/ath/ath11k/reg.c b/drivers/net/wireless/ath/ath11k/reg.c
-index 657fdb6a017d..2370f227cf57 100644
 --- a/drivers/net/wireless/ath/ath11k/reg.c
 +++ b/drivers/net/wireless/ath/ath11k/reg.c
-@@ -101,7 +101,7 @@ ath11k_reg_notifier(struct wiphy *wiphy, struct regulatory_request *request)
+@@ -101,7 +101,7 @@ ath11k_reg_notifier(struct wiphy *wiphy,
  	ar->regdom_set_by_user = true;
  }
  
@@ -288,7 +278,7 @@ index 657fdb6a017d..2370f227cf57 100644
  {
  	struct ieee80211_supported_band **bands;
  	struct scan_chan_list_params *params;
-@@ -110,7 +110,32 @@ int ath11k_reg_update_chan_list(struct ath11k *ar)
+@@ -110,7 +110,32 @@ int ath11k_reg_update_chan_list(struct a
  	struct channel_param *ch;
  	enum nl80211_band band;
  	int num_channels = 0;
@@ -322,7 +312,7 @@ index 657fdb6a017d..2370f227cf57 100644
  
  	bands = hw->wiphy->bands;
  	for (band = 0; band < NUM_NL80211_BANDS; band++) {
-@@ -192,11 +217,6 @@ int ath11k_reg_update_chan_list(struct ath11k *ar)
+@@ -192,11 +217,6 @@ int ath11k_reg_update_chan_list(struct a
  	ret = ath11k_wmi_send_scan_chan_list_cmd(ar, params);
  	kfree(params);
  
@@ -334,7 +324,7 @@ index 657fdb6a017d..2370f227cf57 100644
  	return ret;
  }
  
-@@ -262,15 +282,8 @@ int ath11k_regd_update(struct ath11k *ar)
+@@ -262,15 +282,8 @@ int ath11k_regd_update(struct ath11k *ar
  		goto err;
  	}
  
@@ -350,7 +340,7 @@ index 657fdb6a017d..2370f227cf57 100644
  	ret = regulatory_set_wiphy_regd_sync(ar->hw->wiphy, regd_copy);
  	wiphy_unlock(ar->hw->wiphy);
  	rtnl_unlock();
-@@ -281,7 +294,7 @@ int ath11k_regd_update(struct ath11k *ar)
+@@ -281,7 +294,7 @@ int ath11k_regd_update(struct ath11k *ar
  		goto err;
  
  	if (ar->state == ATH11K_STATE_ON) {
@@ -359,8 +349,6 @@ index 657fdb6a017d..2370f227cf57 100644
  		if (ret)
  			goto err;
  	}
-diff --git a/drivers/net/wireless/ath/ath11k/reg.h b/drivers/net/wireless/ath/ath11k/reg.h
-index 5fb9dc03a74e..2f284f26378d 100644
 --- a/drivers/net/wireless/ath/ath11k/reg.h
 +++ b/drivers/net/wireless/ath/ath11k/reg.h
 @@ -32,5 +32,5 @@ struct ieee80211_regdomain *
@@ -370,11 +358,9 @@ index 5fb9dc03a74e..2f284f26378d 100644
 -int ath11k_reg_update_chan_list(struct ath11k *ar);
 +int ath11k_reg_update_chan_list(struct ath11k *ar, bool wait);
  #endif
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
-index 7f97c26bffd9..3af24b18204e 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -2015,7 +2015,10 @@ void ath11k_wmi_start_scan_init(struct ath11k *ar,
+@@ -2015,7 +2015,10 @@ void ath11k_wmi_start_scan_init(struct a
  {
  	/* setup commonly used values */
  	arg->scan_req_id = 1;
@@ -386,7 +372,7 @@ index 7f97c26bffd9..3af24b18204e 100644
  	arg->dwell_time_active = 50;
  	arg->dwell_time_active_2g = 0;
  	arg->dwell_time_passive = 150;
-@@ -6350,8 +6353,10 @@ static void ath11k_wmi_op_ep_tx_credits(struct ath11k_base *ab)
+@@ -6350,8 +6353,10 @@ static void ath11k_wmi_op_ep_tx_credits(
  static int ath11k_reg_11d_new_cc_event(struct ath11k_base *ab, struct sk_buff *skb)
  {
  	const struct wmi_11d_new_cc_ev *ev;
@@ -398,7 +384,7 @@ index 7f97c26bffd9..3af24b18204e 100644
  
  	tb = ath11k_wmi_tlv_parse_alloc(ab, skb->data, skb->len, GFP_ATOMIC);
  	if (IS_ERR(tb)) {
-@@ -6377,6 +6382,13 @@ static int ath11k_reg_11d_new_cc_event(struct ath11k_base *ab, struct sk_buff *s
+@@ -6377,6 +6382,13 @@ static int ath11k_reg_11d_new_cc_event(s
  
  	kfree(tb);
  
@@ -412,6 +398,3 @@ index 7f97c26bffd9..3af24b18204e 100644
  	queue_work(ab->workqueue, &ab->update_11d_work);
  
  	return 0;
--- 
-2.37.1
-

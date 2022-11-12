@@ -23,11 +23,9 @@ Link: https://lore.kernel.org/r/20210721201927.100369-4-jouni@codeaurora.org
  drivers/net/wireless/ath/ath11k/qmi.c | 13 +++++++++++--
  1 file changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/qmi.c b/drivers/net/wireless/ath/ath11k/qmi.c
-index 421814cbfc4e..daba79058b56 100644
 --- a/drivers/net/wireless/ath/ath11k/qmi.c
 +++ b/drivers/net/wireless/ath/ath11k/qmi.c
-@@ -2033,6 +2033,7 @@ static int ath11k_qmi_load_file_target_mem(struct ath11k_base *ab,
+@@ -2033,6 +2033,7 @@ err_free_req:
  
  static int ath11k_qmi_load_bdf_qmi(struct ath11k_base *ab)
  {
@@ -35,7 +33,7 @@ index 421814cbfc4e..daba79058b56 100644
  	char filename[ATH11K_QMI_MAX_BDF_FILE_NAME_SIZE];
  	const struct firmware *fw_entry;
  	struct ath11k_board_data bd;
-@@ -2067,6 +2068,14 @@ static int ath11k_qmi_load_bdf_qmi(struct ath11k_base *ab)
+@@ -2067,6 +2068,14 @@ static int ath11k_qmi_load_bdf_qmi(struc
  		goto out;
  
  	file_type = ATH11K_QMI_FILE_TYPE_CALDATA;
@@ -50,7 +48,7 @@ index 421814cbfc4e..daba79058b56 100644
  	fw_entry = ath11k_core_firmware_request(ab, ATH11K_DEFAULT_CAL_FILE);
  	if (IS_ERR(fw_entry)) {
  		ret = PTR_ERR(fw_entry);
-@@ -2076,6 +2085,7 @@ static int ath11k_qmi_load_bdf_qmi(struct ath11k_base *ab)
+@@ -2076,6 +2085,7 @@ static int ath11k_qmi_load_bdf_qmi(struc
  		goto out;
  	}
  
@@ -58,7 +56,7 @@ index 421814cbfc4e..daba79058b56 100644
  	fw_size = min_t(u32, ab->hw_params.fw.board_size, fw_entry->size);
  	ret = ath11k_qmi_load_file_target_mem(ab, fw_entry->data, fw_size, file_type);
  	if (ret < 0) {
-@@ -2083,8 +2093,7 @@ static int ath11k_qmi_load_bdf_qmi(struct ath11k_base *ab)
+@@ -2083,8 +2093,7 @@ static int ath11k_qmi_load_bdf_qmi(struc
  		goto out_qmi_cal;
  	}
  
@@ -68,6 +66,3 @@ index 421814cbfc4e..daba79058b56 100644
  
  out_qmi_cal:
  	release_firmware(fw_entry);
--- 
-2.37.1
-

@@ -1,0 +1,47 @@
+From 7855a6ed5cf77bf2ce4f5735103749b845489fa6 Mon Sep 17 00:00:00 2001
+From: Wen Gong <quic_wgong@quicinc.com>
+Date: Mon, 19 Sep 2022 16:06:03 +0300
+Subject: [PATCH] wifi: ath11k: change complete() to complete_all() for
+ scan.completed
+
+Currently commit 1f682dc9fb37 ("ath11k: reduce the wait time of 11d scan
+and hw scan while add interface") introduced a wait_for_completion_timeout
+operation for ar->scan.completed, another one is existed in ath11k_scan_stop(),
+then ath11k has two places to wait for the ar->scan.completed and they
+run in different thread, thus it is possible to happend that the two
+thread both enter wait status. To handle this scenario, ath11k should
+change the complete() to complete_all() for the ar->scan.completed. This
+also work well when it is only one thread wait for ar->scan.completed.
+
+Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-03125-QCAHSPSWPL_V1_V2_SILICONZ_LITE-3
+
+Signed-off-by: Wen Gong <quic_wgong@quicinc.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220919024413.25083-1-quic_wgong@quicinc.com
+---
+ drivers/net/wireless/ath/ath11k/core.c | 2 +-
+ drivers/net/wireless/ath/ath11k/mac.c  | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+--- a/drivers/net/wireless/ath/ath11k/core.c
++++ b/drivers/net/wireless/ath/ath11k/core.c
+@@ -1614,7 +1614,7 @@ static void ath11k_core_pre_reconfigure_
+ 		ar->state_11d = ATH11K_11D_IDLE;
+ 		complete(&ar->completed_11d_scan);
+ 		complete(&ar->scan.started);
+-		complete(&ar->scan.completed);
++		complete_all(&ar->scan.completed);
+ 		complete(&ar->scan.on_channel);
+ 		complete(&ar->peer_assoc_done);
+ 		complete(&ar->peer_delete_done);
+--- a/drivers/net/wireless/ath/ath11k/mac.c
++++ b/drivers/net/wireless/ath/ath11k/mac.c
+@@ -3453,7 +3453,7 @@ void __ath11k_mac_scan_finish(struct ath
+ 		ar->scan_channel = NULL;
+ 		ar->scan.roc_freq = 0;
+ 		cancel_delayed_work(&ar->scan.timeout);
+-		complete(&ar->scan.completed);
++		complete_all(&ar->scan.completed);
+ 		break;
+ 	}
+ }

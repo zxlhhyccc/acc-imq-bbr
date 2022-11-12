@@ -40,11 +40,9 @@ Link: https://lore.kernel.org/r/1645366059-11798-1-git-send-email-quic_vnaralas@
  drivers/net/wireless/ath/ath11k/hw.h      |   1 +
  6 files changed, 283 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
-index ffe342539871..175da5e52bd4 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -99,6 +99,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -99,6 +99,7 @@ static const struct ath11k_hw_params ath
  		.supports_rssi_stats = false,
  		.fw_wmi_diag_event = false,
  		.current_cc_support = false,
@@ -52,7 +50,7 @@ index ffe342539871..175da5e52bd4 100644
  	},
  	{
  		.hw_rev = ATH11K_HW_IPQ6018_HW10,
-@@ -164,6 +165,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -164,6 +165,7 @@ static const struct ath11k_hw_params ath
  		.supports_rssi_stats = false,
  		.fw_wmi_diag_event = false,
  		.current_cc_support = false,
@@ -60,7 +58,7 @@ index ffe342539871..175da5e52bd4 100644
  	},
  	{
  		.name = "qca6390 hw2.0",
-@@ -228,6 +230,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -228,6 +230,7 @@ static const struct ath11k_hw_params ath
  		.supports_rssi_stats = true,
  		.fw_wmi_diag_event = true,
  		.current_cc_support = true,
@@ -68,7 +66,7 @@ index ffe342539871..175da5e52bd4 100644
  	},
  	{
  		.name = "qcn9074 hw1.0",
-@@ -292,6 +295,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -292,6 +295,7 @@ static const struct ath11k_hw_params ath
  		.supports_rssi_stats = false,
  		.fw_wmi_diag_event = false,
  		.current_cc_support = false,
@@ -76,7 +74,7 @@ index ffe342539871..175da5e52bd4 100644
  	},
  	{
  		.name = "wcn6855 hw2.0",
-@@ -356,6 +360,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -356,6 +360,7 @@ static const struct ath11k_hw_params ath
  		.supports_rssi_stats = true,
  		.fw_wmi_diag_event = true,
  		.current_cc_support = true,
@@ -84,7 +82,7 @@ index ffe342539871..175da5e52bd4 100644
  	},
  	{
  		.name = "wcn6855 hw2.1",
-@@ -419,6 +424,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -419,6 +424,7 @@ static const struct ath11k_hw_params ath
  		.supports_rssi_stats = true,
  		.fw_wmi_diag_event = true,
  		.current_cc_support = true,
@@ -92,8 +90,6 @@ index ffe342539871..175da5e52bd4 100644
  	},
  };
  
-diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
-index d2fc7a7a98f4..c0228e91a596 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
 @@ -461,6 +461,7 @@ struct ath11k_debug {
@@ -104,11 +100,9 @@ index d2fc7a7a98f4..c0228e91a596 100644
  };
  
  struct ath11k_per_peer_tx_stats {
-diff --git a/drivers/net/wireless/ath/ath11k/dbring.c b/drivers/net/wireless/ath/ath11k/dbring.c
-index eda67ebfc4c2..2107ec05d14f 100644
 --- a/drivers/net/wireless/ath/ath11k/dbring.c
 +++ b/drivers/net/wireless/ath/ath11k/dbring.c
-@@ -37,7 +37,8 @@ static void ath11k_dbring_fill_magic_value(struct ath11k *ar,
+@@ -37,7 +37,8 @@ static void ath11k_dbring_fill_magic_val
  
  static int ath11k_dbring_bufs_replenish(struct ath11k *ar,
  					struct ath11k_dbring *ring,
@@ -118,7 +112,7 @@ index eda67ebfc4c2..2107ec05d14f 100644
  {
  	struct ath11k_base *ab = ar->ab;
  	struct hal_srng *srng;
-@@ -84,6 +85,7 @@ static int ath11k_dbring_bufs_replenish(struct ath11k *ar,
+@@ -84,6 +85,7 @@ static int ath11k_dbring_bufs_replenish(
  
  	ath11k_hal_rx_buf_addr_info_set(desc, paddr, cookie, 0);
  
@@ -126,7 +120,7 @@ index eda67ebfc4c2..2107ec05d14f 100644
  	ath11k_hal_srng_access_end(ab, srng);
  
  	return 0;
-@@ -101,7 +103,8 @@ static int ath11k_dbring_bufs_replenish(struct ath11k *ar,
+@@ -101,7 +103,8 @@ err:
  }
  
  static int ath11k_dbring_fill_bufs(struct ath11k *ar,
@@ -136,7 +130,7 @@ index eda67ebfc4c2..2107ec05d14f 100644
  {
  	struct ath11k_dbring_element *buff;
  	struct hal_srng *srng;
-@@ -129,7 +132,7 @@ static int ath11k_dbring_fill_bufs(struct ath11k *ar,
+@@ -129,7 +132,7 @@ static int ath11k_dbring_fill_bufs(struc
  			kfree(buff);
  			break;
  		}
@@ -145,7 +139,7 @@ index eda67ebfc4c2..2107ec05d14f 100644
  		if (ret) {
  			ath11k_warn(ar->ab, "failed to replenish db ring num_remain %d req_ent %d\n",
  				    num_remain, req_entries);
-@@ -210,7 +213,7 @@ int ath11k_dbring_buf_setup(struct ath11k *ar,
+@@ -210,7 +213,7 @@ int ath11k_dbring_buf_setup(struct ath11
  	ring->hp_addr = ath11k_hal_srng_get_hp_addr(ar->ab, srng);
  	ring->tp_addr = ath11k_hal_srng_get_tp_addr(ar->ab, srng);
  
@@ -154,7 +148,7 @@ index eda67ebfc4c2..2107ec05d14f 100644
  
  	return ret;
  }
-@@ -270,7 +273,7 @@ int ath11k_dbring_buffer_release_event(struct ath11k_base *ab,
+@@ -270,7 +273,7 @@ int ath11k_dbring_buffer_release_event(s
  	struct ath11k_buffer_addr desc;
  	u8 *vaddr_unalign;
  	u32 num_entry, num_buff_reaped;
@@ -163,7 +157,7 @@ index eda67ebfc4c2..2107ec05d14f 100644
  	u32 cookie;
  	int buf_id;
  	int size;
-@@ -278,6 +281,7 @@ int ath11k_dbring_buffer_release_event(struct ath11k_base *ab,
+@@ -278,6 +281,7 @@ int ath11k_dbring_buffer_release_event(s
  	int ret = 0;
  
  	pdev_idx = ev->fixed.pdev_id;
@@ -171,7 +165,7 @@ index eda67ebfc4c2..2107ec05d14f 100644
  
  	if (pdev_idx >= ab->num_radios) {
  		ath11k_warn(ab, "Invalid pdev id %d\n", pdev_idx);
-@@ -346,6 +350,9 @@ int ath11k_dbring_buffer_release_event(struct ath11k_base *ab,
+@@ -346,6 +350,9 @@ int ath11k_dbring_buffer_release_event(s
  		dma_unmap_single(ab->dev, buff->paddr, ring->buf_sz,
  				 DMA_FROM_DEVICE);
  
@@ -181,7 +175,7 @@ index eda67ebfc4c2..2107ec05d14f 100644
  		if (ring->handler) {
  			vaddr_unalign = buff->payload;
  			handler_data.data = PTR_ALIGN(vaddr_unalign,
-@@ -357,7 +364,7 @@ int ath11k_dbring_buffer_release_event(struct ath11k_base *ab,
+@@ -357,7 +364,7 @@ int ath11k_dbring_buffer_release_event(s
  
  		buff->paddr = 0;
  		memset(buff->payload, 0, size);
@@ -190,11 +184,9 @@ index eda67ebfc4c2..2107ec05d14f 100644
  	}
  
  	spin_unlock_bh(&srng->lock);
-diff --git a/drivers/net/wireless/ath/ath11k/debugfs.c b/drivers/net/wireless/ath/ath11k/debugfs.c
-index d2e2a9ff0ffa..2c8a5c0c88c3 100644
 --- a/drivers/net/wireless/ath/ath11k/debugfs.c
 +++ b/drivers/net/wireless/ath/ath11k/debugfs.c
-@@ -50,6 +50,45 @@ static const char *htt_bp_lmac_ring[HTT_SW_LMAC_RING_IDX_MAX] = {
+@@ -50,6 +50,45 @@ static const char *htt_bp_lmac_ring[HTT_
  	"MONITOR_DEST_RING",
  };
  
@@ -240,7 +232,7 @@ index d2e2a9ff0ffa..2c8a5c0c88c3 100644
  static void ath11k_fw_stats_pdevs_free(struct list_head *head)
  {
  	struct ath11k_fw_stats_pdev *i, *tmp;
-@@ -1174,6 +1213,169 @@ static const struct file_operations fops_simulate_radar = {
+@@ -1174,6 +1213,169 @@ static const struct file_operations fops
  	.open = simple_open
  };
  
@@ -410,7 +402,7 @@ index d2e2a9ff0ffa..2c8a5c0c88c3 100644
  int ath11k_debugfs_register(struct ath11k *ar)
  {
  	struct ath11k_base *ab = ar->ab;
-@@ -1216,11 +1418,30 @@ int ath11k_debugfs_register(struct ath11k *ar)
+@@ -1216,11 +1418,30 @@ int ath11k_debugfs_register(struct ath11
  				    &ar->dfs_block_radar_events);
  	}
  
@@ -441,8 +433,6 @@ index d2e2a9ff0ffa..2c8a5c0c88c3 100644
  }
  
  static ssize_t ath11k_write_twt_add_dialog(struct file *file,
-diff --git a/drivers/net/wireless/ath/ath11k/debugfs.h b/drivers/net/wireless/ath/ath11k/debugfs.h
-index ef8ed57bb820..30c00cb28311 100644
 --- a/drivers/net/wireless/ath/ath11k/debugfs.h
 +++ b/drivers/net/wireless/ath/ath11k/debugfs.h
 @@ -47,6 +47,36 @@ enum ath11k_dbg_htt_ext_stats_type {
@@ -482,7 +472,7 @@ index ef8ed57bb820..30c00cb28311 100644
  struct debug_htt_stats_req {
  	bool done;
  	u8 pdev_id;
-@@ -278,6 +308,10 @@ static inline int ath11k_debugfs_rx_filter(struct ath11k *ar)
+@@ -278,6 +308,10 @@ static inline int ath11k_debugfs_rx_filt
  
  int ath11k_debugfs_add_interface(struct ath11k_vif *arvif);
  void ath11k_debugfs_remove_interface(struct ath11k_vif *arvif);
@@ -493,7 +483,7 @@ index ef8ed57bb820..30c00cb28311 100644
  
  #else
  static inline int ath11k_debugfs_soc_create(struct ath11k_base *ab)
-@@ -361,6 +395,13 @@ static inline void ath11k_debugfs_remove_interface(struct ath11k_vif *arvif)
+@@ -361,6 +395,13 @@ static inline void ath11k_debugfs_remove
  {
  }
  
@@ -507,8 +497,6 @@ index ef8ed57bb820..30c00cb28311 100644
  #endif /* CPTCFG_ATH11K_DEBUGFS*/
  
  #endif /* _ATH11K_DEBUGFS_H_ */
-diff --git a/drivers/net/wireless/ath/ath11k/hw.h b/drivers/net/wireless/ath/ath11k/hw.h
-index 985321e0e938..debfcf193236 100644
 --- a/drivers/net/wireless/ath/ath11k/hw.h
 +++ b/drivers/net/wireless/ath/ath11k/hw.h
 @@ -193,6 +193,7 @@ struct ath11k_hw_params {
@@ -519,6 +507,3 @@ index 985321e0e938..debfcf193236 100644
  };
  
  struct ath11k_hw_ops {
--- 
-2.37.1
-

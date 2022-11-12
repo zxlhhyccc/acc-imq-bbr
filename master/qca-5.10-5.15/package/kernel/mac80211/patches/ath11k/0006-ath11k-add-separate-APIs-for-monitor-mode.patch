@@ -21,8 +21,6 @@ Link: https://lore.kernel.org/r/20210721162053.46290-3-jouni@codeaurora.org
  drivers/net/wireless/ath/ath11k/mac.c  | 371 ++++++++++++++++++++++++-
  2 files changed, 370 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
-index cea54e01836c..774c092dda54 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
 @@ -200,6 +200,9 @@ enum ath11k_dev_flags {
@@ -51,11 +49,9 @@ index cea54e01836c..774c092dda54 100644
  #ifdef CPTCFG_ATH11K_DEBUGFS
  	struct ath11k_debug debug;
  #endif
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index 2c1386ce2e6b..b6d0f12aee40 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -746,16 +746,372 @@ static inline int ath11k_mac_vdev_setup_sync(struct ath11k *ar)
+@@ -746,14 +746,370 @@ static inline int ath11k_mac_vdev_setup_
  	return ar->last_wmi_vdev_start_status ? -EINVAL : 0;
  }
  
@@ -129,8 +125,8 @@ index 2c1386ce2e6b..b6d0f12aee40 100644
 +
 +	ath11k_dbg(ar->ab, ATH11K_DBG_MAC, "mac monitor vdev %i started\n",
 +		   vdev_id);
-+
-+	return 0;
+ 
+ 	return 0;
 +
 +vdev_stop:
 +	reinit_completion(&ar->vdev_setup_done);
@@ -183,10 +179,10 @@ index 2c1386ce2e6b..b6d0f12aee40 100644
 +
 +	ath11k_dbg(ar->ab, ATH11K_DBG_MAC, "mac monitor vdev %i stopped\n",
 +		   ar->monitor_vdev_id);
- 
- 	return 0;
- }
- 
++
++	return 0;
++}
++
 +static int ath11k_mac_monitor_vdev_create(struct ath11k *ar)
 +{
 +	struct ath11k_pdev *pdev = ar->pdev;
@@ -428,12 +424,10 @@ index 2c1386ce2e6b..b6d0f12aee40 100644
 +	ath11k_mac_monitor_vdev_delete(ar);
 +	mutex_unlock(&ar->conf_mutex);
 +	return ret;
-+}
-+
+ }
+ 
  static int ath11k_mac_setup_bcn_tmpl(struct ath11k_vif *arvif)
- {
- 	struct ath11k *ar = arvif->ar;
-@@ -6792,7 +7148,12 @@ int ath11k_mac_allocate(struct ath11k_base *ab)
+@@ -6792,7 +7148,12 @@ int ath11k_mac_allocate(struct ath11k_ba
  
  		INIT_WORK(&ar->wmi_mgmt_tx_work, ath11k_mgmt_over_wmi_tx_work);
  		skb_queue_head_init(&ar->wmi_mgmt_tx_queue);
@@ -446,6 +440,3 @@ index 2c1386ce2e6b..b6d0f12aee40 100644
  	}
  
  	return 0;
--- 
-2.37.1
-

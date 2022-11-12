@@ -57,11 +57,9 @@ Link: https://lore.kernel.org/r/20220331073110.3846-1-quic_nmaran@quicinc.com
  drivers/net/wireless/ath/ath11k/wow.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/wow.c b/drivers/net/wireless/ath/ath11k/wow.c
-index 93714df834b2..6c2611f93739 100644
 --- a/drivers/net/wireless/ath/ath11k/wow.c
 +++ b/drivers/net/wireless/ath/ath11k/wow.c
-@@ -810,8 +810,8 @@ int ath11k_wow_op_resume(struct ieee80211_hw *hw)
+@@ -810,8 +810,8 @@ exit:
  
  int ath11k_wow_init(struct ath11k *ar)
  {
@@ -72,6 +70,3 @@ index 93714df834b2..6c2611f93739 100644
  
  	ar->wow.wowlan_support = ath11k_wowlan_support;
  
--- 
-2.37.1
-

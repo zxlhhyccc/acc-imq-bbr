@@ -28,11 +28,9 @@ Link: https://lore.kernel.org/r/1636644002-25446-1-git-send-email-quic_vnaralas@
  drivers/net/wireless/ath/ath11k/mac.c | 26 +++++++++++++++++++++-----
  1 file changed, 21 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index 813e4d10d7d5..10b78bf42d9d 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -3935,11 +3935,27 @@ static void ath11k_sta_rc_update_wk(struct work_struct *wk)
+@@ -3935,11 +3935,27 @@ static void ath11k_sta_rc_update_wk(stru
  			   ath11k_mac_max_he_nss(he_mcs_mask)));
  
  	if (changed & IEEE80211_RC_BW_CHANGED) {
@@ -65,6 +63,3 @@ index 813e4d10d7d5..10b78bf42d9d 100644
  	}
  
  	if (changed & IEEE80211_RC_NSS_CHANGED) {
--- 
-2.37.1
-

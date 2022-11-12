@@ -22,11 +22,9 @@ Link: https://lore.kernel.org/r/20220328055714.6449-4-quic_mpubbise@quicinc.com
  drivers/net/wireless/ath/ath11k/pcic.h |  1 +
  4 files changed, 78 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/pci.c b/drivers/net/wireless/ath/ath11k/pci.c
-index a2287a8ae493..44069983d67c 100644
 --- a/drivers/net/wireless/ath/ath11k/pci.c
 +++ b/drivers/net/wireless/ath/ath11k/pci.c
-@@ -43,28 +43,6 @@ static const struct ath11k_bus_params ath11k_pci_bus_params = {
+@@ -43,28 +43,6 @@ static const struct ath11k_bus_params at
  	.fixed_mem_region = false,
  };
  
@@ -55,7 +53,7 @@ index a2287a8ae493..44069983d67c 100644
  static const struct ath11k_msi_config msi_config_one_msi = {
  	.total_vectors = 1,
  	.total_users = 4,
-@@ -667,10 +645,8 @@ static int ath11k_pci_probe(struct pci_dev *pdev,
+@@ -667,10 +645,8 @@ static int ath11k_pci_probe(struct pci_d
  			ret = -EOPNOTSUPP;
  			goto err_pci_free_region;
  		}
@@ -66,7 +64,7 @@ index a2287a8ae493..44069983d67c 100644
  		ab->bus_params.static_window_map = true;
  		ab->hw_rev = ATH11K_HW_QCN9074_HW10;
  		break;
-@@ -700,7 +676,6 @@ static int ath11k_pci_probe(struct pci_dev *pdev,
+@@ -700,7 +676,6 @@ unsupported_wcn6855_soc:
  			ret = -EOPNOTSUPP;
  			goto err_pci_free_region;
  		}
@@ -74,7 +72,7 @@ index a2287a8ae493..44069983d67c 100644
  		break;
  	default:
  		dev_err(&pdev->dev, "Unknown PCI device found: 0x%x\n",
-@@ -709,6 +684,12 @@ static int ath11k_pci_probe(struct pci_dev *pdev,
+@@ -709,6 +684,12 @@ unsupported_wcn6855_soc:
  		goto err_pci_free_region;
  	}
  
@@ -87,8 +85,6 @@ index a2287a8ae493..44069983d67c 100644
  	ret = ath11k_pci_alloc_msi(ab_pci);
  	if (ret) {
  		ath11k_err(ab, "failed to enable msi: %d\n", ret);
-diff --git a/drivers/net/wireless/ath/ath11k/pci.h b/drivers/net/wireless/ath/ath11k/pci.h
-index 038e4152987c..7e225de6eb6e 100644
 --- a/drivers/net/wireless/ath/ath11k/pci.h
 +++ b/drivers/net/wireless/ath/ath11k/pci.h
 @@ -63,6 +63,7 @@ struct ath11k_msi_config {
@@ -99,11 +95,9 @@ index 038e4152987c..7e225de6eb6e 100644
  };
  
  enum ath11k_pci_flags {
-diff --git a/drivers/net/wireless/ath/ath11k/pcic.c b/drivers/net/wireless/ath/ath11k/pcic.c
-index 391c308455e5..eab153453106 100644
 --- a/drivers/net/wireless/ath/ath11k/pcic.c
 +++ b/drivers/net/wireless/ath/ath11k/pcic.c
-@@ -63,6 +63,76 @@ static const char *irq_name[ATH11K_IRQ_NUM_MAX] = {
+@@ -63,6 +63,76 @@ static const char *irq_name[ATH11K_IRQ_N
  	"tcl2host-status-ring",
  };
  
@@ -180,16 +174,11 @@ index 391c308455e5..eab153453106 100644
  void ath11k_pcic_aspm_restore(struct ath11k_pci *ab_pci)
  {
  	if (test_and_clear_bit(ATH11K_PCI_ASPM_RESTORE, &ab_pci->flags))
-diff --git a/drivers/net/wireless/ath/ath11k/pcic.h b/drivers/net/wireless/ath/ath11k/pcic.h
-index 6780f7e8bc64..d5fe315ccc61 100644
 --- a/drivers/net/wireless/ath/ath11k/pcic.h
 +++ b/drivers/net/wireless/ath/ath11k/pcic.h
-@@ -50,4 +50,5 @@ int ath11k_get_user_msi_assignment(struct ath11k_base *ab, char *user_name,
+@@ -50,4 +50,5 @@ int ath11k_get_user_msi_assignment(struc
  void ath11k_pcic_aspm_restore(struct ath11k_pci *ab_pci);
  int ath11k_pcic_set_irq_affinity_hint(struct ath11k_pci *ab_pci,
  				      const struct cpumask *m);
 +int ath11k_pcic_init_msi_config(struct ath11k_base *ab);
  #endif
--- 
-2.37.1
-

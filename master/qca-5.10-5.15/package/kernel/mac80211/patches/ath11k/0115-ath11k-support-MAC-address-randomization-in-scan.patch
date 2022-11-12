@@ -19,11 +19,9 @@ Link: https://lore.kernel.org/r/1638948007-9609-1-git-send-email-quic_cjhuang@qu
  drivers/net/wireless/ath/ath11k/wmi.h | 10 ++++++++-
  3 files changed, 58 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index efe071490a24..6a7294bca870 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -3552,6 +3552,12 @@ static int ath11k_mac_op_hw_scan(struct ieee80211_hw *hw,
+@@ -3552,6 +3552,12 @@ static int ath11k_mac_op_hw_scan(struct
  			arg.chan_list[i] = req->channels[i]->center_freq;
  	}
  
@@ -36,7 +34,7 @@ index efe071490a24..6a7294bca870 100644
  	ret = ath11k_start_scan(ar, &arg);
  	if (ret) {
  		ath11k_warn(ar->ab, "failed to start hw scan: %d\n", ret);
-@@ -5597,6 +5603,14 @@ static int ath11k_mac_op_start(struct ieee80211_hw *hw)
+@@ -5597,6 +5603,14 @@ static int ath11k_mac_op_start(struct ie
  		goto err;
  	}
  
@@ -51,7 +49,7 @@ index efe071490a24..6a7294bca870 100644
  	ret = ath11k_wmi_pdev_set_param(ar, WMI_PDEV_PARAM_ARP_AC_OVERRIDE,
  					0, pdev->pdev_id);
  	if (ret) {
-@@ -8198,6 +8212,11 @@ static int __ath11k_mac_register(struct ath11k *ar)
+@@ -8198,6 +8212,11 @@ static int __ath11k_mac_register(struct
  
  	ar->hw->wiphy->max_ap_assoc_sta = ar->max_num_stations;
  
@@ -63,11 +61,9 @@ index efe071490a24..6a7294bca870 100644
  	ar->hw->queues = ATH11K_HW_MAX_QUEUES;
  	ar->hw->wiphy->tx_queue_len = ATH11K_QUEUE_LEN;
  	ar->hw->offchannel_tx_hw_queue = ATH11K_HW_MAX_QUEUES - 1;
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
-index 52facd75a822..2b4d27d807ab 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -2181,6 +2181,8 @@ int ath11k_wmi_send_scan_start_cmd(struct ath11k *ar,
+@@ -2181,6 +2181,8 @@ int ath11k_wmi_send_scan_start_cmd(struc
  	cmd->num_ssids = params->num_ssids;
  	cmd->ie_len = params->extraie.len;
  	cmd->n_probes = params->n_probes;
@@ -76,7 +72,7 @@ index 52facd75a822..2b4d27d807ab 100644
  
  	ptr += sizeof(*cmd);
  
-@@ -7710,3 +7712,31 @@ int ath11k_wmi_wow_enable(struct ath11k *ar)
+@@ -7710,3 +7712,31 @@ int ath11k_wmi_wow_enable(struct ath11k
  
  	return ath11k_wmi_cmd_send(ar->wmi, skb, WMI_WOW_ENABLE_CMDID);
  }
@@ -108,8 +104,6 @@ index 52facd75a822..2b4d27d807ab 100644
 +
 +	return ath11k_wmi_cmd_send(ar->wmi, skb, WMI_SCAN_PROB_REQ_OUI_CMDID);
 +}
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.h b/drivers/net/wireless/ath/ath11k/wmi.h
-index 5c8363a9c34a..aeaf89b28b57 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.h
 +++ b/drivers/net/wireless/ath/ath11k/wmi.h
 @@ -3313,6 +3313,8 @@ struct scan_req_params {
@@ -133,7 +127,7 @@ index 5c8363a9c34a..aeaf89b28b57 100644
  #define WMI_MGMT_SEND_DOWNLD_LEN	64
  
  #define WMI_TX_PARAMS_DWORD0_POWER		GENMASK(7, 0)
-@@ -5530,5 +5537,6 @@ int ath11k_wmi_set_hw_mode(struct ath11k_base *ab,
+@@ -5530,5 +5537,6 @@ int ath11k_wmi_set_hw_mode(struct ath11k
  			   enum wmi_host_hw_mode_config_type mode);
  int ath11k_wmi_wow_host_wakeup_ind(struct ath11k *ar);
  int ath11k_wmi_wow_enable(struct ath11k *ar);
@@ -141,6 +135,3 @@ index 5c8363a9c34a..aeaf89b28b57 100644
 +int ath11k_wmi_scan_prob_req_oui(struct ath11k *ar,
 +				 const u8 mac_addr[ETH_ALEN]);
  #endif
--- 
-2.37.1
-

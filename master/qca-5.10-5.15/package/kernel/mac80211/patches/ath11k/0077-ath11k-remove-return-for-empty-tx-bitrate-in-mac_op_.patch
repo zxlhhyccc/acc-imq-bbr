@@ -27,11 +27,9 @@ Link: https://lore.kernel.org/r/20211011084957.31024-1-wgong@codeaurora.org
  drivers/net/wireless/ath/ath11k/mac.c | 29 +++++++++++++--------------
  1 file changed, 14 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index e9dd79773240..f52910d9e3c6 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -7447,21 +7447,20 @@ static void ath11k_mac_op_sta_statistics(struct ieee80211_hw *hw,
+@@ -7447,21 +7447,20 @@ static void ath11k_mac_op_sta_statistics
  	sinfo->tx_duration = arsta->tx_duration;
  	sinfo->filled |= BIT_ULL(NL80211_STA_INFO_TX_DURATION);
  
@@ -47,9 +45,6 @@ index e9dd79773240..f52910d9e3c6 100644
 -		sinfo->txrate.he_gi = arsta->txrate.he_gi;
 -		sinfo->txrate.he_dcm = arsta->txrate.he_dcm;
 -		sinfo->txrate.he_ru_alloc = arsta->txrate.he_ru_alloc;
--	}
--	sinfo->txrate.flags = arsta->txrate.flags;
--	sinfo->filled |= BIT_ULL(NL80211_STA_INFO_TX_BITRATE);
 +	if (arsta->txrate.legacy || arsta->txrate.nss) {
 +		if (arsta->txrate.legacy) {
 +			sinfo->txrate.legacy = arsta->txrate.legacy;
@@ -63,10 +58,9 @@ index e9dd79773240..f52910d9e3c6 100644
 +		}
 +		sinfo->txrate.flags = arsta->txrate.flags;
 +		sinfo->filled |= BIT_ULL(NL80211_STA_INFO_TX_BITRATE);
-+	}
+ 	}
+-	sinfo->txrate.flags = arsta->txrate.flags;
+-	sinfo->filled |= BIT_ULL(NL80211_STA_INFO_TX_BITRATE);
  
  	/* TODO: Use real NF instead of default one. */
  	sinfo->signal = arsta->rssi_comb + ATH11K_DEFAULT_NOISE_FLOOR;
--- 
-2.37.1
-

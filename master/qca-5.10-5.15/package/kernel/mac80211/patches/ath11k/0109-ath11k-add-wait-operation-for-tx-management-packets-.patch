@@ -52,11 +52,9 @@ Link: https://lore.kernel.org/r/20211202063705.14321-1-quic_wgong@quicinc.com
  drivers/net/wireless/ath/ath11k/wmi.c  | 12 ++++++-
  4 files changed, 55 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
-index 7cbce0612c47..cefa9ac088ff 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -1165,6 +1165,7 @@ static void ath11k_core_restart(struct work_struct *work)
+@@ -1165,6 +1165,7 @@ static void ath11k_core_restart(struct w
  		idr_for_each(&ar->txmgmt_idr,
  			     ath11k_mac_tx_mgmt_pending_free, ar);
  		idr_destroy(&ar->txmgmt_idr);
@@ -64,8 +62,6 @@ index 7cbce0612c47..cefa9ac088ff 100644
  	}
  
  	wake_up(&ab->wmi_ab.tx_credits_wq);
-diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
-index 8f48095d96bb..e12d26374b5f 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
 @@ -551,6 +551,7 @@ struct ath11k {
@@ -76,11 +72,9 @@ index 8f48095d96bb..e12d26374b5f 100644
  
  	/* cycle count is reported twice for each visited channel during scan.
  	 * access protected by data_lock
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index 38dc814e4729..d190cd23cd40 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -5274,6 +5274,21 @@ static int __ath11k_set_antenna(struct ath11k *ar, u32 tx_ant, u32 rx_ant)
+@@ -5274,6 +5274,21 @@ static int __ath11k_set_antenna(struct a
  	return 0;
  }
  
@@ -102,7 +96,7 @@ index 38dc814e4729..d190cd23cd40 100644
  static void ath11k_mac_tx_mgmt_free(struct ath11k *ar, int buf_id)
  {
  	struct sk_buff *msdu;
-@@ -5292,7 +5307,7 @@ static void ath11k_mac_tx_mgmt_free(struct ath11k *ar, int buf_id)
+@@ -5292,7 +5307,7 @@ static void ath11k_mac_tx_mgmt_free(stru
  	info = IEEE80211_SKB_CB(msdu);
  	memset(&info->status, 0, sizeof(info->status));
  
@@ -111,7 +105,7 @@ index 38dc814e4729..d190cd23cd40 100644
  }
  
  int ath11k_mac_tx_mgmt_pending_free(int buf_id, void *skb, void *ctx)
-@@ -5332,6 +5347,10 @@ static int ath11k_mac_mgmt_tx_wmi(struct ath11k *ar, struct ath11k_vif *arvif,
+@@ -5332,6 +5347,10 @@ static int ath11k_mac_mgmt_tx_wmi(struct
  	buf_id = idr_alloc(&ar->txmgmt_idr, skb, 0,
  			   ATH11K_TX_MGMT_NUM_PENDING_MAX, GFP_ATOMIC);
  	spin_unlock_bh(&ar->txmgmt_idr_lock);
@@ -122,7 +116,7 @@ index 38dc814e4729..d190cd23cd40 100644
  	if (buf_id < 0)
  		return -ENOSPC;
  
-@@ -5378,7 +5397,7 @@ static void ath11k_mgmt_over_wmi_tx_purge(struct ath11k *ar)
+@@ -5378,7 +5397,7 @@ static void ath11k_mgmt_over_wmi_tx_purg
  	struct sk_buff *skb;
  
  	while ((skb = skb_dequeue(&ar->wmi_mgmt_tx_queue)) != NULL)
@@ -131,7 +125,7 @@ index 38dc814e4729..d190cd23cd40 100644
  }
  
  static void ath11k_mgmt_over_wmi_tx_work(struct work_struct *work)
-@@ -5393,7 +5412,7 @@ static void ath11k_mgmt_over_wmi_tx_work(struct work_struct *work)
+@@ -5393,7 +5412,7 @@ static void ath11k_mgmt_over_wmi_tx_work
  		skb_cb = ATH11K_SKB_CB(skb);
  		if (!skb_cb->vif) {
  			ath11k_warn(ar->ab, "no vif found for mgmt frame\n");
@@ -140,7 +134,7 @@ index 38dc814e4729..d190cd23cd40 100644
  			continue;
  		}
  
-@@ -5402,19 +5421,20 @@ static void ath11k_mgmt_over_wmi_tx_work(struct work_struct *work)
+@@ -5402,19 +5421,20 @@ static void ath11k_mgmt_over_wmi_tx_work
  		if (ar->allocated_vdev_map & (1LL << arvif->vdev_id)) {
  			ret = ath11k_mac_mgmt_tx_wmi(ar, arvif, skb);
  			if (ret) {
@@ -166,7 +160,7 @@ index 38dc814e4729..d190cd23cd40 100644
  		}
  		mutex_unlock(&ar->conf_mutex);
  	}
-@@ -5446,6 +5466,7 @@ static int ath11k_mac_mgmt_tx(struct ath11k *ar, struct sk_buff *skb,
+@@ -5446,6 +5466,7 @@ static int ath11k_mac_mgmt_tx(struct ath
  	}
  
  	skb_queue_tail(q, skb);
@@ -174,7 +168,7 @@ index 38dc814e4729..d190cd23cd40 100644
  	ieee80211_queue_work(ar->hw, &ar->wmi_mgmt_tx_work);
  
  	return 0;
-@@ -7037,6 +7058,17 @@ static void ath11k_mac_op_flush(struct ieee80211_hw *hw, struct ieee80211_vif *v
+@@ -7037,6 +7058,17 @@ static void ath11k_mac_op_flush(struct i
  				       ATH11K_FLUSH_TIMEOUT);
  	if (time_left == 0)
  		ath11k_warn(ar->ab, "failed to flush transmit queue %ld\n", time_left);
@@ -192,7 +186,7 @@ index 38dc814e4729..d190cd23cd40 100644
  }
  
  static int
-@@ -8275,6 +8307,8 @@ int ath11k_mac_register(struct ath11k_base *ab)
+@@ -8275,6 +8307,8 @@ int ath11k_mac_register(struct ath11k_ba
  		ret = __ath11k_mac_register(ar);
  		if (ret)
  			goto err_cleanup;
@@ -201,11 +195,9 @@ index 38dc814e4729..d190cd23cd40 100644
  	}
  
  	return 0;
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
-index f38fe1098eb2..52facd75a822 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -4980,6 +4980,7 @@ static int wmi_process_mgmt_tx_comp(struct ath11k *ar, u32 desc_id,
+@@ -4980,6 +4980,7 @@ static int wmi_process_mgmt_tx_comp(stru
  	struct sk_buff *msdu;
  	struct ieee80211_tx_info *info;
  	struct ath11k_skb_cb *skb_cb;
@@ -213,7 +205,7 @@ index f38fe1098eb2..52facd75a822 100644
  
  	spin_lock_bh(&ar->txmgmt_idr_lock);
  	msdu = idr_find(&ar->txmgmt_idr, desc_id);
-@@ -5003,10 +5004,19 @@ static int wmi_process_mgmt_tx_comp(struct ath11k *ar, u32 desc_id,
+@@ -5003,10 +5004,19 @@ static int wmi_process_mgmt_tx_comp(stru
  
  	ieee80211_tx_status_irqsafe(ar->hw, msdu);
  
@@ -234,6 +226,3 @@ index f38fe1098eb2..52facd75a822 100644
  	return 0;
  }
  
--- 
-2.37.1
-

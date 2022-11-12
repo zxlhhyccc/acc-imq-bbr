@@ -24,11 +24,9 @@ Link: https://lore.kernel.org/r/20210914163726.38604-1-jouni@codeaurora.org
  drivers/net/wireless/ath/ath11k/mac.c     |  2 +-
  7 files changed, 19 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
-index 8a18725fab9d..9b7dead927a4 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -58,7 +58,6 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -58,7 +58,6 @@ static const struct ath11k_hw_params ath
  		.rx_mac_buf_ring = false,
  		.vdev_start_delay = false,
  		.htt_peer_map_v2 = true,
@@ -36,7 +34,7 @@ index 8a18725fab9d..9b7dead927a4 100644
  
  		.spectral = {
  			.fft_sz = 2,
-@@ -82,6 +81,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -82,6 +81,7 @@ static const struct ath11k_hw_params ath
  		.hal_desc_sz = sizeof(struct hal_rx_desc_ipq8074),
  		.fix_l1ss = true,
  		.wakeup_mhi = false,
@@ -44,7 +42,7 @@ index 8a18725fab9d..9b7dead927a4 100644
  	},
  	{
  		.hw_rev = ATH11K_HW_IPQ6018_HW10,
-@@ -110,7 +110,6 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -110,7 +110,6 @@ static const struct ath11k_hw_params ath
  		.rx_mac_buf_ring = false,
  		.vdev_start_delay = false,
  		.htt_peer_map_v2 = true,
@@ -52,7 +50,7 @@ index 8a18725fab9d..9b7dead927a4 100644
  
  		.spectral = {
  			.fft_sz = 4,
-@@ -131,6 +130,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -131,6 +130,7 @@ static const struct ath11k_hw_params ath
  		.hal_desc_sz = sizeof(struct hal_rx_desc_ipq8074),
  		.fix_l1ss = true,
  		.wakeup_mhi = false,
@@ -60,7 +58,7 @@ index 8a18725fab9d..9b7dead927a4 100644
  	},
  	{
  		.name = "qca6390 hw2.0",
-@@ -159,7 +159,6 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -159,7 +159,6 @@ static const struct ath11k_hw_params ath
  		.rx_mac_buf_ring = true,
  		.vdev_start_delay = true,
  		.htt_peer_map_v2 = false,
@@ -68,7 +66,7 @@ index 8a18725fab9d..9b7dead927a4 100644
  
  		.spectral = {
  			.fft_sz = 0,
-@@ -179,6 +178,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -179,6 +178,7 @@ static const struct ath11k_hw_params ath
  		.hal_desc_sz = sizeof(struct hal_rx_desc_ipq8074),
  		.fix_l1ss = true,
  		.wakeup_mhi = true,
@@ -76,7 +74,7 @@ index 8a18725fab9d..9b7dead927a4 100644
  	},
  	{
  		.name = "qcn9074 hw1.0",
-@@ -206,7 +206,6 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -206,7 +206,6 @@ static const struct ath11k_hw_params ath
  		.rx_mac_buf_ring = false,
  		.vdev_start_delay = false,
  		.htt_peer_map_v2 = true,
@@ -84,7 +82,7 @@ index 8a18725fab9d..9b7dead927a4 100644
  
  		.spectral = {
  			.fft_sz = 2,
-@@ -227,6 +226,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -227,6 +226,7 @@ static const struct ath11k_hw_params ath
  		.hal_desc_sz = sizeof(struct hal_rx_desc_qcn9074),
  		.fix_l1ss = true,
  		.wakeup_mhi = false,
@@ -92,7 +90,7 @@ index 8a18725fab9d..9b7dead927a4 100644
  	},
  	{
  		.name = "wcn6855 hw2.0",
-@@ -255,7 +255,6 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -255,7 +255,6 @@ static const struct ath11k_hw_params ath
  		.rx_mac_buf_ring = true,
  		.vdev_start_delay = true,
  		.htt_peer_map_v2 = false,
@@ -100,7 +98,7 @@ index 8a18725fab9d..9b7dead927a4 100644
  
  		.spectral = {
  			.fft_sz = 0,
-@@ -275,6 +274,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -275,6 +274,7 @@ static const struct ath11k_hw_params ath
  		.hal_desc_sz = sizeof(struct hal_rx_desc_wcn6855),
  		.fix_l1ss = false,
  		.wakeup_mhi = true,
@@ -108,11 +106,9 @@ index 8a18725fab9d..9b7dead927a4 100644
  	},
  };
  
-diff --git a/drivers/net/wireless/ath/ath11k/debugfs.c b/drivers/net/wireless/ath/ath11k/debugfs.c
-index 17f0bbbac7ae..80afd35337a1 100644
 --- a/drivers/net/wireless/ath/ath11k/debugfs.c
 +++ b/drivers/net/wireless/ath/ath11k/debugfs.c
-@@ -806,7 +806,7 @@ static ssize_t ath11k_debugfs_dump_soc_dp_stats(struct file *file,
+@@ -806,7 +806,7 @@ static ssize_t ath11k_debugfs_dump_soc_d
  	len += scnprintf(buf + len, size - len, "\nSOC TX STATS:\n");
  	len += scnprintf(buf + len, size - len, "\nTCL Ring Full Failures:\n");
  
@@ -121,11 +117,9 @@ index 17f0bbbac7ae..80afd35337a1 100644
  		len += scnprintf(buf + len, size - len, "ring%d: %u\n",
  				 i, soc_stats->tx_err.desc_na[i]);
  
-diff --git a/drivers/net/wireless/ath/ath11k/dp.c b/drivers/net/wireless/ath/ath11k/dp.c
-index b0c8f6290099..c52d49cb8a04 100644
 --- a/drivers/net/wireless/ath/ath11k/dp.c
 +++ b/drivers/net/wireless/ath/ath11k/dp.c
-@@ -311,7 +311,7 @@ void ath11k_dp_stop_shadow_timers(struct ath11k_base *ab)
+@@ -311,7 +311,7 @@ void ath11k_dp_stop_shadow_timers(struct
  	if (!ab->hw_params.supports_shadow_regs)
  		return;
  
@@ -134,7 +128,7 @@ index b0c8f6290099..c52d49cb8a04 100644
  		ath11k_dp_shadow_stop_timer(ab, &ab->dp.tx_ring_timer[i]);
  
  	ath11k_dp_shadow_stop_timer(ab, &ab->dp.reo_cmd_timer);
-@@ -326,7 +326,7 @@ static void ath11k_dp_srng_common_cleanup(struct ath11k_base *ab)
+@@ -326,7 +326,7 @@ static void ath11k_dp_srng_common_cleanu
  	ath11k_dp_srng_cleanup(ab, &dp->wbm_desc_rel_ring);
  	ath11k_dp_srng_cleanup(ab, &dp->tcl_cmd_ring);
  	ath11k_dp_srng_cleanup(ab, &dp->tcl_status_ring);
@@ -143,7 +137,7 @@ index b0c8f6290099..c52d49cb8a04 100644
  		ath11k_dp_srng_cleanup(ab, &dp->tx_ring[i].tcl_data_ring);
  		ath11k_dp_srng_cleanup(ab, &dp->tx_ring[i].tcl_comp_ring);
  	}
-@@ -366,7 +366,7 @@ static int ath11k_dp_srng_common_setup(struct ath11k_base *ab)
+@@ -366,7 +366,7 @@ static int ath11k_dp_srng_common_setup(s
  		goto err;
  	}
  
@@ -152,7 +146,7 @@ index b0c8f6290099..c52d49cb8a04 100644
  		ret = ath11k_dp_srng_setup(ab, &dp->tx_ring[i].tcl_data_ring,
  					   HAL_TCL_DATA, i, 0,
  					   DP_TCL_DATA_RING_SIZE);
-@@ -996,7 +996,7 @@ void ath11k_dp_free(struct ath11k_base *ab)
+@@ -996,7 +996,7 @@ void ath11k_dp_free(struct ath11k_base *
  
  	ath11k_dp_reo_cmd_list_cleanup(ab);
  
@@ -161,7 +155,7 @@ index b0c8f6290099..c52d49cb8a04 100644
  		spin_lock_bh(&dp->tx_ring[i].tx_idr_lock);
  		idr_for_each(&dp->tx_ring[i].txbuf_idr,
  			     ath11k_dp_tx_pending_cleanup, ab);
-@@ -1046,7 +1046,7 @@ int ath11k_dp_alloc(struct ath11k_base *ab)
+@@ -1046,7 +1046,7 @@ int ath11k_dp_alloc(struct ath11k_base *
  
  	size = sizeof(struct hal_wbm_release_ring) * DP_TX_COMP_RING_SIZE;
  
@@ -170,8 +164,6 @@ index b0c8f6290099..c52d49cb8a04 100644
  		idr_init(&dp->tx_ring[i].txbuf_idr);
  		spin_lock_init(&dp->tx_ring[i].tx_idr_lock);
  		dp->tx_ring[i].tcl_data_ring_id = i;
-diff --git a/drivers/net/wireless/ath/ath11k/dp.h b/drivers/net/wireless/ath/ath11k/dp.h
-index f236770a2a10..f524d19aca34 100644
 --- a/drivers/net/wireless/ath/ath11k/dp.h
 +++ b/drivers/net/wireless/ath/ath11k/dp.h
 @@ -170,6 +170,7 @@ struct ath11k_pdev_dp {
@@ -182,11 +174,9 @@ index f236770a2a10..f524d19aca34 100644
  
  #define DP_IDLE_SCATTER_BUFS_MAX 16
  
-diff --git a/drivers/net/wireless/ath/ath11k/dp_tx.c b/drivers/net/wireless/ath/ath11k/dp_tx.c
-index d30636174d54..10b76f6f710b 100644
 --- a/drivers/net/wireless/ath/ath11k/dp_tx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_tx.c
-@@ -115,11 +115,8 @@ int ath11k_dp_tx(struct ath11k *ar, struct ath11k_vif *arvif,
+@@ -115,11 +115,8 @@ int ath11k_dp_tx(struct ath11k *ar, stru
  
  tcl_ring_sel:
  	tcl_ring_retry = false;
@@ -200,7 +190,7 @@ index d30636174d54..10b76f6f710b 100644
  
  	ring_map |= BIT(ti.ring_id);
  
-@@ -131,7 +128,7 @@ int ath11k_dp_tx(struct ath11k *ar, struct ath11k_vif *arvif,
+@@ -131,7 +128,7 @@ tcl_ring_sel:
  	spin_unlock_bh(&tx_ring->tx_idr_lock);
  
  	if (ret < 0) {
@@ -209,7 +199,7 @@ index d30636174d54..10b76f6f710b 100644
  			atomic_inc(&ab->soc_stats.tx_err.misc_fail);
  			return -ENOSPC;
  		}
-@@ -248,8 +245,8 @@ int ath11k_dp_tx(struct ath11k *ar, struct ath11k_vif *arvif,
+@@ -248,8 +245,8 @@ tcl_ring_sel:
  		 * checking this ring earlier for each pkt tx.
  		 * Restart ring selection if some rings are not checked yet.
  		 */
@@ -220,8 +210,6 @@ index d30636174d54..10b76f6f710b 100644
  			tcl_ring_retry = true;
  			ring_selector++;
  		}
-diff --git a/drivers/net/wireless/ath/ath11k/hw.h b/drivers/net/wireless/ath/ath11k/hw.h
-index 5a2e698916d1..3f04f8123f3f 100644
 --- a/drivers/net/wireless/ath/ath11k/hw.h
 +++ b/drivers/net/wireless/ath/ath11k/hw.h
 @@ -152,7 +152,6 @@ struct ath11k_hw_params {
@@ -240,11 +228,9 @@ index 5a2e698916d1..3f04f8123f3f 100644
  };
  
  struct ath11k_hw_ops {
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index e3b894c812b1..d0ea6ea97418 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -5813,7 +5813,7 @@ static void ath11k_mac_op_remove_interface(struct ieee80211_hw *hw,
+@@ -5813,7 +5813,7 @@ err_vdev_del:
  	idr_for_each(&ar->txmgmt_idr,
  		     ath11k_mac_vif_txmgmt_idr_remove, vif);
  
@@ -253,6 +239,3 @@ index e3b894c812b1..d0ea6ea97418 100644
  		spin_lock_bh(&ab->dp.tx_ring[i].tx_idr_lock);
  		idr_for_each(&ab->dp.tx_ring[i].txbuf_idr,
  			     ath11k_mac_vif_unref, vif);
--- 
-2.37.1
-

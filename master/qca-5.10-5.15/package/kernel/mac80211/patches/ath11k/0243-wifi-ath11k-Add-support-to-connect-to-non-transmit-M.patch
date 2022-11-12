@@ -1,0 +1,144 @@
+From 7d992bd4615c5b1ac4a92f691967d886e2bfec35 Mon Sep 17 00:00:00 2001
+From: Manikanta Pubbisetty <quic_mpubbise@quicinc.com>
+Date: Thu, 1 Sep 2022 19:21:25 +0300
+Subject: [PATCH 243/243] wifi: ath11k: Add support to connect to non-transmit
+ MBSSID profiles
+
+Add support to connect to a non-transmit MBSSID AP profile.
+
+Non-transmit MBSSID profile parameters are passed to the firmware
+via WMI VDEV UP command and this helps firmware to track MBSSID
+profile within the multi-BSS beacon and report beacon loss if
+any.
+
+WCN6750, QCA6390 & WCN6855 firmwares have the support and hence
+enable the support on these hardwares.
+
+Tested-on: WCN6750 hw1.0 AHB WLAN.MSL.1.0.1-00887-QCAMSLSWPLZ-1
+
+Signed-off-by: Manikanta Pubbisetty <quic_mpubbise@quicinc.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220901080616.29414-1-quic_mpubbise@quicinc.com
+---
+ drivers/net/wireless/ath/ath11k/core.c |  7 +++++++
+ drivers/net/wireless/ath/ath11k/hw.h   |  1 +
+ drivers/net/wireless/ath/ath11k/mac.c  |  5 +++++
+ drivers/net/wireless/ath/ath11k/wmi.c  | 15 +++++++++++++++
+ 4 files changed, 28 insertions(+)
+
+--- a/drivers/net/wireless/ath/ath11k/core.c
++++ b/drivers/net/wireless/ath/ath11k/core.c
+@@ -108,6 +108,7 @@ static const struct ath11k_hw_params ath
+ 		.hybrid_bus_type = false,
+ 		.fixed_fw_mem = false,
+ 		.support_off_channel_tx = false,
++		.supports_multi_bssid = false,
+ 	},
+ 	{
+ 		.hw_rev = ATH11K_HW_IPQ6018_HW10,
+@@ -181,6 +182,7 @@ static const struct ath11k_hw_params ath
+ 		.hybrid_bus_type = false,
+ 		.fixed_fw_mem = false,
+ 		.support_off_channel_tx = false,
++		.supports_multi_bssid = false,
+ 	},
+ 	{
+ 		.name = "qca6390 hw2.0",
+@@ -253,6 +255,7 @@ static const struct ath11k_hw_params ath
+ 		.hybrid_bus_type = false,
+ 		.fixed_fw_mem = false,
+ 		.support_off_channel_tx = true,
++		.supports_multi_bssid = true,
+ 	},
+ 	{
+ 		.name = "qcn9074 hw1.0",
+@@ -325,6 +328,7 @@ static const struct ath11k_hw_params ath
+ 		.hybrid_bus_type = false,
+ 		.fixed_fw_mem = false,
+ 		.support_off_channel_tx = false,
++		.supports_multi_bssid = false,
+ 	},
+ 	{
+ 		.name = "wcn6855 hw2.0",
+@@ -397,6 +401,7 @@ static const struct ath11k_hw_params ath
+ 		.hybrid_bus_type = false,
+ 		.fixed_fw_mem = false,
+ 		.support_off_channel_tx = true,
++		.supports_multi_bssid = true,
+ 	},
+ 	{
+ 		.name = "wcn6855 hw2.1",
+@@ -467,6 +472,7 @@ static const struct ath11k_hw_params ath
+ 		.hybrid_bus_type = false,
+ 		.fixed_fw_mem = false,
+ 		.support_off_channel_tx = true,
++		.supports_multi_bssid = true,
+ 	},
+ 	{
+ 		.name = "wcn6750 hw1.0",
+@@ -537,6 +543,7 @@ static const struct ath11k_hw_params ath
+ 		.hybrid_bus_type = true,
+ 		.fixed_fw_mem = true,
+ 		.support_off_channel_tx = false,
++		.supports_multi_bssid = true,
+ 	},
+ };
+ 
+--- a/drivers/net/wireless/ath/ath11k/hw.h
++++ b/drivers/net/wireless/ath/ath11k/hw.h
+@@ -202,6 +202,7 @@ struct ath11k_hw_params {
+ 	bool hybrid_bus_type;
+ 	bool fixed_fw_mem;
+ 	bool support_off_channel_tx;
++	bool supports_multi_bssid;
+ };
+ 
+ struct ath11k_hw_ops {
+--- a/drivers/net/wireless/ath/ath11k/mac.c
++++ b/drivers/net/wireless/ath/ath11k/mac.c
+@@ -8775,6 +8775,11 @@ static int __ath11k_mac_register(struct
+ 	if (ab->hw_params.single_pdev_only && ar->supports_6ghz)
+ 		ieee80211_hw_set(ar->hw, SINGLE_SCAN_ON_ALL_BANDS);
+ 
++	if (ab->hw_params.supports_multi_bssid) {
++		ieee80211_hw_set(ar->hw, SUPPORTS_MULTI_BSSID);
++		ieee80211_hw_set(ar->hw, SUPPORTS_ONLY_HE_MULTI_BSSID);
++	}
++
+ 	ieee80211_hw_set(ar->hw, SIGNAL_DBM);
+ 	ieee80211_hw_set(ar->hw, SUPPORTS_PS);
+ 	ieee80211_hw_set(ar->hw, SUPPORTS_DYNAMIC_PS);
+--- a/drivers/net/wireless/ath/ath11k/wmi.c
++++ b/drivers/net/wireless/ath/ath11k/wmi.c
+@@ -991,9 +991,13 @@ int ath11k_wmi_vdev_up(struct ath11k *ar
+ {
+ 	struct ath11k_pdev_wmi *wmi = ar->wmi;
+ 	struct wmi_vdev_up_cmd *cmd;
++	struct ieee80211_bss_conf *bss_conf;
++	struct ath11k_vif *arvif;
+ 	struct sk_buff *skb;
+ 	int ret;
+ 
++	arvif = ath11k_mac_get_arvif(ar, vdev_id);
++
+ 	skb = ath11k_wmi_alloc_skb(wmi->wmi_ab, sizeof(*cmd));
+ 	if (!skb)
+ 		return -ENOMEM;
+@@ -1007,6 +1011,17 @@ int ath11k_wmi_vdev_up(struct ath11k *ar
+ 
+ 	ether_addr_copy(cmd->vdev_bssid.addr, bssid);
+ 
++	if (arvif && arvif->vif->type == NL80211_IFTYPE_STATION) {
++		bss_conf = &arvif->vif->bss_conf;
++
++		if (bss_conf->nontransmitted) {
++			ether_addr_copy(cmd->trans_bssid.addr,
++					bss_conf->transmitter_bssid);
++			cmd->profile_idx = bss_conf->bssid_index;
++			cmd->profile_num = bss_conf->bssid_indicator;
++		}
++	}
++
+ 	ret = ath11k_wmi_cmd_send(wmi, skb, WMI_VDEV_UP_CMDID);
+ 	if (ret) {
+ 		ath11k_warn(ar->ab, "failed to submit WMI_VDEV_UP cmd\n");

@@ -13,11 +13,9 @@ Link: https://lore.kernel.org/r/20220407102820.613881-1-colin.i.king@gmail.com
  drivers/net/wireless/ath/ath11k/core.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
-index 3ce78d320cf3..0e8a7a3b91ad 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -1572,7 +1572,7 @@ static void ath11k_core_reset(struct work_struct *work)
+@@ -1572,7 +1572,7 @@ static void ath11k_core_reset(struct wor
  		 * completed, then the second reset worker will destroy the previous one,
  		 * thus below is to avoid that.
  		 */
@@ -26,6 +24,3 @@ index 3ce78d320cf3..0e8a7a3b91ad 100644
  
  		reinit_completion(&ab->reset_complete);
  		time_left = wait_for_completion_timeout(&ab->reset_complete,
--- 
-2.37.1
-

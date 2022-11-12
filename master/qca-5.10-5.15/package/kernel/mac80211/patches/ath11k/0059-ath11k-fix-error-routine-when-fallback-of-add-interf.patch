@@ -23,11 +23,9 @@ Link: https://lore.kernel.org/r/1636558557-2874-1-git-send-email-quic_periyasa@q
  drivers/net/wireless/ath/ath11k/mac.c | 14 +++++++-------
  1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index dfff15944fb7..765fd86df4a9 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -5629,7 +5629,7 @@ static int ath11k_mac_op_add_interface(struct ieee80211_hw *hw,
+@@ -5629,7 +5629,7 @@ static int ath11k_mac_op_add_interface(s
  	u32 param_id, param_value;
  	u16 nss;
  	int i;
@@ -36,7 +34,7 @@ index dfff15944fb7..765fd86df4a9 100644
  	int bit;
  
  	vif->driver_flags |= IEEE80211_VIF_SUPPORTS_UAPSD;
-@@ -5832,17 +5832,17 @@ static int ath11k_mac_op_add_interface(struct ieee80211_hw *hw,
+@@ -5832,17 +5832,17 @@ err_peer_del:
  	if (arvif->vdev_type == WMI_VDEV_TYPE_AP) {
  		reinit_completion(&ar->peer_delete_done);
  
@@ -60,6 +58,3 @@ index dfff15944fb7..765fd86df4a9 100644
  			goto err;
  
  		ar->num_peers--;
--- 
-2.37.1
-

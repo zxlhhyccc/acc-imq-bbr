@@ -19,8 +19,6 @@ Link: https://lore.kernel.org/r/1638881695-22155-3-git-send-email-akolli@codeaur
  drivers/net/wireless/ath/ath11k/hal_rx.h   | 17 +++++++++
  3 files changed, 80 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath11k/hal_desc.h b/drivers/net/wireless/ath/ath11k/hal_desc.h
-index 00b595b84939..406767672844 100644
 --- a/drivers/net/wireless/ath/ath11k/hal_desc.h
 +++ b/drivers/net/wireless/ath/ath11k/hal_desc.h
 @@ -858,6 +858,25 @@ struct hal_reo_entrance_ring {
@@ -49,11 +47,9 @@ index 00b595b84939..406767672844 100644
  #define HAL_REO_CMD_HDR_INFO0_CMD_NUMBER	GENMASK(15, 0)
  #define HAL_REO_CMD_HDR_INFO0_STATUS_REQUIRED	BIT(16)
  
-diff --git a/drivers/net/wireless/ath/ath11k/hal_rx.c b/drivers/net/wireless/ath/ath11k/hal_rx.c
-index 0e43e215c10a..1e279e99baa8 100644
 --- a/drivers/net/wireless/ath/ath11k/hal_rx.c
 +++ b/drivers/net/wireless/ath/ath11k/hal_rx.c
-@@ -1185,3 +1185,47 @@ void ath11k_hal_rx_reo_ent_buf_paddr_get(void *rx_desc, dma_addr_t *paddr,
+@@ -1185,3 +1185,47 @@ void ath11k_hal_rx_reo_ent_buf_paddr_get
  
  	*pp_buf_addr = (void *)buf_addr_info;
  }
@@ -101,8 +97,6 @@ index 0e43e215c10a..1e279e99baa8 100644
 +	sw_mon_entries->ppdu_id =
 +		FIELD_GET(HAL_SW_MON_RING_INFO1_PHY_PPDU_ID, sw_mon_ring->info1);
 +}
-diff --git a/drivers/net/wireless/ath/ath11k/hal_rx.h b/drivers/net/wireless/ath/ath11k/hal_rx.h
-index 0f1f04b812b9..8db420ef6351 100644
 --- a/drivers/net/wireless/ath/ath11k/hal_rx.h
 +++ b/drivers/net/wireless/ath/ath11k/hal_rx.h
 @@ -77,6 +77,20 @@ enum hal_rx_mon_status {
@@ -126,7 +120,7 @@ index 0f1f04b812b9..8db420ef6351 100644
  struct hal_rx_mon_ppdu_info {
  	u32 ppdu_id;
  	u32 ppdu_ts;
-@@ -331,6 +345,9 @@ void ath11k_hal_rx_reo_ent_buf_paddr_get(void *rx_desc,
+@@ -331,6 +345,9 @@ void ath11k_hal_rx_reo_ent_buf_paddr_get
  					 dma_addr_t *paddr, u32 *sw_cookie,
  					 void **pp_buf_addr_info, u8 *rbm,
  					 u32 *msdu_cnt);
@@ -136,6 +130,3 @@ index 0f1f04b812b9..8db420ef6351 100644
  enum hal_rx_mon_status
  ath11k_hal_rx_parse_mon_status(struct ath11k_base *ab,
  			       struct hal_rx_mon_ppdu_info *ppdu_info,
--- 
-2.37.1
-

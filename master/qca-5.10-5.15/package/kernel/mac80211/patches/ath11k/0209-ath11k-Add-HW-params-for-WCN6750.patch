@@ -31,11 +31,9 @@ Link: https://lore.kernel.org/r/20220429170502.20080-4-quic_mpubbise@quicinc.com
  drivers/net/wireless/ath/ath11k/qmi.h  |  2 +
  4 files changed, 77 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
-index cdb6a7c1bead..7912c1d3f0d5 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -107,6 +107,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -107,6 +107,7 @@ static const struct ath11k_hw_params ath
  		.fixed_bdf_addr = true,
  		.fixed_mem_region = true,
  		.static_window_map = false,
@@ -43,7 +41,7 @@ index cdb6a7c1bead..7912c1d3f0d5 100644
  	},
  	{
  		.hw_rev = ATH11K_HW_IPQ6018_HW10,
-@@ -179,6 +180,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -179,6 +180,7 @@ static const struct ath11k_hw_params ath
  		.fixed_bdf_addr = true,
  		.fixed_mem_region = true,
  		.static_window_map = false,
@@ -51,7 +49,7 @@ index cdb6a7c1bead..7912c1d3f0d5 100644
  	},
  	{
  		.name = "qca6390 hw2.0",
-@@ -250,6 +252,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -250,6 +252,7 @@ static const struct ath11k_hw_params ath
  		.fixed_bdf_addr = false,
  		.fixed_mem_region = false,
  		.static_window_map = false,
@@ -59,7 +57,7 @@ index cdb6a7c1bead..7912c1d3f0d5 100644
  	},
  	{
  		.name = "qcn9074 hw1.0",
-@@ -321,6 +324,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -321,6 +324,7 @@ static const struct ath11k_hw_params ath
  		.fixed_bdf_addr = false,
  		.fixed_mem_region = false,
  		.static_window_map = true,
@@ -67,7 +65,7 @@ index cdb6a7c1bead..7912c1d3f0d5 100644
  	},
  	{
  		.name = "wcn6855 hw2.0",
-@@ -392,6 +396,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -392,6 +396,7 @@ static const struct ath11k_hw_params ath
  		.fixed_bdf_addr = false,
  		.fixed_mem_region = false,
  		.static_window_map = false,
@@ -75,7 +73,7 @@ index cdb6a7c1bead..7912c1d3f0d5 100644
  	},
  	{
  		.name = "wcn6855 hw2.1",
-@@ -461,6 +466,74 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -461,6 +466,74 @@ static const struct ath11k_hw_params ath
  		.fixed_bdf_addr = false,
  		.fixed_mem_region = false,
  		.static_window_map = false,
@@ -150,8 +148,6 @@ index cdb6a7c1bead..7912c1d3f0d5 100644
  	},
  };
  
-diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
-index d8ab28413d95..fdea44627125 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
 @@ -140,6 +140,7 @@ enum ath11k_hw_rev {
@@ -162,8 +158,6 @@ index d8ab28413d95..fdea44627125 100644
  };
  
  enum ath11k_firmware_mode {
-diff --git a/drivers/net/wireless/ath/ath11k/hw.h b/drivers/net/wireless/ath/ath11k/hw.h
-index 85ff05c7c90d..95be5c6e57a6 100644
 --- a/drivers/net/wireless/ath/ath11k/hw.h
 +++ b/drivers/net/wireless/ath/ath11k/hw.h
 @@ -201,6 +201,7 @@ struct ath11k_hw_params {
@@ -174,8 +168,6 @@ index 85ff05c7c90d..95be5c6e57a6 100644
  };
  
  struct ath11k_hw_ops {
-diff --git a/drivers/net/wireless/ath/ath11k/qmi.h b/drivers/net/wireless/ath/ath11k/qmi.h
-index 61678de56ac7..e0201e184733 100644
 --- a/drivers/net/wireless/ath/ath11k/qmi.h
 +++ b/drivers/net/wireless/ath/ath11k/qmi.h
 @@ -1,6 +1,7 @@
@@ -194,6 +186,3 @@ index 61678de56ac7..e0201e184733 100644
  #define ATH11K_QMI_WLANFW_MAX_TIMESTAMP_LEN_V01	32
  #define ATH11K_QMI_RESP_LEN_MAX			8192
  #define ATH11K_QMI_WLANFW_MAX_NUM_MEM_SEG_V01	52
--- 
-2.37.1
-

@@ -25,11 +25,9 @@ Link: https://lore.kernel.org/r/20210721212029.142388-6-jouni@codeaurora.org
  drivers/net/wireless/ath/ath11k/mac.c | 14 +++++++-------
  1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index 21a274fdd36c..88e71fd8942b 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -7722,6 +7722,10 @@ int ath11k_mac_register(struct ath11k_base *ab)
+@@ -7722,6 +7722,10 @@ int ath11k_mac_register(struct ath11k_ba
  	if (test_bit(ATH11K_FLAG_REGISTERED, &ab->dev_flags))
  		return 0;
  
@@ -40,7 +38,7 @@ index 21a274fdd36c..88e71fd8942b 100644
  	for (i = 0; i < ab->num_radios; i++) {
  		pdev = &ab->pdevs[i];
  		ar = pdev->ar;
-@@ -7732,18 +7736,14 @@ int ath11k_mac_register(struct ath11k_base *ab)
+@@ -7732,18 +7736,14 @@ int ath11k_mac_register(struct ath11k_ba
  			ar->mac_addr[4] += i;
  		}
  
@@ -62,6 +60,3 @@ index 21a274fdd36c..88e71fd8942b 100644
  	return 0;
  
  err_cleanup:
--- 
-2.37.1
-

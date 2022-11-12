@@ -33,8 +33,6 @@ Link: https://lore.kernel.org/r/20210720213147.90042-1-jouni@codeaurora.org
  drivers/net/wireless/ath/ath11k/mac.c  | 48 ++++++++++++++++++++++++--
  2 files changed, 49 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
-index caa8f6eba009..49836d649a62 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
 @@ -368,6 +368,7 @@ struct ath11k_sta {
@@ -54,11 +52,9 @@ index caa8f6eba009..49836d649a62 100644
  };
  
  #define ATH11K_MIN_5G_FREQ 4150
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index f85fd341557e..c69cb2cf357e 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -3166,6 +3166,31 @@ static void ath11k_sta_rc_update_wk(struct work_struct *wk)
+@@ -3166,6 +3166,31 @@ static void ath11k_sta_rc_update_wk(stru
  	mutex_unlock(&ar->conf_mutex);
  }
  
@@ -90,7 +86,7 @@ index f85fd341557e..c69cb2cf357e 100644
  static int ath11k_mac_inc_num_stations(struct ath11k_vif *arvif,
  				       struct ieee80211_sta *sta)
  {
-@@ -3245,11 +3270,13 @@ static int ath11k_mac_station_add(struct ath11k *ar,
+@@ -3245,11 +3270,13 @@ static int ath11k_mac_station_add(struct
  	}
  
  	if (ieee80211_vif_is_mesh(vif)) {
@@ -105,7 +101,7 @@ index f85fd341557e..c69cb2cf357e 100644
  				    sta->addr, ret);
  			goto free_tx_stats;
  		}
-@@ -3302,8 +3329,10 @@ static int ath11k_mac_op_sta_state(struct ieee80211_hw *hw,
+@@ -3302,8 +3329,10 @@ static int ath11k_mac_op_sta_state(struc
  
  	/* cancel must be done outside the mutex to avoid deadlock */
  	if ((old_state == IEEE80211_STA_NONE &&
@@ -117,7 +113,7 @@ index f85fd341557e..c69cb2cf357e 100644
  
  	mutex_lock(&ar->conf_mutex);
  
-@@ -3312,6 +3341,7 @@ static int ath11k_mac_op_sta_state(struct ieee80211_hw *hw,
+@@ -3312,6 +3341,7 @@ static int ath11k_mac_op_sta_state(struc
  		memset(arsta, 0, sizeof(*arsta));
  		arsta->arvif = arvif;
  		INIT_WORK(&arsta->update_wk, ath11k_sta_rc_update_wk);
@@ -125,7 +121,7 @@ index f85fd341557e..c69cb2cf357e 100644
  
  		ret = ath11k_mac_station_add(ar, vif, sta);
  		if (ret)
-@@ -3406,6 +3436,19 @@ static int ath11k_mac_op_sta_set_txpwr(struct ieee80211_hw *hw,
+@@ -3406,6 +3436,19 @@ out:
  	return ret;
  }
  
@@ -145,7 +141,7 @@ index f85fd341557e..c69cb2cf357e 100644
  static void ath11k_mac_op_sta_rc_update(struct ieee80211_hw *hw,
  					struct ieee80211_vif *vif,
  					struct ieee80211_sta *sta,
-@@ -6201,6 +6244,7 @@ static const struct ieee80211_ops ath11k_ops = {
+@@ -6201,6 +6244,7 @@ static const struct ieee80211_ops ath11k
  	.cancel_hw_scan                 = ath11k_mac_op_cancel_hw_scan,
  	.set_key                        = ath11k_mac_op_set_key,
  	.sta_state                      = ath11k_mac_op_sta_state,
@@ -153,6 +149,3 @@ index f85fd341557e..c69cb2cf357e 100644
  	.sta_set_txpwr			= ath11k_mac_op_sta_set_txpwr,
  	.sta_rc_update			= ath11k_mac_op_sta_rc_update,
  	.conf_tx                        = ath11k_mac_op_conf_tx,
--- 
-2.37.1
-

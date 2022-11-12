@@ -27,11 +27,9 @@ Link: https://lore.kernel.org/r/20210721212029.142388-9-jouni@codeaurora.org
  drivers/net/wireless/ath/ath11k/wmi.h | 3 +++
  2 files changed, 4 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
-index 67b9c2d46e6f..63417a2383e6 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -7137,6 +7137,7 @@ static void ath11k_wmi_tlv_op_rx(struct ath11k_base *ab, struct sk_buff *skb)
+@@ -7137,6 +7137,7 @@ static void ath11k_wmi_tlv_op_rx(struct
  	case WMI_TWT_ENABLE_EVENTID:
  	case WMI_TWT_DISABLE_EVENTID:
  	case WMI_PDEV_DMA_RING_CFG_RSP_EVENTID:
@@ -39,8 +37,6 @@ index 67b9c2d46e6f..63417a2383e6 100644
  		ath11k_dbg(ab, ATH11K_DBG_WMI,
  			   "ignoring unsupported event 0x%x\n", id);
  		break;
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.h b/drivers/net/wireless/ath/ath11k/wmi.h
-index b5799230dc5f..0584e68e7593 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.h
 +++ b/drivers/net/wireless/ath/ath11k/wmi.h
 @@ -663,6 +663,9 @@ enum wmi_tlv_event_id {
@@ -53,6 +49,3 @@ index b5799230dc5f..0584e68e7593 100644
  	WMI_MGMT_RX_EVENTID = WMI_TLV_CMD(WMI_GRP_MGMT),
  	WMI_HOST_SWBA_EVENTID,
  	WMI_TBTTOFFSET_UPDATE_EVENTID,
--- 
-2.37.1
-

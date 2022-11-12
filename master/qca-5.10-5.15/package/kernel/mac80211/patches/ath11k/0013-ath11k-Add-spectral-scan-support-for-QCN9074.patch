@@ -19,11 +19,9 @@ Link: https://lore.kernel.org/r/20210721180809.90960-5-jouni@codeaurora.org
  drivers/net/wireless/ath/ath11k/core.c | 5 ++++-
  1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
-index 6119b871bea3..05e69666075a 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -209,8 +209,11 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -209,8 +209,11 @@ static const struct ath11k_hw_params ath
  		.tcl_0_only = false,
  
  		.spectral = {
@@ -36,6 +34,3 @@ index 6119b871bea3..05e69666075a 100644
  		},
  
  		.interface_modes = BIT(NL80211_IFTYPE_STATION) |
--- 
-2.37.1
-

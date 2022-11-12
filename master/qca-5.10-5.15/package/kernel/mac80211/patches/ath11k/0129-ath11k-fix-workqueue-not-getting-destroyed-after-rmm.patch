@@ -22,8 +22,6 @@ Link: https://lore.kernel.org/r/1640231787-17408-1-git-send-email-quic_adisi@qui
  drivers/net/wireless/ath/ath11k/core.c | 4 ++++
  1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
-index 33855383b0aa..7a6ce9f1fa80 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
 @@ -1,6 +1,7 @@
@@ -44,6 +42,3 @@ index 33855383b0aa..7a6ce9f1fa80 100644
  	kfree(ab);
  }
  EXPORT_SYMBOL(ath11k_core_free);
--- 
-2.37.1
-

@@ -32,11 +32,9 @@ Link: https://lore.kernel.org/r/20210914164226.38843-2-jouni@codeaurora.org
  drivers/net/wireless/ath/ath11k/wmi.c | 18 ++++++++++++------
  1 file changed, 12 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
-index 6eba5b2e636e..8a36eaacc961 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -6290,8 +6290,9 @@ static void ath11k_mgmt_tx_compl_event(struct ath11k_base *ab, struct sk_buff *s
+@@ -6290,8 +6290,9 @@ exit:
  	rcu_read_unlock();
  }
  
@@ -48,7 +46,7 @@ index 6eba5b2e636e..8a36eaacc961 100644
  {
  	int i;
  	struct ath11k_pdev *pdev;
-@@ -6303,7 +6304,7 @@ static struct ath11k *ath11k_get_ar_on_scan_abort(struct ath11k_base *ab,
+@@ -6303,7 +6304,7 @@ static struct ath11k *ath11k_get_ar_on_s
  			ar = pdev->ar;
  
  			spin_lock_bh(&ar->data_lock);
@@ -57,7 +55,7 @@ index 6eba5b2e636e..8a36eaacc961 100644
  			    ar->scan.vdev_id == vdev_id) {
  				spin_unlock_bh(&ar->data_lock);
  				return ar;
-@@ -6333,10 +6334,15 @@ static void ath11k_scan_event(struct ath11k_base *ab, struct sk_buff *skb)
+@@ -6333,10 +6334,15 @@ static void ath11k_scan_event(struct ath
  	 * aborting scan's vdev id matches this event info.
  	 */
  	if (scan_ev.event_type == WMI_SCAN_EVENT_COMPLETED &&
@@ -76,6 +74,3 @@ index 6eba5b2e636e..8a36eaacc961 100644
  
  	if (!ar) {
  		ath11k_warn(ab, "Received scan event for unknown vdev");
--- 
-2.37.1
-

@@ -23,11 +23,9 @@ Link: https://lore.kernel.org/r/1635164229-22880-1-git-send-email-quic_ppranees@
  drivers/net/wireless/ath/ath11k/wmi.c |  2 ++
  2 files changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index 071e0fa610ec..d1a36cb78bf2 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -776,9 +776,9 @@ static int ath11k_mac_monitor_vdev_start(struct ath11k *ar, int vdev_id,
+@@ -776,9 +776,9 @@ static int ath11k_mac_monitor_vdev_start
  	arg.channel.chan_radar = !!(channel->flags & IEEE80211_CHAN_RADAR);
  
  	arg.channel.min_power = 0;
@@ -40,7 +38,7 @@ index 071e0fa610ec..d1a36cb78bf2 100644
  
  	arg.pref_tx_streams = ar->num_tx_chains;
  	arg.pref_rx_streams = ar->num_rx_chains;
-@@ -6139,9 +6139,9 @@ ath11k_mac_vdev_start_restart(struct ath11k_vif *arvif,
+@@ -6139,9 +6139,9 @@ ath11k_mac_vdev_start_restart(struct ath
  		ath11k_phymodes[chandef->chan->band][chandef->width];
  
  	arg.channel.min_power = 0;
@@ -53,11 +51,9 @@ index 071e0fa610ec..d1a36cb78bf2 100644
  
  	arg.pref_tx_streams = ar->num_tx_chains;
  	arg.pref_rx_streams = ar->num_rx_chains;
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
-index dbcfde83def4..d9638834054c 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -2388,6 +2388,8 @@ int ath11k_wmi_send_scan_chan_list_cmd(struct ath11k *ar,
+@@ -2388,6 +2388,8 @@ int ath11k_wmi_send_scan_chan_list_cmd(s
  					    tchan_info->reg_class_id);
  			*reg2 |= FIELD_PREP(WMI_CHAN_REG_INFO2_ANT_MAX,
  					    tchan_info->antennamax);
@@ -66,6 +62,3 @@ index dbcfde83def4..d9638834054c 100644
  
  			ath11k_dbg(ar->ab, ATH11K_DBG_WMI,
  				   "WMI chan scan list chan[%d] = %u, chan_info->info %8x\n",
--- 
-2.37.1
-

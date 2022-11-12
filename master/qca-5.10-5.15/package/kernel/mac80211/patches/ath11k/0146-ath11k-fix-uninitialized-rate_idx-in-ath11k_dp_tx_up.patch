@@ -18,11 +18,9 @@ Link: https://lore.kernel.org/r/20220209060816.423-1-quic_wgong@quicinc.com
  drivers/net/wireless/ath/ath11k/dp_tx.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/dp_tx.c b/drivers/net/wireless/ath/ath11k/dp_tx.c
-index 6d19547d78be..c7d7631efa5a 100644
 --- a/drivers/net/wireless/ath/ath11k/dp_tx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_tx.c
-@@ -426,7 +426,7 @@ void ath11k_dp_tx_update_txcompl(struct ath11k *ar, struct hal_tx_status *ts)
+@@ -426,7 +426,7 @@ void ath11k_dp_tx_update_txcompl(struct
  	struct ath11k_sta *arsta;
  	struct ieee80211_sta *sta;
  	u16 rate, ru_tones;
@@ -31,6 +29,3 @@ index 6d19547d78be..c7d7631efa5a 100644
  	int ret;
  
  	spin_lock_bh(&ab->base_lock);
--- 
-2.37.1
-

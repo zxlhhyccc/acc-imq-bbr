@@ -23,11 +23,9 @@ Link: https://lore.kernel.org/r/1635177786-20854-1-git-send-email-quic_ramess@qu
  drivers/net/wireless/ath/ath11k/wmi.h | 1 +
  3 files changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index 86806b3bc749..0e1c4cb9b215 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -2500,6 +2500,7 @@ static void ath11k_bss_assoc(struct ieee80211_hw *hw,
+@@ -2500,6 +2500,7 @@ static void ath11k_bss_assoc(struct ieee
  
  	rcu_read_unlock();
  
@@ -35,7 +33,7 @@ index 86806b3bc749..0e1c4cb9b215 100644
  	ret = ath11k_wmi_send_peer_assoc_cmd(ar, &peer_arg);
  	if (ret) {
  		ath11k_warn(ar->ab, "failed to run peer assoc for %pM vdev %i: %d\n",
-@@ -3783,6 +3784,7 @@ static int ath11k_station_assoc(struct ath11k *ar,
+@@ -3783,6 +3784,7 @@ static int ath11k_station_assoc(struct a
  
  	ath11k_peer_assoc_prepare(ar, vif, sta, &peer_arg, reassoc);
  
@@ -43,7 +41,7 @@ index 86806b3bc749..0e1c4cb9b215 100644
  	ret = ath11k_wmi_send_peer_assoc_cmd(ar, &peer_arg);
  	if (ret) {
  		ath11k_warn(ar->ab, "failed to run peer assoc for STA %pM vdev %i: %d\n",
-@@ -3994,6 +3996,7 @@ static void ath11k_sta_rc_update_wk(struct work_struct *wk)
+@@ -3994,6 +3996,7 @@ static void ath11k_sta_rc_update_wk(stru
  			ath11k_peer_assoc_prepare(ar, arvif->vif, sta,
  						  &peer_arg, true);
  
@@ -51,11 +49,9 @@ index 86806b3bc749..0e1c4cb9b215 100644
  			err = ath11k_wmi_send_peer_assoc_cmd(ar, &peer_arg);
  			if (err)
  				ath11k_warn(ar->ab, "failed to run peer assoc for STA %pM vdev %i: %d\n",
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
-index fe6f1d4e18f0..8781215ae2d6 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -1764,7 +1764,7 @@ ath11k_wmi_copy_peer_flags(struct wmi_peer_assoc_complete_cmd *cmd,
+@@ -1764,7 +1764,7 @@ ath11k_wmi_copy_peer_flags(struct wmi_pe
  		cmd->peer_flags |= WMI_PEER_AUTH;
  	if (param->need_ptk_4_way) {
  		cmd->peer_flags |= WMI_PEER_NEED_PTK_4_WAY;
@@ -64,8 +60,6 @@ index fe6f1d4e18f0..8781215ae2d6 100644
  			cmd->peer_flags &= ~WMI_PEER_AUTH;
  	}
  	if (param->need_gtk_2_way)
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.h b/drivers/net/wireless/ath/ath11k/wmi.h
-index 93e2992db862..81d12405be54 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.h
 +++ b/drivers/net/wireless/ath/ath11k/wmi.h
 @@ -3617,6 +3617,7 @@ struct peer_assoc_params {
@@ -76,6 +70,3 @@ index 93e2992db862..81d12405be54 100644
  	struct ath11k_ppe_threshold peer_ppet;
  };
  
--- 
-2.37.1
-

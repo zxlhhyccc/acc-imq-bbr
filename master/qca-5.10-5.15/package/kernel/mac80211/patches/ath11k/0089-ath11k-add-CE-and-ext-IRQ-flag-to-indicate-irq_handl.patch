@@ -20,8 +20,6 @@ Link: https://lore.kernel.org/r/20211026041646.5060-1-bqiang@codeaurora.org
  drivers/net/wireless/ath/ath11k/pci.c  | 16 ++++++++++++++++
  2 files changed, 18 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
-index 94cfa9c5026d..92c00fccce6d 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
 @@ -200,6 +200,8 @@ enum ath11k_dev_flags {
@@ -33,11 +31,9 @@ index 94cfa9c5026d..92c00fccce6d 100644
  };
  
  enum ath11k_monitor_flags {
-diff --git a/drivers/net/wireless/ath/ath11k/pci.c b/drivers/net/wireless/ath/ath11k/pci.c
-index a2e8adc92e68..4e5971373d54 100644
 --- a/drivers/net/wireless/ath/ath11k/pci.c
 +++ b/drivers/net/wireless/ath/ath11k/pci.c
-@@ -578,6 +578,8 @@ static void ath11k_pci_ce_irqs_disable(struct ath11k_base *ab)
+@@ -578,6 +578,8 @@ static void ath11k_pci_ce_irqs_disable(s
  {
  	int i;
  
@@ -46,7 +42,7 @@ index a2e8adc92e68..4e5971373d54 100644
  	for (i = 0; i < ab->hw_params.ce_count; i++) {
  		if (ath11k_ce_get_attr_flags(ab, i) & CE_ATTR_DIS_INTR)
  			continue;
-@@ -611,6 +613,10 @@ static void ath11k_pci_ce_tasklet(struct tasklet_struct *t)
+@@ -611,6 +613,10 @@ static void ath11k_pci_ce_tasklet(struct
  static irqreturn_t ath11k_pci_ce_interrupt_handler(int irq, void *arg)
  {
  	struct ath11k_ce_pipe *ce_pipe = arg;
@@ -57,7 +53,7 @@ index a2e8adc92e68..4e5971373d54 100644
  
  	/* last interrupt received for this CE */
  	ce_pipe->timestamp = jiffies;
-@@ -633,6 +639,8 @@ static void __ath11k_pci_ext_irq_disable(struct ath11k_base *sc)
+@@ -633,6 +639,8 @@ static void __ath11k_pci_ext_irq_disable
  {
  	int i;
  
@@ -66,7 +62,7 @@ index a2e8adc92e68..4e5971373d54 100644
  	for (i = 0; i < ATH11K_EXT_IRQ_GRP_NUM_MAX; i++) {
  		struct ath11k_ext_irq_grp *irq_grp = &sc->ext_irq_grp[i];
  
-@@ -658,6 +666,8 @@ static void ath11k_pci_ext_irq_enable(struct ath11k_base *ab)
+@@ -658,6 +666,8 @@ static void ath11k_pci_ext_irq_enable(st
  {
  	int i;
  
@@ -75,7 +71,7 @@ index a2e8adc92e68..4e5971373d54 100644
  	for (i = 0; i < ATH11K_EXT_IRQ_GRP_NUM_MAX; i++) {
  		struct ath11k_ext_irq_grp *irq_grp = &ab->ext_irq_grp[i];
  
-@@ -712,6 +722,10 @@ static int ath11k_pci_ext_grp_napi_poll(struct napi_struct *napi, int budget)
+@@ -712,6 +722,10 @@ static int ath11k_pci_ext_grp_napi_poll(
  static irqreturn_t ath11k_pci_ext_interrupt_handler(int irq, void *arg)
  {
  	struct ath11k_ext_irq_grp *irq_grp = arg;
@@ -86,7 +82,7 @@ index a2e8adc92e68..4e5971373d54 100644
  
  	ath11k_dbg(irq_grp->ab, ATH11K_DBG_PCI, "ext irq:%d\n", irq);
  
-@@ -858,6 +872,8 @@ static void ath11k_pci_ce_irqs_enable(struct ath11k_base *ab)
+@@ -858,6 +872,8 @@ static void ath11k_pci_ce_irqs_enable(st
  {
  	int i;
  
@@ -95,6 +91,3 @@ index a2e8adc92e68..4e5971373d54 100644
  	for (i = 0; i < ab->hw_params.ce_count; i++) {
  		if (ath11k_ce_get_attr_flags(ab, i) & CE_ATTR_DIS_INTR)
  			continue;
--- 
-2.37.1
-

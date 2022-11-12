@@ -38,11 +38,9 @@ Link: https://lore.kernel.org/r/20210913180246.193388-5-jouni@codeaurora.org
  drivers/net/wireless/ath/ath11k/pci.c | 41 +++++++++++++++++++++++----
  1 file changed, 36 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/pci.c b/drivers/net/wireless/ath/ath11k/pci.c
-index d1f5c097e4e5..754578f3dcf1 100644
 --- a/drivers/net/wireless/ath/ath11k/pci.c
 +++ b/drivers/net/wireless/ath/ath11k/pci.c
-@@ -865,7 +865,32 @@ static void ath11k_pci_ce_irqs_enable(struct ath11k_base *ab)
+@@ -865,7 +865,32 @@ static void ath11k_pci_ce_irqs_enable(st
  	}
  }
  
@@ -76,7 +74,7 @@ index d1f5c097e4e5..754578f3dcf1 100644
  {
  	struct ath11k_base *ab = ab_pci->ab;
  	const struct ath11k_msi_config *msi_config = ab_pci->msi_config;
-@@ -886,6 +911,7 @@ static int ath11k_pci_enable_msi(struct ath11k_pci *ab_pci)
+@@ -886,6 +911,7 @@ static int ath11k_pci_enable_msi(struct
  		else
  			return num_vectors;
  	}
@@ -84,7 +82,7 @@ index d1f5c097e4e5..754578f3dcf1 100644
  
  	msi_desc = irq_get_msi_desc(ab_pci->pdev->irq);
  	if (!msi_desc) {
-@@ -908,7 +934,7 @@ static int ath11k_pci_enable_msi(struct ath11k_pci *ab_pci)
+@@ -908,7 +934,7 @@ free_msi_vector:
  	return ret;
  }
  
@@ -93,7 +91,7 @@ index d1f5c097e4e5..754578f3dcf1 100644
  {
  	pci_free_irq_vectors(ab_pci->pdev);
  }
-@@ -1029,6 +1055,8 @@ static int ath11k_pci_power_up(struct ath11k_base *ab)
+@@ -1029,6 +1055,8 @@ static int ath11k_pci_power_up(struct at
  	 */
  	ath11k_pci_aspm_disable(ab_pci);
  
@@ -102,7 +100,7 @@ index d1f5c097e4e5..754578f3dcf1 100644
  	ret = ath11k_mhi_start(ab_pci);
  	if (ret) {
  		ath11k_err(ab, "failed to start mhi: %d\n", ret);
-@@ -1049,6 +1077,9 @@ static void ath11k_pci_power_down(struct ath11k_base *ab)
+@@ -1049,6 +1077,9 @@ static void ath11k_pci_power_down(struct
  	ath11k_pci_aspm_restore(ab_pci);
  
  	ath11k_pci_force_wake(ab_pci->ab);
@@ -112,7 +110,7 @@ index d1f5c097e4e5..754578f3dcf1 100644
  	ath11k_mhi_stop(ab_pci);
  	clear_bit(ATH11K_PCI_FLAG_INIT_DONE, &ab_pci->flags);
  	ath11k_pci_sw_reset(ab_pci->ab, false);
-@@ -1283,7 +1314,7 @@ static int ath11k_pci_probe(struct pci_dev *pdev,
+@@ -1283,7 +1314,7 @@ static int ath11k_pci_probe(struct pci_d
  		goto err_pci_free_region;
  	}
  
@@ -121,7 +119,7 @@ index d1f5c097e4e5..754578f3dcf1 100644
  	if (ret) {
  		ath11k_err(ab, "failed to enable msi: %d\n", ret);
  		goto err_pci_free_region;
-@@ -1337,7 +1368,7 @@ static int ath11k_pci_probe(struct pci_dev *pdev,
+@@ -1337,7 +1368,7 @@ err_mhi_unregister:
  	ath11k_mhi_unregister(ab_pci);
  
  err_pci_disable_msi:
@@ -130,7 +128,7 @@ index d1f5c097e4e5..754578f3dcf1 100644
  
  err_pci_free_region:
  	ath11k_pci_free_region(ab_pci);
-@@ -1368,7 +1399,7 @@ static void ath11k_pci_remove(struct pci_dev *pdev)
+@@ -1368,7 +1399,7 @@ qmi_fail:
  	ath11k_mhi_unregister(ab_pci);
  
  	ath11k_pci_free_irq(ab);
@@ -139,6 +137,3 @@ index d1f5c097e4e5..754578f3dcf1 100644
  	ath11k_pci_free_region(ab_pci);
  
  	ath11k_hal_srng_deinit(ab);
--- 
-2.37.1
-

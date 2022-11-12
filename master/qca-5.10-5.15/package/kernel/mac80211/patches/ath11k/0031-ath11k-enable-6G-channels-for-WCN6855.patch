@@ -28,11 +28,9 @@ Link: https://lore.kernel.org/r/20210804181217.88751-3-jouni@codeaurora.org
  drivers/net/wireless/ath/ath11k/mac.c | 25 ++++++++++++++++---------
  1 file changed, 16 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index 6327eed0b938..61cc2211d9ae 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -7333,7 +7333,7 @@ static int ath11k_mac_setup_channels_rates(struct ath11k *ar,
+@@ -7333,7 +7333,7 @@ static int ath11k_mac_setup_channels_rat
  					   u32 supported_bands)
  {
  	struct ieee80211_supported_band *band;
@@ -41,7 +39,7 @@ index 6327eed0b938..61cc2211d9ae 100644
  	void *channels;
  	u32 phy_id;
  
-@@ -7343,6 +7343,7 @@ static int ath11k_mac_setup_channels_rates(struct ath11k *ar,
+@@ -7343,6 +7343,7 @@ static int ath11k_mac_setup_channels_rat
  		     ATH11K_NUM_CHANS);
  
  	reg_cap = &ar->ab->hal_reg_cap[ar->pdev_idx];
@@ -49,7 +47,7 @@ index 6327eed0b938..61cc2211d9ae 100644
  
  	if (supported_bands & WMI_HOST_WLAN_2G_CAP) {
  		channels = kmemdup(ath11k_2ghz_channels,
-@@ -7361,11 +7362,11 @@ static int ath11k_mac_setup_channels_rates(struct ath11k *ar,
+@@ -7361,11 +7362,11 @@ static int ath11k_mac_setup_channels_rat
  
  		if (ar->ab->hw_params.single_pdev_only) {
  			phy_id = ath11k_get_phy_id(ar, WMI_HOST_WLAN_2G_CAP);
@@ -64,7 +62,7 @@ index 6327eed0b938..61cc2211d9ae 100644
  	}
  
  	if (supported_bands & WMI_HOST_WLAN_5G_CAP) {
-@@ -7385,9 +7386,15 @@ static int ath11k_mac_setup_channels_rates(struct ath11k *ar,
+@@ -7385,9 +7386,15 @@ static int ath11k_mac_setup_channels_rat
  			band->n_bitrates = ath11k_a_rates_size;
  			band->bitrates = ath11k_a_rates;
  			ar->hw->wiphy->bands[NL80211_BAND_6GHZ] = band;
@@ -82,7 +80,7 @@ index 6327eed0b938..61cc2211d9ae 100644
  		}
  
  		if (reg_cap->low_5ghz_chan < ATH11K_MIN_6G_FREQ) {
-@@ -7410,12 +7417,12 @@ static int ath11k_mac_setup_channels_rates(struct ath11k *ar,
+@@ -7410,12 +7417,12 @@ static int ath11k_mac_setup_channels_rat
  
  			if (ar->ab->hw_params.single_pdev_only) {
  				phy_id = ath11k_get_phy_id(ar, WMI_HOST_WLAN_5G_CAP);
@@ -98,6 +96,3 @@ index 6327eed0b938..61cc2211d9ae 100644
  		}
  	}
  
--- 
-2.37.1
-

@@ -19,11 +19,9 @@ Link: https://lore.kernel.org/r/20210721162053.46290-2-jouni@codeaurora.org
  drivers/net/wireless/ath/ath11k/mac.c | 28 +++++++++++++--------------
  1 file changed, 14 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index d04ccae4217d..2c1386ce2e6b 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -732,6 +732,20 @@ static int ath11k_monitor_vdev_up(struct ath11k *ar, int vdev_id)
+@@ -732,6 +732,20 @@ static int ath11k_monitor_vdev_up(struct
  	return 0;
  }
  
@@ -44,7 +42,7 @@ index d04ccae4217d..2c1386ce2e6b 100644
  static int ath11k_mac_op_config(struct ieee80211_hw *hw, u32 changed)
  {
  	/* mac80211 requires this op to be present and that's why
-@@ -5181,20 +5195,6 @@ static void ath11k_mac_op_remove_chanctx(struct ieee80211_hw *hw,
+@@ -5181,20 +5195,6 @@ static void ath11k_mac_op_remove_chanctx
  	mutex_unlock(&ar->conf_mutex);
  }
  
@@ -65,6 +63,3 @@ index d04ccae4217d..2c1386ce2e6b 100644
  static int
  ath11k_mac_vdev_start_restart(struct ath11k_vif *arvif,
  			      const struct cfg80211_chan_def *chandef,
--- 
-2.37.1
-

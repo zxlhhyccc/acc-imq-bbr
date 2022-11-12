@@ -19,8 +19,6 @@ Link: https://lore.kernel.org/r/20220328062032.28881-1-quic_mpubbise@quicinc.com
  drivers/net/wireless/ath/ath11k/ahb.h |   9 ++
  2 files changed, 186 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/ahb.c b/drivers/net/wireless/ath/ath11k/ahb.c
-index 050bda828966..fa11807f48a9 100644
 --- a/drivers/net/wireless/ath/ath11k/ahb.c
 +++ b/drivers/net/wireless/ath/ath11k/ahb.c
 @@ -9,6 +9,8 @@
@@ -32,7 +30,7 @@ index 050bda828966..fa11807f48a9 100644
  #include "ahb.h"
  #include "debug.h"
  #include "hif.h"
-@@ -757,6 +759,172 @@ static int ath11k_ahb_setup_resources(struct ath11k_base *ab)
+@@ -757,6 +759,172 @@ static int ath11k_ahb_setup_resources(st
  	return 0;
  }
  
@@ -205,7 +203,7 @@ index 050bda828966..fa11807f48a9 100644
  static int ath11k_ahb_probe(struct platform_device *pdev)
  {
  	struct ath11k_base *ab;
-@@ -816,10 +984,14 @@ static int ath11k_ahb_probe(struct platform_device *pdev)
+@@ -816,10 +984,14 @@ static int ath11k_ahb_probe(struct platf
  	if (ret)
  		goto err_core_free;
  
@@ -221,7 +219,7 @@ index 050bda828966..fa11807f48a9 100644
  	ret = ath11k_ce_alloc_pipes(ab);
  	if (ret) {
  		ath11k_err(ab, "failed to allocate ce pipes: %d\n", ret);
-@@ -856,6 +1028,9 @@ static int ath11k_ahb_probe(struct platform_device *pdev)
+@@ -856,6 +1028,9 @@ err_ce_free:
  err_hal_srng_deinit:
  	ath11k_hal_srng_deinit(ab);
  
@@ -231,7 +229,7 @@ index 050bda828966..fa11807f48a9 100644
  err_core_free:
  	ath11k_core_free(ab);
  	platform_set_drvdata(pdev, NULL);
-@@ -891,6 +1066,7 @@ static int ath11k_ahb_remove(struct platform_device *pdev)
+@@ -891,6 +1066,7 @@ static int ath11k_ahb_remove(struct plat
  qmi_fail:
  	ath11k_ahb_free_irq(ab);
  	ath11k_hal_srng_deinit(ab);
@@ -239,8 +237,6 @@ index 050bda828966..fa11807f48a9 100644
  	ath11k_ce_free_pipes(ab);
  	ath11k_core_free(ab);
  	platform_set_drvdata(pdev, NULL);
-diff --git a/drivers/net/wireless/ath/ath11k/ahb.h b/drivers/net/wireless/ath/ath11k/ahb.h
-index 51e6e4a5f686..58a945411c5b 100644
 --- a/drivers/net/wireless/ath/ath11k/ahb.h
 +++ b/drivers/net/wireless/ath/ath11k/ahb.h
 @@ -12,6 +12,15 @@ struct ath11k_base;
@@ -259,6 +255,3 @@ index 51e6e4a5f686..58a945411c5b 100644
  };
  
  static inline struct ath11k_ahb *ath11k_ahb_priv(struct ath11k_base *ab)
--- 
-2.37.1
-

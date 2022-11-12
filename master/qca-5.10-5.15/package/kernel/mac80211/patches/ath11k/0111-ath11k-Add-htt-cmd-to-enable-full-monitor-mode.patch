@@ -21,11 +21,9 @@ Link: https://lore.kernel.org/r/1638881695-22155-2-git-send-email-akolli@codeaur
  drivers/net/wireless/ath/ath11k/hw.h    |  1 +
  5 files changed, 84 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
-index cefa9ac088ff..350698228d92 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -74,6 +74,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -74,6 +74,7 @@ static const struct ath11k_hw_params ath
  					BIT(NL80211_IFTYPE_AP) |
  					BIT(NL80211_IFTYPE_MESH_POINT),
  		.supports_monitor = true,
@@ -33,7 +31,7 @@ index cefa9ac088ff..350698228d92 100644
  		.supports_shadow_regs = false,
  		.idle_ps = false,
  		.supports_sta_ps = false,
-@@ -128,6 +129,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -128,6 +129,7 @@ static const struct ath11k_hw_params ath
  					BIT(NL80211_IFTYPE_AP) |
  					BIT(NL80211_IFTYPE_MESH_POINT),
  		.supports_monitor = true,
@@ -41,7 +39,7 @@ index cefa9ac088ff..350698228d92 100644
  		.supports_shadow_regs = false,
  		.idle_ps = false,
  		.supports_sta_ps = false,
-@@ -181,6 +183,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -181,6 +183,7 @@ static const struct ath11k_hw_params ath
  		.interface_modes = BIT(NL80211_IFTYPE_STATION) |
  					BIT(NL80211_IFTYPE_AP),
  		.supports_monitor = false,
@@ -49,7 +47,7 @@ index cefa9ac088ff..350698228d92 100644
  		.supports_shadow_regs = true,
  		.idle_ps = true,
  		.supports_sta_ps = true,
-@@ -234,6 +237,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -234,6 +237,7 @@ static const struct ath11k_hw_params ath
  					BIT(NL80211_IFTYPE_AP) |
  					BIT(NL80211_IFTYPE_MESH_POINT),
  		.supports_monitor = true,
@@ -57,7 +55,7 @@ index cefa9ac088ff..350698228d92 100644
  		.supports_shadow_regs = false,
  		.idle_ps = false,
  		.supports_sta_ps = false,
-@@ -287,6 +291,7 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -287,6 +291,7 @@ static const struct ath11k_hw_params ath
  		.interface_modes = BIT(NL80211_IFTYPE_STATION) |
  					BIT(NL80211_IFTYPE_AP),
  		.supports_monitor = false,
@@ -65,8 +63,6 @@ index cefa9ac088ff..350698228d92 100644
  		.supports_shadow_regs = true,
  		.idle_ps = true,
  		.supports_sta_ps = true,
-diff --git a/drivers/net/wireless/ath/ath11k/dp.h b/drivers/net/wireless/ath/ath11k/dp.h
-index a4c36a9be338..10f234b3f11c 100644
 --- a/drivers/net/wireless/ath/ath11k/dp.h
 +++ b/drivers/net/wireless/ath/ath11k/dp.h
 @@ -292,6 +292,7 @@ enum htt_h2t_msg_type {
@@ -111,11 +107,9 @@ index a4c36a9be338..10f234b3f11c 100644
  /* HTT message target->host */
  
  enum htt_t2h_msg_type {
-diff --git a/drivers/net/wireless/ath/ath11k/dp_tx.c b/drivers/net/wireless/ath/ath11k/dp_tx.c
-index 7587e1679ec3..8560f3b33812 100644
 --- a/drivers/net/wireless/ath/ath11k/dp_tx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_tx.c
-@@ -1033,6 +1033,15 @@ int ath11k_dp_tx_htt_monitor_mode_ring_config(struct ath11k *ar, bool reset)
+@@ -1033,6 +1033,15 @@ int ath11k_dp_tx_htt_monitor_mode_ring_c
  	struct htt_rx_ring_tlv_filter tlv_filter = {0};
  	int ret = 0, ring_id = 0, i;
  
@@ -131,7 +125,7 @@ index 7587e1679ec3..8560f3b33812 100644
  	ring_id = dp->rxdma_mon_buf_ring.refill_buf_ring.ring_id;
  
  	if (!reset) {
-@@ -1098,3 +1107,42 @@ int ath11k_dp_tx_htt_monitor_mode_ring_config(struct ath11k *ar, bool reset)
+@@ -1098,3 +1107,42 @@ int ath11k_dp_tx_htt_monitor_mode_ring_c
  
  	return ret;
  }
@@ -174,19 +168,15 @@ index 7587e1679ec3..8560f3b33812 100644
 +
 +	return ret;
 +}
-diff --git a/drivers/net/wireless/ath/ath11k/dp_tx.h b/drivers/net/wireless/ath/ath11k/dp_tx.h
-index 698b907b878d..e373dbccf417 100644
 --- a/drivers/net/wireless/ath/ath11k/dp_tx.h
 +++ b/drivers/net/wireless/ath/ath11k/dp_tx.h
-@@ -37,4 +37,6 @@ int ath11k_dp_tx_htt_rx_filter_setup(struct ath11k_base *ab, u32 ring_id,
+@@ -37,4 +37,6 @@ int ath11k_dp_tx_htt_rx_filter_setup(str
  				     int rx_buf_size,
  				     struct htt_rx_ring_tlv_filter *tlv_filter);
  
 +int ath11k_dp_tx_htt_rx_full_mon_setup(struct ath11k_base *ab, int mac_id,
 +				       bool config);
  #endif
-diff --git a/drivers/net/wireless/ath/ath11k/hw.h b/drivers/net/wireless/ath/ath11k/hw.h
-index ba861bfe8fc8..178689a4d0cf 100644
 --- a/drivers/net/wireless/ath/ath11k/hw.h
 +++ b/drivers/net/wireless/ath/ath11k/hw.h
 @@ -168,6 +168,7 @@ struct ath11k_hw_params {
@@ -197,6 +187,3 @@ index ba861bfe8fc8..178689a4d0cf 100644
  	bool supports_shadow_regs;
  	bool idle_ps;
  	bool supports_sta_ps;
--- 
-2.37.1
-

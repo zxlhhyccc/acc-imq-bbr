@@ -21,8 +21,6 @@ Link: https://lore.kernel.org/r/20220210064706.6171-1-quic_kathirve@quicinc.com
  drivers/net/wireless/ath/ath11k/dp_rx.c | 42 +++++++++++++++++++++----
  2 files changed, 39 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/dp.h b/drivers/net/wireless/ath/ath11k/dp.h
-index 409d6cc5a1d5..b6ec2d6a2bb6 100644
 --- a/drivers/net/wireless/ath/ath11k/dp.h
 +++ b/drivers/net/wireless/ath/ath11k/dp.h
 @@ -115,6 +115,8 @@ struct ath11k_pdev_mon_stats {
@@ -42,11 +40,9 @@ index 409d6cc5a1d5..b6ec2d6a2bb6 100644
  	atomic_t num_tx_pending;
  	wait_queue_head_t tx_empty_waitq;
  	struct dp_rxdma_ring rx_refill_buf_ring;
-diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
-index 99dc9b5bbf4b..20c9e7904261 100644
 --- a/drivers/net/wireless/ath/ath11k/dp_rx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
-@@ -4959,6 +4959,12 @@ static int ath11k_dp_rx_mon_deliver(struct ath11k *ar, u32 mac_id,
+@@ -4959,6 +4959,12 @@ mon_deliver_fail:
  	return -EINVAL;
  }
  
@@ -59,7 +55,7 @@ index 99dc9b5bbf4b..20c9e7904261 100644
  static void ath11k_dp_rx_mon_dest_process(struct ath11k *ar, int mac_id,
  					  u32 quota, struct napi_struct *napi)
  {
-@@ -4972,6 +4978,7 @@ static void ath11k_dp_rx_mon_dest_process(struct ath11k *ar, int mac_id,
+@@ -4972,6 +4978,7 @@ static void ath11k_dp_rx_mon_dest_proces
  	u32 ring_id;
  	struct ath11k_pdev_mon_stats *rx_mon_stats;
  	u32	 npackets = 0;
@@ -67,7 +63,7 @@ index 99dc9b5bbf4b..20c9e7904261 100644
  
  	if (ar->ab->hw_params.rxdma1_enable)
  		ring_id = dp->rxdma_mon_dst_ring.ring_id;
-@@ -5001,16 +5008,39 @@ static void ath11k_dp_rx_mon_dest_process(struct ath11k *ar, int mac_id,
+@@ -5001,16 +5008,39 @@ static void ath11k_dp_rx_mon_dest_proces
  		head_msdu = NULL;
  		tail_msdu = NULL;
  
@@ -113,6 +109,3 @@ index 99dc9b5bbf4b..20c9e7904261 100644
  			break;
  		}
  		if (head_msdu && tail_msdu) {
--- 
-2.37.1
-

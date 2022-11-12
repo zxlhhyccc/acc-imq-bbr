@@ -29,11 +29,9 @@ Link: https://lore.kernel.org/r/20211026041714.5219-1-bqiang@codeaurora.org
  drivers/net/wireless/ath/ath11k/pci.c | 52 ++++++++++++++++++++-------
  2 files changed, 51 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mhi.c b/drivers/net/wireless/ath/ath11k/mhi.c
-index f2149241fb13..3602a353bab9 100644
 --- a/drivers/net/wireless/ath/ath11k/mhi.c
 +++ b/drivers/net/wireless/ath/ath11k/mhi.c
-@@ -248,6 +248,7 @@ static int ath11k_mhi_get_msi(struct ath11k_pci *ab_pci)
+@@ -248,6 +248,7 @@ static int ath11k_mhi_get_msi(struct ath
  	u32 user_base_data, base_vector;
  	int ret, num_vectors, i;
  	int *irq;
@@ -41,7 +39,7 @@ index f2149241fb13..3602a353bab9 100644
  
  	ret = ath11k_pci_get_user_msi_assignment(ab_pci,
  						 "MHI", &num_vectors,
-@@ -262,9 +263,15 @@ static int ath11k_mhi_get_msi(struct ath11k_pci *ab_pci)
+@@ -262,9 +263,15 @@ static int ath11k_mhi_get_msi(struct ath
  	if (!irq)
  		return -ENOMEM;
  
@@ -59,7 +57,7 @@ index f2149241fb13..3602a353bab9 100644
  
  	ab_pci->mhi_ctrl->irq = irq;
  	ab_pci->mhi_ctrl->nr_irqs = num_vectors;
-@@ -341,6 +348,9 @@ int ath11k_mhi_register(struct ath11k_pci *ab_pci)
+@@ -341,6 +348,9 @@ int ath11k_mhi_register(struct ath11k_pc
  		return ret;
  	}
  
@@ -69,11 +67,9 @@ index f2149241fb13..3602a353bab9 100644
  	mhi_ctrl->iova_start = 0;
  	mhi_ctrl->iova_stop = 0xffffffff;
  	mhi_ctrl->sbl_size = SZ_512K;
-diff --git a/drivers/net/wireless/ath/ath11k/pci.c b/drivers/net/wireless/ath/ath11k/pci.c
-index d3fad47a968d..edb43b895350 100644
 --- a/drivers/net/wireless/ath/ath11k/pci.c
 +++ b/drivers/net/wireless/ath/ath11k/pci.c
-@@ -77,6 +77,17 @@ static const struct ath11k_msi_config ath11k_msi_config[] = {
+@@ -77,6 +77,17 @@ static const struct ath11k_msi_config at
  	},
  };
  
@@ -91,7 +87,7 @@ index d3fad47a968d..edb43b895350 100644
  static const char *irq_name[ATH11K_IRQ_NUM_MAX] = {
  	"bhi",
  	"mhi-er0",
-@@ -619,16 +630,18 @@ static void ath11k_pci_sync_ce_irqs(struct ath11k_base *ab)
+@@ -619,16 +630,18 @@ static void ath11k_pci_sync_ce_irqs(stru
  static void ath11k_pci_ce_tasklet(struct tasklet_struct *t)
  {
  	struct ath11k_ce_pipe *ce_pipe = from_tasklet(ce_pipe, t, intr_tq);
@@ -111,7 +107,7 @@ index d3fad47a968d..edb43b895350 100644
  
  	if (!test_bit(ATH11K_FLAG_CE_IRQ_ENABLED, &ab->dev_flags))
  		return IRQ_HANDLED;
-@@ -636,7 +649,8 @@ static irqreturn_t ath11k_pci_ce_interrupt_handler(int irq, void *arg)
+@@ -636,7 +649,8 @@ static irqreturn_t ath11k_pci_ce_interru
  	/* last interrupt received for this CE */
  	ce_pipe->timestamp = jiffies;
  
@@ -121,7 +117,7 @@ index d3fad47a968d..edb43b895350 100644
  	tasklet_schedule(&ce_pipe->intr_tq);
  
  	return IRQ_HANDLED;
-@@ -735,11 +749,13 @@ static int ath11k_pci_ext_grp_napi_poll(struct napi_struct *napi, int budget)
+@@ -735,11 +749,13 @@ static int ath11k_pci_ext_grp_napi_poll(
  						napi);
  	struct ath11k_base *ab = irq_grp->ab;
  	int work_done;
@@ -136,7 +132,7 @@ index d3fad47a968d..edb43b895350 100644
  	}
  
  	if (work_done > budget)
-@@ -752,6 +768,7 @@ static irqreturn_t ath11k_pci_ext_interrupt_handler(int irq, void *arg)
+@@ -752,6 +768,7 @@ static irqreturn_t ath11k_pci_ext_interr
  {
  	struct ath11k_ext_irq_grp *irq_grp = arg;
  	struct ath11k_base *ab = irq_grp->ab;
@@ -144,7 +140,7 @@ index d3fad47a968d..edb43b895350 100644
  
  	if (!test_bit(ATH11K_FLAG_EXT_IRQ_ENABLED, &ab->dev_flags))
  		return IRQ_HANDLED;
-@@ -761,7 +778,8 @@ static irqreturn_t ath11k_pci_ext_interrupt_handler(int irq, void *arg)
+@@ -761,7 +778,8 @@ static irqreturn_t ath11k_pci_ext_interr
  	/* last interrupt received for this group */
  	irq_grp->timestamp = jiffies;
  
@@ -154,7 +150,7 @@ index d3fad47a968d..edb43b895350 100644
  
  	napi_schedule(&irq_grp->napi);
  
-@@ -947,18 +965,25 @@ static int ath11k_pci_alloc_msi(struct ath11k_pci *ab_pci)
+@@ -947,18 +965,25 @@ static int ath11k_pci_alloc_msi(struct a
  					    msi_config->total_vectors,
  					    msi_config->total_vectors,
  					    PCI_IRQ_MSI);
@@ -189,7 +185,7 @@ index d3fad47a968d..edb43b895350 100644
  	ath11k_pci_msi_disable(ab_pci);
  
  	msi_desc = irq_get_msi_desc(ab_pci->pdev->irq);
-@@ -979,6 +1004,7 @@ static int ath11k_pci_alloc_msi(struct ath11k_pci *ab_pci)
+@@ -979,6 +1004,7 @@ static int ath11k_pci_alloc_msi(struct a
  free_msi_vector:
  	pci_free_irq_vectors(ab_pci->pdev);
  
@@ -197,6 +193,3 @@ index d3fad47a968d..edb43b895350 100644
  	return ret;
  }
  
--- 
-2.37.1
-

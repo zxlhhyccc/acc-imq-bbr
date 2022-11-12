@@ -27,11 +27,9 @@ Link: https://lore.kernel.org/r/20220506012540.1579604-1-quic_bqiang@quicinc.com
  drivers/net/wireless/ath/ath11k/wow.c | 34 ++++++++++++++++++++
  5 files changed, 156 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index 17b65f82cdf5..8899e30640e7 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -9030,3 +9030,34 @@ void ath11k_mac_destroy(struct ath11k_base *ab)
+@@ -9030,3 +9030,34 @@ void ath11k_mac_destroy(struct ath11k_ba
  		pdev->ar = NULL;
  	}
  }
@@ -66,8 +64,6 @@ index 17b65f82cdf5..8899e30640e7 100644
 +
 +	return 0;
 +}
-diff --git a/drivers/net/wireless/ath/ath11k/mac.h b/drivers/net/wireless/ath/ath11k/mac.h
-index 7f93e3a9ca23..57ebfc592b00 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.h
 +++ b/drivers/net/wireless/ath/ath11k/mac.h
 @@ -8,6 +8,7 @@
@@ -78,7 +74,7 @@ index 7f93e3a9ca23..57ebfc592b00 100644
  
  struct ath11k;
  struct ath11k_base;
-@@ -173,4 +174,7 @@ void ath11k_mac_handle_beacon(struct ath11k *ar, struct sk_buff *skb);
+@@ -173,4 +174,7 @@ void ath11k_mac_handle_beacon(struct ath
  void ath11k_mac_handle_beacon_miss(struct ath11k *ar, u32 vdev_id);
  void ath11k_mac_bcn_tx_event(struct ath11k_vif *arvif);
  int ath11k_mac_wait_tx_complete(struct ath11k *ar);
@@ -86,11 +82,9 @@ index 7f93e3a9ca23..57ebfc592b00 100644
 +				 enum wmi_sta_keepalive_method method,
 +				 u32 interval);
  #endif
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
-index 1410114d1d5c..63463b6c63be 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -8959,3 +8959,44 @@ int ath11k_wmi_pdev_set_bios_geo_table_param(struct ath11k *ar)
+@@ -8959,3 +8959,44 @@ int ath11k_wmi_pdev_set_bios_geo_table_p
  
  	return ath11k_wmi_cmd_send(wmi, skb, WMI_PDEV_SET_BIOS_GEO_TABLE_CMDID);
  }
@@ -135,8 +129,6 @@ index 1410114d1d5c..63463b6c63be 100644
 +
 +	return ath11k_wmi_cmd_send(wmi, skb, WMI_STA_KEEPALIVE_CMDID);
 +}
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.h b/drivers/net/wireless/ath/ath11k/wmi.h
-index 7600e9a52da8..b1fad4707dc6 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.h
 +++ b/drivers/net/wireless/ath/ath11k/wmi.h
 @@ -5907,6 +5907,50 @@ struct wmi_pdev_set_geo_table_cmd {
@@ -190,7 +182,7 @@ index 7600e9a52da8..b1fad4707dc6 100644
  int ath11k_wmi_cmd_send(struct ath11k_pdev_wmi *wmi, struct sk_buff *skb,
  			u32 cmd_id);
  struct sk_buff *ath11k_wmi_alloc_skb(struct ath11k_wmi_base *wmi_sc, u32 len);
-@@ -6087,5 +6131,7 @@ int ath11k_wmi_gtk_rekey_getinfo(struct ath11k *ar,
+@@ -6087,5 +6131,7 @@ int ath11k_wmi_gtk_rekey_getinfo(struct
  				 struct ath11k_vif *arvif);
  int ath11k_wmi_pdev_set_bios_sar_table_param(struct ath11k *ar, const u8 *sar_val);
  int ath11k_wmi_pdev_set_bios_geo_table_param(struct ath11k *ar);
@@ -198,11 +190,9 @@ index 7600e9a52da8..b1fad4707dc6 100644
 +			     const struct wmi_sta_keepalive_arg *arg);
  
  #endif
-diff --git a/drivers/net/wireless/ath/ath11k/wow.c b/drivers/net/wireless/ath/ath11k/wow.c
-index 9d088cebef03..b3e65cd13d83 100644
 --- a/drivers/net/wireless/ath/ath11k/wow.c
 +++ b/drivers/net/wireless/ath/ath11k/wow.c
-@@ -640,6 +640,24 @@ static int ath11k_wow_protocol_offload(struct ath11k *ar, bool enable)
+@@ -640,6 +640,24 @@ static int ath11k_wow_protocol_offload(s
  	return 0;
  }
  
@@ -227,7 +217,7 @@ index 9d088cebef03..b3e65cd13d83 100644
  int ath11k_wow_op_suspend(struct ieee80211_hw *hw,
  			  struct cfg80211_wowlan *wowlan)
  {
-@@ -691,6 +709,14 @@ int ath11k_wow_op_suspend(struct ieee80211_hw *hw,
+@@ -691,6 +709,14 @@ int ath11k_wow_op_suspend(struct ieee802
  		goto cleanup;
  	}
  
@@ -242,7 +232,7 @@ index 9d088cebef03..b3e65cd13d83 100644
  	ret = ath11k_wow_enable(ar->ab);
  	if (ret) {
  		ath11k_warn(ar->ab, "failed to start wow: %d\n", ret);
-@@ -786,6 +812,14 @@ int ath11k_wow_op_resume(struct ieee80211_hw *hw)
+@@ -786,6 +812,14 @@ int ath11k_wow_op_resume(struct ieee8021
  		goto exit;
  	}
  
@@ -257,6 +247,3 @@ index 9d088cebef03..b3e65cd13d83 100644
  exit:
  	if (ret) {
  		switch (ar->state) {
--- 
-2.37.1
-

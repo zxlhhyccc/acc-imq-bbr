@@ -19,11 +19,9 @@ Link: https://lore.kernel.org/r/20220406094107.17878-10-quic_mpubbise@quicinc.co
  drivers/net/wireless/ath/ath11k/wmi.c  | 3 ++-
  2 files changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
-index 2597b1474ee0..9928fdc28902 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -1218,7 +1218,7 @@ static int ath11k_core_start(struct ath11k_base *ab,
+@@ -1218,7 +1218,7 @@ static int ath11k_core_start(struct ath1
  	}
  
  	/* put hardware to DBS mode */
@@ -32,8 +30,6 @@ index 2597b1474ee0..9928fdc28902 100644
  		ret = ath11k_wmi_set_hw_mode(ab, WMI_HOST_HW_MODE_DBS);
  		if (ret) {
  			ath11k_err(ab, "failed to send dbs mode: %d\n", ret);
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
-index dcf31bdad47e..d7243819d9bd 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
 @@ -1,6 +1,7 @@
@@ -44,7 +40,7 @@ index dcf31bdad47e..d7243819d9bd 100644
   */
  #include <linux/skbuff.h>
  #include <linux/ctype.h>
-@@ -8225,7 +8226,7 @@ int ath11k_wmi_attach(struct ath11k_base *ab)
+@@ -8225,7 +8226,7 @@ int ath11k_wmi_attach(struct ath11k_base
  	ab->wmi_ab.preferred_hw_mode = WMI_HOST_HW_MODE_MAX;
  
  	/* It's overwritten when service_ext_ready is handled */
@@ -53,6 +49,3 @@ index dcf31bdad47e..d7243819d9bd 100644
  		ab->wmi_ab.preferred_hw_mode = WMI_HOST_HW_MODE_SINGLE;
  
  	/* TODO: Init remaining wmi soc resources required */
--- 
-2.37.1
-

@@ -16,8 +16,6 @@ Link: https://lore.kernel.org/r/20220209060012.32478-4-quic_wgong@quicinc.com
  drivers/net/wireless/ath/ath11k/mhi.c | 2 ++
  1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mhi.c b/drivers/net/wireless/ath/ath11k/mhi.c
-index 8b2143802816..fc3524e83e52 100644
 --- a/drivers/net/wireless/ath/ath11k/mhi.c
 +++ b/drivers/net/wireless/ath/ath11k/mhi.c
 @@ -13,6 +13,7 @@
@@ -28,7 +26,7 @@ index 8b2143802816..fc3524e83e52 100644
  
  static struct mhi_channel_config ath11k_mhi_channels_qca6390[] = {
  	{
-@@ -384,6 +385,7 @@ int ath11k_mhi_register(struct ath11k_pci *ab_pci)
+@@ -384,6 +385,7 @@ int ath11k_mhi_register(struct ath11k_pc
  		mhi_ctrl->iova_stop = 0xFFFFFFFF;
  	}
  
@@ -36,6 +34,3 @@ index 8b2143802816..fc3524e83e52 100644
  	mhi_ctrl->sbl_size = SZ_512K;
  	mhi_ctrl->seg_len = SZ_512K;
  	mhi_ctrl->fbc_download = true;
--- 
-2.37.1
-

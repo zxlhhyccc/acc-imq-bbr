@@ -19,8 +19,6 @@ Link: https://lore.kernel.org/r/1630560820-21905-4-git-send-email-ppranees@codea
  drivers/net/wireless/ath/ath11k/dp_rx.c | 114 ++++++++++++------------
  1 file changed, 59 insertions(+), 55 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
-index c5320847b80a..f4ae948a6dd6 100644
 --- a/drivers/net/wireless/ath/ath11k/dp_rx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
 @@ -20,13 +20,15 @@
@@ -42,7 +40,7 @@ index c5320847b80a..f4ae948a6dd6 100644
  {
  	if (!ab->hw_params.hw_ops->rx_desc_encrypt_valid(desc))
  		return HAL_ENCRYPT_TYPE_OPEN;
-@@ -34,32 +36,34 @@ static enum hal_encrypt_type ath11k_dp_rx_h_mpdu_start_enctype(struct ath11k_bas
+@@ -34,32 +36,34 @@ static enum hal_encrypt_type ath11k_dp_r
  	return ab->hw_params.hw_ops->rx_desc_get_encrypt_type(desc);
  }
  
@@ -87,7 +85,7 @@ index c5320847b80a..f4ae948a6dd6 100644
  {
  	struct ieee80211_hdr *hdr;
  
-@@ -67,8 +71,8 @@ static bool ath11k_dp_rx_h_mpdu_start_more_frags(struct ath11k_base *ab,
+@@ -67,8 +71,8 @@ static bool ath11k_dp_rx_h_mpdu_start_mo
  	return ieee80211_has_morefrags(hdr->frame_control);
  }
  
@@ -98,7 +96,7 @@ index c5320847b80a..f4ae948a6dd6 100644
  {
  	struct ieee80211_hdr *hdr;
  
-@@ -76,37 +80,37 @@ static u16 ath11k_dp_rx_h_mpdu_start_frag_no(struct ath11k_base *ab,
+@@ -76,37 +80,37 @@ static u16 ath11k_dp_rx_h_mpdu_start_fra
  	return le16_to_cpu(hdr->seq_ctrl) & IEEE80211_SCTL_FRAG;
  }
  
@@ -144,7 +142,7 @@ index c5320847b80a..f4ae948a6dd6 100644
  {
  	return (FIELD_GET(RX_ATTENTION_INFO2_DCRYPT_STATUS_CODE,
  			  __le32_to_cpu(attn->info2)) ==
-@@ -154,68 +158,68 @@ static bool ath11k_dp_rx_h_attn_msdu_len_err(struct ath11k_base *ab,
+@@ -154,68 +158,68 @@ static bool ath11k_dp_rx_h_attn_msdu_len
  	return errmap & DP_RX_MPDU_ERR_MSDU_LEN;
  }
  
@@ -235,7 +233,7 @@ index c5320847b80a..f4ae948a6dd6 100644
  {
  	return ab->hw_params.hw_ops->rx_desc_get_first_msdu(desc);
  }
-@@ -233,14 +237,14 @@ static void ath11k_dp_rx_desc_end_tlv_copy(struct ath11k_base *ab,
+@@ -233,14 +237,14 @@ static void ath11k_dp_rx_desc_end_tlv_co
  	ab->hw_params.hw_ops->rx_desc_copy_attn_end_tlv(fdesc, ldesc);
  }
  
@@ -253,7 +251,7 @@ index c5320847b80a..f4ae948a6dd6 100644
  {
  	u8 *rx_pkt_hdr;
  
-@@ -249,8 +253,8 @@ static u8 *ath11k_dp_rxdesc_get_80211hdr(struct ath11k_base *ab,
+@@ -249,8 +253,8 @@ static u8 *ath11k_dp_rxdesc_get_80211hdr
  	return rx_pkt_hdr;
  }
  
@@ -264,7 +262,7 @@ index c5320847b80a..f4ae948a6dd6 100644
  {
  	u32 tlv_tag;
  
-@@ -259,15 +263,15 @@ static bool ath11k_dp_rxdesc_mpdu_valid(struct ath11k_base *ab,
+@@ -259,15 +263,15 @@ static bool ath11k_dp_rxdesc_mpdu_valid(
  	return tlv_tag == HAL_RX_MPDU_START;
  }
  
@@ -285,6 +283,3 @@ index c5320847b80a..f4ae948a6dd6 100644
  {
  	ab->hw_params.hw_ops->rx_desc_set_msdu_len(desc, len);
  }
--- 
-2.37.1
-

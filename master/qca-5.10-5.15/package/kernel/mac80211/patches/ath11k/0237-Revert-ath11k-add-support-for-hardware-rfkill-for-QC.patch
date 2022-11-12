@@ -22,11 +22,9 @@ Link: https://lore.kernel.org/r/20220708164656.29549-1-kvalo@kernel.org
  drivers/net/wireless/ath/ath11k/wmi.h  | 25 ---------
  7 files changed, 206 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
-index c0548da30678..ed9748aac91e 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -54,9 +54,6 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -54,9 +54,6 @@ static const struct ath11k_hw_params ath
  		.target_ce_count = 11,
  		.svc_to_ce_map = ath11k_target_service_to_ce_map_wlan_ipq8074,
  		.svc_to_ce_map_len = 21,
@@ -36,7 +34,7 @@ index c0548da30678..ed9748aac91e 100644
  		.single_pdev_only = false,
  		.rxdma1_enable = true,
  		.num_rxmda_per_pdev = 1,
-@@ -132,9 +129,6 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -132,9 +129,6 @@ static const struct ath11k_hw_params ath
  		.target_ce_count = 11,
  		.svc_to_ce_map = ath11k_target_service_to_ce_map_wlan_ipq6018,
  		.svc_to_ce_map_len = 19,
@@ -46,7 +44,7 @@ index c0548da30678..ed9748aac91e 100644
  		.single_pdev_only = false,
  		.rxdma1_enable = true,
  		.num_rxmda_per_pdev = 1,
-@@ -207,9 +201,6 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -207,9 +201,6 @@ static const struct ath11k_hw_params ath
  		.target_ce_count = 9,
  		.svc_to_ce_map = ath11k_target_service_to_ce_map_wlan_qca6390,
  		.svc_to_ce_map_len = 14,
@@ -56,7 +54,7 @@ index c0548da30678..ed9748aac91e 100644
  		.single_pdev_only = true,
  		.rxdma1_enable = false,
  		.num_rxmda_per_pdev = 2,
-@@ -281,9 +272,6 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -281,9 +272,6 @@ static const struct ath11k_hw_params ath
  		.target_ce_count = 9,
  		.svc_to_ce_map = ath11k_target_service_to_ce_map_wlan_qcn9074,
  		.svc_to_ce_map_len = 18,
@@ -66,7 +64,7 @@ index c0548da30678..ed9748aac91e 100644
  		.rxdma1_enable = true,
  		.num_rxmda_per_pdev = 1,
  		.rx_mac_buf_ring = false,
-@@ -355,9 +343,6 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -355,9 +343,6 @@ static const struct ath11k_hw_params ath
  		.target_ce_count = 9,
  		.svc_to_ce_map = ath11k_target_service_to_ce_map_wlan_qca6390,
  		.svc_to_ce_map_len = 14,
@@ -76,7 +74,7 @@ index c0548da30678..ed9748aac91e 100644
  		.single_pdev_only = true,
  		.rxdma1_enable = false,
  		.num_rxmda_per_pdev = 2,
-@@ -429,9 +414,6 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -429,9 +414,6 @@ static const struct ath11k_hw_params ath
  		.target_ce_count = 9,
  		.svc_to_ce_map = ath11k_target_service_to_ce_map_wlan_qca6390,
  		.svc_to_ce_map_len = 14,
@@ -86,7 +84,7 @@ index c0548da30678..ed9748aac91e 100644
  		.single_pdev_only = true,
  		.rxdma1_enable = false,
  		.num_rxmda_per_pdev = 2,
-@@ -501,9 +483,6 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -501,9 +483,6 @@ static const struct ath11k_hw_params ath
  		.target_ce_count = 9,
  		.svc_to_ce_map = ath11k_target_service_to_ce_map_wlan_qca6390,
  		.svc_to_ce_map_len = 14,
@@ -96,7 +94,7 @@ index c0548da30678..ed9748aac91e 100644
  		.single_pdev_only = true,
  		.rxdma1_enable = false,
  		.num_rxmda_per_pdev = 1,
-@@ -1393,27 +1372,6 @@ static int ath11k_core_start_firmware(struct ath11k_base *ab,
+@@ -1393,27 +1372,6 @@ static int ath11k_core_start_firmware(st
  	return ret;
  }
  
@@ -124,7 +122,7 @@ index c0548da30678..ed9748aac91e 100644
  int ath11k_core_qmi_firmware_ready(struct ath11k_base *ab)
  {
  	int ret;
-@@ -1466,13 +1424,6 @@ int ath11k_core_qmi_firmware_ready(struct ath11k_base *ab)
+@@ -1466,13 +1424,6 @@ int ath11k_core_qmi_firmware_ready(struc
  		goto err_core_stop;
  	}
  	ath11k_hif_irq_enable(ab);
@@ -175,7 +173,7 @@ index c0548da30678..ed9748aac91e 100644
  static void ath11k_update_11d(struct work_struct *work)
  {
  	struct ath11k_base *ab = container_of(work, struct ath11k_base, update_11d_work);
-@@ -1882,7 +1810,6 @@ struct ath11k_base *ath11k_core_alloc(struct device *dev, size_t priv_size,
+@@ -1882,7 +1810,6 @@ struct ath11k_base *ath11k_core_alloc(st
  	init_waitqueue_head(&ab->qmi.cold_boot_waitq);
  	INIT_WORK(&ab->restart_work, ath11k_core_restart);
  	INIT_WORK(&ab->update_11d_work, ath11k_update_11d);
@@ -183,8 +181,6 @@ index c0548da30678..ed9748aac91e 100644
  	INIT_WORK(&ab->reset_work, ath11k_core_reset);
  	timer_setup(&ab->rx_replenish_retry, ath11k_ce_rx_replenish_retry, 0);
  	init_completion(&ab->htc_suspend);
-diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
-index 2bd5eb9df4d4..afad8f55e433 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
 @@ -929,10 +929,6 @@ struct ath11k_base {
@@ -198,8 +194,6 @@ index 2bd5eb9df4d4..afad8f55e433 100644
  
  	/* To synchronize 11d scan vdev id */
  	struct mutex vdev_id_11d_lock;
-diff --git a/drivers/net/wireless/ath/ath11k/hw.h b/drivers/net/wireless/ath/ath11k/hw.h
-index 89ab1d40a8f3..42249e338852 100644
 --- a/drivers/net/wireless/ath/ath11k/hw.h
 +++ b/drivers/net/wireless/ath/ath11k/hw.h
 @@ -153,9 +153,6 @@ struct ath11k_hw_params {
@@ -212,11 +206,9 @@ index 89ab1d40a8f3..42249e338852 100644
  
  	bool rxdma1_enable;
  	int num_rxmda_per_pdev;
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index 3f60cc4f5d1b..8a60b69575c6 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -5605,63 +5605,6 @@ static int ath11k_mac_mgmt_tx(struct ath11k *ar, struct sk_buff *skb,
+@@ -5605,63 +5605,6 @@ static int ath11k_mac_mgmt_tx(struct ath
  	return 0;
  }
  
@@ -280,7 +272,7 @@ index 3f60cc4f5d1b..8a60b69575c6 100644
  static void ath11k_mac_op_tx(struct ieee80211_hw *hw,
  			     struct ieee80211_tx_control *control,
  			     struct sk_buff *skb)
-@@ -5916,7 +5859,6 @@ static void ath11k_mac_op_stop(struct ieee80211_hw *hw)
+@@ -5916,7 +5859,6 @@ static void ath11k_mac_op_stop(struct ie
  	cancel_delayed_work_sync(&ar->scan.timeout);
  	cancel_work_sync(&ar->regd_update_work);
  	cancel_work_sync(&ar->ab->update_11d_work);
@@ -288,11 +280,9 @@ index 3f60cc4f5d1b..8a60b69575c6 100644
  
  	if (ar->state_11d == ATH11K_11D_PREPARING) {
  		ar->state_11d = ATH11K_11D_IDLE;
-diff --git a/drivers/net/wireless/ath/ath11k/mac.h b/drivers/net/wireless/ath/ath11k/mac.h
-index 57ebfc592b00..2a0d3afb0c99 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.h
 +++ b/drivers/net/wireless/ath/ath11k/mac.h
-@@ -148,8 +148,6 @@ u8 ath11k_mac_hw_rate_to_idx(const struct ieee80211_supported_band *sband,
+@@ -148,8 +148,6 @@ u8 ath11k_mac_hw_rate_to_idx(const struc
  
  void __ath11k_mac_scan_finish(struct ath11k *ar);
  void ath11k_mac_scan_finish(struct ath11k *ar);
@@ -301,11 +291,9 @@ index 57ebfc592b00..2a0d3afb0c99 100644
  
  struct ath11k_vif *ath11k_mac_get_arvif(struct ath11k *ar, u32 vdev_id);
  struct ath11k_vif *ath11k_mac_get_arvif_by_vdev_id(struct ath11k_base *ab,
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
-index f69918b9452a..0f97d4a4ba15 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -129,8 +129,6 @@ static const struct wmi_tlv_policy wmi_tlv_policies[] = {
+@@ -129,8 +129,6 @@ static const struct wmi_tlv_policy wmi_t
  		= { .min_len = sizeof(struct wmi_peer_assoc_conf_event) },
  	[WMI_TAG_STATS_EVENT]
  		= { .min_len = sizeof(struct wmi_stats_event) },
@@ -314,7 +302,7 @@ index f69918b9452a..0f97d4a4ba15 100644
  	[WMI_TAG_PDEV_CTL_FAILSAFE_CHECK_EVENT]
  		= { .min_len = sizeof(struct wmi_pdev_ctl_failsafe_chk_event) },
  	[WMI_TAG_HOST_SWFDA_EVENT] = {
-@@ -533,8 +531,6 @@ static int ath11k_pull_service_ready_tlv(struct ath11k_base *ab,
+@@ -533,8 +531,6 @@ static int ath11k_pull_service_ready_tlv
  	cap->default_dbs_hw_mode_index = ev->default_dbs_hw_mode_index;
  	cap->num_msdu_desc = ev->num_msdu_desc;
  
@@ -323,7 +311,7 @@ index f69918b9452a..0f97d4a4ba15 100644
  	return 0;
  }
  
-@@ -7565,40 +7561,6 @@ ath11k_wmi_pdev_dfs_radar_detected_event(struct ath11k_base *ab, struct sk_buff
+@@ -7565,40 +7561,6 @@ exit:
  	kfree(tb);
  }
  
@@ -364,7 +352,7 @@ index f69918b9452a..0f97d4a4ba15 100644
  static void
  ath11k_wmi_pdev_temperature_event(struct ath11k_base *ab,
  				  struct sk_buff *skb)
-@@ -7994,9 +7956,6 @@ static void ath11k_wmi_tlv_op_rx(struct ath11k_base *ab, struct sk_buff *skb)
+@@ -7994,9 +7956,6 @@ static void ath11k_wmi_tlv_op_rx(struct
  	case WMI_11D_NEW_COUNTRY_EVENTID:
  		ath11k_reg_11d_new_cc_event(ab, skb);
  		break;
@@ -374,8 +362,6 @@ index f69918b9452a..0f97d4a4ba15 100644
  	case WMI_DIAG_EVENTID:
  		ath11k_wmi_diag_event(ab, skb);
  		break;
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.h b/drivers/net/wireless/ath/ath11k/wmi.h
-index b1fad4707dc6..4da248ffa318 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.h
 +++ b/drivers/net/wireless/ath/ath11k/wmi.h
 @@ -5328,31 +5328,6 @@ struct target_resource_config {
@@ -410,6 +396,3 @@ index b1fad4707dc6..4da248ffa318 100644
  enum wmi_debug_log_param {
  	WMI_DEBUG_LOG_PARAM_LOG_LEVEL = 0x1,
  	WMI_DEBUG_LOG_PARAM_VDEV_ENABLE,
--- 
-2.37.1
-

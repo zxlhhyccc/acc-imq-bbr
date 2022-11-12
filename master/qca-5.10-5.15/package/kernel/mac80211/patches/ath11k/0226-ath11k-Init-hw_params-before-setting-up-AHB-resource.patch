@@ -24,11 +24,9 @@ Link: https://lore.kernel.org/r/20220517055241.15885-1-quic_mpubbise@quicinc.com
  drivers/net/wireless/ath/ath11k/ahb.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/ahb.c b/drivers/net/wireless/ath/ath11k/ahb.c
-index fa11807f48a9..d7d33d5cdfc5 100644
 --- a/drivers/net/wireless/ath/ath11k/ahb.c
 +++ b/drivers/net/wireless/ath/ath11k/ahb.c
-@@ -976,11 +976,11 @@ static int ath11k_ahb_probe(struct platform_device *pdev)
+@@ -976,11 +976,11 @@ static int ath11k_ahb_probe(struct platf
  	ab->hw_rev = hw_rev;
  	platform_set_drvdata(pdev, ab);
  
@@ -42,6 +40,3 @@ index fa11807f48a9..d7d33d5cdfc5 100644
  	if (ret)
  		goto err_core_free;
  
--- 
-2.37.1
-

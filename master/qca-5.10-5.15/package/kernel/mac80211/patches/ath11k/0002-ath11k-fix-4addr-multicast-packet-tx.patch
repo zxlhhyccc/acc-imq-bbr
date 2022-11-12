@@ -23,8 +23,6 @@ Link: https://lore.kernel.org/r/20210720213147.90042-2-jouni@codeaurora.org
  drivers/net/wireless/ath/ath11k/peer.c  | 11 +++++++++++
  5 files changed, 28 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
-index 49836d649a62..cea54e01836c 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
 @@ -383,6 +383,7 @@ struct ath11k_sta {
@@ -35,11 +33,9 @@ index 49836d649a62..cea54e01836c 100644
  };
  
  #define ATH11K_MIN_5G_FREQ 4150
-diff --git a/drivers/net/wireless/ath/ath11k/dp_tx.c b/drivers/net/wireless/ath/ath11k/dp_tx.c
-index bb8744ccfa00..32f16f79161b 100644
 --- a/drivers/net/wireless/ath/ath11k/dp_tx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_tx.c
-@@ -78,7 +78,7 @@ enum hal_encrypt_type ath11k_dp_tx_get_encrypt_type(u32 cipher)
+@@ -78,7 +78,7 @@ enum hal_encrypt_type ath11k_dp_tx_get_e
  }
  
  int ath11k_dp_tx(struct ath11k *ar, struct ath11k_vif *arvif,
@@ -48,7 +44,7 @@ index bb8744ccfa00..32f16f79161b 100644
  {
  	struct ath11k_base *ab = ar->ab;
  	struct ath11k_dp *dp = &ab->dp;
-@@ -145,7 +145,15 @@ int ath11k_dp_tx(struct ath11k *ar, struct ath11k_vif *arvif,
+@@ -145,7 +145,15 @@ tcl_ring_sel:
  		     FIELD_PREP(DP_TX_DESC_ID_MSDU_ID, ret) |
  		     FIELD_PREP(DP_TX_DESC_ID_POOL_ID, pool_id);
  	ti.encap_type = ath11k_dp_tx_get_encap_type(arvif, skb);
@@ -65,8 +61,6 @@ index bb8744ccfa00..32f16f79161b 100644
  
  	if (ti.encap_type == HAL_TCL_ENCAP_TYPE_RAW) {
  		if (skb_cb->flags & ATH11K_SKB_CIPHER_SET) {
-diff --git a/drivers/net/wireless/ath/ath11k/dp_tx.h b/drivers/net/wireless/ath/ath11k/dp_tx.h
-index f8a9f9c8e444..698b907b878d 100644
 --- a/drivers/net/wireless/ath/ath11k/dp_tx.h
 +++ b/drivers/net/wireless/ath/ath11k/dp_tx.h
 @@ -17,7 +17,7 @@ struct ath11k_dp_htt_wbm_tx_status {
@@ -78,11 +72,9 @@ index f8a9f9c8e444..698b907b878d 100644
  void ath11k_dp_tx_completion_handler(struct ath11k_base *ab, int ring_id);
  int ath11k_dp_tx_send_reo_cmd(struct ath11k_base *ab, struct dp_rx_tid *rx_tid,
  			      enum hal_reo_cmd_type type,
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index c69cb2cf357e..d04ccae4217d 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -4372,6 +4372,7 @@ static void ath11k_mac_op_tx(struct ieee80211_hw *hw,
+@@ -4372,6 +4372,7 @@ static void ath11k_mac_op_tx(struct ieee
  	struct ath11k_vif *arvif = ath11k_vif_to_arvif(vif);
  	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)skb->data;
  	struct ieee80211_key_conf *key = info->control.hw_key;
@@ -90,7 +82,7 @@ index c69cb2cf357e..d04ccae4217d 100644
  	u32 info_flags = info->flags;
  	bool is_prb_rsp;
  	int ret;
-@@ -4397,7 +4398,10 @@ static void ath11k_mac_op_tx(struct ieee80211_hw *hw,
+@@ -4397,7 +4398,10 @@ static void ath11k_mac_op_tx(struct ieee
  		return;
  	}
  
@@ -102,11 +94,9 @@ index c69cb2cf357e..d04ccae4217d 100644
  	if (ret) {
  		ath11k_warn(ar->ab, "failed to transmit frame %d\n", ret);
  		ieee80211_free_txskb(ar->hw, skb);
-diff --git a/drivers/net/wireless/ath/ath11k/peer.c b/drivers/net/wireless/ath/ath11k/peer.c
-index f49abefa9618..85471f8b3563 100644
 --- a/drivers/net/wireless/ath/ath11k/peer.c
 +++ b/drivers/net/wireless/ath/ath11k/peer.c
-@@ -251,6 +251,7 @@ int ath11k_peer_create(struct ath11k *ar, struct ath11k_vif *arvif,
+@@ -251,6 +251,7 @@ int ath11k_peer_create(struct ath11k *ar
  		       struct ieee80211_sta *sta, struct peer_create_params *param)
  {
  	struct ath11k_peer *peer;
@@ -114,7 +104,7 @@ index f49abefa9618..85471f8b3563 100644
  	int ret;
  
  	lockdep_assert_held(&ar->conf_mutex);
-@@ -319,6 +320,16 @@ int ath11k_peer_create(struct ath11k *ar, struct ath11k_vif *arvif,
+@@ -319,6 +320,16 @@ int ath11k_peer_create(struct ath11k *ar
  	peer->sec_type = HAL_ENCRYPT_TYPE_OPEN;
  	peer->sec_type_grp = HAL_ENCRYPT_TYPE_OPEN;
  
@@ -131,6 +121,3 @@ index f49abefa9618..85471f8b3563 100644
  	ar->num_peers++;
  
  	spin_unlock_bh(&ar->ab->base_lock);
--- 
-2.37.1
-

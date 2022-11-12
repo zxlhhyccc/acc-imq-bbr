@@ -16,8 +16,6 @@ Link: https://lore.kernel.org/r/20211026041655.5112-1-bqiang@codeaurora.org
  drivers/net/wireless/ath/ath11k/pci.c | 8 ++++----
  1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/pci.c b/drivers/net/wireless/ath/ath11k/pci.c
-index 4e5971373d54..6e8d4d89dcb4 100644
 --- a/drivers/net/wireless/ath/ath11k/pci.c
 +++ b/drivers/net/wireless/ath/ath11k/pci.c
 @@ -16,7 +16,8 @@
@@ -30,7 +28,7 @@ index 4e5971373d54..6e8d4d89dcb4 100644
  
  #define WINDOW_ENABLE_BIT		0x40000000
  #define WINDOW_REG_ADDRESS		0x310c
-@@ -742,9 +743,8 @@ static irqreturn_t ath11k_pci_ext_interrupt_handler(int irq, void *arg)
+@@ -742,9 +743,8 @@ static irqreturn_t ath11k_pci_ext_interr
  static int ath11k_pci_ext_irq_config(struct ath11k_base *ab)
  {
  	int i, j, ret, num_vectors = 0;
@@ -41,7 +39,7 @@ index 4e5971373d54..6e8d4d89dcb4 100644
  	ret = ath11k_pci_get_user_msi_assignment(ath11k_pci_priv(ab), "DP",
  						 &num_vectors,
  						 &user_base_data,
-@@ -774,7 +774,7 @@ static int ath11k_pci_ext_irq_config(struct ath11k_base *ab)
+@@ -774,7 +774,7 @@ static int ath11k_pci_ext_irq_config(str
  		}
  
  		irq_grp->num_irq = num_irq;
@@ -50,6 +48,3 @@ index 4e5971373d54..6e8d4d89dcb4 100644
  
  		for (j = 0; j < irq_grp->num_irq; j++) {
  			int irq_idx = irq_grp->irqs[j];
--- 
-2.37.1
-

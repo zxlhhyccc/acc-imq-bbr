@@ -23,11 +23,9 @@ Link: https://lore.kernel.org/r/20211026041722.5271-1-bqiang@codeaurora.org
  drivers/net/wireless/ath/ath11k/pci.c | 8 +++++++-
  1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/pci.c b/drivers/net/wireless/ath/ath11k/pci.c
-index edb43b895350..6ee4c451edca 100644
 --- a/drivers/net/wireless/ath/ath11k/pci.c
 +++ b/drivers/net/wireless/ath/ath11k/pci.c
-@@ -1229,7 +1229,13 @@ static int ath11k_pci_start(struct ath11k_base *ab)
+@@ -1229,7 +1229,13 @@ static int ath11k_pci_start(struct ath11
  
  	set_bit(ATH11K_PCI_FLAG_INIT_DONE, &ab_pci->flags);
  
@@ -42,6 +40,3 @@ index edb43b895350..6ee4c451edca 100644
  
  	ath11k_pci_ce_irqs_enable(ab);
  	ath11k_ce_rx_post_buf(ab);
--- 
-2.37.1
-

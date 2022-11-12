@@ -27,11 +27,9 @@ Link: https://lore.kernel.org/r/20220228064606.8981-3-quic_wgong@quicinc.com
  drivers/net/wireless/ath/ath11k/mac.c  | 22 +++++++++++
  3 files changed, 70 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
-index cb1e4735b640..8fb6c80caf18 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -1302,12 +1302,11 @@ static void ath11k_update_11d(struct work_struct *work)
+@@ -1302,12 +1302,11 @@ static void ath11k_update_11d(struct wor
  	}
  }
  
@@ -46,7 +44,7 @@ index cb1e4735b640..8fb6c80caf18 100644
  
  	spin_lock_bh(&ab->base_lock);
  	ab->stats.fw_crash_counter++;
-@@ -1340,12 +1339,13 @@ static void ath11k_core_restart(struct work_struct *work)
+@@ -1340,12 +1339,13 @@ static void ath11k_core_restart(struct w
  
  	wake_up(&ab->wmi_ab.tx_credits_wq);
  	wake_up(&ab->peer_mapping_wq);
@@ -65,7 +63,7 @@ index cb1e4735b640..8fb6c80caf18 100644
  
  	for (i = 0; i < ab->num_radios; i++) {
  		pdev = &ab->pdevs[i];
-@@ -1381,6 +1381,27 @@ static void ath11k_core_restart(struct work_struct *work)
+@@ -1381,6 +1381,27 @@ static void ath11k_core_restart(struct w
  	complete(&ab->driver_recovery);
  }
  
@@ -93,7 +91,7 @@ index cb1e4735b640..8fb6c80caf18 100644
  static void ath11k_core_reset(struct work_struct *work)
  {
  	struct ath11k_base *ab = container_of(work, struct ath11k_base, reset_work);
-@@ -1432,6 +1453,18 @@ static void ath11k_core_reset(struct work_struct *work)
+@@ -1432,6 +1453,18 @@ static void ath11k_core_reset(struct wor
  
  	ab->is_reset = true;
  	atomic_set(&ab->recovery_count, 0);
@@ -112,7 +110,7 @@ index cb1e4735b640..8fb6c80caf18 100644
  
  	ath11k_hif_power_down(ab);
  	ath11k_qmi_free_resource(ab);
-@@ -1540,6 +1573,8 @@ struct ath11k_base *ath11k_core_alloc(struct device *dev, size_t priv_size,
+@@ -1540,6 +1573,8 @@ struct ath11k_base *ath11k_core_alloc(st
  	spin_lock_init(&ab->base_lock);
  	mutex_init(&ab->vdev_id_11d_lock);
  	init_completion(&ab->reset_complete);
@@ -121,8 +119,6 @@ index cb1e4735b640..8fb6c80caf18 100644
  
  	INIT_LIST_HEAD(&ab->peers);
  	init_waitqueue_head(&ab->peer_mapping_wq);
-diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
-index bd31413d84ca..70eb6e418422 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
 @@ -44,6 +44,8 @@ extern unsigned int ath11k_frame_mode;
@@ -146,11 +142,9 @@ index bd31413d84ca..70eb6e418422 100644
  	/* continuous recovery fail count */
  	atomic_t fail_cont_count;
  	unsigned long reset_fail_timeout;
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index 5ab6af54adf1..7c7b37fbfd46 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -5756,6 +5756,27 @@ static int ath11k_mac_config_mon_status_default(struct ath11k *ar, bool enable)
+@@ -5756,6 +5756,27 @@ static int ath11k_mac_config_mon_status_
  	return ret;
  }
  
@@ -178,7 +172,7 @@ index 5ab6af54adf1..7c7b37fbfd46 100644
  static int ath11k_mac_op_start(struct ieee80211_hw *hw)
  {
  	struct ath11k *ar = hw->priv;
-@@ -5772,6 +5793,7 @@ static int ath11k_mac_op_start(struct ieee80211_hw *hw)
+@@ -5772,6 +5793,7 @@ static int ath11k_mac_op_start(struct ie
  		break;
  	case ATH11K_STATE_RESTARTING:
  		ar->state = ATH11K_STATE_RESTARTED;
@@ -186,6 +180,3 @@ index 5ab6af54adf1..7c7b37fbfd46 100644
  		break;
  	case ATH11K_STATE_RESTARTED:
  	case ATH11K_STATE_WEDGED:
--- 
-2.37.1
-

@@ -22,11 +22,9 @@ Link: https://lore.kernel.org/r/1635168282-8845-1-git-send-email-quic_ppranees@q
  drivers/net/wireless/ath/ath11k/mac.c | 5 +++--
  1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index d1a36cb78bf2..cf6c8f105e34 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -5219,11 +5219,12 @@ static void ath11k_mgmt_over_wmi_tx_work(struct work_struct *work)
+@@ -5219,11 +5219,12 @@ static void ath11k_mgmt_over_wmi_tx_work
  		if (ar->allocated_vdev_map & (1LL << arvif->vdev_id)) {
  			ret = ath11k_mac_mgmt_tx_wmi(ar, arvif, skb);
  			if (ret) {
@@ -41,6 +39,3 @@ index d1a36cb78bf2..cf6c8f105e34 100644
  			}
  		} else {
  			ath11k_warn(ar->ab,
--- 
-2.37.1
-

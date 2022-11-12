@@ -24,11 +24,9 @@ Link: https://lore.kernel.org/r/20210721180809.90960-2-jouni@codeaurora.org
  drivers/net/wireless/ath/ath11k/spectral.c | 13 ++++-----
  3 files changed, 40 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
-index 48b4151e13a3..2147cda9dbb6 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -59,7 +59,14 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -59,7 +59,14 @@ static const struct ath11k_hw_params ath
  		.vdev_start_delay = false,
  		.htt_peer_map_v2 = true,
  		.tcl_0_only = false,
@@ -44,7 +42,7 @@ index 48b4151e13a3..2147cda9dbb6 100644
  
  		.interface_modes = BIT(NL80211_IFTYPE_STATION) |
  					BIT(NL80211_IFTYPE_AP) |
-@@ -101,7 +108,11 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -101,7 +108,11 @@ static const struct ath11k_hw_params ath
  		.vdev_start_delay = false,
  		.htt_peer_map_v2 = true,
  		.tcl_0_only = false,
@@ -57,7 +55,7 @@ index 48b4151e13a3..2147cda9dbb6 100644
  
  		.interface_modes = BIT(NL80211_IFTYPE_STATION) |
  					BIT(NL80211_IFTYPE_AP) |
-@@ -143,7 +154,11 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -143,7 +154,11 @@ static const struct ath11k_hw_params ath
  		.vdev_start_delay = true,
  		.htt_peer_map_v2 = false,
  		.tcl_0_only = true,
@@ -70,7 +68,7 @@ index 48b4151e13a3..2147cda9dbb6 100644
  
  		.interface_modes = BIT(NL80211_IFTYPE_STATION) |
  					BIT(NL80211_IFTYPE_AP),
-@@ -183,6 +198,12 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -183,6 +198,12 @@ static const struct ath11k_hw_params ath
  		.vdev_start_delay = false,
  		.htt_peer_map_v2 = true,
  		.tcl_0_only = false,
@@ -83,7 +81,7 @@ index 48b4151e13a3..2147cda9dbb6 100644
  		.interface_modes = BIT(NL80211_IFTYPE_STATION) |
  					BIT(NL80211_IFTYPE_AP) |
  					BIT(NL80211_IFTYPE_MESH_POINT),
-@@ -223,7 +244,11 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+@@ -223,7 +244,11 @@ static const struct ath11k_hw_params ath
  		.vdev_start_delay = true,
  		.htt_peer_map_v2 = false,
  		.tcl_0_only = true,
@@ -96,8 +94,6 @@ index 48b4151e13a3..2147cda9dbb6 100644
  
  		.interface_modes = BIT(NL80211_IFTYPE_STATION) |
  					BIT(NL80211_IFTYPE_AP),
-diff --git a/drivers/net/wireless/ath/ath11k/hw.h b/drivers/net/wireless/ath/ath11k/hw.h
-index 4fe051625edf..b5731e6a2817 100644
 --- a/drivers/net/wireless/ath/ath11k/hw.h
 +++ b/drivers/net/wireless/ath/ath11k/hw.h
 @@ -153,7 +153,11 @@ struct ath11k_hw_params {
@@ -113,8 +109,6 @@ index 4fe051625edf..b5731e6a2817 100644
  
  	u16 interface_modes;
  	bool supports_monitor;
-diff --git a/drivers/net/wireless/ath/ath11k/spectral.c b/drivers/net/wireless/ath/ath11k/spectral.c
-index e5af9358e610..5f60946ebcec 100644
 --- a/drivers/net/wireless/ath/ath11k/spectral.c
 +++ b/drivers/net/wireless/ath/ath11k/spectral.c
 @@ -11,8 +11,6 @@
@@ -126,7 +120,7 @@ index e5af9358e610..5f60946ebcec 100644
  #define ATH11K_SPECTRAL_ATH11K_MIN_BINS		64
  #define ATH11K_SPECTRAL_ATH11K_MIN_IB_BINS	32
  #define ATH11K_SPECTRAL_ATH11K_MAX_IB_BINS	256
-@@ -588,12 +586,12 @@ int ath11k_spectral_process_fft(struct ath11k *ar,
+@@ -588,12 +586,12 @@ int ath11k_spectral_process_fft(struct a
  	struct spectral_tlv *tlv;
  	int tlv_len, bin_len, num_bins;
  	u16 length, freq;
@@ -141,7 +135,7 @@ index e5af9358e610..5f60946ebcec 100644
  		ath11k_warn(ab, "invalid bin size type for hw rev %d\n",
  			    ab->hw_rev);
  		return -EINVAL;
-@@ -611,7 +609,8 @@ int ath11k_spectral_process_fft(struct ath11k *ar,
+@@ -611,7 +609,8 @@ int ath11k_spectral_process_fft(struct a
  		return -EINVAL;
  	}
  
@@ -151,7 +145,7 @@ index e5af9358e610..5f60946ebcec 100644
  	/* Only In-band bins are useful to user for visualize */
  	num_bins >>= 1;
  
-@@ -661,7 +660,7 @@ int ath11k_spectral_process_fft(struct ath11k *ar,
+@@ -661,7 +660,7 @@ int ath11k_spectral_process_fft(struct a
  	fft_sample->freq2 = __cpu_to_be16(freq);
  
  	ath11k_spectral_parse_fft(fft_sample->data, fft_report->bins, num_bins,
@@ -160,7 +154,7 @@ index e5af9358e610..5f60946ebcec 100644
  
  	fft_sample->max_exp = ath11k_spectral_get_max_exp(fft_sample->max_index,
  							  search.peak_mag,
-@@ -967,7 +966,7 @@ int ath11k_spectral_init(struct ath11k_base *ab)
+@@ -967,7 +966,7 @@ int ath11k_spectral_init(struct ath11k_b
  		      ab->wmi_ab.svc_map))
  		return 0;
  
@@ -169,6 +163,3 @@ index e5af9358e610..5f60946ebcec 100644
  		return 0;
  
  	for (i = 0; i < ab->num_radios; i++) {
--- 
-2.37.1
-

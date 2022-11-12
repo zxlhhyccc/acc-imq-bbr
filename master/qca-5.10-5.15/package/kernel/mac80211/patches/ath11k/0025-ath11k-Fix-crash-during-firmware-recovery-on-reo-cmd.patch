@@ -49,11 +49,9 @@ Link: https://lore.kernel.org/r/20210721212029.142388-7-jouni@codeaurora.org
  drivers/net/wireless/ath/ath11k/dp_tx.c | 3 +++
  1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath11k/dp_tx.c b/drivers/net/wireless/ath/ath11k/dp_tx.c
-index 4c339ca5aef3..d30636174d54 100644
 --- a/drivers/net/wireless/ath/ath11k/dp_tx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_tx.c
-@@ -622,6 +622,9 @@ int ath11k_dp_tx_send_reo_cmd(struct ath11k_base *ab, struct dp_rx_tid *rx_tid,
+@@ -622,6 +622,9 @@ int ath11k_dp_tx_send_reo_cmd(struct ath
  	struct hal_srng *cmd_ring;
  	int cmd_num;
  
@@ -63,6 +61,3 @@ index 4c339ca5aef3..d30636174d54 100644
  	cmd_ring = &ab->hal.srng_list[dp->reo_cmd_ring.ring_id];
  	cmd_num = ath11k_hal_reo_cmd_send(ab, cmd_ring, type, cmd);
  
--- 
-2.37.1
-

@@ -1,0 +1,284 @@
+From 9e2747c31e5a65e92173bc98a1b72f6a7c86d8e1 Mon Sep 17 00:00:00 2001
+From: Manikanta Pubbisetty <quic_mpubbise@quicinc.com>
+Date: Thu, 1 Sep 2022 19:21:24 +0300
+Subject: [PATCH 241/243] wifi: ath11k: Add TWT debugfs support for STA
+ interface
+
+Currently TWT debugfs files required for manually testing the
+TWT feature are created only for the AP interfaces; these debugfs
+hooks are also required for the station interfaces in order to
+test the TWT feature manually, therefore create these debugfs
+hooks for station iftype as well.
+
+In the case of station interfaces, TWT is entirely handled in the
+firmware based on input parameters passed to it during association
+via TWT enable WMI command. In order to manually test this feature,
+firmware expects to first disable the TWT feature and then send the
+enable command with sta_cong_timer_ms parameter set to 0.
+This is true for WCN6750, QCA6390 & WCN6855 hardwares.
+
+Tested-on: WCN6750 hw1.0 AHB WLAN.MSL.1.0.1-00887-QCAMSLSWPLZ-1
+
+Signed-off-by: Manikanta Pubbisetty <quic_mpubbise@quicinc.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220720135150.22193-2-quic_mpubbise@quicinc.com
+---
+ drivers/net/wireless/ath/ath11k/debugfs.c | 57 ++++++++++++++++---
+ drivers/net/wireless/ath/ath11k/mac.c     | 11 +++-
+ drivers/net/wireless/ath/ath11k/wmi.c     | 68 +++++++++++++++--------
+ drivers/net/wireless/ath/ath11k/wmi.h     | 23 +++++++-
+ 4 files changed, 123 insertions(+), 36 deletions(-)
+
+--- a/drivers/net/wireless/ath/ath11k/debugfs.c
++++ b/drivers/net/wireless/ath/ath11k/debugfs.c
+@@ -1454,11 +1454,13 @@ static ssize_t ath11k_write_twt_add_dial
+ {
+ 	struct ath11k_vif *arvif = file->private_data;
+ 	struct wmi_twt_add_dialog_params params = { 0 };
++	struct wmi_twt_enable_params twt_params = {0};
++	struct ath11k *ar = arvif->ar;
+ 	u8 buf[128] = {0};
+ 	int ret;
+ 
+-	if (arvif->ar->twt_enabled == 0) {
+-		ath11k_err(arvif->ar->ab, "twt support is not enabled\n");
++	if (ar->twt_enabled == 0) {
++		ath11k_err(ar->ab, "twt support is not enabled\n");
+ 		return -EOPNOTSUPP;
+ 	}
+ 
+@@ -1488,13 +1490,38 @@ static ssize_t ath11k_write_twt_add_dial
+ 	if (ret != 16)
+ 		return -EINVAL;
+ 
++	/* In the case of station vif, TWT is entirely handled by
++	 * the firmware based on the input parameters in the TWT enable
++	 * WMI command that is sent to the target during assoc.
++	 * For manually testing the TWT feature, we need to first disable
++	 * TWT and send enable command again with TWT input parameter
++	 * sta_cong_timer_ms set to 0.
++	 */
++	if (arvif->vif->type == NL80211_IFTYPE_STATION) {
++		ath11k_wmi_send_twt_disable_cmd(ar, ar->pdev->pdev_id);
++
++		ath11k_wmi_fill_default_twt_params(&twt_params);
++		twt_params.sta_cong_timer_ms = 0;
++
++		ath11k_wmi_send_twt_enable_cmd(ar, ar->pdev->pdev_id, &twt_params);
++	}
++
+ 	params.vdev_id = arvif->vdev_id;
+ 
+ 	ret = ath11k_wmi_send_twt_add_dialog_cmd(arvif->ar, &params);
+ 	if (ret)
+-		return ret;
++		goto err_twt_add_dialog;
+ 
+ 	return count;
++
++err_twt_add_dialog:
++	if (arvif->vif->type == NL80211_IFTYPE_STATION) {
++		ath11k_wmi_send_twt_disable_cmd(ar, ar->pdev->pdev_id);
++		ath11k_wmi_fill_default_twt_params(&twt_params);
++		ath11k_wmi_send_twt_enable_cmd(ar, ar->pdev->pdev_id, &twt_params);
++	}
++
++	return ret;
+ }
+ 
+ static ssize_t ath11k_write_twt_del_dialog(struct file *file,
+@@ -1503,11 +1530,13 @@ static ssize_t ath11k_write_twt_del_dial
+ {
+ 	struct ath11k_vif *arvif = file->private_data;
+ 	struct wmi_twt_del_dialog_params params = { 0 };
++	struct wmi_twt_enable_params twt_params = {0};
++	struct ath11k *ar = arvif->ar;
+ 	u8 buf[64] = {0};
+ 	int ret;
+ 
+-	if (arvif->ar->twt_enabled == 0) {
+-		ath11k_err(arvif->ar->ab, "twt support is not enabled\n");
++	if (ar->twt_enabled == 0) {
++		ath11k_err(ar->ab, "twt support is not enabled\n");
+ 		return -EOPNOTSUPP;
+ 	}
+ 
+@@ -1533,6 +1562,12 @@ static ssize_t ath11k_write_twt_del_dial
+ 	if (ret)
+ 		return ret;
+ 
++	if (arvif->vif->type == NL80211_IFTYPE_STATION) {
++		ath11k_wmi_send_twt_disable_cmd(ar, ar->pdev->pdev_id);
++		ath11k_wmi_fill_default_twt_params(&twt_params);
++		ath11k_wmi_send_twt_enable_cmd(ar, ar->pdev->pdev_id, &twt_params);
++	}
++
+ 	return count;
+ }
+ 
+@@ -1638,12 +1673,18 @@ static const struct file_operations ath1
+ 
+ int ath11k_debugfs_add_interface(struct ath11k_vif *arvif)
+ {
+-	if (arvif->vif->type == NL80211_IFTYPE_AP && !arvif->debugfs_twt) {
++	struct ath11k_base *ab = arvif->ar->ab;
++
++	if (arvif->vif->type != NL80211_IFTYPE_AP &&
++	    !(arvif->vif->type == NL80211_IFTYPE_STATION &&
++	      test_bit(WMI_TLV_SERVICE_STA_TWT, ab->wmi_ab.svc_map)))
++		return 0;
++
++	if (!arvif->debugfs_twt) {
+ 		arvif->debugfs_twt = debugfs_create_dir("twt",
+ 							arvif->vif->debugfs_dir);
+ 		if (!arvif->debugfs_twt || IS_ERR(arvif->debugfs_twt)) {
+-			ath11k_warn(arvif->ar->ab,
+-				    "failed to create directory %p\n",
++			ath11k_warn(ab, "failed to create directory %p\n",
+ 				    arvif->debugfs_twt);
+ 			arvif->debugfs_twt = NULL;
+ 			return -1;
+--- a/drivers/net/wireless/ath/ath11k/mac.c
++++ b/drivers/net/wireless/ath/ath11k/mac.c
+@@ -3348,10 +3348,15 @@ static void ath11k_mac_op_bss_info_chang
+ 		ath11k_recalculate_mgmt_rate(ar, vif, &def);
+ 
+ 	if (changed & BSS_CHANGED_TWT) {
+-		if (info->twt_requester || info->twt_responder)
+-			ath11k_wmi_send_twt_enable_cmd(ar, ar->pdev->pdev_id);
+-		else
++		struct wmi_twt_enable_params twt_params = {0};
++
++		if (info->twt_requester || info->twt_responder) {
++			ath11k_wmi_fill_default_twt_params(&twt_params);
++			ath11k_wmi_send_twt_enable_cmd(ar, ar->pdev->pdev_id,
++						       &twt_params);
++		} else {
+ 			ath11k_wmi_send_twt_disable_cmd(ar, ar->pdev->pdev_id);
++		}
+ 	}
+ 
+ 	if (changed & BSS_CHANGED_HE_OBSS_PD)
+--- a/drivers/net/wireless/ath/ath11k/wmi.c
++++ b/drivers/net/wireless/ath/ath11k/wmi.c
+@@ -3064,8 +3064,34 @@ int ath11k_wmi_pdev_pktlog_disable(struc
+ 	return ret;
+ }
+ 
+-int
+-ath11k_wmi_send_twt_enable_cmd(struct ath11k *ar, u32 pdev_id)
++void ath11k_wmi_fill_default_twt_params(struct wmi_twt_enable_params *twt_params)
++{
++	twt_params->sta_cong_timer_ms = ATH11K_TWT_DEF_STA_CONG_TIMER_MS;
++	twt_params->default_slot_size = ATH11K_TWT_DEF_DEFAULT_SLOT_SIZE;
++	twt_params->congestion_thresh_setup = ATH11K_TWT_DEF_CONGESTION_THRESH_SETUP;
++	twt_params->congestion_thresh_teardown =
++		ATH11K_TWT_DEF_CONGESTION_THRESH_TEARDOWN;
++	twt_params->congestion_thresh_critical =
++		ATH11K_TWT_DEF_CONGESTION_THRESH_CRITICAL;
++	twt_params->interference_thresh_teardown =
++		ATH11K_TWT_DEF_INTERFERENCE_THRESH_TEARDOWN;
++	twt_params->interference_thresh_setup =
++		ATH11K_TWT_DEF_INTERFERENCE_THRESH_SETUP;
++	twt_params->min_no_sta_setup = ATH11K_TWT_DEF_MIN_NO_STA_SETUP;
++	twt_params->min_no_sta_teardown = ATH11K_TWT_DEF_MIN_NO_STA_TEARDOWN;
++	twt_params->no_of_bcast_mcast_slots = ATH11K_TWT_DEF_NO_OF_BCAST_MCAST_SLOTS;
++	twt_params->min_no_twt_slots = ATH11K_TWT_DEF_MIN_NO_TWT_SLOTS;
++	twt_params->max_no_sta_twt = ATH11K_TWT_DEF_MAX_NO_STA_TWT;
++	twt_params->mode_check_interval = ATH11K_TWT_DEF_MODE_CHECK_INTERVAL;
++	twt_params->add_sta_slot_interval = ATH11K_TWT_DEF_ADD_STA_SLOT_INTERVAL;
++	twt_params->remove_sta_slot_interval =
++		ATH11K_TWT_DEF_REMOVE_STA_SLOT_INTERVAL;
++	/* TODO add MBSSID support */
++	twt_params->mbss_support = 0;
++}
++
++int ath11k_wmi_send_twt_enable_cmd(struct ath11k *ar, u32 pdev_id,
++				   struct wmi_twt_enable_params *params)
+ {
+ 	struct ath11k_pdev_wmi *wmi = ar->wmi;
+ 	struct ath11k_base *ab = wmi->wmi_ab->ab;
+@@ -3083,28 +3109,22 @@ ath11k_wmi_send_twt_enable_cmd(struct at
+ 	cmd->tlv_header = FIELD_PREP(WMI_TLV_TAG, WMI_TAG_TWT_ENABLE_CMD) |
+ 			  FIELD_PREP(WMI_TLV_LEN, len - TLV_HDR_SIZE);
+ 	cmd->pdev_id = pdev_id;
+-	cmd->sta_cong_timer_ms = ATH11K_TWT_DEF_STA_CONG_TIMER_MS;
+-	cmd->default_slot_size = ATH11K_TWT_DEF_DEFAULT_SLOT_SIZE;
+-	cmd->congestion_thresh_setup = ATH11K_TWT_DEF_CONGESTION_THRESH_SETUP;
+-	cmd->congestion_thresh_teardown =
+-		ATH11K_TWT_DEF_CONGESTION_THRESH_TEARDOWN;
+-	cmd->congestion_thresh_critical =
+-		ATH11K_TWT_DEF_CONGESTION_THRESH_CRITICAL;
+-	cmd->interference_thresh_teardown =
+-		ATH11K_TWT_DEF_INTERFERENCE_THRESH_TEARDOWN;
+-	cmd->interference_thresh_setup =
+-		ATH11K_TWT_DEF_INTERFERENCE_THRESH_SETUP;
+-	cmd->min_no_sta_setup = ATH11K_TWT_DEF_MIN_NO_STA_SETUP;
+-	cmd->min_no_sta_teardown = ATH11K_TWT_DEF_MIN_NO_STA_TEARDOWN;
+-	cmd->no_of_bcast_mcast_slots = ATH11K_TWT_DEF_NO_OF_BCAST_MCAST_SLOTS;
+-	cmd->min_no_twt_slots = ATH11K_TWT_DEF_MIN_NO_TWT_SLOTS;
+-	cmd->max_no_sta_twt = ATH11K_TWT_DEF_MAX_NO_STA_TWT;
+-	cmd->mode_check_interval = ATH11K_TWT_DEF_MODE_CHECK_INTERVAL;
+-	cmd->add_sta_slot_interval = ATH11K_TWT_DEF_ADD_STA_SLOT_INTERVAL;
+-	cmd->remove_sta_slot_interval =
+-		ATH11K_TWT_DEF_REMOVE_STA_SLOT_INTERVAL;
+-	/* TODO add MBSSID support */
+-	cmd->mbss_support = 0;
++	cmd->sta_cong_timer_ms = params->sta_cong_timer_ms;
++	cmd->default_slot_size = params->default_slot_size;
++	cmd->congestion_thresh_setup = params->congestion_thresh_setup;
++	cmd->congestion_thresh_teardown = params->congestion_thresh_teardown;
++	cmd->congestion_thresh_critical = params->congestion_thresh_critical;
++	cmd->interference_thresh_teardown = params->interference_thresh_teardown;
++	cmd->interference_thresh_setup = params->interference_thresh_setup;
++	cmd->min_no_sta_setup = params->min_no_sta_setup;
++	cmd->min_no_sta_teardown = params->min_no_sta_teardown;
++	cmd->no_of_bcast_mcast_slots = params->no_of_bcast_mcast_slots;
++	cmd->min_no_twt_slots = params->min_no_twt_slots;
++	cmd->max_no_sta_twt = params->max_no_sta_twt;
++	cmd->mode_check_interval = params->mode_check_interval;
++	cmd->add_sta_slot_interval = params->add_sta_slot_interval;
++	cmd->remove_sta_slot_interval = params->remove_sta_slot_interval;
++	cmd->mbss_support = params->mbss_support;
+ 
+ 	ret = ath11k_wmi_cmd_send(wmi, skb, WMI_TWT_ENABLE_CMDID);
+ 	if (ret) {
+--- a/drivers/net/wireless/ath/ath11k/wmi.h
++++ b/drivers/net/wireless/ath/ath11k/wmi.h
+@@ -4933,6 +4933,25 @@ struct wmi_wmm_params_all_arg {
+ #define ATH11K_TWT_DEF_ADD_STA_SLOT_INTERVAL		1000
+ #define ATH11K_TWT_DEF_REMOVE_STA_SLOT_INTERVAL		5000
+ 
++struct wmi_twt_enable_params {
++	u32 sta_cong_timer_ms;
++	u32 mbss_support;
++	u32 default_slot_size;
++	u32 congestion_thresh_setup;
++	u32 congestion_thresh_teardown;
++	u32 congestion_thresh_critical;
++	u32 interference_thresh_teardown;
++	u32 interference_thresh_setup;
++	u32 min_no_sta_setup;
++	u32 min_no_sta_teardown;
++	u32 no_of_bcast_mcast_slots;
++	u32 min_no_twt_slots;
++	u32 max_no_sta_twt;
++	u32 mode_check_interval;
++	u32 add_sta_slot_interval;
++	u32 remove_sta_slot_interval;
++};
++
+ struct wmi_twt_enable_params_cmd {
+ 	u32 tlv_header;
+ 	u32 pdev_id;
+@@ -6039,7 +6058,9 @@ void ath11k_wmi_fw_stats_fill(struct ath
+ 			      struct ath11k_fw_stats *fw_stats, u32 stats_id,
+ 			      char *buf);
+ int ath11k_wmi_simulate_radar(struct ath11k *ar);
+-int ath11k_wmi_send_twt_enable_cmd(struct ath11k *ar, u32 pdev_id);
++void ath11k_wmi_fill_default_twt_params(struct wmi_twt_enable_params *twt_params);
++int ath11k_wmi_send_twt_enable_cmd(struct ath11k *ar, u32 pdev_id,
++				   struct wmi_twt_enable_params *params);
+ int ath11k_wmi_send_twt_disable_cmd(struct ath11k *ar, u32 pdev_id);
+ int ath11k_wmi_send_twt_add_dialog_cmd(struct ath11k *ar,
+ 				       struct wmi_twt_add_dialog_params *params);

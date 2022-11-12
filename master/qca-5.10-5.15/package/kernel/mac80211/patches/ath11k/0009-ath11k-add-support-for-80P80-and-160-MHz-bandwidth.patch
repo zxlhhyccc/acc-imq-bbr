@@ -36,8 +36,6 @@ Link: https://lore.kernel.org/r/20210721173615.75637-2-jouni@codeaurora.org
  drivers/net/wireless/ath/ath11k/wmi.h  | 30 ++++++++
  5 files changed, 136 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
-index 747d4fd6ca21..80c773d1c6ce 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
 @@ -603,6 +603,8 @@ struct ath11k_pdev_cap {
@@ -49,11 +47,9 @@ index 747d4fd6ca21..80c773d1c6ce 100644
  };
  
  struct ath11k_pdev {
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index 2d4005c707cc..82fe3993d057 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -1586,6 +1586,34 @@ ath11k_peer_assoc_h_vht_limit(u16 tx_mcs_set,
+@@ -1586,6 +1586,34 @@ ath11k_peer_assoc_h_vht_limit(u16 tx_mcs
  	return tx_mcs_set;
  }
  
@@ -88,7 +84,7 @@ index 2d4005c707cc..82fe3993d057 100644
  static void ath11k_peer_assoc_h_vht(struct ath11k *ar,
  				    struct ieee80211_vif *vif,
  				    struct ieee80211_sta *sta,
-@@ -1600,6 +1628,7 @@ static void ath11k_peer_assoc_h_vht(struct ath11k *ar,
+@@ -1600,6 +1628,7 @@ static void ath11k_peer_assoc_h_vht(stru
  	u8 max_nss, vht_mcs;
  	int i, vht_nss, nss_idx;
  	bool user_rate_valid = true;
@@ -96,7 +92,7 @@ index 2d4005c707cc..82fe3993d057 100644
  
  	if (WARN_ON(ath11k_mac_vif_chan(vif, &def)))
  		return;
-@@ -1692,10 +1721,29 @@ static void ath11k_peer_assoc_h_vht(struct ath11k *ar,
+@@ -1692,10 +1721,29 @@ static void ath11k_peer_assoc_h_vht(stru
  	/* TODO:  Check */
  	arg->tx_max_mcs_nss = 0xFF;
  
@@ -129,7 +125,7 @@ index 2d4005c707cc..82fe3993d057 100644
  }
  
  static int ath11k_mac_get_max_he_mcs_map(u16 mcs_map, int nss)
-@@ -1779,6 +1827,7 @@ static void ath11k_peer_assoc_h_he(struct ath11k *ar,
+@@ -1779,6 +1827,7 @@ static void ath11k_peer_assoc_h_he(struc
  	u16 he_tx_mcs = 0, v = 0;
  	int i, he_nss, nss_idx;
  	bool user_rate_valid = true;
@@ -137,7 +133,7 @@ index 2d4005c707cc..82fe3993d057 100644
  
  	if (WARN_ON(ath11k_mac_vif_chan(vif, &def)))
  		return;
-@@ -1942,9 +1991,30 @@ static void ath11k_peer_assoc_h_he(struct ath11k *ar,
+@@ -1942,9 +1991,30 @@ static void ath11k_peer_assoc_h_he(struc
  	}
  	arg->peer_nss = min(sta->rx_nss, max_nss);
  
@@ -170,7 +166,7 @@ index 2d4005c707cc..82fe3993d057 100644
  }
  
  static void ath11k_peer_assoc_h_smps(struct ieee80211_sta *sta,
-@@ -2232,11 +2302,11 @@ static void ath11k_peer_assoc_prepare(struct ath11k *ar,
+@@ -2232,11 +2302,11 @@ static void ath11k_peer_assoc_prepare(st
  	ath11k_peer_assoc_h_basic(ar, vif, sta, arg);
  	ath11k_peer_assoc_h_crypto(ar, vif, sta, arg);
  	ath11k_peer_assoc_h_rates(ar, vif, sta, arg);
@@ -183,7 +179,7 @@ index 2d4005c707cc..82fe3993d057 100644
  	ath11k_peer_assoc_h_smps(sta, arg);
  
  	/* TODO: amsdu_disable req? */
-@@ -4438,11 +4508,6 @@ ath11k_create_vht_cap(struct ath11k *ar, u32 rate_cap_tx_chainmask,
+@@ -4438,11 +4508,6 @@ ath11k_create_vht_cap(struct ath11k *ar,
  
  	ath11k_set_vht_txbf_cap(ar, &vht_cap.cap);
  
@@ -195,7 +191,7 @@ index 2d4005c707cc..82fe3993d057 100644
  	rxmcs_map = 0;
  	txmcs_map = 0;
  	for (i = 0; i < 8; i++) {
-@@ -7366,7 +7431,9 @@ static int ath11k_mac_setup_iface_combinations(struct ath11k *ar)
+@@ -7366,7 +7431,9 @@ static int ath11k_mac_setup_iface_combin
  	combinations[0].radar_detect_widths = BIT(NL80211_CHAN_WIDTH_20_NOHT) |
  						BIT(NL80211_CHAN_WIDTH_20) |
  						BIT(NL80211_CHAN_WIDTH_40) |
@@ -206,7 +202,7 @@ index 2d4005c707cc..82fe3993d057 100644
  
  	ar->hw->wiphy->iface_combinations = combinations;
  	ar->hw->wiphy->n_iface_combinations = 1;
-@@ -7505,6 +7572,10 @@ static int __ath11k_mac_register(struct ath11k *ar)
+@@ -7505,6 +7572,10 @@ static int __ath11k_mac_register(struct
  	ieee80211_hw_set(ar->hw, SUPPORTS_TX_FRAG);
  	ieee80211_hw_set(ar->hw, REPORTS_LOW_ACK);
  	ieee80211_hw_set(ar->hw, SUPPORTS_TX_ENCAP_OFFLOAD);
@@ -217,8 +213,6 @@ index 2d4005c707cc..82fe3993d057 100644
  	if (ht_cap & WMI_HT_CAP_ENABLED) {
  		ieee80211_hw_set(ar->hw, AMPDU_AGGREGATION);
  		ieee80211_hw_set(ar->hw, TX_AMPDU_SETUP_IN_HW);
-diff --git a/drivers/net/wireless/ath/ath11k/mac.h b/drivers/net/wireless/ath/ath11k/mac.h
-index 4bc59bdaf244..254ca4acc8e8 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.h
 +++ b/drivers/net/wireless/ath/ath11k/mac.h
 @@ -115,6 +115,9 @@ struct ath11k_generic_iter {
@@ -231,11 +225,9 @@ index 4bc59bdaf244..254ca4acc8e8 100644
  
  #define ATH11K_OBSS_PD_MAX_THRESHOLD			-82
  #define ATH11K_OBSS_PD_NON_SRG_MAX_THRESHOLD		-62
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
-index fc2c685128fc..aa2247cc8049 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -360,6 +360,10 @@ ath11k_pull_mac_phy_cap_svc_ready_ext(struct ath11k_pdev_wmi *wmi_handle,
+@@ -360,6 +360,10 @@ ath11k_pull_mac_phy_cap_svc_ready_ext(st
  		pdev_cap->he_mcs = mac_phy_caps->he_supp_mcs_5g;
  		pdev_cap->tx_chain_mask = mac_phy_caps->tx_chain_mask_5g;
  		pdev_cap->rx_chain_mask = mac_phy_caps->rx_chain_mask_5g;
@@ -246,7 +238,7 @@ index fc2c685128fc..aa2247cc8049 100644
  	} else {
  		return -EINVAL;
  	}
-@@ -783,14 +787,26 @@ int ath11k_wmi_vdev_down(struct ath11k *ar, u8 vdev_id)
+@@ -783,14 +787,26 @@ int ath11k_wmi_vdev_down(struct ath11k *
  static void ath11k_wmi_put_wmi_channel(struct wmi_channel *chan,
  				       struct wmi_vdev_start_req_arg *arg)
  {
@@ -275,8 +267,6 @@ index fc2c685128fc..aa2247cc8049 100644
  
  	chan->info |= FIELD_PREP(WMI_CHAN_INFO_MODE, arg->channel.mode);
  	if (arg->channel.passive)
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.h b/drivers/net/wireless/ath/ath11k/wmi.h
-index c06db3a28eb8..39bfa233b83a 100644
 --- a/drivers/net/wireless/ath/ath11k/wmi.h
 +++ b/drivers/net/wireless/ath/ath11k/wmi.h
 @@ -2146,6 +2146,24 @@ enum wmi_direct_buffer_module {
@@ -330,6 +320,3 @@ index c06db3a28eb8..39bfa233b83a 100644
  } __packed;
  
  struct wmi_hal_reg_capabilities_ext {
--- 
-2.37.1
-

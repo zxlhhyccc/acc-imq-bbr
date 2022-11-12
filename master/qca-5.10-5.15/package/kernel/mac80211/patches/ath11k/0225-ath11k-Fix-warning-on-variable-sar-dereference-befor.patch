@@ -21,11 +21,9 @@ Link: https://lore.kernel.org/r/20220517004844.2412660-1-quic_bqiang@quicinc.com
  drivers/net/wireless/ath/ath11k/mac.c | 13 ++++++-------
  1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index 76a9e4ecc501..0b5c7ed506bf 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -8291,11 +8291,15 @@ static int ath11k_mac_op_set_bios_sar_specs(struct ieee80211_hw *hw,
+@@ -8291,11 +8291,15 @@ static int ath11k_mac_op_set_bios_sar_sp
  					    const struct cfg80211_sar_specs *sar)
  {
  	struct ath11k *ar = hw->priv;
@@ -42,7 +40,7 @@ index 76a9e4ecc501..0b5c7ed506bf 100644
  	mutex_lock(&ar->conf_mutex);
  
  	if (!test_bit(WMI_TLV_SERVICE_BIOS_SAR_SUPPORT, ar->ab->wmi_ab.svc_map) ||
-@@ -8304,12 +8308,6 @@ static int ath11k_mac_op_set_bios_sar_specs(struct ieee80211_hw *hw,
+@@ -8304,12 +8308,6 @@ static int ath11k_mac_op_set_bios_sar_sp
  		goto exit;
  	}
  
@@ -55,7 +53,7 @@ index 76a9e4ecc501..0b5c7ed506bf 100644
  	ret = ath11k_wmi_pdev_set_bios_geo_table_param(ar);
  	if (ret) {
  		ath11k_warn(ar->ab, "failed to set geo table: %d\n", ret);
-@@ -8322,6 +8320,7 @@ static int ath11k_mac_op_set_bios_sar_specs(struct ieee80211_hw *hw,
+@@ -8322,6 +8320,7 @@ static int ath11k_mac_op_set_bios_sar_sp
  		goto exit;
  	}
  
@@ -63,6 +61,3 @@ index 76a9e4ecc501..0b5c7ed506bf 100644
  	for (i = 0; i < sar->num_sub_specs; i++) {
  		if (sspec->freq_range_index >= (BIOS_SAR_TABLE_LEN >> 1)) {
  			ath11k_warn(ar->ab, "Ignore bad frequency index %u, max allowed %u\n",
--- 
-2.37.1
-

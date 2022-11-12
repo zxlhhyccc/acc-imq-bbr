@@ -1,0 +1,86 @@
+From d78c8b7131dc69abaa6d9131006ba30f9a51e41b Mon Sep 17 00:00:00 2001
+From: Baochen Qiang <quic_bqiang@quicinc.com>
+Date: Sat, 24 Sep 2022 16:48:29 +0300
+Subject: [PATCH] wifi: ath11k: Fix deadlock during WoWLAN suspend
+
+We are seeing system hangs during WoWLAN suspend, and get below
+two stacks:
+
+Stack1:
+[ffffb02cc1557b20] __schedule at ffffffff8bb10860
+[ffffb02cc1557ba8] schedule at ffffffff8bb10f24
+[ffffb02cc1557bb8] schedule_timeout at ffffffff8bb16d88
+[ffffb02cc1557c30] wait_for_completion at ffffffff8bb11778
+[ffffb02cc1557c78] __flush_work at ffffffff8b0b30cd
+[ffffb02cc1557cf0] __cancel_work_timer at ffffffff8b0b33ad
+[ffffb02cc1557d60] ath11k_mac_drain_tx at ffffffffc0c1f0ca [ath11k]
+[ffffb02cc1557d70] ath11k_wow_op_suspend at ffffffffc0c5201e [ath11k]
+[ffffb02cc1557da8] __ieee80211_suspend at ffffffffc11e2bd3 [mac80211]
+[ffffb02cc1557dd8] wiphy_suspend at ffffffffc0f901ac [cfg80211]
+[ffffb02cc1557e08] dpm_run_callback at ffffffff8b75118a
+[ffffb02cc1557e38] __device_suspend at ffffffff8b751630
+[ffffb02cc1557e70] async_suspend at ffffffff8b7519ea
+[ffffb02cc1557e88] async_run_entry_fn at ffffffff8b0bf4ce
+[ffffb02cc1557ea8] process_one_work at ffffffff8b0b1a24
+[ffffb02cc1557ee0] worker_thread at ffffffff8b0b1c4a
+[ffffb02cc1557f18] kthread at ffffffff8b0b9cb8
+[ffffb02cc1557f50] ret_from_fork at ffffffff8b001d32
+
+Stack2:
+[ffffb02cc00b7d18] __schedule at ffffffff8bb10860
+[ffffb02cc00b7da0] schedule at ffffffff8bb10f24
+[ffffb02cc00b7db0] schedule_preempt_disabled at ffffffff8bb112b4
+[ffffb02cc00b7db8] __mutex_lock at ffffffff8bb127ea
+[ffffb02cc00b7e38] ath11k_mgmt_over_wmi_tx_work at ffffffffc0c1aa44 [ath11k]
+[ffffb02cc00b7ea8] process_one_work at ffffffff8b0b1a24
+[ffffb02cc00b7ee0] worker_thread at ffffffff8b0b1c4a
+[ffffb02cc00b7f18] kthread at ffffffff8b0b9cb8
+[ffffb02cc00b7f50] ret_from_fork at ffffffff8b001d32
+
+From the first stack, ath11k_mac_drain_tx calls
+cancel_work_sync(&ar->wmi_mgmt_tx_work) and waits all packets to be sent
+out or dropped. However, we find from Stack2 that this work item is blocked
+because ar->conf_mutex is already held by ath11k_wow_op_suspend.
+
+Fix this issue by moving ath11k_mac_wait_tx_complete to the start of
+ath11k_wow_op_suspend where ar->conf_mutex has not been acquired. And
+this change also makes the logic in ath11k_wow_op_suspend match the
+logic in ath11k_mac_op_start and ath11k_mac_op_stop.
+
+Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-03125-QCAHSPSWPL_V1_V2_SILICONZ_LITE-3
+
+Signed-off-by: Baochen Qiang <quic_bqiang@quicinc.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220919021435.2459-1-quic_bqiang@quicinc.com
+---
+ drivers/net/wireless/ath/ath11k/wow.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+--- a/drivers/net/wireless/ath/ath11k/wow.c
++++ b/drivers/net/wireless/ath/ath11k/wow.c
+@@ -672,6 +672,12 @@ int ath11k_wow_op_suspend(struct ieee802
+ 	struct ath11k *ar = hw->priv;
+ 	int ret;
+ 
++	ret = ath11k_mac_wait_tx_complete(ar);
++	if (ret) {
++		ath11k_warn(ar->ab, "failed to wait tx complete: %d\n", ret);
++		return ret;
++	}
++
+ 	mutex_lock(&ar->conf_mutex);
+ 
+ 	ret = ath11k_dp_rx_pktlog_stop(ar->ab, true);
+@@ -703,12 +709,6 @@ int ath11k_wow_op_suspend(struct ieee802
+ 		goto cleanup;
+ 	}
+ 
+-	ret = ath11k_mac_wait_tx_complete(ar);
+-	if (ret) {
+-		ath11k_warn(ar->ab, "failed to wait tx complete: %d\n", ret);
+-		goto cleanup;
+-	}
+-
+ 	ret = ath11k_wow_set_hw_filter(ar);
+ 	if (ret) {
+ 		ath11k_warn(ar->ab, "failed to set hw filter: %d\n",

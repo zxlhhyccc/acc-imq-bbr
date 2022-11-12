@@ -63,11 +63,9 @@ Link: https://lore.kernel.org/r/20220315104721.26649-2-quic_wgong@quicinc.com
  drivers/net/wireless/ath/ath11k/core.c | 48 ++++++++++++++++++++++----
  1 file changed, 41 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
-index 2ab5bb3d8d0d..bfdb675aa177 100644
 --- a/drivers/net/wireless/ath/ath11k/core.c
 +++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -571,13 +571,13 @@ int ath11k_core_check_dt(struct ath11k_base *ab)
+@@ -571,13 +571,13 @@ int ath11k_core_check_dt(struct ath11k_b
  	return 0;
  }
  
@@ -84,7 +82,7 @@ index 2ab5bb3d8d0d..bfdb675aa177 100644
  		scnprintf(variant, sizeof(variant), ",variant=%s",
  			  ab->qmi.target.bdf_ext);
  
-@@ -607,6 +607,18 @@ static int ath11k_core_create_board_name(struct ath11k_base *ab, char *name,
+@@ -607,6 +607,18 @@ static int ath11k_core_create_board_name
  	return 0;
  }
  
@@ -103,7 +101,7 @@ index 2ab5bb3d8d0d..bfdb675aa177 100644
  const struct firmware *ath11k_core_firmware_request(struct ath11k_base *ab,
  						    const char *file)
  {
-@@ -810,7 +822,7 @@ static int ath11k_core_fetch_board_data_api_n(struct ath11k_base *ab,
+@@ -810,7 +822,7 @@ static int ath11k_core_fetch_board_data_
  
  out:
  	if (!bd->data || !bd->len) {
@@ -112,7 +110,7 @@ index 2ab5bb3d8d0d..bfdb675aa177 100644
  			   "failed to fetch board data for %s from %s\n",
  			   boardname, filepath);
  		ret = -ENODATA;
-@@ -842,10 +854,13 @@ int ath11k_core_fetch_board_data_api_1(struct ath11k_base *ab,
+@@ -842,10 +854,13 @@ int ath11k_core_fetch_board_data_api_1(s
  #define BOARD_NAME_SIZE 200
  int ath11k_core_fetch_bdf(struct ath11k_base *ab, struct ath11k_board_data *bd)
  {
@@ -128,7 +126,7 @@ index 2ab5bb3d8d0d..bfdb675aa177 100644
  	if (ret) {
  		ath11k_err(ab, "failed to create board name: %d", ret);
  		return ret;
-@@ -856,10 +871,29 @@ int ath11k_core_fetch_bdf(struct ath11k_base *ab, struct ath11k_board_data *bd)
+@@ -856,10 +871,29 @@ int ath11k_core_fetch_bdf(struct ath11k_
  	if (!ret)
  		goto success;
  
@@ -159,6 +157,3 @@ index 2ab5bb3d8d0d..bfdb675aa177 100644
  			   ab->hw_params.fw.dir);
  		return ret;
  	}
--- 
-2.37.1
-

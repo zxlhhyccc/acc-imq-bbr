@@ -26,11 +26,9 @@ Link: https://lore.kernel.org/r/20210721212029.142388-1-jouni@codeaurora.org
  drivers/net/wireless/ath/ath11k/trace.h   | 11 ++++++----
  4 files changed, 42 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/debugfs.c b/drivers/net/wireless/ath/ath11k/debugfs.c
-index 554feaf1ed5c..17f0bbbac7ae 100644
 --- a/drivers/net/wireless/ath/ath11k/debugfs.c
 +++ b/drivers/net/wireless/ath/ath11k/debugfs.c
-@@ -902,7 +902,7 @@ static ssize_t ath11k_write_pktlog_filter(struct file *file,
+@@ -902,7 +902,7 @@ static ssize_t ath11k_write_pktlog_filte
  	struct htt_rx_ring_tlv_filter tlv_filter = {0};
  	u32 rx_filter = 0, ring_id, filter, mode;
  	u8 buf[128] = {0};
@@ -39,7 +37,7 @@ index 554feaf1ed5c..17f0bbbac7ae 100644
  	ssize_t rc;
  
  	mutex_lock(&ar->conf_mutex);
-@@ -940,6 +940,17 @@ static ssize_t ath11k_write_pktlog_filter(struct file *file,
+@@ -940,6 +940,17 @@ static ssize_t ath11k_write_pktlog_filte
  		}
  	}
  
@@ -57,7 +55,7 @@ index 554feaf1ed5c..17f0bbbac7ae 100644
  #define HTT_RX_FILTER_TLV_LITE_MODE \
  			(HTT_RX_FILTER_TLV_FLAGS_PPDU_START | \
  			HTT_RX_FILTER_TLV_FLAGS_PPDU_END | \
-@@ -955,6 +966,7 @@ static ssize_t ath11k_write_pktlog_filter(struct file *file,
+@@ -955,6 +966,7 @@ static ssize_t ath11k_write_pktlog_filte
  			    HTT_RX_FILTER_TLV_FLAGS_MPDU_END |
  			    HTT_RX_FILTER_TLV_FLAGS_PACKET_HEADER |
  			    HTT_RX_FILTER_TLV_FLAGS_ATTENTION;
@@ -65,7 +63,7 @@ index 554feaf1ed5c..17f0bbbac7ae 100644
  	} else if (mode == ATH11K_PKTLOG_MODE_LITE) {
  		ret = ath11k_dp_tx_htt_h2t_ppdu_stats_req(ar,
  							  HTT_PPDU_STATS_TAG_PKTLOG);
-@@ -964,7 +976,12 @@ static ssize_t ath11k_write_pktlog_filter(struct file *file,
+@@ -964,7 +976,12 @@ static ssize_t ath11k_write_pktlog_filte
  		}
  
  		rx_filter = HTT_RX_FILTER_TLV_LITE_MODE;
@@ -78,7 +76,7 @@ index 554feaf1ed5c..17f0bbbac7ae 100644
  		ret = ath11k_dp_tx_htt_h2t_ppdu_stats_req(ar,
  							  HTT_PPDU_STATS_TAG_DEFAULT);
  		if (ret) {
-@@ -988,7 +1005,7 @@ static ssize_t ath11k_write_pktlog_filter(struct file *file,
+@@ -988,7 +1005,7 @@ static ssize_t ath11k_write_pktlog_filte
  		ret = ath11k_dp_tx_htt_rx_filter_setup(ab, ring_id,
  						       ar->dp.mac_id + i,
  						       HAL_RXDMA_MONITOR_STATUS,
@@ -87,7 +85,7 @@ index 554feaf1ed5c..17f0bbbac7ae 100644
  
  		if (ret) {
  			ath11k_warn(ab, "failed to set rx filter for monitor status ring\n");
-@@ -996,8 +1013,8 @@ static ssize_t ath11k_write_pktlog_filter(struct file *file,
+@@ -996,8 +1013,8 @@ static ssize_t ath11k_write_pktlog_filte
  		}
  	}
  
@@ -98,8 +96,6 @@ index 554feaf1ed5c..17f0bbbac7ae 100644
  
  	ar->debug.pktlog_filter = filter;
  	ar->debug.pktlog_mode = mode;
-diff --git a/drivers/net/wireless/ath/ath11k/dp.h b/drivers/net/wireless/ath/ath11k/dp.h
-index d3e50e34f23d..019199059eb7 100644
 --- a/drivers/net/wireless/ath/ath11k/dp.h
 +++ b/drivers/net/wireless/ath/ath11k/dp.h
 @@ -195,6 +195,7 @@ struct ath11k_pdev_dp {
@@ -110,11 +106,9 @@ index d3e50e34f23d..019199059eb7 100644
  #define DP_RX_BUFFER_ALIGN_SIZE	128
  
  #define DP_RXDMA_BUF_COOKIE_BUF_ID	GENMASK(17, 0)
-diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
-index 2358b252d7a1..58b19d18cece 100644
 --- a/drivers/net/wireless/ath/ath11k/dp_rx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
-@@ -3033,6 +3033,8 @@ int ath11k_dp_rx_process_mon_status(struct ath11k_base *ab, int mac_id,
+@@ -3033,6 +3033,8 @@ int ath11k_dp_rx_process_mon_status(stru
  	struct ath11k_peer *peer;
  	struct ath11k_sta *arsta;
  	int num_buffs_reaped = 0;
@@ -123,7 +117,7 @@ index 2358b252d7a1..58b19d18cece 100644
  
  	__skb_queue_head_init(&skb_list);
  
-@@ -3045,8 +3047,16 @@ int ath11k_dp_rx_process_mon_status(struct ath11k_base *ab, int mac_id,
+@@ -3045,8 +3047,16 @@ int ath11k_dp_rx_process_mon_status(stru
  		memset(&ppdu_info, 0, sizeof(ppdu_info));
  		ppdu_info.peer_id = HAL_INVALID_PEERID;
  
@@ -142,7 +136,7 @@ index 2358b252d7a1..58b19d18cece 100644
  
  		hal_status = ath11k_hal_rx_parse_mon_status(ab, &ppdu_info, skb);
  
-@@ -3074,7 +3084,7 @@ int ath11k_dp_rx_process_mon_status(struct ath11k_base *ab, int mac_id,
+@@ -3074,7 +3084,7 @@ int ath11k_dp_rx_process_mon_status(stru
  		ath11k_dp_rx_update_peer_stats(arsta, &ppdu_info);
  
  		if (ath11k_debugfs_is_pktlog_peer_valid(ar, peer->addr))
@@ -151,8 +145,6 @@ index 2358b252d7a1..58b19d18cece 100644
  
  		spin_unlock_bh(&ab->base_lock);
  		rcu_read_unlock();
-diff --git a/drivers/net/wireless/ath/ath11k/trace.h b/drivers/net/wireless/ath/ath11k/trace.h
-index d2d2a3cb0826..25d18e9d5b0b 100644
 --- a/drivers/net/wireless/ath/ath11k/trace.h
 +++ b/drivers/net/wireless/ath/ath11k/trace.h
 @@ -79,14 +79,15 @@ TRACE_EVENT(ath11k_htt_ppdu_stats,
@@ -192,6 +184,3 @@ index d2d2a3cb0826..25d18e9d5b0b 100644
  	 )
  );
  
--- 
-2.37.1
-

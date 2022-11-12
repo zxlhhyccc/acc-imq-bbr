@@ -189,11 +189,9 @@ Link: https://lore.kernel.org/r/20211222070431.29595-1-quic_wgong@quicinc.com
  drivers/net/wireless/ath/ath11k/mac.c | 31 ++++++++++++++++-----------
  1 file changed, 18 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index 80dd232deed2..b847fd4dd514 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -4510,24 +4510,30 @@ static int ath11k_mac_op_sta_state(struct ieee80211_hw *hw,
+@@ -4510,24 +4510,30 @@ static int ath11k_mac_op_sta_state(struc
  				    sta->addr, arvif->vdev_id);
  	} else if ((old_state == IEEE80211_STA_NONE &&
  		    new_state == IEEE80211_STA_NOTEXIST)) {
@@ -236,7 +234,7 @@ index 80dd232deed2..b847fd4dd514 100644
  			ath11k_warn(ar->ab, "Found peer entry %pM n vdev %i after it was supposedly removed\n",
  				    vif->addr, arvif->vdev_id);
  			peer->sta = NULL;
-@@ -4537,7 +4543,6 @@ static int ath11k_mac_op_sta_state(struct ieee80211_hw *hw,
+@@ -4537,7 +4543,6 @@ static int ath11k_mac_op_sta_state(struc
  		}
  		spin_unlock_bh(&ar->ab->base_lock);
  
@@ -244,6 +242,3 @@ index 80dd232deed2..b847fd4dd514 100644
  		kfree(arsta->tx_stats);
  		arsta->tx_stats = NULL;
  
--- 
-2.37.1
-

@@ -25,11 +25,9 @@ Link: https://lore.kernel.org/r/20211118095901.8271-1-quic_wgong@quicinc.com
  drivers/net/wireless/ath/ath11k/mac.c | 32 +--------------------------
  1 file changed, 1 insertion(+), 31 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index ff27713ff9b3..a0973136be9d 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -6473,37 +6473,7 @@ ath11k_mac_update_vif_chan(struct ath11k *ar,
+@@ -6473,37 +6473,7 @@ ath11k_mac_update_vif_chan(struct ath11k
  
  	lockdep_assert_held(&ar->conf_mutex);
  
@@ -68,6 +66,3 @@ index ff27713ff9b3..a0973136be9d 100644
  	 * should be available for the channel switch now.
  	 */
  
--- 
-2.37.1
-

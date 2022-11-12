@@ -20,8 +20,6 @@ Link: https://lore.kernel.org/r/1642605793-13518-1-git-send-email-quic_akolli@qu
  drivers/net/wireless/ath/ath11k/dp_rx.c   | 7 +++++--
  2 files changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/debugfs.h b/drivers/net/wireless/ath/ath11k/debugfs.h
-index 4c0740394c95..71525d786bdf 100644
 --- a/drivers/net/wireless/ath/ath11k/debugfs.h
 +++ b/drivers/net/wireless/ath/ath11k/debugfs.h
 @@ -88,6 +88,7 @@ enum ath11k_pktlog_mode {
@@ -32,11 +30,9 @@ index 4c0740394c95..71525d786bdf 100644
  	ATH11K_PKTLOG_TYPE_TX_CTRL      = 1,
  	ATH11K_PKTLOG_TYPE_TX_STAT      = 2,
  	ATH11K_PKTLOG_TYPE_TX_MSDU_ID   = 3,
-diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
-index 89b77b94bb20..99dc9b5bbf4b 100644
 --- a/drivers/net/wireless/ath/ath11k/dp_rx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
-@@ -5054,7 +5054,7 @@ int ath11k_dp_rx_process_mon_status(struct ath11k_base *ab, int mac_id,
+@@ -5054,7 +5054,7 @@ int ath11k_dp_rx_process_mon_status(stru
  	struct ath11k_sta *arsta;
  	int num_buffs_reaped = 0;
  	u32 rx_buf_sz;
@@ -45,7 +41,7 @@ index 89b77b94bb20..99dc9b5bbf4b 100644
  	struct ath11k_mon_data *pmon = (struct ath11k_mon_data *)&ar->dp.mon_data;
  	struct ath11k_pdev_mon_stats *rx_mon_stats = &pmon->rx_mon_stats;
  	struct hal_rx_mon_ppdu_info *ppdu_info = &pmon->mon_ppdu_info;
-@@ -5076,9 +5076,12 @@ int ath11k_dp_rx_process_mon_status(struct ath11k_base *ab, int mac_id,
+@@ -5076,9 +5076,12 @@ int ath11k_dp_rx_process_mon_status(stru
  		} else if (ath11k_debugfs_is_pktlog_rx_stats_enabled(ar)) {
  			log_type = ATH11K_PKTLOG_TYPE_RX_STATBUF;
  			rx_buf_sz = DP_RX_BUFFER_SIZE;
@@ -59,6 +55,3 @@ index 89b77b94bb20..99dc9b5bbf4b 100644
  			trace_ath11k_htt_rxdesc(ar, skb->data, log_type, rx_buf_sz);
  
  		hal_status = ath11k_hal_rx_parse_mon_status(ab, ppdu_info, skb);
--- 
-2.37.1
-

@@ -17,11 +17,9 @@ Link: https://lore.kernel.org/r/20220209060012.32478-3-quic_wgong@quicinc.com
  drivers/net/wireless/ath/ath11k/qmi.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/ath/ath11k/qmi.c b/drivers/net/wireless/ath/ath11k/qmi.c
-index 1144e828cf5c..d4d831566a89 100644
 --- a/drivers/net/wireless/ath/ath11k/qmi.c
 +++ b/drivers/net/wireless/ath/ath11k/qmi.c
-@@ -2342,6 +2342,7 @@ static void ath11k_qmi_m3_free(struct ath11k_base *ab)
+@@ -2342,6 +2342,7 @@ static void ath11k_qmi_m3_free(struct at
  	dma_free_coherent(ab->dev, m3_mem->size,
  			  m3_mem->vaddr, m3_mem->paddr);
  	m3_mem->vaddr = NULL;
@@ -29,6 +27,3 @@ index 1144e828cf5c..d4d831566a89 100644
  }
  
  static int ath11k_qmi_wlanfw_m3_info_send(struct ath11k_base *ab)
--- 
-2.37.1
-

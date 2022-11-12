@@ -19,8 +19,6 @@ Link: https://lore.kernel.org/r/1652965061-30457-1-git-send-email-quic_tmariyap@
  drivers/net/wireless/ath/ath11k/mac.c   | 5 +++++
  3 files changed, 12 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
-index 95bca0b078b1..ea31016437b0 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
 @@ -14,6 +14,7 @@
@@ -48,11 +46,9 @@ index 95bca0b078b1..ea31016437b0 100644
  	s8 rssi_beacon;
  	s8 chain_signal[IEEE80211_MAX_CHAINS];
  	struct ath11k_htt_tx_stats *tx_stats;
-diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
-index 049774cc158c..e16beb96c37c 100644
 --- a/drivers/net/wireless/ath/ath11k/dp_rx.c
 +++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
-@@ -2765,6 +2765,9 @@ static void ath11k_dp_rx_update_peer_stats(struct ath11k_sta *arsta,
+@@ -2765,6 +2765,9 @@ static void ath11k_dp_rx_update_peer_sta
  	if (!rx_stats)
  		return;
  
@@ -62,11 +58,9 @@ index 049774cc158c..e16beb96c37c 100644
  	num_msdu = ppdu_info->tcp_msdu_count + ppdu_info->tcp_ack_msdu_count +
  		   ppdu_info->udp_msdu_count + ppdu_info->other_msdu_count;
  
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index 0b5c7ed506bf..0d2e2cb4f640 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -4478,6 +4478,7 @@ static int ath11k_mac_station_add(struct ath11k *ar,
+@@ -4478,6 +4478,7 @@ static int ath11k_mac_station_add(struct
  		}
  	}
  
@@ -74,7 +68,7 @@ index 0b5c7ed506bf..0d2e2cb4f640 100644
  	return 0;
  
  free_tx_stats:
-@@ -8155,6 +8156,10 @@ static void ath11k_mac_op_sta_statistics(struct ieee80211_hw *hw,
+@@ -8155,6 +8156,10 @@ static void ath11k_mac_op_sta_statistics
  		sinfo->signal = db2dbm ? signal : signal + ATH11K_DEFAULT_NOISE_FLOOR;
  		sinfo->filled |= BIT_ULL(NL80211_STA_INFO_SIGNAL);
  	}
@@ -85,6 +79,3 @@ index 0b5c7ed506bf..0d2e2cb4f640 100644
  }
  
  #if IS_ENABLED(CONFIG_IPV6)
--- 
-2.37.1
-

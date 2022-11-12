@@ -29,8 +29,6 @@ Link: https://lore.kernel.org/r/20220602124142.29909-1-quic_mpubbise@quicinc.com
  drivers/net/wireless/ath/ath11k/mac.c  | 4 +++-
  2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
-index ea31016437b0..2bd5eb9df4d4 100644
 --- a/drivers/net/wireless/ath/ath11k/core.h
 +++ b/drivers/net/wireless/ath/ath11k/core.h
 @@ -582,8 +582,6 @@ struct ath11k {
@@ -42,11 +40,9 @@ index ea31016437b0..2bd5eb9df4d4 100644
  	struct ath11k_he ar_he;
  	enum ath11k_state state;
  	bool supports_6ghz;
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index 0d2e2cb4f640..9e16470cd302 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -7794,6 +7794,7 @@ ath11k_mac_op_set_bitrate_mask(struct ieee80211_hw *hw,
+@@ -7794,6 +7794,7 @@ ath11k_mac_op_set_bitrate_mask(struct ie
  {
  	struct ath11k_vif *arvif = (void *)vif->drv_priv;
  	struct cfg80211_chan_def def;
@@ -54,7 +50,7 @@ index 0d2e2cb4f640..9e16470cd302 100644
  	struct ath11k *ar = arvif->ar;
  	enum nl80211_band band;
  	const u8 *ht_mcs_mask;
-@@ -7814,10 +7815,11 @@ ath11k_mac_op_set_bitrate_mask(struct ieee80211_hw *hw,
+@@ -7814,10 +7815,11 @@ ath11k_mac_op_set_bitrate_mask(struct ie
  		return -EPERM;
  
  	band = def.chan->band;
@@ -67,6 +63,3 @@ index 0d2e2cb4f640..9e16470cd302 100644
  
  	sgi = mask->control[band].gi;
  	if (sgi == NL80211_TXRATE_FORCE_LGI)
--- 
-2.37.1
-
