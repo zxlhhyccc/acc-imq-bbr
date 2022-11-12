@@ -5,25 +5,25 @@ PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE_URL:=https://git.codelinaro.org/clo/qsdk/oss/lklm/qca-ssdk.git
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2022-07-09
-PKG_SOURCE_VERSION:=775e4dc814580012e1019f53ff5cdb8968ed4ca8
-PKG_MIRROR_HASH:=2bc9ca2d5b5f9d8e47decf144e60fcfedb8cb835d91244c4ccbe5f3cb91dd84e
+PKG_SOURCE_DATE:=2022-10-20
+PKG_SOURCE_VERSION:=02550e6c49453043abbbf2ec58dee9058a3926c3
+PKG_MIRROR_HASH:=34a691aa4206b65cf7e583fa14282ac8e8372d372e167d3e7b66519e5a68da4b
 
 include $(INCLUDE_DIR)/kernel.mk
 include $(INCLUDE_DIR)/package.mk
 
-define KernelPackage/qca-ssdk-nohnat
+define KernelPackage/qca-ssdk
   SECTION:=kernel
   CATEGORY:=Kernel modules
   SUBMENU:=Network Devices
-  TITLE:=Kernel driver for QCA SSDK
+  TITLE:=Qualcom SSDK switch driver
   DEPENDS:=@(TARGET_ipq807x)
   FILES:=$(PKG_BUILD_DIR)/build/bin/qca-ssdk.ko
   AUTOLOAD:=$(call AutoLoad,30,qca-ssdk)
 endef
 
-define KernelPackage/qca-ssdk-nohnat/Description
-This package contains a qca-ssdk driver for QCA chipset
+define KernelPackage/qca-ssdk/Description
+  Driver for Qualcomm Atheros switches.
 endef
 
 GCC_VERSION=$(shell echo "$(CONFIG_GCC_VERSION)" | sed 's/[^0-9.]*\([0-9.]*\).*/\1/')
@@ -43,17 +43,11 @@ MAKE_FLAGS+= \
 	ARCH=$(LINUX_KARCH) \
 	TARGET_SUFFIX=$(CONFIG_TARGET_SUFFIX) \
 	GCC_VERSION=$(GCC_VERSION) \
-	EXTRA_CFLAGS='-Wno-error -fno-PIC -fno-stack-protector -I$(STAGING_DIR)/usr/include' \
+	EXTRA_CFLAGS='-fno-PIC -fno-stack-protector -I$(STAGING_DIR)/usr/include' \
 	$(KERNEL_MAKE_FLAGS)
 
-ifneq (, $(findstring $(CONFIG_TARGET_BOARD), "ipq60xx" "ipq807x"))
-    MAKE_FLAGS+= PTP_FEATURE=disable SWCONFIG_FEATURE=disable
-endif
-
 ifeq ($(CONFIG_TARGET_BOARD), "ipq807x")
-    MAKE_FLAGS+= CHIP_TYPE=HPPE
-else ifeq ($(CONFIG_TARGET_BOARD), "ipq60xx")
-    MAKE_FLAGS+= CHIP_TYPE=CPPE
+    MAKE_FLAGS+= CHIP_TYPE=HPPE PTP_FEATURE=disable SWCONFIG_FEATURE=disable
 endif
 
 define Build/InstallDev
@@ -83,9 +77,9 @@ define Build/InstallDev
 
 endef
 
-define KernelPackage/qca-ssdk-nohnat/install
+define KernelPackage/qca-ssdk/install
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/qca-ssdk $(1)/etc/init.d/qca-ssdk
 endef
 
-$(eval $(call KernelPackage,qca-ssdk-nohnat))
+$(eval $(call KernelPackage,qca-ssdk))
