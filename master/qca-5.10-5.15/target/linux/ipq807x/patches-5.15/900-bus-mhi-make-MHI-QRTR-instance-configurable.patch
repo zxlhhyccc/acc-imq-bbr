@@ -1,0 +1,62 @@
+From dba72ad942e596f0eb84d9ae54e3ee5dd4f6795b Mon Sep 17 00:00:00 2001
+From: Robert Marko <robimarko@gmail.com>
+Date: Mon, 10 Oct 2022 13:58:57 +0200
+Subject: [PATCH] bus: mhi: make MHI QRTR instance configurable
+
+Allow QRTR instance ID to be configurable for MHI devices by parsing
+"qcom,qrtr_instance_id" from DTS and then writing it to the MHI device.
+
+It is required as otherwise having AHB ath11k device and PCI one will
+cause a clash and you are not able to concurrently use them.
+
+Signed-off-by: Robert Marko <robimarko@gmail.com>
+---
+ drivers/bus/mhi/core/boot.c | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
+
+--- a/drivers/bus/mhi/core/boot.c
++++ b/drivers/bus/mhi/core/boot.c
+@@ -16,8 +16,12 @@
+ #include <linux/random.h>
+ #include <linux/slab.h>
+ #include <linux/wait.h>
++#include <linux/of.h>
+ #include "internal.h"
+ 
++#define QRTR_INSTANCE_MASK	0x0000FFFF
++#define QRTR_INSTANCE_SHIFT	0
++
+ /* Setup RDDM vector table for RDDM transfer and program RXVEC */
+ void mhi_rddm_prepare(struct mhi_controller *mhi_cntrl,
+ 		      struct image_info *img_info)
+@@ -395,6 +399,7 @@ void mhi_fw_load_handler(struct mhi_cont
+ 	dma_addr_t dma_addr;
+ 	size_t size;
+ 	int i, ret;
++	u32 instance;
+ 
+ 	if (MHI_PM_IN_ERROR_STATE(mhi_cntrl->pm_state)) {
+ 		dev_err(dev, "Device MHI is not in valid state\n");
+@@ -467,6 +472,22 @@ void mhi_fw_load_handler(struct mhi_cont
+ 		goto fw_load_ready_state;
+ 	}
+ 
++	/* QRTR ID for multiple cards */
++	if (!ret && mhi_cntrl->cntrl_dev->of_node) {
++		ret = of_property_read_u32(mhi_cntrl->cntrl_dev->of_node,
++					   "qcom,qrtr_instance_id", &instance);
++		if (!ret) {
++			instance &= QRTR_INSTANCE_MASK;
++			mhi_write_reg_field(mhi_cntrl, mhi_cntrl->bhi,
++					    BHI_ERRDBG2, QRTR_INSTANCE_MASK,
++					    QRTR_INSTANCE_SHIFT, instance);
++		} else {
++			dev_err(dev,
++				"qcom,qrtr_instance_id not defined in DT, ret:%d\n",
++				ret);
++		}
++	}
++
+ 	write_lock_irq(&mhi_cntrl->pm_lock);
+ 	mhi_cntrl->dev_state = MHI_STATE_RESET;
+ 	write_unlock_irq(&mhi_cntrl->pm_lock);

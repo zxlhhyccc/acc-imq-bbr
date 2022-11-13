@@ -11,12 +11,8 @@
 #include <dt-bindings/leds/common.h>
 
 / {
-	#address-cells = <2>;
-	#size-cells = <2>;
-
 	model = "Dynalink DL-WRX36";
 	compatible = "dynalink,dl-wrx36", "qcom,ipq8074";
-	interrupt-parent = <&intc>;
 
 	aliases {
 		led-boot = &led_system_red;
@@ -64,9 +60,9 @@
 		};
 
 		led_system_red: system-red {
-			label = "yellow:system";
+			label = "red:system";
 			gpios = <&tlmm 25 GPIO_ACTIVE_HIGH>;
-			color = <LED_COLOR_ID_YELLOW>;
+			color = <LED_COLOR_ID_RED>;
 		};
 	};
 };

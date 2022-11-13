@@ -11,12 +11,8 @@
 #include <dt-bindings/leds/common.h>
 
 / {
-	#address-cells = <2>;
-	#size-cells = <2>;
-
 	model = "QNAP 301w";
 	compatible = "qnap,301w", "qcom,ipq8074";
-	interrupt-parent = <&intc>;
 
 	aliases {
 		serial0 = &blsp1_uart5;

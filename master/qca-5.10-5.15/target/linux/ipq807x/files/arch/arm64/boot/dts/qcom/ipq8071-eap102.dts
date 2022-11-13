@@ -10,12 +10,8 @@
 #include <dt-bindings/input/input.h>
 
 / {
-	#address-cells = <2>;
-	#size-cells = <2>;
 	model = "Edgecore EAP102";
 	compatible = "edgecore,eap102", "qcom,ipq8074";
-
-	interrupt-parent = <&intc>;
 
 	aliases {
 		serial0 = &blsp1_uart5;

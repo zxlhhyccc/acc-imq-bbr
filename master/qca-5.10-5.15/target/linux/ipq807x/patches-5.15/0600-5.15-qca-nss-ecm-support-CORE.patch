@@ -105,7 +105,7 @@
  
 +/* QCA NSS ECM support - Start */
 +struct net_device *ipv6_dev_find_and_hold(struct net *net, struct in6_addr *addr,
-+				 int strict);
++				 						  int strict);
 +/* QCA NSS ECM support - End */
 +
  #endif
@@ -169,11 +169,31 @@
  #endif
 --- a/net/8021q/vlan_core.c
 +++ b/net/8021q/vlan_core.c
-@@ -556,4 +556,32 @@ static int __init vlan_offload_init(void
+@@ -556,4 +556,52 @@ static int __init vlan_offload_init(void
  	return 0;
  }
  
 +/* QCA NSS ECM support - Start */
++/* Update the VLAN device with statistics from network offload engines */
++void __vlan_dev_update_accel_stats(struct net_device *dev,
++				   struct rtnl_link_stats64 *nlstats)
++{
++	struct vlan_pcpu_stats *stats;
++
++	if (!is_vlan_dev(dev))
++		return;
++
++	stats = per_cpu_ptr(vlan_dev_priv(dev)->vlan_pcpu_stats, 0);
++
++	u64_stats_update_begin(&stats->syncp);
++	stats->rx_packets += nlstats->rx_packets;
++	stats->rx_bytes += nlstats->rx_bytes;
++	stats->tx_packets += nlstats->tx_packets;
++	stats->tx_bytes += nlstats->tx_bytes;
++	u64_stats_update_end(&stats->syncp);
++}
++EXPORT_SYMBOL(__vlan_dev_update_accel_stats);
++
 +/* Lookup the 802.1p egress_map table and return the 802.1p value */
 +u16 vlan_dev_get_egress_prio(struct net_device *dev, u32 skb_prio)
 +{
@@ -597,41 +617,14 @@
  	struct fib_table *tb;
 --- a/net/ipv6/ndisc.c
 +++ b/net/ipv6/ndisc.c
-@@ -650,6 +650,34 @@
+@@ -649,6 +649,7 @@ void ndisc_send_ns(struct net_device *de
+ 
  	ndisc_send_skb(skb, daddr, saddr);
  }
- 
 +EXPORT_SYMBOL(ndisc_send_ns);
-+
-+struct net_device *ipv6_dev_find_and_hold(struct net *net, struct in6_addr *addr,
-+							int strict)
-+{
-+	struct inet6_ifaddr *ifp;
-+	struct net_device *dev;
-+
-+	ifp = ipv6_get_ifaddr(net, addr, NULL, strict);
-+	if (!ifp)
-+		return NULL;
-+
-+	if (!ifp->idev) {
-+		in6_ifa_put(ifp);
-+		return NULL;
-+	}
-+
-+	dev = ifp->idev->dev;
-+	if (dev)
-+		dev_hold(dev);
-+
-+	in6_ifa_put(ifp);
-+
-+	return dev;
-+}
-+
-+EXPORT_SYMBOL(ipv6_dev_find_and_hold);
-+
+ 
  void ndisc_send_rs(struct net_device *dev, const struct in6_addr *saddr,
  		   const struct in6_addr *daddr)
- {
 --- a/net/ipv6/route.c
 +++ b/net/ipv6/route.c
 @@ -3878,6 +3878,9 @@ out_free:
@@ -697,3 +690,68 @@
  	}
  #undef N
  	return "UNKNOWN_NETDEV_EVENT";
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -987,6 +987,7 @@ void inet6_ifa_finish_destroy(struct ine
+ 
+ 	kfree_rcu(ifp, rcu);
+ }
++EXPORT_SYMBOL(inet6_ifa_finish_destroy);
+ 
+ static void
+ ipv6_link_dev_addr(struct inet6_dev *idev, struct inet6_ifaddr *ifp)
+@@ -2048,6 +2049,36 @@ struct inet6_ifaddr *ipv6_get_ifaddr(str
+ 
+ 	return result;
+ }
++EXPORT_SYMBOL(ipv6_get_ifaddr);
++
++/* ipv6_dev_find_and_hold()
++ *  	Find (and hold) net device that has the given address.
++ *  	Or NULL on failure.
++ */
++struct net_device *ipv6_dev_find_and_hold(struct net *net, struct in6_addr *addr,
++                                int strict)
++{
++    struct inet6_ifaddr *ifp;
++    struct net_device *dev;
++
++    ifp = ipv6_get_ifaddr(net, addr, NULL, strict);
++    if (!ifp)
++        return NULL;
++
++    if (!ifp->idev) {
++        in6_ifa_put(ifp);
++        return NULL;
++    }
++
++    dev = ifp->idev->dev;
++    if (dev)
++    	dev_hold(dev);
++
++    in6_ifa_put(ifp);
++
++    return dev;
++}
++EXPORT_SYMBOL(ipv6_dev_find_and_hold);
+ 
+ /* Gets referenced address, destroys ifaddr */
+ 
+--- a/include/net/vxlan.h
++++ b/include/net/vxlan.h
+@@ -376,6 +376,15 @@ static inline __be32 vxlan_compute_rco(u
+ 	return vni_field;
+ }
+ 
++/*
++ * vxlan_get_vni()
++ *      Returns the vni corresponding to tunnel
++ */
++static inline u32 vxlan_get_vni(struct vxlan_dev *vxlan_tun)
++{
++    return be32_to_cpu(vxlan_tun->cfg.vni);
++}
++
+ static inline unsigned short vxlan_get_sk_family(struct vxlan_sock *vs)
+ {
+ 	return vs->sock->sk->sk_family;

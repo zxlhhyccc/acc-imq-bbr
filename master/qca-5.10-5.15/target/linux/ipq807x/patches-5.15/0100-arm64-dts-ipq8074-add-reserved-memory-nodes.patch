@@ -1,7 +1,7 @@
-From 5fa912a3d39c675d876fa900b3f06e1a2eef5e2c Mon Sep 17 00:00:00 2001
+From 2dc8319c43ccc511a38f441ab4f7aa120af9a9fb Mon Sep 17 00:00:00 2001
 From: Robert Marko <robimarko@gmail.com>
 Date: Wed, 22 Dec 2021 12:23:34 +0100
-Subject: [PATCH 100/158] arm64: dts: ipq8074: add reserved memory nodes
+Subject: [PATCH 100/137] arm64: dts: ipq8074: add reserved memory nodes
 
 IPQ8074 has multiple reserved memory ranges, if they are not defined
 then weird things tend to happen, board hangs and resets when PCI or
@@ -19,7 +19,7 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
 
 --- a/arch/arm64/boot/dts/qcom/ipq8074.dtsi
 +++ b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
-@@ -81,6 +81,26 @@
+@@ -85,6 +85,26 @@
  		#size-cells = <2>;
  		ranges;
  
@@ -46,7 +46,7 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
  		smem@4ab00000 {
  			compatible = "qcom,smem";
  			reg = <0x0 0x4ab00000 0x0 0x00100000>;
-@@ -93,6 +113,21 @@
+@@ -97,6 +117,21 @@
  			no-map;
  			reg = <0x0 0x4ac00000 0x0 0x00400000>;
  		};
