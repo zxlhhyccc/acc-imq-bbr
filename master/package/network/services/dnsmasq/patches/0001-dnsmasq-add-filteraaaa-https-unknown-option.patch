@@ -1,19 +1,20 @@
 --- a/files/dhcp.conf
 +++ b/files/dhcp.conf
-@@ -20,6 +20,13 @@ config dnsmasq
- 	#list notinterface	lo
+@@ -21,8 +21,13 @@ config dnsmasq
  	#list bogusnxdomain     '64.94.110.11'
  	option localservice	1  # disable to allow DNS requests from non-local subnets
-+	option filter_a		0
+ 	option ednspacket_max	1232
+-	option filter_aaaa	0
 +	option filter_aaaa	1
-+	option cachesize	8000
-+	option mini_ttl		3600
+ 	option filter_a		0
 +	option filter_https	1
 +	option filter_unknown	1
++	option cachesize	8000
++	option mini_ttl		3600
 +	option dns_redirect	1
- 	option ednspacket_max	1232
  
  config dhcp lan
+ 	option interface	lan
 --- a/files/dnsmasq.init
 +++ b/files/dnsmasq.init
 @@ -8,6 +8,8 @@ PROG=/usr/sbin/dnsmasq
@@ -25,15 +26,13 @@
  ADD_WAN_FQDN=0
  ADD_LOCAL_FQDN=""
  
-@@ -960,8 +962,16 @@ dnsmasq_start()
- 	append_bool "$cfg" rapidcommit "--dhcp-rapid-commit"
- 	append_bool "$cfg" scriptarp "--script-arp"
+@@ -962,9 +964,14 @@ dnsmasq_start()
  
-+	append_bool "$cfg" filter_a "--filter-A"
-+	append_bool "$cfg" filter_aaaa "--filter-AAAA"
+ 	append_bool "$cfg" filter_aaaa "--filter-AAAA"
+ 	append_bool "$cfg" filter_a "--filter-A"
 +	append_bool "$cfg" filter_https "--filter-https"
 +	append_bool "$cfg" filter_unknown "--filter-unknown"
-+
+ 
  	append_parm "$cfg" logfacility "--log-facility"
  	config_get logfacility "$cfg" "logfacility"
 +
@@ -42,7 +41,7 @@
  	append_parm "$cfg" cachesize "--cache-size"
  	append_parm "$cfg" dnsforwardmax "--dns-forward-max"
  	append_parm "$cfg" port "--port"
-@@ -1020,6 +1030,8 @@ dnsmasq_start()
+@@ -1023,6 +1030,8 @@ dnsmasq_start()
  
  	config_get_bool ADD_LOCAL_DOMAIN "$cfg" add_local_domain 1
  	config_get_bool ADD_LOCAL_HOSTNAME "$cfg" add_local_hostname 1
@@ -51,7 +50,7 @@
  	config_get ADD_LOCAL_FQDN "$cfg" add_local_fqdn ""
  	config_get ADD_WAN_FQDN "$cfg" add_wan_fqdn 0
  
-@@ -1176,8 +1188,12 @@ dnsmasq_start()
+@@ -1179,8 +1188,12 @@ dnsmasq_start()
  		[ $ADD_LOCAL_DOMAIN -eq 1 ] && [ -n "$DOMAIN" ] && {
  			echo "search $DOMAIN" >> /tmp/resolv.conf
  		}
@@ -66,7 +65,7 @@
  		for DNS_SERVER in $DNS_SERVERS ; do
  			echo "nameserver $DNS_SERVER" >> /tmp/resolv.conf
  		done
-@@ -1206,6 +1222,27 @@ dnsmasq_start()
+@@ -1209,6 +1222,27 @@ dnsmasq_start()
  	esac
  
  	procd_close_instance
@@ -94,7 +93,7 @@
  }
  
  dnsmasq_stop()
-@@ -1223,6 +1260,25 @@ dnsmasq_stop()
+@@ -1226,6 +1260,25 @@ dnsmasq_stop()
  	rm -f ${BASEDHCPSTAMPFILE}.${cfg}.*.dhcp
  }
  
@@ -120,7 +119,7 @@
  add_interface_trigger()
  {
  	local interface ignore
-@@ -1293,6 +1349,7 @@ start_service() {
+@@ -1296,6 +1349,7 @@ start_service() {
  }
  
  reload_service() {
@@ -128,7 +127,7 @@
  	rc_procd start_service "$@"
  	procd_send_signal dnsmasq "$@"
  }
-@@ -1319,4 +1376,5 @@ stop_service() {
+@@ -1322,4 +1376,5 @@ stop_service() {
  	else
  		config_foreach dnsmasq_stop dnsmasq
  	fi
