@@ -1,30 +1,18 @@
-diff --git a/Makefile b/Makefile
-index 701d338..e1900fc 100644
---- a/Makefile
-+++ b/Makefile
-@@ -22,6 +22,8 @@ PKG_CPE_ID:=cpe:/a:arm:mbed_tls
- 
- PKG_CONFIG_DEPENDS := \
- 	CONFIG_LIBMBEDTLS_DEBUG_C \
-+	CONFIG_LIBMBEDTLS_HAVE_ARMV8CE_AES \
-+	CONFIG_LIBMBEDTLS_HAVE_SSE2 \
- 	CONFIG_LIBMBEDTLS_HKDF_C
- 
- include $(INCLUDE_DIR)/package.mk
-@@ -43,6 +45,7 @@ $(call Package/mbedtls/Default)
-   CATEGORY:=Libraries
-   SUBMENU:=SSL
-   TITLE+= (library)
-+  PKGFLAGS:=nonshared
-   ABI_VERSION:=12
- endef
- 
-@@ -59,6 +62,32 @@ config LIBMBEDTLS_DEBUG_C
- 
- 	 Usually, you don't need this, so don't select this if you're unsure.
- 
-+config LIBMBEDTLS_HAVE_ARMV8CE_AES
-+	depends on PACKAGE_libmbedtls
+--- a/Config.in
++++ b/Config.in
+@@ -155,10 +155,44 @@ config MBEDTLS_CIPHER_MODE_XTS
+ config MBEDTLS_DEBUG_C
+ 	bool "MBEDTLS_DEBUG_C"
+ 	default n
++	help
++	 This option enables mbedtls library's debug functions.
++
++	 It increases the uncompressed libmbedtls binary size
++	 by around 60 KiB (for an ARMv5 platform).
++
++	 Usually, you don't need this, so don't select this if you're unsure.
++
++config MBEDTLS_HAVE_ARMV8CE_AES
 +	bool
 +	default y
 +	prompt "Enable use of the ARMv8 Crypto Extensions"
@@ -35,8 +23,7 @@ index 701d338..e1900fc 100644
 +
 +	 If you don't sure, say Y here.
 +
-+config LIBMBEDTLS_HAVE_SSE2
-+	depends on PACKAGE_libmbedtls
++config MBEDTLS_HAVE_SSE2
 +	bool
 +	default y if !TARGET_x86_legacy && !TARGET_x86_geode
 +	prompt "Enable use of x86 SSE2 instructions"
@@ -48,11 +35,20 @@ index 701d338..e1900fc 100644
 +	 support them, such as Geode GX and LX.  In this case you may
 +	 save 23KB by saying yes here.  AMD Geode NX, and Intel
 +	 Pentium 4 and above support SSE2.
-+
- config LIBMBEDTLS_HKDF_C
- 	depends on PACKAGE_libmbedtls
- 	bool "Enable the HKDF algorithm (RFC 5869)"
-@@ -89,6 +118,9 @@ endef
+ 
+ config MBEDTLS_HKDF_C
+-	bool "MBEDTLS_HKDF_C"
++	bool "MBEDTLS_HKDF_C (RFC 5869)"
+ 	default n
++	help
++	 This option adds support for the Hashed Message Authentication Code
++	 (HMAC)-based key derivation function (HKDF).
+ 
+ config MBEDTLS_PLATFORM_C
+ 	bool "MBEDTLS_PLATFORM_C"
+--- a/Makefile
++++ b/Makefile
+@@ -123,6 +123,9 @@ endef
  
  TARGET_CFLAGS += -ffunction-sections -fdata-sections
  TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS))
@@ -62,18 +58,20 @@ index 701d338..e1900fc 100644
  
  CMAKE_OPTIONS += \
  	-DCMAKE_POSITION_INDEPENDENT_CODE=ON \
-@@ -101,6 +133,8 @@ define Build/Configure
+@@ -140,10 +143,11 @@ endef
+ define Build/Prepare
+        $(call Build/Prepare/Default)
  
- 	awk 'BEGIN { rc = 1 } \
- 	     /#define MBEDTLS_DEBUG_C/ { $$$$0 = "$(if $(CONFIG_LIBMBEDTLS_DEBUG_C),,// )#define MBEDTLS_DEBUG_C"; rc = 0 } \
-+	     /#define MBEDTLS_ARMV8CE_AES_C/ { $$$$0 = "$(if $(CONFIG_LIBMBEDTLS_HAVE_ARMV8CE_AES),,// )#define MBEDTLS_ARMV8CE_AES_C"; rc = 0 } \
-+	     /#define MBEDTLS_HAVE_SSE2/ { $$$$0 = "$(if $(CONFIG_LIBMBEDTLS_HAVE_SSE2),,// )#define MBEDTLS_HAVE_SSE2"; rc = 0 } \
- 	     { print } \
- 	     END { exit(rc) }' $(PKG_BUILD_DIR)/include/mbedtls/config.h \
- 	     >$(PKG_BUILD_DIR)/include/mbedtls/config.h.new && \
-diff --git a/patches/100-Implements-AES-and-GCM-with-ARMv8-Crypto-Extensions.patch b/patches/100-Implements-AES-and-GCM-with-ARMv8-Crypto-Extensions.patch
-new file mode 100644
-index 0000000..07f18f8
+-       $(foreach opt,$(MBEDTLS_BUILD_OPTS),
++       $(if $(strip $(foreach opt,$(MBEDTLS_BUILD_OPTS),$($(opt)))),
++	 $(foreach opt,$(MBEDTLS_BUILD_OPTS),
+ 	 $(PKG_BUILD_DIR)/scripts/config.py \
+ 	 -f $(PKG_BUILD_DIR)/include/mbedtls/config.h \
+-	 $(if $($(opt)),set,unset) $(patsubst CONFIG_%,%,$(opt)))
++	 $(if $($(opt)),set,unset) $(patsubst CONFIG_%,%,$(opt))),)
+ endef
+ 
+ define Build/InstallDev
 --- /dev/null
 +++ b/patches/100-Implements-AES-and-GCM-with-ARMv8-Crypto-Extensions.patch
 @@ -0,0 +1,390 @@
@@ -467,195 +465,17 @@ index 0000000..07f18f8
 + #if defined(MBEDTLS_AES_C)
 +     "MBEDTLS_AES_C",
 + #endif /* MBEDTLS_AES_C */
-diff --git a/patches/200-config.patch b/patches/200-config.patch
-index 54d4cf4..10acd18 100644
---- a/patches/200-config.patch
-+++ b/patches/200-config.patch
-@@ -1,6 +1,6 @@
- --- a/include/mbedtls/config.h
- +++ b/include/mbedtls/config.h
--@@ -670,14 +670,14 @@
-+@@ -671,14 +671,14 @@
-   *
-   * Enable Output Feedback mode (OFB) for symmetric ciphers.
-   */
-@@ -17,7 +17,7 @@
-  
-  /**
-   * \def MBEDTLS_CIPHER_NULL_CIPHER
--@@ -795,20 +795,20 @@
-+@@ -796,20 +796,20 @@
-   * Comment macros to disable the curve and functions for it
-   */
-  /* Short Weierstrass curves (supporting ECP, ECDH, ECDSA) */
-@@ -47,7 +47,7 @@
-  
-  /**
-   * \def MBEDTLS_ECP_NIST_OPTIM
--@@ -961,7 +961,7 @@
-+@@ -962,7 +962,7 @@
-   *             See dhm.h for more details.
-   *
-   */
-@@ -56,7 +56,7 @@
-  
-  /**
-   * \def MBEDTLS_KEY_EXCHANGE_ECDHE_PSK_ENABLED
--@@ -981,7 +981,7 @@
-+@@ -982,7 +982,7 @@
-   *      MBEDTLS_TLS_ECDHE_PSK_WITH_3DES_EDE_CBC_SHA
-   *      MBEDTLS_TLS_ECDHE_PSK_WITH_RC4_128_SHA
-   */
-@@ -65,7 +65,7 @@
-  
-  /**
-   * \def MBEDTLS_KEY_EXCHANGE_RSA_PSK_ENABLED
--@@ -1006,7 +1006,7 @@
-+@@ -1007,7 +1007,7 @@
-   *      MBEDTLS_TLS_RSA_PSK_WITH_3DES_EDE_CBC_SHA
-   *      MBEDTLS_TLS_RSA_PSK_WITH_RC4_128_SHA
-   */
-@@ -74,7 +74,7 @@
-  
-  /**
-   * \def MBEDTLS_KEY_EXCHANGE_RSA_ENABLED
--@@ -1140,7 +1140,7 @@
-+@@ -1141,7 +1141,7 @@
-   *      MBEDTLS_TLS_ECDH_ECDSA_WITH_CAMELLIA_128_GCM_SHA256
-   *      MBEDTLS_TLS_ECDH_ECDSA_WITH_CAMELLIA_256_GCM_SHA384
-   */
-@@ -83,7 +83,7 @@
-  
-  /**
-   * \def MBEDTLS_KEY_EXCHANGE_ECDH_RSA_ENABLED
--@@ -1164,7 +1164,7 @@
-+@@ -1165,7 +1165,7 @@
-   *      MBEDTLS_TLS_ECDH_RSA_WITH_CAMELLIA_128_GCM_SHA256
-   *      MBEDTLS_TLS_ECDH_RSA_WITH_CAMELLIA_256_GCM_SHA384
-   */
-@@ -92,7 +92,7 @@
-  
-  /**
-   * \def MBEDTLS_KEY_EXCHANGE_ECJPAKE_ENABLED
--@@ -1268,7 +1268,7 @@
-+@@ -1269,7 +1269,7 @@
-   * This option is only useful if both MBEDTLS_SHA256_C and
-   * MBEDTLS_SHA512_C are defined. Otherwise the available hash module is used.
-   */
-@@ -101,7 +101,7 @@
-  
-  /**
-   * \def MBEDTLS_ENTROPY_NV_SEED
--@@ -1483,14 +1483,14 @@
-+@@ -1484,14 +1484,14 @@
-   * Uncomment this macro to disable the use of CRT in RSA.
-   *
-   */
-@@ -118,7 +118,7 @@
-  
-  /**
-   * \def MBEDTLS_SHA256_SMALLER
--@@ -1761,7 +1761,7 @@
-+@@ -1762,7 +1762,7 @@
-   *          configuration of this extension).
-   *
-   */
-@@ -127,7 +127,7 @@
-  
-  /**
-   * \def MBEDTLS_SSL_SRV_SUPPORT_SSLV2_CLIENT_HELLO
--@@ -2022,7 +2022,7 @@
-+@@ -2023,7 +2023,7 @@
-   *
-   * Comment this macro to disable support for truncated HMAC in SSL
-   */
-@@ -136,7 +136,7 @@
-  
-  /**
-   * \def MBEDTLS_SSL_TRUNCATED_HMAC_COMPAT
--@@ -2201,7 +2201,7 @@
-+@@ -2202,7 +2202,7 @@
-   *
-   * Comment this to disable run-time checking and save ROM space
-   */
-@@ -145,7 +145,7 @@
-  
-  /**
-   * \def MBEDTLS_X509_ALLOW_EXTENSIONS_NON_V3
--@@ -2550,7 +2550,7 @@
-+@@ -2566,7 +2566,7 @@
-   *      MBEDTLS_TLS_PSK_WITH_CAMELLIA_128_GCM_SHA256
-   *      MBEDTLS_TLS_PSK_WITH_CAMELLIA_128_CBC_SHA256
-   */
-@@ -154,7 +154,7 @@
-  
-  /**
-   * \def MBEDTLS_ARIA_C
--@@ -2616,7 +2616,7 @@
-+@@ -2632,7 +2632,7 @@
-   * This module enables the AES-CCM ciphersuites, if other requisites are
-   * enabled as well.
-   */
-@@ -163,7 +163,7 @@
-  
-  /**
-   * \def MBEDTLS_CERTS_C
--@@ -2628,7 +2628,7 @@
-+@@ -2644,7 +2644,7 @@
-   *
-   * This module is used for testing (ssl_client/server).
-   */
-@@ -172,7 +172,7 @@
-  
-  /**
-   * \def MBEDTLS_CHACHA20_C
--@@ -2741,7 +2741,7 @@
-+@@ -2757,7 +2757,7 @@
-   * \warning   DES is considered a weak cipher and its use constitutes a
-   *            security risk. We recommend considering stronger ciphers instead.
-   */
-@@ -181,7 +181,7 @@
-  
-  /**
-   * \def MBEDTLS_DHM_C
--@@ -2906,7 +2906,7 @@
-+@@ -2922,7 +2922,7 @@
-   * This module adds support for the Hashed Message Authentication Code
-   * (HMAC)-based key derivation function (HKDF).
-   */
-@@ -190,7 +190,7 @@
-  
-  /**
-   * \def MBEDTLS_HMAC_DRBG_C
--@@ -3219,7 +3219,7 @@
-+@@ -3235,7 +3235,7 @@
-   *
-   * This module enables abstraction of common (libc) functions.
-   */
-@@ -199,7 +199,7 @@
-  
-  /**
-   * \def MBEDTLS_POLY1305_C
--@@ -3295,7 +3295,7 @@
-+@@ -3311,7 +3311,7 @@
-   * Caller:  library/md.c
-   *
-   */
-@@ -208,7 +208,7 @@
-  
-  /**
-   * \def MBEDTLS_RSA_C
--@@ -3506,7 +3506,7 @@
-+@@ -3522,7 +3522,7 @@
-   *
-   * This module provides run-time version information.
-   */
-@@ -217,7 +217,7 @@
-  
-  /**
-   * \def MBEDTLS_X509_USE_C
--@@ -3616,7 +3616,7 @@
-+@@ -3632,7 +3632,7 @@
-   * Module:  library/xtea.c
-   * Caller:
-   */
+--- /dev/null
++++ b/patches/200.Enable-config.SSE2.patch
+@@ -0,0 +1,11 @@
++--- a/include/mbedtls/config.h
+++++ b/include/mbedtls/config.h
++@@ -116,7 +116,7 @@
++  *
++  * Uncomment if the CPU supports SSE2 (IA-32 specific).
++  */
++-//#define MBEDTLS_HAVE_SSE2
+++#define MBEDTLS_HAVE_SSE2
++ 
++ /**
++  * \def MBEDTLS_HAVE_TIME
