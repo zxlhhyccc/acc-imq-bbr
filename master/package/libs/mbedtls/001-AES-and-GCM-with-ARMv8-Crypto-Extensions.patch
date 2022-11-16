@@ -58,20 +58,6 @@
  
  CMAKE_OPTIONS += \
  	-DCMAKE_POSITION_INDEPENDENT_CODE=ON \
-@@ -140,10 +143,11 @@ endef
- define Build/Prepare
-        $(call Build/Prepare/Default)
- 
--       $(foreach opt,$(MBEDTLS_BUILD_OPTS),
-+       $(if $(strip $(foreach opt,$(MBEDTLS_BUILD_OPTS),$($(opt)))),
-+	 $(foreach opt,$(MBEDTLS_BUILD_OPTS),
- 	 $(PKG_BUILD_DIR)/scripts/config.py \
- 	 -f $(PKG_BUILD_DIR)/include/mbedtls/config.h \
--	 $(if $($(opt)),set,unset) $(patsubst CONFIG_%,%,$(opt)))
-+	 $(if $($(opt)),set,unset) $(patsubst CONFIG_%,%,$(opt))),)
- endef
- 
- define Build/InstallDev
 --- /dev/null
 +++ b/patches/100-Implements-AES-and-GCM-with-ARMv8-Crypto-Extensions.patch
 @@ -0,0 +1,390 @@
