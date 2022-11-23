@@ -1,6 +1,6 @@
 --- a/htdocs/luci-static/resources/view/network/dhcp.js
 +++ b/htdocs/luci-static/resources/view/network/dhcp.js
-@@ -261,6 +261,29 @@ return view.extend({
+@@ -263,6 +263,29 @@ return view.extend({
  		s.tab('srvhosts', _('SRV'));
  		s.tab('mxhosts', _('MX'));
  		s.tab('ipsets', _('IP Sets'));
@@ -30,7 +30,7 @@
  
  		s.taboption('general', form.Flag, 'domainneeded',
  			_('Domain required'),
-@@ -436,6 +459,16 @@ return view.extend({
+@@ -438,6 +461,16 @@ return view.extend({
  		o.optional = true;
  		o.placeholder = '/etc/dnsmasq.hosts';
  
@@ -47,7 +47,7 @@
  		o = s.taboption('advanced', form.Flag, 'quietdhcp',
  			_('Suppress logging'),
  			_('Suppress logging of the routine operation for the DHCP protocol.'));
-@@ -466,6 +499,7 @@ return view.extend({
+@@ -468,6 +501,7 @@ return view.extend({
  			_('Filter IPv4 A records'),
  			_('Remove IPv4 addresses from the results and only return IPv6 addresses.'));
  		o.optional = true;
@@ -55,7 +55,7 @@
  
  		s.taboption('advanced', form.Flag, 'localise_queries',
  			_('Localise queries'),
-@@ -555,6 +589,13 @@ return view.extend({
+@@ -557,6 +591,13 @@ return view.extend({
  		o.datatype = 'range(0,10000)';
  		o.placeholder = 150;
  
