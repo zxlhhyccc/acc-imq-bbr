@@ -27,14 +27,15 @@ index 5e22f98..8d9462f 100644
  
 diff --git a/patches/fullconenat.patch b/patches/fullconenat.patch
 new file mode 100644
-index 0000000..d69e712
+index 0000000..aa0486d
 --- /dev/null
 +++ b/patches/fullconenat.patch
-@@ -0,0 +1,63 @@
+@@ -0,0 +1,64 @@
++diff --git a/defaults.c b/defaults.c
 +index 85a3750..9fac9b1 100644
 +--- a/defaults.c
 ++++ b/defaults.c
-+@@ -46,7 +46,9 @@ const struct fw3_option fw3_flag_opts[] = {
++@@ -48,7 +48,9 @@ const struct fw3_option fw3_flag_opts[]
 + 	FW3_OPT("synflood_protect",    bool,     defaults, syn_flood),
 + 	FW3_OPT("synflood_rate",       limit,    defaults, syn_flood_rate),
 + 	FW3_OPT("synflood_burst",      int,      defaults, syn_flood_rate.burst),
@@ -49,8 +50,8 @@ index 0000000..d69e712
 +index 6edd174..c02eb97 100644
 +--- a/options.h
 ++++ b/options.h
-+@@ -267,6 +267,7 @@ struct fw3_defaults
-+ 	bool drop_invalid;
++@@ -297,6 +297,7 @@ struct fw3_defaults
++ 	enum fw3_reject_code any_reject_code;
 + 
 + 	bool syn_flood;
 ++	bool fullcone;
@@ -61,7 +62,7 @@ index 0000000..d69e712
 +index 2aa7473..57eead0 100644
 +--- a/zones.c
 ++++ b/zones.c
-+@@ -627,6 +627,7 @@ print_zone_rule(struct fw3_ipt_handle *h
++@@ -670,6 +670,7 @@ print_zone_rule(struct fw3_ipt_handle *h
 + 	struct fw3_address *msrc;
 + 	struct fw3_address *mdest;
 + 	struct fw3_ipt_rule *r;
@@ -69,7 +70,7 @@ index 0000000..d69e712
 + 
 + 	if (!fw3_is_family(zone, handle->family))
 + 		return;
-+@@ -712,8 +713,22 @@ print_zone_rule(struct fw3_ipt_handle *h
++@@ -755,8 +756,22 @@ print_zone_rule(struct fw3_ipt_handle *h
 + 				{
 + 					r = fw3_ipt_rule_new(handle);
 + 					fw3_ipt_rule_src_dest(r, msrc, mdest);
