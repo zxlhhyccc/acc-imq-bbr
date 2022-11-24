@@ -1,3 +1,5 @@
+diff --git a/Makefile b/Makefile
+index 6aee5c6..2e68909 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -198,6 +198,39 @@ Includes support for:
@@ -52,6 +54,9 @@
  $(eval $(call BuildPlugin,iptables-mod-ipopt,$(IPT_IPOPT-m)))
  $(eval $(call BuildPlugin,iptables-mod-ipsec,$(IPT_IPSEC-m)))
  $(eval $(call BuildPlugin,iptables-mod-nat-extra,$(IPT_NAT_EXTRA-m)))
+diff --git a/patches/601-add-imq-support.patch b/patches/601-add-imq-support.patch
+new file mode 100644
+index 0000000..5dfbeb1
 --- /dev/null
 +++ b/patches/601-add-imq-support.patch
 @@ -0,0 +1,138 @@
@@ -193,6 +198,9 @@
 ++
 ++#endif /* _XT_IMQ_H */
 ++
+diff --git a/patches/608-add-gargoyle-netfilter-match-modules.patch b/patches/608-add-gargoyle-netfilter-match-modules.patch
+new file mode 100644
+index 0000000..17ad17f
 --- /dev/null
 +++ b/patches/608-add-gargoyle-netfilter-match-modules.patch
 @@ -0,0 +1,2811 @@
@@ -3007,79 +3015,3 @@
 ++	unsigned char invert;
 ++};
 ++#endif /*_IPT_WEBURL_H*/
---- /dev/null
-+++ b/patches/900-bcm-fullconenat.patch
-@@ -0,0 +1,73 @@
-+--- a/extensions/libipt_MASQUERADE.c
-++++ b/extensions/libipt_MASQUERADE.c
-+@@ -11,6 +11,7 @@
-+ enum {
-+ 	O_TO_PORTS = 0,
-+ 	O_RANDOM,
-++	O_MODE,
-+ 	O_RANDOM_FULLY,
-+ };
-+ 
-+@@ -23,13 +24,16 @@ static void MASQUERADE_help(void)
-+ " --random\n"
-+ "				Randomize source port.\n"
-+ " --random-fully\n"
-+-"				Fully randomize source port.\n");
-++"				Fully randomize source port.\n"
-++" --mode <fullcone|symmetric>\n"
-++"				NAT mode.\n");
-+ }
-+ 
-+ static const struct xt_option_entry MASQUERADE_opts[] = {
-+ 	{.name = "to-ports", .id = O_TO_PORTS, .type = XTTYPE_STRING},
-+ 	{.name = "random", .id = O_RANDOM, .type = XTTYPE_NONE},
-+ 	{.name = "random-fully", .id = O_RANDOM_FULLY, .type = XTTYPE_NONE},
-++	{.name = "mode", .id = O_MODE, .type = XTTYPE_STRING},
-+ 	XTOPT_TABLEEND,
-+ };
-+ 
-+@@ -90,6 +94,8 @@ static void MASQUERADE_parse(struct xt_o
-+ 	else
-+ 		portok = 0;
-+ 
-++	mr->range[0].min_ip = 0;
-++
-+ 	xtables_option_parse(cb);
-+ 	switch (cb->entry->id) {
-+ 	case O_TO_PORTS:
-+@@ -104,6 +110,15 @@ static void MASQUERADE_parse(struct xt_o
-+ 	case O_RANDOM_FULLY:
-+ 		mr->range[0].flags |=  NF_NAT_RANGE_PROTO_RANDOM_FULLY;
-+ 		break;
-++	case O_MODE:
-++		if (strcasecmp(cb->arg, "fullcone") == 0)
-++			mr->range[0].min_ip = 1;
-++		else if (strcasecmp(cb->arg, "symmetric") == 0)
-++			mr->range[0].min_ip = 0;
-++		else
-++			xtables_error(PARAMETER_PROBLEM,
-++				   "Unknown mode %s", cb->arg);
-++		break;
-+ 	}
-+ }
-+ 
-+@@ -126,6 +141,9 @@ MASQUERADE_print(const void *ip, const s
-+ 
-+ 	if (r->flags & NF_NAT_RANGE_PROTO_RANDOM_FULLY)
-+ 		printf(" random-fully");
-++
-++	if (r->min_ip == 1)
-++		printf(" mode: fullcone");
-+ }
-+ 
-+ static void
-+@@ -145,6 +163,9 @@ MASQUERADE_save(const void *ip, const st
-+ 
-+ 	if (r->flags & NF_NAT_RANGE_PROTO_RANDOM_FULLY)
-+ 		printf(" --random-fully");
-++
-++	if (r->min_ip == 1)
-++		printf(" --mode fullcone");
-+ }
-+ 
-+ static int MASQUERADE_xlate(struct xt_xlate *xl,

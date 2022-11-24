@@ -1,21 +1,17 @@
 diff --git a/htdocs/luci-static/resources/view/firewall/zones.js b/htdocs/luci-static/resources/view/firewall/zones.js
-index 58cd2a7..8f87702 100644
+index 58cd2a7..aa85bd4 100644
 --- a/htdocs/luci-static/resources/view/firewall/zones.js
 +++ b/htdocs/luci-static/resources/view/firewall/zones.js
-@@ -57,6 +57,11 @@ return view.extend({
+@@ -56,6 +56,7 @@ return view.extend({
+ 		};
  
  		o = s.option(form.Flag, 'drop_invalid', _('Drop invalid packets'));
++		o = s.option(form.Flag, 'fullcone', _('Enable FullCone NAT'));
  
-+		o = s.option(form.ListValue, 'fullcone', _('Enable FullCone NAT'));
-+		o.value('0', _('Disable'));
-+		o.value('1', _('Compatible Mode'));
-+		o.value('2', _('High Performing Mode'));
-+
  		var p = [
  			s.option(form.ListValue, 'input', _('Input')),
- 			s.option(form.ListValue, 'output', _('Output')),
 diff --git a/po/zh_Hans/firewall.po b/po/zh_Hans/firewall.po
-index bc7e743..ac52285 100644
+index 6ab67e1..f320484 100644
 --- a/po/zh_Hans/firewall.po
 +++ b/po/zh_Hans/firewall.po
 @@ -303,6 +303,9 @@ msgstr "启用 NAT 环回"
@@ -23,18 +19,8 @@ index bc7e743..ac52285 100644
  msgstr "启用 SYN-flood 防御"
  
 +msgid "Enable FullCone NAT"
-+msgstr "启用 FullCone-NAT"
++msgstr "启用FullCone-NAT"
 +
  #: applications/luci-app-firewall/htdocs/luci-static/resources/view/firewall/zones.js:264
  msgid "Enable logging on this zone"
  msgstr "启用此区域的日志记录"
-@@ -1203,3 +1206,9 @@ msgstr "未指定"
- #: applications/luci-app-firewall/htdocs/luci-static/resources/tools/firewall.js:338
- msgid "valid firewall mark"
- msgstr "有效的防火墙标记"
-+
-+msgid "Compatible Mode"
-+msgstr "兼容模式"
-+
-+msgid "High Performing Mode"
-+msgstr "高性能模式"
