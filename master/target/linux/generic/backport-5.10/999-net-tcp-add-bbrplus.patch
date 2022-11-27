@@ -77,8 +77,8 @@
  obj-$(CONFIG_TCP_CONG_BIC) += tcp_bic.o
  obj-$(CONFIG_TCP_CONG_CDG) += tcp_cdg.o
  obj-$(CONFIG_TCP_CONG_CUBIC) += tcp_cubic.o
---- /dev/null
-+++ b/net/ipv4/tcp_bbrplus.c
+--- a/net/ipv4/tcp_bbrplus.c	1970-01-01 08:00:00.000000000 +0800
++++ b/net/ipv4/tcp_bbrplus.c	2022-11-08 11:27:31.092919169 +0800
 @@ -0,0 +1,1187 @@
 +/* Bottleneck Bandwidth and RTT (BBR) congestion control
 + *
@@ -1135,7 +1135,7 @@
 +    bbr->prior_cwnd = 0;
 +    bbr->tso_segs_goal = 0;  /* default segs per skb until first ACK */
 +    bbr->rtt_cnt = 0;
-+    bbr->next_rtt_delivered = 0;
++    bbr->next_rtt_delivered = tp->delivered;
 +    bbr->prev_ca_state = TCP_CA_Open;
 +    bbr->packet_conservation = 0;
 +
@@ -1269,7 +1269,7 @@
 +MODULE_DESCRIPTION("TCP BBR (Bottleneck Bandwidth and RTT)");
 --- a/net/ipv4/tcp_output.c
 +++ b/net/ipv4/tcp_output.c
-@@ -1955,7 +1955,7 @@ static bool tcp_nagle_check(bool partial
+@@ -1957,7 +1957,7 @@ static bool tcp_nagle_check(bool partial
  /* Return how many segs we'd like on a TSO packet,
   * to send one TSO packet per ms
   */
@@ -1278,7 +1278,7 @@
  			    int min_tso_segs)
  {
  	u32 bytes, segs;
-@@ -1973,6 +1973,7 @@ static u32 tcp_tso_autosize(const struct
+@@ -1975,6 +1975,7 @@ static u32 tcp_tso_autosize(const struct
  
  	return segs;
  }
