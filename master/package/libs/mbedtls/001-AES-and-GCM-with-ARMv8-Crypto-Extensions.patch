@@ -4,7 +4,7 @@
  
  comment "Build Options - unselect features to reduce binary size"
  
-+config MBEDTLS_HAVE_ARMV8CE_AES
++config MBEDTLS_ARMV8CE_AES_C
 +	bool
 +	default y
 +	prompt "Enable use of the ARMv8 Crypto Extensions"
