@@ -75,7 +75,7 @@ index d3928c2..d0852ec 100755
 +	config_get_bool dns_redirect "$cfg" dns_redirect 0
 +	config_get dns_port "$cfg" port 53
 +	if [ "$dns_redirect" = 1 ]; then
-+		if [ -s "$nftsets" ]; then
++		if [ -e "$nftsets" ]; then
 +		cat <<-EOF > /tmp/dnsmasq-dns-redirect.nft
 +			table inet dnsmasq {
 +				chain prerouting {
@@ -87,7 +87,7 @@ index d3928c2..d0852ec 100755
 +		nft -f /tmp/dnsmasq-dns-redirect.nft
 +		fi
 +
-+		if [ -s "$ipsets" ]; then
++		if [ -e "$ipsets" ]; then
 +		iptables -t nat -A PREROUTING -m comment --comment "DNSMASQ" -p udp --dport 53 -j REDIRECT --to-ports $dns_port
 +		[ -n "$(command -v ip6tables)" ] && ip6tables -t nat -A PREROUTING -m comment --comment "DNSMASQ" -p udp --dport 53 -j REDIRECT --to-ports $dns_port
 +		fi
@@ -101,7 +101,7 @@ index d3928c2..d0852ec 100755
  
 +iptables_nftables_clear()
 +{
-+	if [ -s "$nftsets" ]; then
++	if [ -e "$nftsets" ]; then
 +	nft --check list table inet dnsmasq > /dev/null 2>&1
 +		if [ $? -eq "0" ]; then
 +			echo "Remove dnsmasq nat table"
@@ -109,7 +109,7 @@ index d3928c2..d0852ec 100755
 +		fi
 +	fi
 +
-+	if [ -s "$ipsets" ]; then
++	if [ -e "$ipsets" ]; then
 +		if [ $? -eq "0" ]; then
 +			config_get dns_port "$cfg" port 53
 +			iptables -t nat -D PREROUTING -m comment --comment "DNSMASQ" -p udp --dport 53 -j REDIRECT --to-ports $dns_port 2>"/dev/null"
