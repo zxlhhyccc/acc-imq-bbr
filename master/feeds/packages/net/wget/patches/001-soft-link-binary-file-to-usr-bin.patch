@@ -1,8 +1,6 @@
-diff --git a/Makefile b/Makefile
-index 5a82e63..605fab3 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -49,7 +49,9 @@ $(call Package/wget/Default)
+@@ -50,7 +50,9 @@ $(call Package/wget/Default)
    DEPENDS+= +libopenssl +librt
    TITLE+= (with SSL support)
    VARIANT:=ssl
@@ -13,7 +11,7 @@ index 5a82e63..605fab3 100644
  endef
  
  define Package/wget-ssl/description
-@@ -61,7 +63,9 @@ define Package/wget-nossl
+@@ -62,7 +64,9 @@ define Package/wget-nossl
  $(call Package/wget/Default)
    TITLE+= (without SSL support)
    VARIANT:=nossl
