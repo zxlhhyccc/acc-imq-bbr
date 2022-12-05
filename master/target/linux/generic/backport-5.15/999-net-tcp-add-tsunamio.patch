@@ -46,7 +46,7 @@
  obj-$(CONFIG_TCP_CONG_CDG) += tcp_cdg.o
 --- /dev/null
 +++ b/net/ipv4/tcp_tsunamio.c
-@@ -0,0 +1,987 @@
+@@ -0,0 +1,988 @@
 +/* Bottleneck Bandwidth and RTT (BBR) congestion control
 + *
 + * BBR congestion control computes the sending rate based on the delivery
@@ -1009,6 +1009,7 @@
 +	.undo_cwnd	= bbr_undo_cwnd,
 +	.cwnd_event	= bbr_cwnd_event,
 +	.ssthresh	= bbr_ssthresh,
++	.tso_segs_goal	= bbr_tso_segs_goal,
 +	.min_tso_segs	= bbr_min_tso_segs,
 +	.get_info	= bbr_get_info,
 +	.set_state	= bbr_set_state,
