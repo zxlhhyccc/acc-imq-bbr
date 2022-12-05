@@ -1,0 +1,24 @@
+From 474231811ed16d65dceb4f2353b5244c926a01f2 Mon Sep 17 00:00:00 2001
+From: Robert Marko <robimarko@gmail.com>
+Date: Sat, 8 Oct 2022 17:18:03 +0200
+Subject: [PATCH] ath11k: enable regdb support for IPQ8074
+
+FW 2.7 appears to support external regdb just fine, so enable support for
+it on IPQ8074.
+
+Signed-off-by: Robert Marko <robimarko@gmail.com>
+---
+ drivers/net/wireless/ath/ath11k/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/drivers/net/wireless/ath/ath11k/core.c
++++ b/drivers/net/wireless/ath/ath11k/core.c
+@@ -94,7 +94,7 @@ static const struct ath11k_hw_params ath
+ #endif
+ 		.supports_suspend = false,
+ 		.hal_desc_sz = sizeof(struct hal_rx_desc_ipq8074),
+-		.supports_regdb = false,
++		.supports_regdb = true,
+ 		.fix_l1ss = true,
+ 		.wakeup_mhi = false,
+ 		.credit_flow = false,

@@ -1,0 +1,28 @@
+From d50ebec14535c4937b8b1ef2b6f7473373263a2f Mon Sep 17 00:00:00 2001
+From: Baochen Qiang <quic_bqiang@quicinc.com>
+Date: Sat, 24 Sep 2022 16:48:18 +0300
+Subject: [PATCH] wifi: ath11k: Remove redundant ath11k_mac_drain_tx
+
+ath11k_mac_drain_tx is already called in ath11k_mac_wait_tx_complete, no need to call it again. So remove it.
+
+This is found in code review.
+
+Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-03125-QCAHSPSWPL_V1_V2_SILICONZ_LITE-3
+
+Signed-off-by: Baochen Qiang <quic_bqiang@quicinc.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220919020259.1746-1-quic_bqiang@quicinc.com
+---
+ drivers/net/wireless/ath/ath11k/wow.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+--- a/drivers/net/wireless/ath/ath11k/wow.c
++++ b/drivers/net/wireless/ath/ath11k/wow.c
+@@ -703,7 +703,6 @@ int ath11k_wow_op_suspend(struct ieee802
+ 		goto cleanup;
+ 	}
+ 
+-	ath11k_mac_drain_tx(ar);
+ 	ret = ath11k_mac_wait_tx_complete(ar);
+ 	if (ret) {
+ 		ath11k_warn(ar->ab, "failed to wait tx complete: %d\n", ret);

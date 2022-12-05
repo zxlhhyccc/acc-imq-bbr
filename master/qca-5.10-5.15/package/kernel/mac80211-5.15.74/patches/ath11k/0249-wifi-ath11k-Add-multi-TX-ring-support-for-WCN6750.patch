@@ -1,0 +1,581 @@
+From 7636c9a6e7d7996ca0b7f31f61f0e55ef5ff89d5 Mon Sep 17 00:00:00 2001
+From: Manikanta Pubbisetty <quic_mpubbise@quicinc.com>
+Date: Wed, 7 Sep 2022 11:36:49 +0300
+Subject: [PATCH 249/250] wifi: ath11k: Add multi TX ring support for WCN6750
+
+Currently in the case of WCN6750, only one TCL ring is used for TX,
+this is limiting the TX throughput in 160 MHz case, enabling multiple
+TCL rings on WCN6750 has shown an improvement of nearly 300 Mbps in
+the case of TCP TX, therefore add the support of multi TX ring for
+WCN6750.
+
+Currently TCL ring is selected based on CPU ID, this logic cannot be
+applied for WCN6750 as there is chance of out of order TX of packets
+and to avoid this, choose TCL ring based on flow hash so that packets
+of the same flow will end up on same TCL ring. For the same reason,
+TCL ring retry logic is also not applicable for WCN6750.
+
+Also the mapping of TCL, WBM & RBM IDs for WCN6750 is different from
+existing devices. Create a new TCM/WBM/RBM mapping for WCN6750.
+
+Change does not impact existing ath11k devices.
+
+Tested-on: WCN6750 hw1.0 AHB WLAN.MSL.1.0.1-00887-QCAMSLSWPLZ-1
+
+Signed-off-by: Manikanta Pubbisetty <quic_mpubbise@quicinc.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220905071805.31625-3-quic_mpubbise@quicinc.com
+---
+ drivers/net/wireless/ath/ath11k/core.c   |  20 +++-
+ drivers/net/wireless/ath/ath11k/dp.c     |  24 +++--
+ drivers/net/wireless/ath/ath11k/dp.h     |   2 +
+ drivers/net/wireless/ath/ath11k/dp_tx.c  |  19 ++--
+ drivers/net/wireless/ath/ath11k/hal.c    |   2 +-
+ drivers/net/wireless/ath/ath11k/hal.h    |   2 +
+ drivers/net/wireless/ath/ath11k/hal_tx.c |   4 +-
+ drivers/net/wireless/ath/ath11k/hal_tx.h |   2 +
+ drivers/net/wireless/ath/ath11k/hw.c     | 118 ++++++++++++++++++++++-
+ drivers/net/wireless/ath/ath11k/hw.h     |  12 +++
+ 10 files changed, 175 insertions(+), 30 deletions(-)
+
+--- a/drivers/net/wireless/ath/ath11k/core.c
++++ b/drivers/net/wireless/ath/ath11k/core.c
+@@ -111,6 +111,8 @@ static const struct ath11k_hw_params ath
+ 		.supports_multi_bssid = false,
+ 
+ 		.sram_dump = {},
++
++		.tcl_ring_retry = true,
+ 	},
+ 	{
+ 		.hw_rev = ATH11K_HW_IPQ6018_HW10,
+@@ -187,6 +189,8 @@ static const struct ath11k_hw_params ath
+ 		.supports_multi_bssid = false,
+ 
+ 		.sram_dump = {},
++
++		.tcl_ring_retry = true,
+ 	},
+ 	{
+ 		.name = "qca6390 hw2.0",
+@@ -265,6 +269,8 @@ static const struct ath11k_hw_params ath
+ 			.start = 0x01400000,
+ 			.end = 0x0171ffff,
+ 		},
++
++		.tcl_ring_retry = true,
+ 	},
+ 	{
+ 		.name = "qcn9074 hw1.0",
+@@ -340,6 +346,8 @@ static const struct ath11k_hw_params ath
+ 		.supports_multi_bssid = false,
+ 
+ 		.sram_dump = {},
++
++		.tcl_ring_retry = true,
+ 	},
+ 	{
+ 		.name = "wcn6855 hw2.0",
+@@ -418,6 +426,8 @@ static const struct ath11k_hw_params ath
+ 			.start = 0x01400000,
+ 			.end = 0x0177ffff,
+ 		},
++
++		.tcl_ring_retry = true,
+ 	},
+ 	{
+ 		.name = "wcn6855 hw2.1",
+@@ -494,6 +504,8 @@ static const struct ath11k_hw_params ath
+ 			.start = 0x01400000,
+ 			.end = 0x0177ffff,
+ 		},
++
++		.tcl_ring_retry = true,
+ 	},
+ 	{
+ 		.name = "wcn6750 hw1.0",
+@@ -506,7 +518,7 @@ static const struct ath11k_hw_params ath
+ 		.max_radios = 1,
+ 		.bdf_addr = 0x4B0C0000,
+ 		.hw_ops = &wcn6750_ops,
+-		.ring_mask = &ath11k_hw_ring_mask_qca6390,
++		.ring_mask = &ath11k_hw_ring_mask_wcn6750,
+ 		.internal_sleep_clock = false,
+ 		.regs = &wcn6750_regs,
+ 		.qmi_service_ins_id = ATH11K_QMI_WLFW_SERVICE_INS_ID_V01_WCN6750,
+@@ -547,8 +559,8 @@ static const struct ath11k_hw_params ath
+ 		.supports_regdb = true,
+ 		.fix_l1ss = false,
+ 		.credit_flow = true,
+-		.max_tx_ring = DP_TCL_NUM_RING_MAX_QCA6390,
+-		.hal_params = &ath11k_hw_hal_params_qca6390,
++		.max_tx_ring = DP_TCL_NUM_RING_MAX,
++		.hal_params = &ath11k_hw_hal_params_wcn6750,
+ 		.supports_dynamic_smps_6ghz = false,
+ 		.alloc_cacheable_memory = false,
+ 		.supports_rssi_stats = true,
+@@ -567,6 +579,8 @@ static const struct ath11k_hw_params ath
+ 		.supports_multi_bssid = true,
+ 
+ 		.sram_dump = {},
++
++		.tcl_ring_retry = false,
+ 	},
+ };
+ 
+--- a/drivers/net/wireless/ath/ath11k/dp.c
++++ b/drivers/net/wireless/ath/ath11k/dp.c
+@@ -1,6 +1,7 @@
+ // SPDX-License-Identifier: BSD-3-Clause-Clear
+ /*
+  * Copyright (c) 2018-2019 The Linux Foundation. All rights reserved.
++ * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+  */
+ 
+ #include <crypto/hash.h>
+@@ -131,13 +132,11 @@ static int ath11k_dp_srng_calculate_msi_
+ 
+ 	switch (type) {
+ 	case HAL_WBM2SW_RELEASE:
+-		if (ring_num < 3) {
+-			grp_mask = &ab->hw_params.ring_mask->tx[0];
+-		} else if (ring_num == 3) {
++		if (ring_num == DP_RX_RELEASE_RING_NUM) {
+ 			grp_mask = &ab->hw_params.ring_mask->rx_wbm_rel[0];
+ 			ring_num = 0;
+ 		} else {
+-			return -ENOENT;
++			grp_mask = &ab->hw_params.ring_mask->tx[0];
+ 		}
+ 		break;
+ 	case HAL_REO_EXCEPTION:
+@@ -371,6 +370,7 @@ static int ath11k_dp_srng_common_setup(s
+ 	struct ath11k_dp *dp = &ab->dp;
+ 	struct hal_srng *srng;
+ 	int i, ret;
++	u8 tcl_num, wbm_num;
+ 
+ 	ret = ath11k_dp_srng_setup(ab, &dp->wbm_desc_rel_ring,
+ 				   HAL_SW2WBM_RELEASE, 0, 0,
+@@ -396,8 +396,11 @@ static int ath11k_dp_srng_common_setup(s
+ 	}
+ 
+ 	for (i = 0; i < ab->hw_params.max_tx_ring; i++) {
++		tcl_num = ab->hw_params.hal_params->tcl2wbm_rbm_map[i].tcl_ring_num;
++		wbm_num = ab->hw_params.hal_params->tcl2wbm_rbm_map[i].wbm_ring_num;
++
+ 		ret = ath11k_dp_srng_setup(ab, &dp->tx_ring[i].tcl_data_ring,
+-					   HAL_TCL_DATA, i, 0,
++					   HAL_TCL_DATA, tcl_num, 0,
+ 					   DP_TCL_DATA_RING_SIZE);
+ 		if (ret) {
+ 			ath11k_warn(ab, "failed to set up tcl_data ring (%d) :%d\n",
+@@ -406,7 +409,7 @@ static int ath11k_dp_srng_common_setup(s
+ 		}
+ 
+ 		ret = ath11k_dp_srng_setup(ab, &dp->tx_ring[i].tcl_comp_ring,
+-					   HAL_WBM2SW_RELEASE, i, 0,
++					   HAL_WBM2SW_RELEASE, wbm_num, 0,
+ 					   DP_TX_COMP_RING_SIZE);
+ 		if (ret) {
+ 			ath11k_warn(ab, "failed to set up tcl_comp ring (%d) :%d\n",
+@@ -431,7 +434,7 @@ static int ath11k_dp_srng_common_setup(s
+ 	}
+ 
+ 	ret = ath11k_dp_srng_setup(ab, &dp->rx_rel_ring, HAL_WBM2SW_RELEASE,
+-				   3, 0, DP_RX_RELEASE_RING_SIZE);
++				   DP_RX_RELEASE_RING_NUM, 0, DP_RX_RELEASE_RING_SIZE);
+ 	if (ret) {
+ 		ath11k_warn(ab, "failed to set up rx_rel ring :%d\n", ret);
+ 		goto err;
+@@ -774,9 +777,10 @@ int ath11k_dp_service_srng(struct ath11k
+ 	int i, j;
+ 	int tot_work_done = 0;
+ 
+-	if (ab->hw_params.ring_mask->tx[grp_id]) {
+-		i = __fls(ab->hw_params.ring_mask->tx[grp_id]);
+-		ath11k_dp_tx_completion_handler(ab, i);
++	for (i = 0; i < ab->hw_params.max_tx_ring; i++) {
++		if (BIT(ab->hw_params.hal_params->tcl2wbm_rbm_map[i].wbm_ring_num) &
++		    ab->hw_params.ring_mask->tx[grp_id])
++			ath11k_dp_tx_completion_handler(ab, i);
+ 	}
+ 
+ 	if (ab->hw_params.ring_mask->rx_err[grp_id]) {
+--- a/drivers/net/wireless/ath/ath11k/dp.h
++++ b/drivers/net/wireless/ath/ath11k/dp.h
+@@ -222,6 +222,8 @@ struct ath11k_pdev_dp {
+ #define DP_RXDMA_MONITOR_DST_RING_SIZE	2048
+ #define DP_RXDMA_MONITOR_DESC_RING_SIZE	4096
+ 
++#define DP_RX_RELEASE_RING_NUM	3
++
+ #define DP_RX_BUFFER_SIZE	2048
+ #define	DP_RX_BUFFER_SIZE_LITE  1024
+ #define DP_RX_BUFFER_ALIGN_SIZE	128
+--- a/drivers/net/wireless/ath/ath11k/dp_tx.c
++++ b/drivers/net/wireless/ath/ath11k/dp_tx.c
+@@ -1,6 +1,7 @@
+ // SPDX-License-Identifier: BSD-3-Clause-Clear
+ /*
+  * Copyright (c) 2018-2019 The Linux Foundation. All rights reserved.
++ * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+  */
+ 
+ #include "core.h"
+@@ -93,7 +94,8 @@ int ath11k_dp_tx(struct ath11k *ar, stru
+ 	u8 pool_id;
+ 	u8 hal_ring_id;
+ 	int ret;
+-	u8 ring_selector = 0, ring_map = 0;
++	u32 ring_selector = 0;
++	u8 ring_map = 0;
+ 	bool tcl_ring_retry;
+ 
+ 	if (unlikely(test_bit(ATH11K_FLAG_CRASH_FLUSH, &ar->ab->dev_flags)))
+@@ -105,19 +107,13 @@ int ath11k_dp_tx(struct ath11k *ar, stru
+ 
+ 	pool_id = skb_get_queue_mapping(skb) & (ATH11K_HW_MAX_QUEUES - 1);
+ 
+-	/* Let the default ring selection be based on current processor
+-	 * number, where one of the 3 tcl rings are selected based on
+-	 * the smp_processor_id(). In case that ring
+-	 * is full/busy, we resort to other available rings.
+-	 * If all rings are full, we drop the packet.
+-	 * //TODO Add throttling logic when all rings are full
+-	 */
+-	ring_selector = smp_processor_id();
++	ring_selector = ab->hw_params.hw_ops->get_ring_selector(skb);
+ 
+ tcl_ring_sel:
+ 	tcl_ring_retry = false;
+ 
+ 	ti.ring_id = ring_selector % ab->hw_params.max_tx_ring;
++	ti.rbm_id = ab->hw_params.hal_params->tcl2wbm_rbm_map[ti.ring_id].rbm_id;
+ 
+ 	ring_map |= BIT(ti.ring_id);
+ 
+@@ -129,7 +125,8 @@ tcl_ring_sel:
+ 	spin_unlock_bh(&tx_ring->tx_idr_lock);
+ 
+ 	if (unlikely(ret < 0)) {
+-		if (ring_map == (BIT(ab->hw_params.max_tx_ring) - 1)) {
++		if (ring_map == (BIT(ab->hw_params.max_tx_ring) - 1) ||
++		    !ab->hw_params.tcl_ring_retry) {
+ 			atomic_inc(&ab->soc_stats.tx_err.misc_fail);
+ 			return -ENOSPC;
+ 		}
+@@ -247,7 +244,7 @@ tcl_ring_sel:
+ 		 * Restart ring selection if some rings are not checked yet.
+ 		 */
+ 		if (unlikely(ring_map != (BIT(ab->hw_params.max_tx_ring)) - 1) &&
+-		    ab->hw_params.max_tx_ring > 1) {
++		    ab->hw_params.tcl_ring_retry && ab->hw_params.max_tx_ring > 1) {
+ 			tcl_ring_retry = true;
+ 			ring_selector++;
+ 		}
+--- a/drivers/net/wireless/ath/ath11k/hal.c
++++ b/drivers/net/wireless/ath/ath11k/hal.c
+@@ -126,7 +126,7 @@ static const struct hal_srng_config hw_s
+ 	},
+ 	{ /* WBM2SW_RELEASE */
+ 		.start_ring_id = HAL_SRNG_RING_ID_WBM2SW0_RELEASE,
+-		.max_rings = 4,
++		.max_rings = 5,
+ 		.entry_size = sizeof(struct hal_wbm_release_ring) >> 2,
+ 		.lmac_ring = false,
+ 		.ring_dir = HAL_SRNG_DIR_DST,
+--- a/drivers/net/wireless/ath/ath11k/hal.h
++++ b/drivers/net/wireless/ath/ath11k/hal.h
+@@ -389,6 +389,7 @@ enum hal_srng_ring_id {
+ 	HAL_SRNG_RING_ID_WBM2SW1_RELEASE,
+ 	HAL_SRNG_RING_ID_WBM2SW2_RELEASE,
+ 	HAL_SRNG_RING_ID_WBM2SW3_RELEASE,
++	HAL_SRNG_RING_ID_WBM2SW4_RELEASE,
+ 
+ 	HAL_SRNG_RING_ID_UMAC_ID_END = 127,
+ 	HAL_SRNG_RING_ID_LMAC1_ID_START,
+@@ -678,6 +679,7 @@ enum hal_rx_buf_return_buf_manager {
+ 	HAL_RX_BUF_RBM_SW1_BM,
+ 	HAL_RX_BUF_RBM_SW2_BM,
+ 	HAL_RX_BUF_RBM_SW3_BM,
++	HAL_RX_BUF_RBM_SW4_BM,
+ };
+ 
+ #define HAL_SRNG_DESC_LOOP_CNT		0xf0000000
+--- a/drivers/net/wireless/ath/ath11k/hal_tx.c
++++ b/drivers/net/wireless/ath/ath11k/hal_tx.c
+@@ -1,6 +1,7 @@
+ // SPDX-License-Identifier: BSD-3-Clause-Clear
+ /*
+  * Copyright (c) 2018-2019 The Linux Foundation. All rights reserved.
++ * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+  */
+ 
+ #include "hal_desc.h"
+@@ -44,8 +45,7 @@ void ath11k_hal_tx_cmd_desc_setup(struct
+ 		FIELD_PREP(BUFFER_ADDR_INFO1_ADDR,
+ 			   ((uint64_t)ti->paddr >> HAL_ADDR_MSB_REG_SHIFT));
+ 	tcl_cmd->buf_addr_info.info1 |=
+-		FIELD_PREP(BUFFER_ADDR_INFO1_RET_BUF_MGR,
+-			   (ti->ring_id + HAL_RX_BUF_RBM_SW0_BM)) |
++		FIELD_PREP(BUFFER_ADDR_INFO1_RET_BUF_MGR, ti->rbm_id) |
+ 		FIELD_PREP(BUFFER_ADDR_INFO1_SW_COOKIE, ti->desc_id);
+ 
+ 	tcl_cmd->info0 =
+--- a/drivers/net/wireless/ath/ath11k/hal_tx.h
++++ b/drivers/net/wireless/ath/ath11k/hal_tx.h
+@@ -1,6 +1,7 @@
+ /* SPDX-License-Identifier: BSD-3-Clause-Clear */
+ /*
+  * Copyright (c) 2018-2019 The Linux Foundation. All rights reserved.
++ * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+  */
+ 
+ #ifndef ATH11K_HAL_TX_H
+@@ -35,6 +36,7 @@ struct hal_tx_info {
+ 	u8 lmac_id;
+ 	u8 dscp_tid_tbl_idx;
+ 	bool enable_mesh;
++	u8 rbm_id;
+ };
+ 
+ /* TODO: Check if the actual desc macros can be used instead */
+--- a/drivers/net/wireless/ath/ath11k/hw.c
++++ b/drivers/net/wireless/ath/ath11k/hw.c
+@@ -820,6 +820,30 @@ static bool ath11k_hw_wcn6855_rx_desc_ge
+ 			 __le32_to_cpu(desc->u.wcn6855.msdu_start.info2));
+ }
+ 
++static u32 ath11k_hw_ipq8074_get_tcl_ring_selector(struct sk_buff *skb)
++{
++	/* Let the default ring selection be based on current processor
++	 * number, where one of the 3 tcl rings are selected based on
++	 * the smp_processor_id(). In case that ring
++	 * is full/busy, we resort to other available rings.
++	 * If all rings are full, we drop the packet.
++	 *
++	 * TODO: Add throttling logic when all rings are full
++	 */
++	return smp_processor_id();
++}
++
++static u32 ath11k_hw_wcn6750_get_tcl_ring_selector(struct sk_buff *skb)
++{
++	/* Select the TCL ring based on the flow hash of the SKB instead
++	 * of CPU ID. Since applications pumping the traffic can be scheduled
++	 * on multiple CPUs, there is a chance that packets of the same flow
++	 * could end on different TCL rings, this could sometimes results in
++	 * an out of order arrival of the packets at the receiver.
++	 */
++	return skb_get_hash(skb);
++}
++
+ const struct ath11k_hw_ops ipq8074_ops = {
+ 	.get_hw_mac_from_pdev_id = ath11k_hw_ipq8074_mac_from_pdev_id,
+ 	.wmi_init_config = ath11k_init_wmi_config_ipq8074,
+@@ -857,6 +881,7 @@ const struct ath11k_hw_ops ipq8074_ops =
+ 	.mpdu_info_get_peerid = ath11k_hw_ipq8074_mpdu_info_get_peerid,
+ 	.rx_desc_mac_addr2_valid = ath11k_hw_ipq8074_rx_desc_mac_addr2_valid,
+ 	.rx_desc_mpdu_start_addr2 = ath11k_hw_ipq8074_rx_desc_mpdu_start_addr2,
++	.get_ring_selector = ath11k_hw_ipq8074_get_tcl_ring_selector,
+ };
+ 
+ const struct ath11k_hw_ops ipq6018_ops = {
+@@ -896,6 +921,7 @@ const struct ath11k_hw_ops ipq6018_ops =
+ 	.mpdu_info_get_peerid = ath11k_hw_ipq8074_mpdu_info_get_peerid,
+ 	.rx_desc_mac_addr2_valid = ath11k_hw_ipq8074_rx_desc_mac_addr2_valid,
+ 	.rx_desc_mpdu_start_addr2 = ath11k_hw_ipq8074_rx_desc_mpdu_start_addr2,
++	.get_ring_selector = ath11k_hw_ipq8074_get_tcl_ring_selector,
+ };
+ 
+ const struct ath11k_hw_ops qca6390_ops = {
+@@ -935,6 +961,7 @@ const struct ath11k_hw_ops qca6390_ops =
+ 	.mpdu_info_get_peerid = ath11k_hw_ipq8074_mpdu_info_get_peerid,
+ 	.rx_desc_mac_addr2_valid = ath11k_hw_ipq8074_rx_desc_mac_addr2_valid,
+ 	.rx_desc_mpdu_start_addr2 = ath11k_hw_ipq8074_rx_desc_mpdu_start_addr2,
++	.get_ring_selector = ath11k_hw_ipq8074_get_tcl_ring_selector,
+ };
+ 
+ const struct ath11k_hw_ops qcn9074_ops = {
+@@ -974,6 +1001,7 @@ const struct ath11k_hw_ops qcn9074_ops =
+ 	.mpdu_info_get_peerid = ath11k_hw_ipq8074_mpdu_info_get_peerid,
+ 	.rx_desc_mac_addr2_valid = ath11k_hw_ipq9074_rx_desc_mac_addr2_valid,
+ 	.rx_desc_mpdu_start_addr2 = ath11k_hw_ipq9074_rx_desc_mpdu_start_addr2,
++	.get_ring_selector = ath11k_hw_ipq8074_get_tcl_ring_selector,
+ };
+ 
+ const struct ath11k_hw_ops wcn6855_ops = {
+@@ -1013,6 +1041,7 @@ const struct ath11k_hw_ops wcn6855_ops =
+ 	.mpdu_info_get_peerid = ath11k_hw_wcn6855_mpdu_info_get_peerid,
+ 	.rx_desc_mac_addr2_valid = ath11k_hw_wcn6855_rx_desc_mac_addr2_valid,
+ 	.rx_desc_mpdu_start_addr2 = ath11k_hw_wcn6855_rx_desc_mpdu_start_addr2,
++	.get_ring_selector = ath11k_hw_ipq8074_get_tcl_ring_selector,
+ };
+ 
+ const struct ath11k_hw_ops wcn6750_ops = {
+@@ -1052,11 +1081,14 @@ const struct ath11k_hw_ops wcn6750_ops =
+ 	.mpdu_info_get_peerid = ath11k_hw_ipq8074_mpdu_info_get_peerid,
+ 	.rx_desc_mac_addr2_valid = ath11k_hw_ipq9074_rx_desc_mac_addr2_valid,
+ 	.rx_desc_mpdu_start_addr2 = ath11k_hw_ipq9074_rx_desc_mpdu_start_addr2,
++	.get_ring_selector = ath11k_hw_wcn6750_get_tcl_ring_selector,
+ };
+ 
+-#define ATH11K_TX_RING_MASK_0 0x1
+-#define ATH11K_TX_RING_MASK_1 0x2
+-#define ATH11K_TX_RING_MASK_2 0x4
++#define ATH11K_TX_RING_MASK_0 BIT(0)
++#define ATH11K_TX_RING_MASK_1 BIT(1)
++#define ATH11K_TX_RING_MASK_2 BIT(2)
++#define ATH11K_TX_RING_MASK_3 BIT(3)
++#define ATH11K_TX_RING_MASK_4 BIT(4)
+ 
+ #define ATH11K_RX_RING_MASK_0 0x1
+ #define ATH11K_RX_RING_MASK_1 0x2
+@@ -1903,6 +1935,43 @@ const struct ath11k_hw_ring_mask ath11k_
+ 	},
+ };
+ 
++const struct ath11k_hw_ring_mask ath11k_hw_ring_mask_wcn6750 = {
++	.tx  = {
++		ATH11K_TX_RING_MASK_0,
++		0,
++		ATH11K_TX_RING_MASK_2,
++		0,
++		ATH11K_TX_RING_MASK_4,
++	},
++	.rx_mon_status = {
++		0, 0, 0, 0, 0, 0,
++		ATH11K_RX_MON_STATUS_RING_MASK_0,
++	},
++	.rx = {
++		0, 0, 0, 0, 0, 0, 0,
++		ATH11K_RX_RING_MASK_0,
++		ATH11K_RX_RING_MASK_1,
++		ATH11K_RX_RING_MASK_2,
++		ATH11K_RX_RING_MASK_3,
++	},
++	.rx_err = {
++		0, ATH11K_RX_ERR_RING_MASK_0,
++	},
++	.rx_wbm_rel = {
++		0, ATH11K_RX_WBM_REL_RING_MASK_0,
++	},
++	.reo_status = {
++		0, ATH11K_REO_STATUS_RING_MASK_0,
++	},
++	.rxdma2host = {
++		ATH11K_RXDMA2HOST_RING_MASK_0,
++		ATH11K_RXDMA2HOST_RING_MASK_1,
++		ATH11K_RXDMA2HOST_RING_MASK_2,
++	},
++	.host2rxdma = {
++	},
++};
++
+ const struct ath11k_hw_regs ipq8074_regs = {
+ 	/* SW2TCL(x) R0 ring configuration address */
+ 	.hal_tcl1_ring_base_lsb = 0x00000510,
+@@ -2332,12 +2401,55 @@ const struct ath11k_hw_regs wcn6750_regs
+ 	.hal_reo1_misc_ctl = 0x000005d8,
+ };
+ 
++static const struct ath11k_hw_tcl2wbm_rbm_map ath11k_hw_tcl2wbm_rbm_map_ipq8074[] = {
++	{
++		.tcl_ring_num = 0,
++		.wbm_ring_num = 0,
++		.rbm_id = HAL_RX_BUF_RBM_SW0_BM,
++	},
++	{
++		.tcl_ring_num = 1,
++		.wbm_ring_num = 1,
++		.rbm_id = HAL_RX_BUF_RBM_SW1_BM,
++	},
++	{
++		.tcl_ring_num = 2,
++		.wbm_ring_num = 2,
++		.rbm_id = HAL_RX_BUF_RBM_SW2_BM,
++	},
++};
++
++static const struct ath11k_hw_tcl2wbm_rbm_map ath11k_hw_tcl2wbm_rbm_map_wcn6750[] = {
++	{
++		.tcl_ring_num = 0,
++		.wbm_ring_num = 0,
++		.rbm_id = HAL_RX_BUF_RBM_SW0_BM,
++	},
++	{
++		.tcl_ring_num = 1,
++		.wbm_ring_num = 4,
++		.rbm_id = HAL_RX_BUF_RBM_SW4_BM,
++	},
++	{
++		.tcl_ring_num = 2,
++		.wbm_ring_num = 2,
++		.rbm_id = HAL_RX_BUF_RBM_SW2_BM,
++	},
++};
++
+ const struct ath11k_hw_hal_params ath11k_hw_hal_params_ipq8074 = {
+ 	.rx_buf_rbm = HAL_RX_BUF_RBM_SW3_BM,
++	.tcl2wbm_rbm_map = ath11k_hw_tcl2wbm_rbm_map_ipq8074,
+ };
+ 
+ const struct ath11k_hw_hal_params ath11k_hw_hal_params_qca6390 = {
+ 	.rx_buf_rbm = HAL_RX_BUF_RBM_SW1_BM,
++	.tcl2wbm_rbm_map = ath11k_hw_tcl2wbm_rbm_map_ipq8074,
++};
++
++const struct ath11k_hw_hal_params ath11k_hw_hal_params_wcn6750 = {
++	.rx_buf_rbm = HAL_RX_BUF_RBM_SW1_BM,
++	.tcl2wbm_rbm_map = ath11k_hw_tcl2wbm_rbm_map_wcn6750,
+ };
+ 
+ static const struct cfg80211_sar_freq_ranges ath11k_hw_sar_freq_ranges_wcn6855[] = {
+--- a/drivers/net/wireless/ath/ath11k/hw.h
++++ b/drivers/net/wireless/ath/ath11k/hw.h
+@@ -122,8 +122,15 @@ struct ath11k_hw_ring_mask {
+ 	u8 host2rxdma[ATH11K_EXT_IRQ_GRP_NUM_MAX];
+ };
+ 
++struct ath11k_hw_tcl2wbm_rbm_map {
++	u8 tcl_ring_num;
++	u8 wbm_ring_num;
++	u8 rbm_id;
++};
++
+ struct ath11k_hw_hal_params {
+ 	enum hal_rx_buf_return_buf_manager rx_buf_rbm;
++	const struct ath11k_hw_tcl2wbm_rbm_map *tcl2wbm_rbm_map;
+ };
+ 
+ struct ath11k_hw_params {
+@@ -208,6 +215,8 @@ struct ath11k_hw_params {
+ 		u32 start;
+ 		u32 end;
+ 	} sram_dump;
++
++	bool tcl_ring_retry;
+ };
+ 
+ struct ath11k_hw_ops {
+@@ -250,6 +259,7 @@ struct ath11k_hw_ops {
+ 	u16 (*mpdu_info_get_peerid)(u8 *tlv_data);
+ 	bool (*rx_desc_mac_addr2_valid)(struct hal_rx_desc *desc);
+ 	u8* (*rx_desc_mpdu_start_addr2)(struct hal_rx_desc *desc);
++	u32 (*get_ring_selector)(struct sk_buff *skb);
+ };
+ 
+ extern const struct ath11k_hw_ops ipq8074_ops;
+@@ -262,9 +272,11 @@ extern const struct ath11k_hw_ops wcn675
+ extern const struct ath11k_hw_ring_mask ath11k_hw_ring_mask_ipq8074;
+ extern const struct ath11k_hw_ring_mask ath11k_hw_ring_mask_qca6390;
+ extern const struct ath11k_hw_ring_mask ath11k_hw_ring_mask_qcn9074;
++extern const struct ath11k_hw_ring_mask ath11k_hw_ring_mask_wcn6750;
+ 
+ extern const struct ath11k_hw_hal_params ath11k_hw_hal_params_ipq8074;
+ extern const struct ath11k_hw_hal_params ath11k_hw_hal_params_qca6390;
++extern const struct ath11k_hw_hal_params ath11k_hw_hal_params_wcn6750;
+ 
+ static inline
+ int ath11k_hw_get_mac_from_pdev_id(struct ath11k_hw_params *hw,

@@ -1,0 +1,120 @@
+From 97c9e37c7a7d7845b09035569da9b0eea196b1e1 Mon Sep 17 00:00:00 2001
+From: Manikanta Pubbisetty <quic_mpubbise@quicinc.com>
+Date: Wed, 7 Sep 2022 11:36:56 +0300
+Subject: [PATCH 250/250] wifi: ath11k: Increase TCL data ring size for WCN6750
+
+Increase TCL data ring size to 2048 for WCN6750. This is
+needed to meet 160 MHz TX throughput.
+
+Add a new hw_param to indicate the TX ring size for
+individual devices.
+
+Tested-on: WCN6750 hw1.0 AHB WLAN.MSL.1.0.1-00887-QCAMSLSWPLZ-1
+
+Signed-off-by: Manikanta Pubbisetty <quic_mpubbise@quicinc.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220905071805.31625-4-quic_mpubbise@quicinc.com
+---
+ drivers/net/wireless/ath/ath11k/core.c | 7 +++++++
+ drivers/net/wireless/ath/ath11k/dp.c   | 2 +-
+ drivers/net/wireless/ath/ath11k/dp.h   | 2 ++
+ drivers/net/wireless/ath/ath11k/hw.h   | 1 +
+ 4 files changed, 11 insertions(+), 1 deletion(-)
+
+--- a/drivers/net/wireless/ath/ath11k/core.c
++++ b/drivers/net/wireless/ath/ath11k/core.c
+@@ -113,6 +113,7 @@ static const struct ath11k_hw_params ath
+ 		.sram_dump = {},
+ 
+ 		.tcl_ring_retry = true,
++		.tx_ring_size = DP_TCL_DATA_RING_SIZE,
+ 	},
+ 	{
+ 		.hw_rev = ATH11K_HW_IPQ6018_HW10,
+@@ -191,6 +192,7 @@ static const struct ath11k_hw_params ath
+ 		.sram_dump = {},
+ 
+ 		.tcl_ring_retry = true,
++		.tx_ring_size = DP_TCL_DATA_RING_SIZE,
+ 	},
+ 	{
+ 		.name = "qca6390 hw2.0",
+@@ -271,6 +273,7 @@ static const struct ath11k_hw_params ath
+ 		},
+ 
+ 		.tcl_ring_retry = true,
++		.tx_ring_size = DP_TCL_DATA_RING_SIZE,
+ 	},
+ 	{
+ 		.name = "qcn9074 hw1.0",
+@@ -348,6 +351,7 @@ static const struct ath11k_hw_params ath
+ 		.sram_dump = {},
+ 
+ 		.tcl_ring_retry = true,
++		.tx_ring_size = DP_TCL_DATA_RING_SIZE,
+ 	},
+ 	{
+ 		.name = "wcn6855 hw2.0",
+@@ -428,6 +432,7 @@ static const struct ath11k_hw_params ath
+ 		},
+ 
+ 		.tcl_ring_retry = true,
++		.tx_ring_size = DP_TCL_DATA_RING_SIZE,
+ 	},
+ 	{
+ 		.name = "wcn6855 hw2.1",
+@@ -506,6 +511,7 @@ static const struct ath11k_hw_params ath
+ 		},
+ 
+ 		.tcl_ring_retry = true,
++		.tx_ring_size = DP_TCL_DATA_RING_SIZE,
+ 	},
+ 	{
+ 		.name = "wcn6750 hw1.0",
+@@ -581,6 +587,7 @@ static const struct ath11k_hw_params ath
+ 		.sram_dump = {},
+ 
+ 		.tcl_ring_retry = false,
++		.tx_ring_size = DP_TCL_DATA_RING_SIZE_WCN6750,
+ 	},
+ };
+ 
+--- a/drivers/net/wireless/ath/ath11k/dp.c
++++ b/drivers/net/wireless/ath/ath11k/dp.c
+@@ -401,7 +401,7 @@ static int ath11k_dp_srng_common_setup(s
+ 
+ 		ret = ath11k_dp_srng_setup(ab, &dp->tx_ring[i].tcl_data_ring,
+ 					   HAL_TCL_DATA, tcl_num, 0,
+-					   DP_TCL_DATA_RING_SIZE);
++					   ab->hw_params.tx_ring_size);
+ 		if (ret) {
+ 			ath11k_warn(ab, "failed to set up tcl_data ring (%d) :%d\n",
+ 				    i, ret);
+--- a/drivers/net/wireless/ath/ath11k/dp.h
++++ b/drivers/net/wireless/ath/ath11k/dp.h
+@@ -1,6 +1,7 @@
+ /* SPDX-License-Identifier: BSD-3-Clause-Clear */
+ /*
+  * Copyright (c) 2018-2019 The Linux Foundation. All rights reserved.
++ * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+  */
+ 
+ #ifndef ATH11K_DP_H
+@@ -203,6 +204,7 @@ struct ath11k_pdev_dp {
+ 
+ #define DP_WBM_RELEASE_RING_SIZE	64
+ #define DP_TCL_DATA_RING_SIZE		512
++#define DP_TCL_DATA_RING_SIZE_WCN6750	2048
+ #define DP_TX_COMP_RING_SIZE		32768
+ #define DP_TX_IDR_SIZE			DP_TX_COMP_RING_SIZE
+ #define DP_TCL_CMD_RING_SIZE		32
+--- a/drivers/net/wireless/ath/ath11k/hw.h
++++ b/drivers/net/wireless/ath/ath11k/hw.h
+@@ -217,6 +217,7 @@ struct ath11k_hw_params {
+ 	} sram_dump;
+ 
+ 	bool tcl_ring_retry;
++	u32 tx_ring_size;
+ };
+ 
+ struct ath11k_hw_ops {
