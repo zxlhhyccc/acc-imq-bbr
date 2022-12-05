@@ -39,7 +39,7 @@ Link: https://lore.kernel.org/r/20211216070535.31732-1-quic_wgong@quicinc.com
  	struct ath11k_rx_peer_stats *rx_stats;
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -7823,6 +7823,9 @@ static void ath11k_mac_op_sta_statistics
+@@ -7838,6 +7838,9 @@ static void ath11k_mac_op_sta_statistics
  {
  	struct ath11k_sta *arsta = (struct ath11k_sta *)sta->drv_priv;
  	struct ath11k *ar = arsta->arvif->ar;
@@ -49,7 +49,7 @@ Link: https://lore.kernel.org/r/20211216070535.31732-1-quic_wgong@quicinc.com
  
  	sinfo->rx_duration = arsta->rx_duration;
  	sinfo->filled |= BIT_ULL(NL80211_STA_INFO_RX_DURATION);
-@@ -7855,9 +7858,22 @@ static void ath11k_mac_op_sta_statistics
+@@ -7870,9 +7873,22 @@ static void ath11k_mac_op_sta_statistics
  		ath11k_mac_put_chain_rssi(sinfo, arsta, "fw stats", true);
  	}
  

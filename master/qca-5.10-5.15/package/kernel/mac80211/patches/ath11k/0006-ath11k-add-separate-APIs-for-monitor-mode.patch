@@ -427,7 +427,7 @@ Link: https://lore.kernel.org/r/20210721162053.46290-3-jouni@codeaurora.org
  }
  
  static int ath11k_mac_setup_bcn_tmpl(struct ath11k_vif *arvif)
-@@ -6792,7 +7148,12 @@ int ath11k_mac_allocate(struct ath11k_ba
+@@ -6807,7 +7163,12 @@ int ath11k_mac_allocate(struct ath11k_ba
  
  		INIT_WORK(&ar->wmi_mgmt_tx_work, ath11k_mgmt_over_wmi_tx_work);
  		skb_queue_head_init(&ar->wmi_mgmt_tx_queue);

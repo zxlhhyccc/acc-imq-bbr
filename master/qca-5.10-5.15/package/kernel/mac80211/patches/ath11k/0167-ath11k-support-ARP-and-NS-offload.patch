@@ -99,7 +99,7 @@ Link: https://lore.kernel.org/r/1644308006-22784-6-git-send-email-quic_cjhuang@q
  	mutex_unlock(&ar->conf_mutex);
  }
  
-@@ -8099,6 +8117,101 @@ static void ath11k_mac_op_sta_statistics
+@@ -8114,6 +8132,101 @@ static void ath11k_mac_op_sta_statistics
  	}
  }
  
@@ -201,7 +201,7 @@ Link: https://lore.kernel.org/r/1644308006-22784-6-git-send-email-quic_cjhuang@q
  static const struct ieee80211_ops ath11k_ops = {
  	.tx				= ath11k_mac_op_tx,
  	.start                          = ath11k_mac_op_start,
-@@ -8144,6 +8257,11 @@ static const struct ieee80211_ops ath11k
+@@ -8159,6 +8272,11 @@ static const struct ieee80211_ops ath11k
  #ifdef CPTCFG_ATH11K_DEBUGFS
  	.sta_add_debugfs		= ath11k_debugfs_sta_op_add,
  #endif

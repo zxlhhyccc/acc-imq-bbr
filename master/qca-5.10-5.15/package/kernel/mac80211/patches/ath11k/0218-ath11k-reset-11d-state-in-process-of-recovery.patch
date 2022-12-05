@@ -53,7 +53,7 @@ Link: https://lore.kernel.org/r/20220505034636.29582-1-quic_wgong@quicinc.com
  		complete(&ar->scan.completed);
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -6154,6 +6154,11 @@ void ath11k_mac_11d_scan_stop(struct ath
+@@ -6169,6 +6169,11 @@ void ath11k_mac_11d_scan_stop(struct ath
  	ath11k_dbg(ar->ab, ATH11K_DBG_MAC, "mac stop 11d vdev id %d\n",
  		   ar->vdev_id_11d_scan);
  

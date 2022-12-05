@@ -35,7 +35,7 @@ Link: https://lore.kernel.org/r/20220428023320.4007-1-quic_wgong@quicinc.com
 
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -5599,7 +5599,7 @@ static int ath11k_mac_mgmt_tx(struct ath
+@@ -5614,7 +5614,7 @@ static int ath11k_mac_mgmt_tx(struct ath
  
  	skb_queue_tail(q, skb);
  	atomic_inc(&ar->num_pending_mgmt_tx);

@@ -83,7 +83,7 @@ Link: https://lore.kernel.org/r/20210913175510.193005-2-jouni@codeaurora.org
  	ath11k_peer_assoc_h_qos(ar, vif, sta, arg);
  	ath11k_peer_assoc_h_smps(sta, arg);
  
-@@ -7619,7 +7667,7 @@ static int __ath11k_mac_register(struct
+@@ -7634,7 +7682,7 @@ static int __ath11k_mac_register(struct
  	if (cap->nss_ratio_enabled)
  		ieee80211_hw_set(ar->hw, SUPPORTS_VHT_EXT_NSS_BW);
  

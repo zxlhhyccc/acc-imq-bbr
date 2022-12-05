@@ -74,7 +74,7 @@ Link: https://lore.kernel.org/r/20210720213147.90042-2-jouni@codeaurora.org
  			      enum hal_reo_cmd_type type,
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -4372,6 +4372,7 @@ static void ath11k_mac_op_tx(struct ieee
+@@ -4387,6 +4387,7 @@ static void ath11k_mac_op_tx(struct ieee
  	struct ath11k_vif *arvif = ath11k_vif_to_arvif(vif);
  	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)skb->data;
  	struct ieee80211_key_conf *key = info->control.hw_key;
@@ -82,7 +82,7 @@ Link: https://lore.kernel.org/r/20210720213147.90042-2-jouni@codeaurora.org
  	u32 info_flags = info->flags;
  	bool is_prb_rsp;
  	int ret;
-@@ -4397,7 +4398,10 @@ static void ath11k_mac_op_tx(struct ieee
+@@ -4412,7 +4413,10 @@ static void ath11k_mac_op_tx(struct ieee
  		return;
  	}
  

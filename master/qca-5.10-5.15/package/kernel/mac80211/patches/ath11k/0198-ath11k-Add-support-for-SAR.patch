@@ -118,7 +118,7 @@ Link: https://lore.kernel.org/r/20220401120948.1312956-3-quic_bqiang@quicinc.com
  #endif
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -8280,6 +8280,68 @@ static void ath11k_mac_op_set_rekey_data
+@@ -8295,6 +8295,68 @@ static void ath11k_mac_op_set_rekey_data
  	mutex_unlock(&ar->conf_mutex);
  }
  
@@ -187,7 +187,7 @@ Link: https://lore.kernel.org/r/20220401120948.1312956-3-quic_bqiang@quicinc.com
  static const struct ieee80211_ops ath11k_ops = {
  	.tx				= ath11k_mac_op_tx,
  	.start                          = ath11k_mac_op_start,
-@@ -8331,6 +8393,7 @@ static const struct ieee80211_ops ath11k
+@@ -8346,6 +8408,7 @@ static const struct ieee80211_ops ath11k
  	.ipv6_addr_change = ath11k_mac_op_ipv6_changed,
  #endif
  
@@ -195,7 +195,7 @@ Link: https://lore.kernel.org/r/20220401120948.1312956-3-quic_bqiang@quicinc.com
  };
  
  static void ath11k_mac_update_ch_list(struct ath11k *ar,
-@@ -8756,6 +8819,10 @@ static int __ath11k_mac_register(struct
+@@ -8771,6 +8834,10 @@ static int __ath11k_mac_register(struct
  		ieee80211_hw_set(ar->hw, SUPPORT_FAST_XMIT);
  	}
  

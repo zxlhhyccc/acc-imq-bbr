@@ -512,7 +512,7 @@ Link: https://lore.kernel.org/r/20210721173615.75637-1-jouni@codeaurora.org
  			ath11k_peer_assoc_prepare(ar, arvif->vif, sta,
  						  &peer_arg, true);
  
-@@ -5117,10 +5382,13 @@ static int ath11k_mac_op_add_interface(s
+@@ -5132,10 +5397,13 @@ static int ath11k_mac_op_add_interface(s
  
  	for (i = 0; i < ARRAY_SIZE(arvif->bitrate_mask.control); i++) {
  		arvif->bitrate_mask.control[i].legacy = 0xffffffff;
@@ -526,7 +526,7 @@ Link: https://lore.kernel.org/r/20210721173615.75637-1-jouni@codeaurora.org
  	}
  
  	bit = __ffs64(ab->free_vdev_map);
-@@ -6201,9 +6469,26 @@ ath11k_mac_has_single_legacy_rate(struct
+@@ -6216,9 +6484,26 @@ ath11k_mac_has_single_legacy_rate(struct
  	if (ath11k_mac_bitrate_mask_num_vht_rates(ar, band, mask))
  		return false;
  
@@ -553,7 +553,7 @@ Link: https://lore.kernel.org/r/20210721173615.75637-1-jouni@codeaurora.org
  static bool
  ath11k_mac_bitrate_mask_get_single_nss(struct ath11k *ar,
  				       enum nl80211_band band,
-@@ -6212,8 +6497,10 @@ ath11k_mac_bitrate_mask_get_single_nss(s
+@@ -6227,8 +6512,10 @@ ath11k_mac_bitrate_mask_get_single_nss(s
  {
  	struct ieee80211_supported_band *sband = &ar->mac.sbands[band];
  	u16 vht_mcs_map = le16_to_cpu(sband->vht_cap.vht_mcs.tx_mcs_map);
@@ -564,7 +564,7 @@ Link: https://lore.kernel.org/r/20210721173615.75637-1-jouni@codeaurora.org
  	int i;
  
  	/* No need to consider legacy here. Basic rates are always present
-@@ -6240,7 +6527,20 @@ ath11k_mac_bitrate_mask_get_single_nss(s
+@@ -6255,7 +6542,20 @@ ath11k_mac_bitrate_mask_get_single_nss(s
  			return false;
  	}
  
@@ -586,7 +586,7 @@ Link: https://lore.kernel.org/r/20210721173615.75637-1-jouni@codeaurora.org
  		return false;
  
  	if (ht_nss_mask == 0)
-@@ -6287,42 +6587,125 @@ ath11k_mac_get_single_legacy_rate(struct
+@@ -6302,42 +6602,125 @@ ath11k_mac_get_single_legacy_rate(struct
  	return 0;
  }
  
@@ -730,7 +730,7 @@ Link: https://lore.kernel.org/r/20210721173615.75637-1-jouni@codeaurora.org
  		return ret;
  	}
  
-@@ -6335,6 +6718,35 @@ static int ath11k_mac_set_fixed_rate_par
+@@ -6350,6 +6733,35 @@ static int ath11k_mac_set_fixed_rate_par
  		return ret;
  	}
  
@@ -766,7 +766,7 @@ Link: https://lore.kernel.org/r/20210721173615.75637-1-jouni@codeaurora.org
  	return 0;
  }
  
-@@ -6363,6 +6775,31 @@ ath11k_mac_vht_mcs_range_present(struct
+@@ -6378,6 +6790,31 @@ ath11k_mac_vht_mcs_range_present(struct
  	return true;
  }
  
@@ -798,7 +798,7 @@ Link: https://lore.kernel.org/r/20210721173615.75637-1-jouni@codeaurora.org
  static void ath11k_mac_set_bitrate_mask_iter(void *data,
  					     struct ieee80211_sta *sta)
  {
-@@ -6394,6 +6831,54 @@ static void ath11k_mac_disable_peer_fixe
+@@ -6409,6 +6846,54 @@ static void ath11k_mac_disable_peer_fixe
  			    sta->addr, ret);
  }
  
@@ -853,7 +853,7 @@ Link: https://lore.kernel.org/r/20210721173615.75637-1-jouni@codeaurora.org
  static int
  ath11k_mac_op_set_bitrate_mask(struct ieee80211_hw *hw,
  			       struct ieee80211_vif *vif,
-@@ -6405,6 +6890,9 @@ ath11k_mac_op_set_bitrate_mask(struct ie
+@@ -6420,6 +6905,9 @@ ath11k_mac_op_set_bitrate_mask(struct ie
  	enum nl80211_band band;
  	const u8 *ht_mcs_mask;
  	const u16 *vht_mcs_mask;
@@ -863,7 +863,7 @@ Link: https://lore.kernel.org/r/20210721173615.75637-1-jouni@codeaurora.org
  	u32 rate;
  	u8 nss;
  	u8 sgi;
-@@ -6412,6 +6900,7 @@ ath11k_mac_op_set_bitrate_mask(struct ie
+@@ -6427,6 +6915,7 @@ ath11k_mac_op_set_bitrate_mask(struct ie
  	int single_nss;
  	int ret;
  	int num_rates;
@@ -871,7 +871,7 @@ Link: https://lore.kernel.org/r/20210721173615.75637-1-jouni@codeaurora.org
  
  	if (ath11k_mac_vif_chan(vif, &def))
  		return -EPERM;
-@@ -6419,12 +6908,16 @@ ath11k_mac_op_set_bitrate_mask(struct ie
+@@ -6434,12 +6923,16 @@ ath11k_mac_op_set_bitrate_mask(struct ie
  	band = def.chan->band;
  	ht_mcs_mask = mask->control[band].ht_mcs;
  	vht_mcs_mask = mask->control[band].vht_mcs;
@@ -888,7 +888,7 @@ Link: https://lore.kernel.org/r/20210721173615.75637-1-jouni@codeaurora.org
  	/* mac80211 doesn't support sending a fixed HT/VHT MCS alone, rather it
  	 * requires passing atleast one of used basic rates along with them.
  	 * Fixed rate setting across different preambles(legacy, HT, VHT) is
-@@ -6448,11 +6941,22 @@ ath11k_mac_op_set_bitrate_mask(struct ie
+@@ -6463,11 +6956,22 @@ ath11k_mac_op_set_bitrate_mask(struct ie
  							  &single_nss)) {
  		rate = WMI_FIXED_RATE_NONE;
  		nss = single_nss;
@@ -913,7 +913,7 @@ Link: https://lore.kernel.org/r/20210721173615.75637-1-jouni@codeaurora.org
  
  		/* If multiple rates across different preambles are given
  		 * we can reconfigure this info with all peers using PEER_ASSOC
-@@ -6483,16 +6987,28 @@ ath11k_mac_op_set_bitrate_mask(struct ie
+@@ -6498,16 +7002,28 @@ ath11k_mac_op_set_bitrate_mask(struct ie
  			 * RATEMASK CMD
  			 */
  			ath11k_warn(ar->ab,
@@ -945,7 +945,7 @@ Link: https://lore.kernel.org/r/20210721173615.75637-1-jouni@codeaurora.org
  		arvif->bitrate_mask = *mask;
  		ieee80211_iterate_stations_atomic(ar->hw,
  						  ath11k_mac_set_bitrate_mask_iter,
-@@ -6503,9 +7019,10 @@ ath11k_mac_op_set_bitrate_mask(struct ie
+@@ -6518,9 +7034,10 @@ ath11k_mac_op_set_bitrate_mask(struct ie
  
  	mutex_lock(&ar->conf_mutex);
  

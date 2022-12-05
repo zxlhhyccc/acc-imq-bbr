@@ -120,7 +120,7 @@ Link: https://lore.kernel.org/r/20220720135150.22193-3-quic_mpubbise@quicinc.com
  static inline void ath11k_debugfs_remove_interface(struct ath11k_vif *arvif)
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -6172,6 +6172,13 @@ static int ath11k_mac_op_add_interface(s
+@@ -6187,6 +6187,13 @@ static int ath11k_mac_op_add_interface(s
  		goto err;
  	}
  
@@ -134,7 +134,7 @@ Link: https://lore.kernel.org/r/20220720135150.22193-3-quic_mpubbise@quicinc.com
  	memset(arvif, 0, sizeof(*arvif));
  
  	arvif->ar = ar;
-@@ -6353,9 +6360,7 @@ static int ath11k_mac_op_add_interface(s
+@@ -6368,9 +6375,7 @@ static int ath11k_mac_op_add_interface(s
  		}
  	}
  

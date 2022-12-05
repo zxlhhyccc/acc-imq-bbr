@@ -96,7 +96,7 @@ Link: https://lore.kernel.org/r/20220901080616.29414-1-quic_mpubbise@quicinc.com
  struct ath11k_hw_ops {
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -8775,6 +8775,11 @@ static int __ath11k_mac_register(struct
+@@ -8790,6 +8790,11 @@ static int __ath11k_mac_register(struct
  	if (ab->hw_params.single_pdev_only && ar->supports_6ghz)
  		ieee80211_hw_set(ar->hw, SINGLE_SCAN_ON_ALL_BANDS);
  

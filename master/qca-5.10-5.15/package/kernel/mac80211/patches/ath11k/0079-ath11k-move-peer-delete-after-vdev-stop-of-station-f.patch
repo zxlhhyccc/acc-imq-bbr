@@ -67,7 +67,7 @@ Link: https://lore.kernel.org/r/20211027093825.12167-1-quic_wgong@quicinc.com
  		kfree(arsta->tx_stats);
  		arsta->tx_stats = NULL;
  
-@@ -6638,6 +6643,19 @@ ath11k_mac_op_unassign_vif_chanctx(struc
+@@ -6653,6 +6658,19 @@ ath11k_mac_op_unassign_vif_chanctx(struc
  	arvif->is_started = false;
  
  	if (ab->hw_params.vdev_start_delay &&

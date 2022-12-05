@@ -122,7 +122,7 @@ Link: https://lore.kernel.org/r/20220421023501.32167-1-quic_wgong@quicinc.com
  #define HECAP_PHYINFO_SIZE              9
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -8846,6 +8846,17 @@ static int __ath11k_mac_register(struct
+@@ -8861,6 +8861,17 @@ static int __ath11k_mac_register(struct
  		goto err_unregister_hw;
  	}
  

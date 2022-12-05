@@ -548,7 +548,7 @@ Link: https://lore.kernel.org/r/20210721204217.120572-1-jouni@codeaurora.org
  extern const struct ath11k_hw_ops ipq8074_ops;
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -5386,7 +5386,8 @@ static void ath11k_mac_op_update_vif_off
+@@ -5401,7 +5401,8 @@ static void ath11k_mac_op_update_vif_off
  	if (ath11k_frame_mode != ATH11K_HW_TXRX_ETHERNET ||
  	    (vif->type != NL80211_IFTYPE_STATION &&
  	     vif->type != NL80211_IFTYPE_AP))
@@ -558,7 +558,7 @@ Link: https://lore.kernel.org/r/20210721204217.120572-1-jouni@codeaurora.org
  
  	if (vif->offload_flags & IEEE80211_OFFLOAD_ENCAP_ENABLED)
  		param_value = ATH11K_HW_TXRX_ETHERNET;
-@@ -5402,6 +5403,22 @@ static void ath11k_mac_op_update_vif_off
+@@ -5417,6 +5418,22 @@ static void ath11k_mac_op_update_vif_off
  			    arvif->vdev_id, ret);
  		vif->offload_flags &= ~IEEE80211_OFFLOAD_ENCAP_ENABLED;
  	}
@@ -581,7 +581,7 @@ Link: https://lore.kernel.org/r/20210721204217.120572-1-jouni@codeaurora.org
  }
  
  static int ath11k_mac_op_add_interface(struct ieee80211_hw *hw,
-@@ -7571,7 +7588,11 @@ static int __ath11k_mac_register(struct
+@@ -7586,7 +7603,11 @@ static int __ath11k_mac_register(struct
  	ieee80211_hw_set(ar->hw, QUEUE_CONTROL);
  	ieee80211_hw_set(ar->hw, SUPPORTS_TX_FRAG);
  	ieee80211_hw_set(ar->hw, REPORTS_LOW_ACK);

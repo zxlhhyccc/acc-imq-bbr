@@ -169,7 +169,7 @@ Link: https://lore.kernel.org/r/1644308006-22784-2-git-send-email-quic_cjhuang@q
  
  #define CHAN2G(_channel, _freq, _flags) { \
  	.band                   = NL80211_BAND_2GHZ, \
-@@ -7270,31 +7272,47 @@ static int ath11k_mac_op_set_frag_thresh
+@@ -7285,31 +7287,47 @@ static int ath11k_mac_op_set_frag_thresh
  	return -EOPNOTSUPP;
  }
  
@@ -231,7 +231,7 @@ Link: https://lore.kernel.org/r/1644308006-22784-2-git-send-email-quic_cjhuang@q
  }
  
  static int
-@@ -8116,6 +8134,13 @@ static const struct ieee80211_ops ath11k
+@@ -8131,6 +8149,13 @@ static const struct ieee80211_ops ath11k
  	.flush				= ath11k_mac_op_flush,
  	.sta_statistics			= ath11k_mac_op_sta_statistics,
  	CFG80211_TESTMODE_CMD(ath11k_tm_cmd)
@@ -245,7 +245,7 @@ Link: https://lore.kernel.org/r/1644308006-22784-2-git-send-email-quic_cjhuang@q
  #ifdef CPTCFG_ATH11K_DEBUGFS
  	.sta_add_debugfs		= ath11k_debugfs_sta_op_add,
  #endif
-@@ -8485,6 +8510,12 @@ static int __ath11k_mac_register(struct
+@@ -8500,6 +8525,12 @@ static int __ath11k_mac_register(struct
  			NL80211_FEATURE_SCAN_RANDOM_MAC_ADDR;
  	}
  

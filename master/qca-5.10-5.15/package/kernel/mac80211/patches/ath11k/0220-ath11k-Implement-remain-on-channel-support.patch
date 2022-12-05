@@ -32,7 +32,7 @@ Link: https://lore.kernel.org/r/20220506013614.1580274-2-quic_bqiang@quicinc.com
  		complete(&ar->install_key_done);
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -8349,6 +8349,118 @@ exit:
+@@ -8364,6 +8364,118 @@ exit:
  	return ret;
  }
  
@@ -151,7 +151,7 @@ Link: https://lore.kernel.org/r/20220506013614.1580274-2-quic_bqiang@quicinc.com
  static const struct ieee80211_ops ath11k_ops = {
  	.tx				= ath11k_mac_op_tx,
  	.start                          = ath11k_mac_op_start,
-@@ -8401,6 +8513,8 @@ static const struct ieee80211_ops ath11k
+@@ -8416,6 +8528,8 @@ static const struct ieee80211_ops ath11k
  #endif
  
  	.set_sar_specs			= ath11k_mac_op_set_bios_sar_specs,
@@ -160,7 +160,7 @@ Link: https://lore.kernel.org/r/20220506013614.1580274-2-quic_bqiang@quicinc.com
  };
  
  static void ath11k_mac_update_ch_list(struct ath11k *ar,
-@@ -8990,6 +9104,7 @@ int ath11k_mac_allocate(struct ath11k_ba
+@@ -9005,6 +9119,7 @@ int ath11k_mac_allocate(struct ath11k_ba
  		init_completion(&ar->bss_survey_done);
  		init_completion(&ar->scan.started);
  		init_completion(&ar->scan.completed);

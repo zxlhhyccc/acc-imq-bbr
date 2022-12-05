@@ -62,7 +62,7 @@ Link: https://lore.kernel.org/r/1644308006-22784-7-git-send-email-quic_cjhuang@q
  	cancel_delayed_work_sync(&arvif->connection_loss_work);
  }
  
-@@ -8212,6 +8215,39 @@ generate:
+@@ -8227,6 +8230,39 @@ generate:
  	ath11k_generate_ns_mc_addr(ar, offload);
  }
  
@@ -102,7 +102,7 @@ Link: https://lore.kernel.org/r/1644308006-22784-7-git-send-email-quic_cjhuang@q
  static const struct ieee80211_ops ath11k_ops = {
  	.tx				= ath11k_mac_op_tx,
  	.start                          = ath11k_mac_op_start,
-@@ -8226,6 +8262,7 @@ static const struct ieee80211_ops ath11k
+@@ -8241,6 +8277,7 @@ static const struct ieee80211_ops ath11k
  	.hw_scan                        = ath11k_mac_op_hw_scan,
  	.cancel_hw_scan                 = ath11k_mac_op_cancel_hw_scan,
  	.set_key                        = ath11k_mac_op_set_key,

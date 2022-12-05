@@ -39,7 +39,7 @@
  	mutex_init(&rtwdev->hal.tx_power_mutex);
  
  	init_waitqueue_head(&rtwdev->coex.wait);
-@@ -1914,7 +1913,6 @@ void rtw_core_deinit(struct rtw_dev *rtw
+@@ -1918,7 +1917,6 @@ void rtw_core_deinit(struct rtw_dev *rtw
  	}
  
  	mutex_destroy(&rtwdev->mutex);

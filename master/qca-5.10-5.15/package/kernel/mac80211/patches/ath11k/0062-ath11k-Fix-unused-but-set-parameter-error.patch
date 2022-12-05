@@ -20,7 +20,7 @@ Link: https://lore.kernel.org/r/1636609967-5114-1-git-send-email-quic_seevalam@q
 
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -5977,7 +5977,6 @@ static void ath11k_mac_op_configure_filt
+@@ -5992,7 +5992,6 @@ static void ath11k_mac_op_configure_filt
  
  	mutex_lock(&ar->conf_mutex);
  

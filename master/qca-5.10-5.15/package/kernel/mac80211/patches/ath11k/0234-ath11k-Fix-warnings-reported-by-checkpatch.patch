@@ -37,7 +37,7 @@ Link: https://lore.kernel.org/r/20220602131350.29486-1-quic_mpubbise@quicinc.com
  	 * size changes and also send WMI message to FW to change the REO
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -7829,7 +7829,7 @@ ath11k_mac_op_set_bitrate_mask(struct ie
+@@ -7844,7 +7844,7 @@ ath11k_mac_op_set_bitrate_mask(struct ie
  	he_ltf = mask->control[band].he_ltf;
  
  	/* mac80211 doesn't support sending a fixed HT/VHT MCS alone, rather it

@@ -22,7 +22,7 @@ Link: https://lore.kernel.org/r/20220411020843.10284-1-yuehaibing@huawei.com
 
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -8152,6 +8152,7 @@ static void ath11k_mac_op_sta_statistics
+@@ -8167,6 +8167,7 @@ static void ath11k_mac_op_sta_statistics
  	}
  }
  
@@ -30,7 +30,7 @@ Link: https://lore.kernel.org/r/20220411020843.10284-1-yuehaibing@huawei.com
  static void ath11k_generate_ns_mc_addr(struct ath11k *ar,
  				       struct ath11k_arp_ns_offload *offload)
  {
-@@ -8246,6 +8247,7 @@ generate:
+@@ -8261,6 +8262,7 @@ generate:
  	/* generate ns multicast address */
  	ath11k_generate_ns_mc_addr(ar, offload);
  }

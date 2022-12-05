@@ -34,7 +34,7 @@ Link: https://lore.kernel.org/r/1638948007-9609-1-git-send-email-quic_cjhuang@qu
  	ret = ath11k_start_scan(ar, &arg);
  	if (ret) {
  		ath11k_warn(ar->ab, "failed to start hw scan: %d\n", ret);
-@@ -5597,6 +5603,14 @@ static int ath11k_mac_op_start(struct ie
+@@ -5612,6 +5618,14 @@ static int ath11k_mac_op_start(struct ie
  		goto err;
  	}
  
@@ -49,7 +49,7 @@ Link: https://lore.kernel.org/r/1638948007-9609-1-git-send-email-quic_cjhuang@qu
  	ret = ath11k_wmi_pdev_set_param(ar, WMI_PDEV_PARAM_ARP_AC_OVERRIDE,
  					0, pdev->pdev_id);
  	if (ret) {
-@@ -8198,6 +8212,11 @@ static int __ath11k_mac_register(struct
+@@ -8213,6 +8227,11 @@ static int __ath11k_mac_register(struct
  
  	ar->hw->wiphy->max_ap_assoc_sta = ar->max_num_stations;
  

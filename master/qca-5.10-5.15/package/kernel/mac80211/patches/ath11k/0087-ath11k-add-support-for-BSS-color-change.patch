@@ -122,7 +122,7 @@ Link: https://lore.kernel.org/r/1635178254-17732-1-git-send-email-quic_ramess@qu
  		} else if (vif->type == NL80211_IFTYPE_STATION) {
  			ret = ath11k_wmi_send_bss_color_change_enable_cmd(ar,
  									  arvif->vdev_id,
-@@ -7892,6 +7939,9 @@ static int __ath11k_mac_register(struct
+@@ -7907,6 +7954,9 @@ static int __ath11k_mac_register(struct
  
  	wiphy_ext_feature_set(ar->hw->wiphy, NL80211_EXT_FEATURE_CQM_RSSI_LIST);
  	wiphy_ext_feature_set(ar->hw->wiphy, NL80211_EXT_FEATURE_STA_TX_PWR);

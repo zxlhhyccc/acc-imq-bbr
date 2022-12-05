@@ -29,7 +29,7 @@ Link: https://lore.kernel.org/r/20220506012540.1579604-1-quic_bqiang@quicinc.com
 
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -9030,3 +9030,34 @@ void ath11k_mac_destroy(struct ath11k_ba
+@@ -9045,3 +9045,34 @@ void ath11k_mac_destroy(struct ath11k_ba
  		pdev->ar = NULL;
  	}
  }

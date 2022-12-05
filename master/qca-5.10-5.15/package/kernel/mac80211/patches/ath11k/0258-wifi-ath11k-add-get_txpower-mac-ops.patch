@@ -29,7 +29,7 @@ Link: https://lore.kernel.org/r/20220603082814.31466-3-quic_adisi@quicinc.com
 
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -8419,6 +8419,95 @@ exit:
+@@ -8434,6 +8434,95 @@ exit:
  	return ret;
  }
  
@@ -125,7 +125,7 @@ Link: https://lore.kernel.org/r/20220603082814.31466-3-quic_adisi@quicinc.com
  static const struct ieee80211_ops ath11k_ops = {
  	.tx				= ath11k_mac_op_tx,
  	.start                          = ath11k_mac_op_start,
-@@ -8469,6 +8558,7 @@ static const struct ieee80211_ops ath11k
+@@ -8484,6 +8573,7 @@ static const struct ieee80211_ops ath11k
  #if IS_ENABLED(CONFIG_IPV6)
  	.ipv6_addr_change = ath11k_mac_op_ipv6_changed,
  #endif
@@ -133,7 +133,7 @@ Link: https://lore.kernel.org/r/20220603082814.31466-3-quic_adisi@quicinc.com
  
  	.set_sar_specs			= ath11k_mac_op_set_bios_sar_specs,
  	.remain_on_channel		= ath11k_mac_op_remain_on_channel,
-@@ -9082,6 +9172,8 @@ int ath11k_mac_allocate(struct ath11k_ba
+@@ -9097,6 +9187,8 @@ int ath11k_mac_allocate(struct ath11k_ba
  		clear_bit(ATH11K_FLAG_MONITOR_VDEV_CREATED, &ar->monitor_flags);
  		ar->vdev_id_11d_scan = ATH11K_11D_INVALID_VDEV_ID;
  		init_completion(&ar->completed_11d_scan);

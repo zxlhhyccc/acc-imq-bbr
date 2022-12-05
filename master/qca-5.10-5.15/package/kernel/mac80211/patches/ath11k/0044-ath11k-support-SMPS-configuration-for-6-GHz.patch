@@ -82,7 +82,7 @@ Link: https://lore.kernel.org/r/20210913175510.193005-3-jouni@codeaurora.org
  	if (ret) {
  		ath11k_warn(ar->ab, "failed to setup peer SMPS for vdev %d: %d\n",
  			    arvif->vdev_id, ret);
-@@ -7682,7 +7693,7 @@ static int __ath11k_mac_register(struct
+@@ -7697,7 +7708,7 @@ static int __ath11k_mac_register(struct
  	 * for each band for a dual band capable radio. It will be tricky to
  	 * handle it when the ht capability different for each band.
  	 */

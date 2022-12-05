@@ -317,7 +317,7 @@ Link: https://lore.kernel.org/r/20220131031043.1295-2-alokad@codeaurora.org
  #endif /* _ATH11K_DEBUGFS_H_ */
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -6361,6 +6361,10 @@ static int ath11k_mac_op_add_interface(s
+@@ -6376,6 +6376,10 @@ static int ath11k_mac_op_add_interface(s
  		}
  	}
  
@@ -328,7 +328,7 @@ Link: https://lore.kernel.org/r/20220131031043.1295-2-alokad@codeaurora.org
  	mutex_unlock(&ar->conf_mutex);
  
  	return 0;
-@@ -6395,6 +6399,7 @@ err_vdev_del:
+@@ -6410,6 +6414,7 @@ err_vdev_del:
  	spin_unlock_bh(&ar->data_lock);
  
  err:
@@ -336,7 +336,7 @@ Link: https://lore.kernel.org/r/20220131031043.1295-2-alokad@codeaurora.org
  	mutex_unlock(&ar->conf_mutex);
  
  	return ret;
-@@ -6493,6 +6498,8 @@ err_vdev_del:
+@@ -6508,6 +6513,8 @@ err_vdev_del:
  	/* Recalc txpower for remaining vdev */
  	ath11k_mac_txpower_recalc(ar);
  

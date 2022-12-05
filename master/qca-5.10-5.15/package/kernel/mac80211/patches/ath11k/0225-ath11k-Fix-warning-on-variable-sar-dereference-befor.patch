@@ -23,7 +23,7 @@ Link: https://lore.kernel.org/r/20220517004844.2412660-1-quic_bqiang@quicinc.com
 
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -8291,11 +8291,15 @@ static int ath11k_mac_op_set_bios_sar_sp
+@@ -8306,11 +8306,15 @@ static int ath11k_mac_op_set_bios_sar_sp
  					    const struct cfg80211_sar_specs *sar)
  {
  	struct ath11k *ar = hw->priv;
@@ -40,7 +40,7 @@ Link: https://lore.kernel.org/r/20220517004844.2412660-1-quic_bqiang@quicinc.com
  	mutex_lock(&ar->conf_mutex);
  
  	if (!test_bit(WMI_TLV_SERVICE_BIOS_SAR_SUPPORT, ar->ab->wmi_ab.svc_map) ||
-@@ -8304,12 +8308,6 @@ static int ath11k_mac_op_set_bios_sar_sp
+@@ -8319,12 +8323,6 @@ static int ath11k_mac_op_set_bios_sar_sp
  		goto exit;
  	}
  
@@ -53,7 +53,7 @@ Link: https://lore.kernel.org/r/20220517004844.2412660-1-quic_bqiang@quicinc.com
  	ret = ath11k_wmi_pdev_set_bios_geo_table_param(ar);
  	if (ret) {
  		ath11k_warn(ar->ab, "failed to set geo table: %d\n", ret);
-@@ -8322,6 +8320,7 @@ static int ath11k_mac_op_set_bios_sar_sp
+@@ -8337,6 +8335,7 @@ static int ath11k_mac_op_set_bios_sar_sp
  		goto exit;
  	}
  

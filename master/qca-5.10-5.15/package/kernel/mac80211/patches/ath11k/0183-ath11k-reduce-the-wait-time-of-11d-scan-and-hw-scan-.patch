@@ -140,7 +140,7 @@ Link: https://lore.kernel.org/r/20220328035832.14122-1-quic_wgong@quicinc.com
  	return ret;
  }
  
-@@ -5866,7 +5850,7 @@ static int ath11k_mac_op_start(struct ie
+@@ -5881,7 +5865,7 @@ static int ath11k_mac_op_start(struct ie
  
  	/* TODO: Do we need to enable ANI? */
  
@@ -149,7 +149,7 @@ Link: https://lore.kernel.org/r/20220328035832.14122-1-quic_wgong@quicinc.com
  
  	ar->num_started_vdevs = 0;
  	ar->num_created_vdevs = 0;
-@@ -5933,6 +5917,11 @@ static void ath11k_mac_op_stop(struct ie
+@@ -5948,6 +5932,11 @@ static void ath11k_mac_op_stop(struct ie
  	cancel_work_sync(&ar->ab->update_11d_work);
  	cancel_work_sync(&ar->ab->rfkill_work);
  
@@ -161,7 +161,7 @@ Link: https://lore.kernel.org/r/20220328035832.14122-1-quic_wgong@quicinc.com
  	spin_lock_bh(&ar->data_lock);
  	list_for_each_entry_safe(ppdu_stats, tmp, &ar->ppdu_stats_info, list) {
  		list_del(&ppdu_stats->list);
-@@ -6103,7 +6092,7 @@ static bool ath11k_mac_vif_ap_active_any
+@@ -6118,7 +6107,7 @@ static bool ath11k_mac_vif_ap_active_any
  	return false;
  }
  
@@ -170,7 +170,7 @@ Link: https://lore.kernel.org/r/20220328035832.14122-1-quic_wgong@quicinc.com
  {
  	struct wmi_11d_scan_start_params param;
  	int ret;
-@@ -6131,28 +6120,22 @@ void ath11k_mac_11d_scan_start(struct at
+@@ -6146,28 +6135,22 @@ void ath11k_mac_11d_scan_start(struct at
  
  	ath11k_dbg(ar->ab, ATH11K_DBG_MAC, "mac start 11d scan\n");
  
@@ -206,7 +206,7 @@ Link: https://lore.kernel.org/r/20220328035832.14122-1-quic_wgong@quicinc.com
  	mutex_unlock(&ar->ab->vdev_id_11d_lock);
  }
  
-@@ -6175,12 +6158,15 @@ void ath11k_mac_11d_scan_stop(struct ath
+@@ -6190,12 +6173,15 @@ void ath11k_mac_11d_scan_stop(struct ath
  		vdev_id = ar->vdev_id_11d_scan;
  
  		ret = ath11k_wmi_send_11d_scan_stop_cmd(ar, vdev_id);
@@ -224,7 +224,7 @@ Link: https://lore.kernel.org/r/20220328035832.14122-1-quic_wgong@quicinc.com
  	}
  	mutex_unlock(&ar->ab->vdev_id_11d_lock);
  }
-@@ -6376,8 +6362,10 @@ static int ath11k_mac_op_add_interface(s
+@@ -6391,8 +6377,10 @@ static int ath11k_mac_op_add_interface(s
  			goto err_peer_del;
  		}
  
@@ -237,7 +237,7 @@ Link: https://lore.kernel.org/r/20220328035832.14122-1-quic_wgong@quicinc.com
  		break;
  	case WMI_VDEV_TYPE_MONITOR:
  		set_bit(ATH11K_FLAG_MONITOR_VDEV_CREATED, &ar->monitor_flags);
-@@ -7237,7 +7225,7 @@ ath11k_mac_op_unassign_vif_chanctx(struc
+@@ -7252,7 +7240,7 @@ ath11k_mac_op_unassign_vif_chanctx(struc
  	}
  
  	if (arvif->vdev_type == WMI_VDEV_TYPE_STA)
@@ -246,7 +246,7 @@ Link: https://lore.kernel.org/r/20220328035832.14122-1-quic_wgong@quicinc.com
  
  	mutex_unlock(&ar->conf_mutex);
  }
-@@ -8927,8 +8915,7 @@ int ath11k_mac_allocate(struct ath11k_ba
+@@ -8942,8 +8930,7 @@ int ath11k_mac_allocate(struct ath11k_ba
  		ar->monitor_vdev_id = -1;
  		clear_bit(ATH11K_FLAG_MONITOR_VDEV_CREATED, &ar->monitor_flags);
  		ar->vdev_id_11d_scan = ATH11K_11D_INVALID_VDEV_ID;
@@ -324,23 +324,19 @@ Link: https://lore.kernel.org/r/20220328035832.14122-1-quic_wgong@quicinc.com
  	return ret;
  }
  
-@@ -262,15 +282,8 @@ int ath11k_regd_update(struct ath11k *ar
+@@ -262,11 +282,6 @@ int ath11k_regd_update(struct ath11k *ar)
  		goto err;
  	}
  
--	if (ar->pending_11d)
+-	if (ar->pending_11d) {
 -		complete(&ar->finish_11d_scan);
--
- 	rtnl_lock();
- 	wiphy_lock(ar->hw->wiphy);
--
--	if (ar->pending_11d)
 -		reinit_completion(&ar->finish_11d_ch_list);
+-	}
 -
- 	ret = regulatory_set_wiphy_regd_sync(ar->hw->wiphy, regd_copy);
- 	wiphy_unlock(ar->hw->wiphy);
- 	rtnl_unlock();
-@@ -281,7 +294,7 @@ int ath11k_regd_update(struct ath11k *ar
+ 	ret = regulatory_set_wiphy_regd(ar->hw->wiphy, regd_copy);
+ 
+ 	kfree(regd_copy);
+@@ -275,7 +290,7 @@ int ath11k_regd_update(struct ath11k *ar
  		goto err;
  
  	if (ar->state == ATH11K_STATE_ON) {

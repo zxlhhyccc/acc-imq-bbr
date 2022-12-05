@@ -180,7 +180,7 @@ Link: https://lore.kernel.org/r/20211201071745.17746-4-quic_wgong@quicinc.com
  	memset(&arg, 0, sizeof(arg));
  	ath11k_wmi_start_scan_init(ar, &arg);
  	arg.vdev_id = arvif->vdev_id;
-@@ -5644,6 +5674,7 @@ static void ath11k_mac_op_stop(struct ie
+@@ -5659,6 +5689,7 @@ static void ath11k_mac_op_stop(struct ie
  
  	cancel_delayed_work_sync(&ar->scan.timeout);
  	cancel_work_sync(&ar->regd_update_work);
@@ -188,7 +188,7 @@ Link: https://lore.kernel.org/r/20211201071745.17746-4-quic_wgong@quicinc.com
  
  	spin_lock_bh(&ar->data_lock);
  	list_for_each_entry_safe(ppdu_stats, tmp, &ar->ppdu_stats_info, list) {
-@@ -5797,6 +5828,122 @@ static void ath11k_mac_op_update_vif_off
+@@ -5812,6 +5843,122 @@ static void ath11k_mac_op_update_vif_off
  	}
  }
  
@@ -311,7 +311,7 @@ Link: https://lore.kernel.org/r/20211201071745.17746-4-quic_wgong@quicinc.com
  static int ath11k_mac_op_add_interface(struct ieee80211_hw *hw,
  				       struct ieee80211_vif *vif)
  {
-@@ -5930,6 +6077,8 @@ static int ath11k_mac_op_add_interface(s
+@@ -5945,6 +6092,8 @@ static int ath11k_mac_op_add_interface(s
  				    arvif->vdev_id, ret);
  			goto err_peer_del;
  		}
@@ -320,7 +320,7 @@ Link: https://lore.kernel.org/r/20211201071745.17746-4-quic_wgong@quicinc.com
  		break;
  	case WMI_VDEV_TYPE_STA:
  		param_id = WMI_STA_PS_PARAM_RX_WAKE_POLICY;
-@@ -5969,6 +6118,9 @@ static int ath11k_mac_op_add_interface(s
+@@ -5984,6 +6133,9 @@ static int ath11k_mac_op_add_interface(s
  				    arvif->vdev_id, ret);
  			goto err_peer_del;
  		}
@@ -330,7 +330,7 @@ Link: https://lore.kernel.org/r/20211201071745.17746-4-quic_wgong@quicinc.com
  		break;
  	case WMI_VDEV_TYPE_MONITOR:
  		set_bit(ATH11K_FLAG_MONITOR_VDEV_CREATED, &ar->monitor_flags);
-@@ -6070,6 +6222,9 @@ static void ath11k_mac_op_remove_interfa
+@@ -6085,6 +6237,9 @@ static void ath11k_mac_op_remove_interfa
  	ath11k_dbg(ab, ATH11K_DBG_MAC, "mac remove interface (vdev %d)\n",
  		   arvif->vdev_id);
  
@@ -340,7 +340,7 @@ Link: https://lore.kernel.org/r/20211201071745.17746-4-quic_wgong@quicinc.com
  	if (arvif->vdev_type == WMI_VDEV_TYPE_AP) {
  		ret = ath11k_peer_delete(ar, arvif->vdev_id, vif->addr);
  		if (ret)
-@@ -6793,6 +6948,9 @@ ath11k_mac_op_unassign_vif_chanctx(struc
+@@ -6808,6 +6963,9 @@ ath11k_mac_op_unassign_vif_chanctx(struc
  				    ret);
  	}
  
@@ -350,7 +350,7 @@ Link: https://lore.kernel.org/r/20211201071745.17746-4-quic_wgong@quicinc.com
  	mutex_unlock(&ar->conf_mutex);
  }
  
-@@ -8194,6 +8352,9 @@ int ath11k_mac_allocate(struct ath11k_ba
+@@ -8209,6 +8367,9 @@ int ath11k_mac_allocate(struct ath11k_ba
  
  		ar->monitor_vdev_id = -1;
  		clear_bit(ATH11K_FLAG_MONITOR_VDEV_CREATED, &ar->monitor_flags);
@@ -400,22 +400,18 @@ Link: https://lore.kernel.org/r/20211201071745.17746-4-quic_wgong@quicinc.com
  	return ret;
  }
  
-@@ -244,8 +252,15 @@ int ath11k_regd_update(struct ath11k *ar
+@@ -244,6 +244,11 @@ int ath11k_regd_update(struct ath11k *ar)
  		goto err;
  	}
  
-+	if (ar->pending_11d)
++	if (ar->pending_11d) {
 +		complete(&ar->finish_11d_scan);
-+
- 	rtnl_lock();
- 	wiphy_lock(ar->hw->wiphy);
-+
-+	if (ar->pending_11d)
 +		reinit_completion(&ar->finish_11d_ch_list);
++	}
 +
- 	ret = regulatory_set_wiphy_regd_sync(ar->hw->wiphy, regd_copy);
- 	wiphy_unlock(ar->hw->wiphy);
- 	rtnl_unlock();
+ 	ret = regulatory_set_wiphy_regd(ar->hw->wiphy, regd_copy);
+ 
+ 	kfree(regd_copy);
 --- a/drivers/net/wireless/ath/ath11k/wmi.c
 +++ b/drivers/net/wireless/ath/ath11k/wmi.c
 @@ -130,6 +130,8 @@ static const struct wmi_tlv_policy wmi_t

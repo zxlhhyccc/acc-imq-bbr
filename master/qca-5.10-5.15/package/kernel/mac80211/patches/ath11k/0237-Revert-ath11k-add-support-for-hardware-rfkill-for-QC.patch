@@ -208,7 +208,7 @@ Link: https://lore.kernel.org/r/20220708164656.29549-1-kvalo@kernel.org
  	int num_rxmda_per_pdev;
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -5605,63 +5605,6 @@ static int ath11k_mac_mgmt_tx(struct ath
+@@ -5620,63 +5620,6 @@ static int ath11k_mac_mgmt_tx(struct ath
  	return 0;
  }
  
@@ -272,7 +272,7 @@ Link: https://lore.kernel.org/r/20220708164656.29549-1-kvalo@kernel.org
  static void ath11k_mac_op_tx(struct ieee80211_hw *hw,
  			     struct ieee80211_tx_control *control,
  			     struct sk_buff *skb)
-@@ -5916,7 +5859,6 @@ static void ath11k_mac_op_stop(struct ie
+@@ -5931,7 +5874,6 @@ static void ath11k_mac_op_stop(struct ie
  	cancel_delayed_work_sync(&ar->scan.timeout);
  	cancel_work_sync(&ar->regd_update_work);
  	cancel_work_sync(&ar->ab->update_11d_work);

@@ -42,7 +42,7 @@ Link: https://lore.kernel.org/r/20220602124142.29909-1-quic_mpubbise@quicinc.com
  	bool supports_6ghz;
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -7794,6 +7794,7 @@ ath11k_mac_op_set_bitrate_mask(struct ie
+@@ -7809,6 +7809,7 @@ ath11k_mac_op_set_bitrate_mask(struct ie
  {
  	struct ath11k_vif *arvif = (void *)vif->drv_priv;
  	struct cfg80211_chan_def def;
@@ -50,7 +50,7 @@ Link: https://lore.kernel.org/r/20220602124142.29909-1-quic_mpubbise@quicinc.com
  	struct ath11k *ar = arvif->ar;
  	enum nl80211_band band;
  	const u8 *ht_mcs_mask;
-@@ -7814,10 +7815,11 @@ ath11k_mac_op_set_bitrate_mask(struct ie
+@@ -7829,10 +7830,11 @@ ath11k_mac_op_set_bitrate_mask(struct ie
  		return -EPERM;
  
  	band = def.chan->band;

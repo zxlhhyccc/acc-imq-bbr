@@ -42,7 +42,7 @@ Link: https://lore.kernel.org/r/20210721162053.46290-2-jouni@codeaurora.org
  static int ath11k_mac_op_config(struct ieee80211_hw *hw, u32 changed)
  {
  	/* mac80211 requires this op to be present and that's why
-@@ -5181,20 +5195,6 @@ static void ath11k_mac_op_remove_chanctx
+@@ -5196,20 +5210,6 @@ static void ath11k_mac_op_remove_chanctx
  	mutex_unlock(&ar->conf_mutex);
  }
  

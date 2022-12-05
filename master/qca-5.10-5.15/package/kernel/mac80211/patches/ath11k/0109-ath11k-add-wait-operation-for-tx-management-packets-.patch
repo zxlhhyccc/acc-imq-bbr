@@ -74,7 +74,7 @@ Link: https://lore.kernel.org/r/20211202063705.14321-1-quic_wgong@quicinc.com
  	 * access protected by data_lock
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -5274,6 +5274,21 @@ static int __ath11k_set_antenna(struct a
+@@ -5289,6 +5289,21 @@ static int __ath11k_set_antenna(struct a
  	return 0;
  }
  
@@ -96,7 +96,7 @@ Link: https://lore.kernel.org/r/20211202063705.14321-1-quic_wgong@quicinc.com
  static void ath11k_mac_tx_mgmt_free(struct ath11k *ar, int buf_id)
  {
  	struct sk_buff *msdu;
-@@ -5292,7 +5307,7 @@ static void ath11k_mac_tx_mgmt_free(stru
+@@ -5307,7 +5322,7 @@ static void ath11k_mac_tx_mgmt_free(stru
  	info = IEEE80211_SKB_CB(msdu);
  	memset(&info->status, 0, sizeof(info->status));
  
@@ -105,7 +105,7 @@ Link: https://lore.kernel.org/r/20211202063705.14321-1-quic_wgong@quicinc.com
  }
  
  int ath11k_mac_tx_mgmt_pending_free(int buf_id, void *skb, void *ctx)
-@@ -5332,6 +5347,10 @@ static int ath11k_mac_mgmt_tx_wmi(struct
+@@ -5347,6 +5362,10 @@ static int ath11k_mac_mgmt_tx_wmi(struct
  	buf_id = idr_alloc(&ar->txmgmt_idr, skb, 0,
  			   ATH11K_TX_MGMT_NUM_PENDING_MAX, GFP_ATOMIC);
  	spin_unlock_bh(&ar->txmgmt_idr_lock);
@@ -116,7 +116,7 @@ Link: https://lore.kernel.org/r/20211202063705.14321-1-quic_wgong@quicinc.com
  	if (buf_id < 0)
  		return -ENOSPC;
  
-@@ -5378,7 +5397,7 @@ static void ath11k_mgmt_over_wmi_tx_purg
+@@ -5393,7 +5412,7 @@ static void ath11k_mgmt_over_wmi_tx_purg
  	struct sk_buff *skb;
  
  	while ((skb = skb_dequeue(&ar->wmi_mgmt_tx_queue)) != NULL)
@@ -125,7 +125,7 @@ Link: https://lore.kernel.org/r/20211202063705.14321-1-quic_wgong@quicinc.com
  }
  
  static void ath11k_mgmt_over_wmi_tx_work(struct work_struct *work)
-@@ -5393,7 +5412,7 @@ static void ath11k_mgmt_over_wmi_tx_work
+@@ -5408,7 +5427,7 @@ static void ath11k_mgmt_over_wmi_tx_work
  		skb_cb = ATH11K_SKB_CB(skb);
  		if (!skb_cb->vif) {
  			ath11k_warn(ar->ab, "no vif found for mgmt frame\n");
@@ -134,7 +134,7 @@ Link: https://lore.kernel.org/r/20211202063705.14321-1-quic_wgong@quicinc.com
  			continue;
  		}
  
-@@ -5402,19 +5421,20 @@ static void ath11k_mgmt_over_wmi_tx_work
+@@ -5417,19 +5436,20 @@ static void ath11k_mgmt_over_wmi_tx_work
  		if (ar->allocated_vdev_map & (1LL << arvif->vdev_id)) {
  			ret = ath11k_mac_mgmt_tx_wmi(ar, arvif, skb);
  			if (ret) {
@@ -160,7 +160,7 @@ Link: https://lore.kernel.org/r/20211202063705.14321-1-quic_wgong@quicinc.com
  		}
  		mutex_unlock(&ar->conf_mutex);
  	}
-@@ -5446,6 +5466,7 @@ static int ath11k_mac_mgmt_tx(struct ath
+@@ -5461,6 +5481,7 @@ static int ath11k_mac_mgmt_tx(struct ath
  	}
  
  	skb_queue_tail(q, skb);
@@ -168,7 +168,7 @@ Link: https://lore.kernel.org/r/20211202063705.14321-1-quic_wgong@quicinc.com
  	ieee80211_queue_work(ar->hw, &ar->wmi_mgmt_tx_work);
  
  	return 0;
-@@ -7037,6 +7058,17 @@ static void ath11k_mac_op_flush(struct i
+@@ -7052,6 +7073,17 @@ static void ath11k_mac_op_flush(struct i
  				       ATH11K_FLUSH_TIMEOUT);
  	if (time_left == 0)
  		ath11k_warn(ar->ab, "failed to flush transmit queue %ld\n", time_left);
@@ -186,7 +186,7 @@ Link: https://lore.kernel.org/r/20211202063705.14321-1-quic_wgong@quicinc.com
  }
  
  static int
-@@ -8275,6 +8307,8 @@ int ath11k_mac_register(struct ath11k_ba
+@@ -8290,6 +8322,8 @@ int ath11k_mac_register(struct ath11k_ba
  		ret = __ath11k_mac_register(ar);
  		if (ret)
  			goto err_cleanup;

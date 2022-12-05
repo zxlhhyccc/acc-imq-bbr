@@ -179,7 +179,7 @@ Link: https://lore.kernel.org/r/20210721173615.75637-2-jouni@codeaurora.org
  	ath11k_peer_assoc_h_smps(sta, arg);
  
  	/* TODO: amsdu_disable req? */
-@@ -4438,11 +4508,6 @@ ath11k_create_vht_cap(struct ath11k *ar,
+@@ -4453,11 +4523,6 @@ ath11k_create_vht_cap(struct ath11k *ar,
  
  	ath11k_set_vht_txbf_cap(ar, &vht_cap.cap);
  
@@ -191,7 +191,7 @@ Link: https://lore.kernel.org/r/20210721173615.75637-2-jouni@codeaurora.org
  	rxmcs_map = 0;
  	txmcs_map = 0;
  	for (i = 0; i < 8; i++) {
-@@ -7366,7 +7431,9 @@ static int ath11k_mac_setup_iface_combin
+@@ -7381,7 +7446,9 @@ static int ath11k_mac_setup_iface_combin
  	combinations[0].radar_detect_widths = BIT(NL80211_CHAN_WIDTH_20_NOHT) |
  						BIT(NL80211_CHAN_WIDTH_20) |
  						BIT(NL80211_CHAN_WIDTH_40) |
@@ -202,7 +202,7 @@ Link: https://lore.kernel.org/r/20210721173615.75637-2-jouni@codeaurora.org
  
  	ar->hw->wiphy->iface_combinations = combinations;
  	ar->hw->wiphy->n_iface_combinations = 1;
-@@ -7505,6 +7572,10 @@ static int __ath11k_mac_register(struct
+@@ -7520,6 +7587,10 @@ static int __ath11k_mac_register(struct
  	ieee80211_hw_set(ar->hw, SUPPORTS_TX_FRAG);
  	ieee80211_hw_set(ar->hw, REPORTS_LOW_ACK);
  	ieee80211_hw_set(ar->hw, SUPPORTS_TX_ENCAP_OFFLOAD);
