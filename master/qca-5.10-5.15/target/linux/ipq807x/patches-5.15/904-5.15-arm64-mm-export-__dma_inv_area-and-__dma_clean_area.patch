@@ -10,9 +10,11 @@ Subject: [PATCH] Update
  arch/arm64/mm/flush.c               | 2 ++
  3 files changed, 6 insertions(+), 4 deletions(-)
 
+diff --git a/arch/arm64/include/asm/cacheflush.h b/arch/arm64/include/asm/cacheflush.h
+index 89424f9..5409c23 100644
 --- a/arch/arm64/include/asm/cacheflush.h
 +++ b/arch/arm64/include/asm/cacheflush.h
-@@ -110,8 +110,8 @@ static inline void flush_icache_range(un
+@@ -110,8 +110,8 @@ static inline void flush_icache_range(unsigned long start, unsigned long end)
  extern void __dma_map_area(const void *, size_t, int);
  extern void __dma_unmap_area(const void *, size_t, int);
  extern void __dma_flush_area(const void *, size_t);
@@ -23,6 +25,8 @@ Subject: [PATCH] Update
  
  #define dmac_flush_range(start, end) \
  	__dma_flush_area(start, (void *)(end) - (void *)(start))
+diff --git a/arch/arm64/mm/cache.S b/arch/arm64/mm/cache.S
+index 5051b3c..8a3e968 100644
 --- a/arch/arm64/mm/cache.S
 +++ b/arch/arm64/mm/cache.S
 @@ -140,7 +140,7 @@ SYM_FUNC_END(dcache_clean_pou)
@@ -43,6 +47,8 @@ Subject: [PATCH] Update
  SYM_FUNC_START_PI(dcache_clean_poc)
  	/* FALLTHROUGH */
  
+diff --git a/arch/arm64/mm/flush.c b/arch/arm64/mm/flush.c
+index 2aaf950..52ac243 100644
 --- a/arch/arm64/mm/flush.c
 +++ b/arch/arm64/mm/flush.c
 @@ -77,6 +77,8 @@ EXPORT_SYMBOL(flush_dcache_page);
@@ -54,3 +60,6 @@ Subject: [PATCH] Update
  
  #ifdef CONFIG_ARCH_HAS_PMEM_API
  void arch_wb_cache_pmem(void *addr, size_t size)
+-- 
+2.25.1
+

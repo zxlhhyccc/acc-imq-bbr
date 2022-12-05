@@ -9,9 +9,11 @@ Subject: [PATCH] Update
  arch/arm64/include/asm/cacheflush.h | 9 +++++++++
  1 file changed, 9 insertions(+)
 
+diff --git a/arch/arm64/include/asm/cacheflush.h b/arch/arm64/include/asm/cacheflush.h
+index 5a228e2..89424f9 100644
 --- a/arch/arm64/include/asm/cacheflush.h
 +++ b/arch/arm64/include/asm/cacheflush.h
-@@ -110,6 +110,15 @@ static inline void flush_icache_range(un
+@@ -110,6 +110,15 @@ static inline void flush_icache_range(unsigned long start, unsigned long end)
  extern void __dma_map_area(const void *, size_t, int);
  extern void __dma_unmap_area(const void *, size_t, int);
  extern void __dma_flush_area(const void *, size_t);
@@ -27,3 +29,6 @@ Subject: [PATCH] Update
  
  /*
   * Copy user data from/to a page which is mapped into a different
+-- 
+2.25.1
+

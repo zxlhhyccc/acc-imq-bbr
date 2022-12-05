@@ -17,7 +17,7 @@ Signed-off-by: Rajkumar Ayyasamy <arajkuma@codeaurora.org>
 @@ -392,6 +392,22 @@ static const struct parent_map gcc_xo_gp
  	{ P_SLEEP_CLK, 6 },
  };
- 
+
 +static const char * const gcc_xo_gpll4_gpll0_gpll6_gpll0_div2[] = {
 +	"xo",
 +	"gpll4",
@@ -40,7 +40,7 @@ Signed-off-by: Rajkumar Ayyasamy <arajkuma@codeaurora.org>
 @@ -964,6 +980,12 @@ static const struct freq_tbl ftbl_pcie_a
  	{ }
  };
- 
+
 +struct freq_tbl ftbl_pcie_rchng_clk_src[] = {
 +	F(19200000, P_XO, 1, 0, 0),
 +	F(100000000, P_GPLL0, 8, 0, 0),
@@ -53,7 +53,7 @@ Signed-off-by: Rajkumar Ayyasamy <arajkuma@codeaurora.org>
 @@ -2023,6 +2045,78 @@ static struct clk_rcg2 gp3_clk_src = {
  	},
  };
- 
+
 +struct freq_tbl ftbl_qdss_tsctr_clk_src[] = {
 +	F(160000000, P_GPLL0_DIV2, 2.5, 0, 0),
 +	F(320000000, P_GPLL0, 2.5, 0, 0),
@@ -132,7 +132,7 @@ Signed-off-by: Rajkumar Ayyasamy <arajkuma@codeaurora.org>
 @@ -4354,13 +4448,7 @@ static struct clk_branch gcc_gp3_clk = {
  	},
  };
- 
+
 -static const struct freq_tbl ftbl_pcie_rchng_clk_src[] = {
 -	F(19200000, P_XO, 1, 0, 0),
 -	F(100000000, P_GPLL0, 8, 0, 0),
@@ -144,10 +144,10 @@ Signed-off-by: Rajkumar Ayyasamy <arajkuma@codeaurora.org>
  	.cmd_rcgr = 0x75070,
  	.freq_tbl = ftbl_pcie_rchng_clk_src,
  	.hid_width = 5,
-@@ -4452,6 +4540,114 @@ static const struct alpha_pll_config nss
+@@ -4452,6 +4540,114 @@ static struct clk_branch gcc_pcie0_axi_s
  	.alpha_en_mask = BIT(24),
  };
- 
+
 +static struct clk_branch gcc_snoc_bus_timeout2_ahb_clk = {
 +	.halt_reg = 0x4700c,
 +	.halt_bit = 31,
@@ -265,7 +265,7 @@ Signed-off-by: Rajkumar Ayyasamy <arajkuma@codeaurora.org>
  	&nss_ppe_cdiv_clk_src.hw,
 +	&qdss_dap_sync_clk_src.hw,
  };
- 
+
  static struct clk_regmap *gcc_ipq8074_clks[] = {
 @@ -4691,6 +4888,15 @@ static struct clk_regmap *gcc_ipq8074_cl
  	[GCC_PCIE0_RCHNG_CLK] = &gcc_pcie0_rchng_clk.clkr,
@@ -281,8 +281,9 @@ Signed-off-by: Rajkumar Ayyasamy <arajkuma@codeaurora.org>
 +    [ADSS_PWM_CLK_SRC] = &adss_pwm_clk_src.clkr,
 +    [GCC_ADSS_PWM_CLK] = &gcc_adss_pwm_clk.clkr,
  };
- 
+
  static const struct qcom_reset_map gcc_ipq8074_resets[] = {
+
 --- a/include/dt-bindings/clock/qcom,gcc-ipq8074.h
 +++ b/include/dt-bindings/clock/qcom,gcc-ipq8074.h
 @@ -230,10 +230,19 @@
@@ -306,6 +307,6 @@ Signed-off-by: Rajkumar Ayyasamy <arajkuma@codeaurora.org>
 +#define QDSS_AT_CLK_SRC            234
 +#define GCC_QDSS_AT_CLK            235
 +#define GCC_QDSS_DAP_CLK           236
- 
+
  #define GCC_BLSP1_BCR				0
  #define GCC_BLSP1_QUP1_BCR			1

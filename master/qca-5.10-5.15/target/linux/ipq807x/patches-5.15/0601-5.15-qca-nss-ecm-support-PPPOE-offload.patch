@@ -5,13 +5,13 @@
  #include <linux/atomic.h>
  #include <linux/refcount.h>
 +#include <linux/if_pppox.h>
- 
+
  #include <linux/nsproxy.h>
  #include <net/net_namespace.h>
 @@ -253,6 +254,25 @@ struct ppp_net {
  #define seq_before(a, b)	((s32)((a) - (b)) < 0)
  #define seq_after(a, b)		((s32)((a) - (b)) > 0)
- 
+
 +
 +/*
 + * Registration/Unregistration methods
@@ -34,18 +34,18 @@
  /* Prototypes. */
  static int ppp_unattached_ioctl(struct net *net, struct ppp_file *pf,
  			struct file *file, unsigned int cmd, unsigned long arg);
-@@ -3450,7 +3470,10 @@ ppp_connect_channel(struct channel *pch,
+@@ -3450,7 +3470,10 @@ ppp_connect_channel(struct channel *pch, int unit)
  	struct ppp_net *pn;
  	int ret = -ENXIO;
  	int hdrlen;
 +	int ppp_proto;
 +	int version;
- 
+
 +	int notify = 0;
  	pn = ppp_pernet(pch->chan_net);
- 
+
  	mutex_lock(&pn->all_ppp_mutex);
-@@ -3482,13 +3505,40 @@ ppp_connect_channel(struct channel *pch,
+@@ -3482,13 +3505,40 @@ ppp_connect_channel(struct channel *pch, int unit)
  	++ppp->n_channels;
  	pch->ppp = ppp;
  	refcount_inc(&ppp->file.refcnt);
@@ -86,8 +86,8 @@
 +
  	return ret;
  }
- 
-@@ -3506,6 +3556,13 @@ ppp_disconnect_channel(struct channel *p
+
+@@ -3506,6 +3556,13 @@ ppp_disconnect_channel(struct channel *pch)
  	pch->ppp = NULL;
  	write_unlock_bh(&pch->upl);
  	if (ppp) {
@@ -101,10 +101,10 @@
  		/* remove it from the ppp unit's list */
  		ppp_lock(ppp);
  		list_del(&pch->clist);
-@@ -3585,6 +3642,222 @@ static void *unit_find(struct idr *p, in
+@@ -3585,6 +3642,222 @@ static void *unit_find(struct idr *p, int n)
  	return idr_find(p, n);
  }
- 
+
 +/* Updates the PPP interface statistics. */
 +void ppp_update_stats(struct net_device *dev, unsigned long rx_packets,
 +		      unsigned long rx_bytes, unsigned long tx_packets,
@@ -322,7 +322,7 @@
 +EXPORT_SYMBOL(ppp_release_channels);
 +
  /* Module/initialization stuff */
- 
+
  module_init(ppp_init);
 @@ -3601,6 +3874,7 @@ EXPORT_SYMBOL(ppp_input_error);
  EXPORT_SYMBOL(ppp_output_wakeup);
@@ -332,6 +332,8 @@
  MODULE_LICENSE("GPL");
  MODULE_ALIAS_CHARDEV(PPP_MAJOR, 0);
  MODULE_ALIAS_RTNL_LINK("ppp");
+diff --git a/drivers/net/ppp/pppoe.c b/drivers/net/ppp/pppoe.c
+index 3619520..3b06b44 100644
 --- a/drivers/net/ppp/pppoe.c
 +++ b/drivers/net/ppp/pppoe.c
 @@ -62,6 +62,7 @@
@@ -344,26 +346,26 @@
  #include <linux/if_pppox.h>
 @@ -87,7 +88,7 @@
  static int __pppoe_xmit(struct sock *sk, struct sk_buff *skb);
- 
+
  static const struct proto_ops pppoe_ops;
 -static const struct ppp_channel_ops pppoe_chan_ops;
 +static const struct pppoe_channel_ops pppoe_chan_ops;
- 
+
  /* per-net private data for this module */
  static unsigned int pppoe_net_id __read_mostly;
-@@ -692,7 +693,7 @@ static int pppoe_connect(struct socket *
- 
+@@ -692,7 +693,7 @@ static int pppoe_connect(struct socket *sock, struct sockaddr *uservaddr,
+
  		po->chan.mtu = dev->mtu - sizeof(struct pppoe_hdr) - 2;
  		po->chan.private = sk;
 -		po->chan.ops = &pppoe_chan_ops;
 +		po->chan.ops = (struct ppp_channel_ops *)&pppoe_chan_ops;
- 
+
  		error = ppp_register_net_channel(dev_net(dev), &po->chan);
  		if (error) {
-@@ -995,9 +996,80 @@ static int pppoe_fill_forward_path(struc
+@@ -995,9 +996,80 @@ static int pppoe_fill_forward_path(struct net_device_path_ctx *ctx,
  	return 0;
  }
- 
+
 -static const struct ppp_channel_ops pppoe_chan_ops = {
 -	.start_xmit = pppoe_xmit,
 -	.fill_forward_path = pppoe_fill_forward_path,
@@ -442,14 +444,16 @@
 +	.ops.release = pppoe_release_chan,
 +	.ops.fill_forward_path = pppoe_fill_forward_path,
  };
- 
+
  static int pppoe_recvmsg(struct socket *sock, struct msghdr *m,
+diff --git a/include/linux/if_pppox.h b/include/linux/if_pppox.h
+index 69e813b..02a4062 100644
 --- a/include/linux/if_pppox.h
 +++ b/include/linux/if_pppox.h
 @@ -93,4 +93,17 @@ enum {
      PPPOX_DEAD		= 16  /* dead, useless, please clean me up!*/
  };
- 
+
 +/*
 + * PPPoE Channel specific operations
 + */
@@ -464,12 +468,14 @@
 +					 struct pppoe_opt *addressing);
 +
  #endif /* !(__LINUX_IF_PPPOX_H) */
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index a73d00a..edde18b 100644
 --- a/include/linux/netdevice.h
 +++ b/include/linux/netdevice.h
 @@ -1673,6 +1673,24 @@ enum netdev_extra_priv_flags {
  	IFF_NO_IP_ALIGN			= 1<<0,
  };
- 
+
 +
 +/**
 + * enum netdev_priv_flags_ext - &struct net_device priv_flags_ext
@@ -499,6 +505,8 @@
  	const struct net_device_ops *netdev_ops;
  	int			ifindex;
  	unsigned short		gflags;
+diff --git a/include/linux/ppp_channel.h b/include/linux/ppp_channel.h
+index 91f9a92..5f79e5b 100644
 --- a/include/linux/ppp_channel.h
 +++ b/include/linux/ppp_channel.h
 @@ -19,6 +19,10 @@
@@ -509,9 +517,9 @@
 +
 +#define PPP_CHANNEL_DISCONNECT	0
 +#define PPP_CHANNEL_CONNECT	1
- 
+
  struct ppp_channel;
- 
+
 @@ -28,9 +32,19 @@ struct ppp_channel_ops {
  	int	(*start_xmit)(struct ppp_channel *, struct sk_buff *);
  	/* Handle an ioctl call that has come in via /dev/ppp. */
@@ -532,12 +540,12 @@
 +				struct net_device_path *,
 +				const struct ppp_channel *);
  };
- 
+
  struct ppp_channel {
-@@ -74,6 +88,51 @@ extern int ppp_unit_number(struct ppp_ch
+@@ -74,6 +88,51 @@ extern int ppp_unit_number(struct ppp_channel *);
  /* Get the device name associated with a channel, or NULL if none */
  extern char *ppp_dev_name(struct ppp_channel *);
- 
+
 +/* Call this to obtain the underlying protocol of the PPP channel,
 + * e.g. PX_PROTO_OE
 + */
@@ -586,3 +594,5 @@
  /*
   * SMP locking notes:
   * The channel code must ensure that when it calls ppp_unregister_channel,
+--
+2.25.1
