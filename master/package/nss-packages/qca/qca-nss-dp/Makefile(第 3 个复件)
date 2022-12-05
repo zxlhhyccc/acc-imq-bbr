@@ -42,12 +42,18 @@ define Build/Configure
 		$(PKG_BUILD_DIR)/exports/nss_dp_arch.h
 endef
 
+ifeq ($(CONFIG_TARGET_BOARD), "ipq807x")
+    SOC="ipq807x_64"
+else ifeq ($(CONFIG_TARGET_BOARD), "ipq60xx")
+    SOC="ipq60xx_64"
+endif
+
 define Build/Compile
 	+$(MAKE) -C "$(LINUX_DIR)" \
 		CROSS_COMPILE="$(TARGET_CROSS)" \
 		ARCH="$(LINUX_KARCH)" \
 		M="$(PKG_BUILD_DIR)" \
-		EXTRA_CFLAGS="$(EXTRA_CFLAGS)" SoC="$(CONFIG_TARGET_BOARD)" \
+		EXTRA_CFLAGS="$(EXTRA_CFLAGS)" SoC="$(SOC)" \
 		$(KERNEL_MAKE_FLAGS) \
 		$(PKG_JOBS) \
 		modules

@@ -5,9 +5,9 @@ PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE_URL:=https://git.codelinaro.org/clo/qsdk/oss/lklm/qca-nss-ecm.git
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2022-09-12
-PKG_SOURCE_VERSION:=122b76a6179bf7e6649c80070c31cc355b045226
-PKG_MIRROR_HASH:=9c542c04464a4ed9eedb97ccecbf211b0b038f7d1acb2c15a14c6a43e83cd131
+PKG_SOURCE_DATE:=2022-07-20
+PKG_SOURCE_VERSION:=6e5616d18ddf39af4279449351df7612043082c7
+PKG_MIRROR_HASH:=eb93fc5cd6acffbad6acbd553b28a499c473c7dc80f8aee0a232a34e58172896
 
 PKG_BUILD_PARALLEL:=1
 
@@ -27,7 +27,7 @@ define KernelPackage/qca-nss-ecm
 	+kmod-ppp \
 	+kmod-pppoe
   TITLE:=QCA NSS Enhanced Connection Manager (ECM)
-  FILES:=$(PKG_BUILD_DIR)/*.ko
+  FILES:=$(PKG_BUILD_DIR)/ecm.ko
   KCONFIG:=CONFIG_BRIDGE_NETFILTER=y \
 	CONFIG_NF_CONNTRACK_EVENTS=y \
 	CONFIG_NF_CONNTRACK_CHAIN_EVENTS=y \
@@ -103,12 +103,6 @@ $(call KernelPackage/qca-nss-ecm/install, $(1))
 	sed -i '/START=/d' $(1)/etc/init.d/qca-nss-ecm
 endef
 
-ifeq ($(CONFIG_TARGET_BOARD), "ipq807x")
-    SOC="ipq807x_64"
-else ifeq ($(CONFIG_TARGET_BOARD), "ipq60xx")
-    SOC="ipq60xx_64"
-endif
-
 define Build/InstallDev
 	mkdir -p $(1)/usr/include/qca-nss-ecm
 	$(CP) $(PKG_BUILD_DIR)/exports/* $(1)/usr/include/qca-nss-ecm
@@ -120,7 +114,7 @@ define Build/Compile
 		ARCH="$(LINUX_KARCH)" \
 		M="$(PKG_BUILD_DIR)" \
 		EXTRA_CFLAGS="$(EXTRA_CFLAGS) -Wno-error=unused-function " \
-		SoC=$(SOC) \
+		SoC=$(CONFIG_TARGET_BOARD) \
 		$(KERNEL_MAKE_FLAGS) \
 		$(PKG_JOBS) \
 		modules

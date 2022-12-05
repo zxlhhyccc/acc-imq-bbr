@@ -18,7 +18,6 @@
 # openwrt build scripts automatically enable this package starting
 # at boot.
 
-START=99
 
 get_front_end_mode() {
 	config_load "ecm"

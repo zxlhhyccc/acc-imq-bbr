@@ -26,12 +26,15 @@ Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
  #error "Check skb recycle code in this file to match Linux version"
  #endif
  
-@@ -2641,7 +2642,7 @@ static inline bool nss_core_skb_can_reus
+@@ -2650,7 +2651,11 @@ static inline bool nss_core_skb_can_reuse(struct nss_ctx_instance *nss_ctx,
  	if (unlikely(irqs_disabled()))
  		return false;
- 
--	if (unlikely(skb_shinfo(nbuf)->tx_flags & SKBTX_DEV_ZEROCOPY))
+
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 14, 0))
+ 	if (unlikely(skb_shinfo(nbuf)->tx_flags & SKBTX_DEV_ZEROCOPY))
++#else
 +	if (unlikely(skb_shinfo(nbuf)->flags & SKBFL_ZEROCOPY_ENABLE))
++#endif
  		return false;
  
  	if (unlikely(skb_is_nonlinear(nbuf)))

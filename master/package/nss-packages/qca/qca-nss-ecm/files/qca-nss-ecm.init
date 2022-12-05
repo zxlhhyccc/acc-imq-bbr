@@ -111,9 +111,9 @@ start() {
 
 	support_bridge && {
 		if ([ -z "$(grep "net.bridge.bridge-nf-call-ip6tables=1" /etc/sysctl.d/qca-nss-ecm.conf)" ] && [ -z "$(grep "net.bridge.bridge-nf-call-iptables=1" /etc/sysctl.d/qca-nss-ecm.conf)" ]); then
-			echo 'net.bridge.bridge-nf-call-ip6tables=1' >> /etc/sysctl.d/qca-nss-ecm.conf
-			echo 'net.bridge.bridge-nf-call-iptables=1' >> /etc/sysctl.d/qca-nss-ecm.conf
 			echo 'net.bridge.bridge-nf-call-arptables=1' >> /etc/sysctl.d/qca-nss-ecm.conf
+			echo 'net.bridge.bridge-nf-call-iptables=1' >> /etc/sysctl.d/qca-nss-ecm.conf
+			echo 'net.bridge.bridge-nf-call-ip6tables=1' >> /etc/sysctl.d/qca-nss-ecm.conf
 		fi
 	}
 

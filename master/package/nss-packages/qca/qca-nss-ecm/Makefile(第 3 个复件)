@@ -27,7 +27,7 @@ define KernelPackage/qca-nss-ecm
 	+kmod-ppp \
 	+kmod-pppoe
   TITLE:=QCA NSS Enhanced Connection Manager (ECM)
-  FILES:=$(PKG_BUILD_DIR)/*.ko
+  FILES:=$(PKG_BUILD_DIR)/ecm.ko
   KCONFIG:=CONFIG_BRIDGE_NETFILTER=y \
 	CONFIG_NF_CONNTRACK_EVENTS=y \
 	CONFIG_NF_CONNTRACK_CHAIN_EVENTS=y \
@@ -103,12 +103,6 @@ $(call KernelPackage/qca-nss-ecm/install, $(1))
 	sed -i '/START=/d' $(1)/etc/init.d/qca-nss-ecm
 endef
 
-ifeq ($(CONFIG_TARGET_BOARD), "ipq807x")
-    SOC="ipq807x_64"
-else ifeq ($(CONFIG_TARGET_BOARD), "ipq60xx")
-    SOC="ipq60xx_64"
-endif
-
 define Build/InstallDev
 	mkdir -p $(1)/usr/include/qca-nss-ecm
 	$(CP) $(PKG_BUILD_DIR)/exports/* $(1)/usr/include/qca-nss-ecm
@@ -120,7 +114,7 @@ define Build/Compile
 		ARCH="$(LINUX_KARCH)" \
 		M="$(PKG_BUILD_DIR)" \
 		EXTRA_CFLAGS="$(EXTRA_CFLAGS) -Wno-error=unused-function " \
-		SoC=$(SOC) \
+		SoC=$(CONFIG_TARGET_BOARD) \
 		$(KERNEL_MAKE_FLAGS) \
 		$(PKG_JOBS) \
 		modules
