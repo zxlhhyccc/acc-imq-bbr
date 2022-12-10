@@ -1,5 +1,3 @@
-diff --git a/htdocs/luci-static/resources/view/network/wireless.js b/htdocs/luci-static/resources/view/network/wireless.js
-index f392c94..64b07b3 100644
 --- a/htdocs/luci-static/resources/view/network/wireless.js
 +++ b/htdocs/luci-static/resources/view/network/wireless.js
 @@ -956,6 +956,9 @@ return view.extend({
@@ -22,39 +20,10 @@ index f392c94..64b07b3 100644
  				}
  
  
-@@ -1516,6 +1522,76 @@ return view.extend({
+@@ -1534,6 +1540,47 @@ return view.extend({
  
  
  				if (hwtype == 'mac80211') {
-+
-+					// Probe 802.11k support
-+					o = ss.taboption('encryption', form.Flag, 'ieee80211k', _('802.11k'), _('Enables The 802.11k standard provides information to discover the best available access point'));
-+					o.depends({ mode: 'ap', encryption: 'wpa' });
-+					o.depends({ mode: 'ap', encryption: 'wpa2' });
-+					o.depends({ mode: 'ap-wds', encryption: 'wpa' });
-+					o.depends({ mode: 'ap-wds', encryption: 'wpa2' });
-+					o.depends({ mode: 'ap', encryption: 'psk' });
-+					o.depends({ mode: 'ap', encryption: 'psk2' });
-+					o.depends({ mode: 'ap', encryption: 'psk-mixed' });
-+					o.depends({ mode: 'ap-wds', encryption: 'psk' });
-+					o.depends({ mode: 'ap-wds', encryption: 'psk2' });
-+					o.depends({ mode: 'ap-wds', encryption: 'psk-mixed' });
-+					o.depends({ mode: 'ap', encryption: 'sae' });
-+					o.depends({ mode: 'ap', encryption: 'sae-mixed' });
-+					o.depends({ mode: 'ap-wds', encryption: 'sae' });
-+					o.depends({ mode: 'ap-wds', encryption: 'sae-mixed' });
-+					o.rmempty = true;
-+
-+					o = ss.taboption('encryption', form.Flag, 'rrm_neighbor_report', _('Enable neighbor report via radio measurements'));
-+					o.default = o.enabled;
-+					o.depends({ ieee80211k: '1' });
-+					o.rmempty = true;
-+
-+					o = ss.taboption('encryption', form.Flag, 'rrm_beacon_report', _('Enable beacon report via radio measurements'));
-+					o.default = o.enabled;
-+					o.depends({ ieee80211k: '1' });
-+					o.rmempty = true;
-+					// End of 802.11k options
 +
 +					// Probe 802.11v support
 +					o = ss.taboption('encryption', form.Flag, 'ieee80211v', _('802.11v'), _('Enables 802.11v allows client devices to exchange information about the network topology,tating overall improvement of the wireless network.'));
@@ -84,7 +53,7 @@ index f392c94..64b07b3 100644
 +					o.depends({ ieee80211v: '1' });
 +					o.rmempty = true;
 +
-+					o = ss.taboption('encryption', form.ListValue, 'time_advertisement', _('Time advertisement"'));
++					o = ss.taboption('encryption', form.ListValue, 'time_advertisement', _('Time advertisement'));
 +					o.depends({ ieee80211v: '1' });
 +					o.value('0', _('disabled'));
 +					o.value('2', _('UTC time at which the TSF timer is 0'));
