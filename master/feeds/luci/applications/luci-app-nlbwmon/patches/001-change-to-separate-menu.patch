@@ -1,0 +1,53 @@
+--- a/htdocs/luci-static/resources/view/nlbw/config.js
++++ b/htdocs/luci-static/resources/view/nlbw/config.js
+@@ -73,7 +73,7 @@ return view.extend({
+ 		o.value('absolute', _('Fixed interval'));
+ 
+ 		o = s.taboption('general', form.DummyValue, '_warning', _('Warning'));
+-		o.default = _('Changing the accounting interval type will invalidate existing databases!<br /><strong><a href="%s">Download backup</a></strong>.').format(L.url('admin/services/nlbw/backup'));
++		o.default = _('Changing the accounting interval type will invalidate existing databases!<br /><strong><a href="%s">Download backup</a></strong>.').format(L.url('admin/nlbw/backup'));
+ 		o.rawhtml = true;
+ 		if (/^[0-9]{4}-[0-9]{2}-[0-9]{2}\/[0-9]+$/.test(uci.get_first('nlbwmon', 'nlbwmon', 'database_interval')))
+ 			o.depends('_period', 'relative');
+--- a/root/usr/share/luci/menu.d/luci-app-nlbwmon.json
++++ b/root/usr/share/luci/menu.d/luci-app-nlbwmon.json
+@@ -1,10 +1,9 @@
+ {
+-	"admin/services/nlbw": {
++	"admin/nlbw": {
+ 		"title": "Bandwidth Monitor",
+ 		"order": 80,
+ 		"action": {
+-			"type": "alias",
+-			"path": "admin/services/nlbw/display"
++			"type": "firstchild"
+ 		},
+ 		"depends": {
+ 			"acl": [ "luci-app-nlbwmon" ],
+@@ -12,7 +11,7 @@
+ 		}
+ 	},
+ 
+-	"admin/services/nlbw/display": {
++	"admin/nlbw/display": {
+ 		"title": "Display",
+ 		"order": 10,
+ 		"action": {
+@@ -21,7 +20,7 @@
+ 		}
+ 	},
+ 
+-	"admin/services/nlbw/config": {
++	"admin/nlbw/config": {
+ 		"title": "Configuration",
+ 		"order": 20,
+ 		"action": {
+@@ -30,7 +29,7 @@
+ 		}
+ 	},
+ 
+-	"admin/services/nlbw/backup": {
++	"admin/nlbw/backup": {
+ 		"title": "Backup",
+ 		"order": 30,
+ 		"action": {
