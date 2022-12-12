@@ -22,7 +22,7 @@
 +
 --- a/modules/lib.mk
 +++ b/modules/lib.mk
-@@ -168,6 +168,27 @@ endef
+@@ -170,6 +170,27 @@ endef
  $(eval $(call KernelPackage,lib-lz4))
  
  
@@ -52,7 +52,7 @@
    TITLE:=RAID6 algorithm support
 --- a/modules/other.mk
 +++ b/modules/other.mk
-@@ -1340,3 +1340,96 @@ define KernelPackage/mhi-pci-generic/description
+@@ -1344,3 +1344,96 @@ define KernelPackage/mhi-pci-generic/description
  endef
  
  $(eval $(call KernelPackage,mhi-pci-generic))
