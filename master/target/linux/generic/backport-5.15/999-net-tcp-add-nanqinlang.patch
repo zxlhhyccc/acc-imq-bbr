@@ -1,6 +1,6 @@
 --- a/net/ipv4/Kconfig
 +++ b/net/ipv4/Kconfig
-@@ -669,6 +669,15 @@ config TCP_CONG_BBR
+@@ -679,6 +679,15 @@ config TCP_CONG_BBR
  	  AQM schemes that do not provide a delay signal. It requires the fq
  	  ("Fair Queue") pacing packet scheduler.
  
@@ -16,7 +16,7 @@
  config TCP_CONG_BBRPLUS
          tristate "BBRPLUS TCP"
          default m
-@@ -715,6 +724,9 @@ choice
+@@ -725,6 +734,9 @@ choice
  	config DEFAULT_BBR
  		bool "BBR" if TCP_CONG_BBR=y
  
@@ -26,7 +26,7 @@
          config DEFAULT_BBRPLUS
                  bool "BBRPLUS" if TCP_CONG_BBRPLUS=y
  
-@@ -742,6 +754,7 @@ config DEFAULT_TCP_CONG
+@@ -752,6 +764,7 @@ config DEFAULT_TCP_CONG
  	default "dctcp" if DEFAULT_DCTCP
  	default "cdg" if DEFAULT_CDG
  	default "bbr" if DEFAULT_BBR
