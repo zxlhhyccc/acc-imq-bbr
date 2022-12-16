@@ -2,7 +2,7 @@ diff --git a/Makefile b/Makefile
 index 9d17e03..ec65730 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -17,6 +17,15 @@ PKG_MIRROR_HASH:=e915d53da916db333d62c396154612ed7557fbb27ed8884e70c19c321c08b12c
+@@ -17,6 +17,15 @@ PKG_MIRROR_HASH:=c376d3f2794fcef2956c038a16b4a1a4d30082ca4f2d2b955bd191d06e78f6ec
  PKG_MAINTAINER:=Jo-Philipp Wich <jo@mein.io>
  PKG_LICENSE:=GPL-2.0
  
