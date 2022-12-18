@@ -1,18 +1,6 @@
 --- a/htdocs/luci-static/resources/view/status/include/10_system.js
 +++ b/htdocs/luci-static/resources/view/status/include/10_system.js
-@@ -3,11 +3,6 @@
- 'require fs';
- 'require rpc';
- 
--var callLuciVersion = rpc.declare({
--	object: 'luci',
--	method: 'getVersion'
--});
--
- var callSystemBoard = rpc.declare({
- 	object: 'system',
- 	method: 'board'
-@@ -18,6 +13,26 @@ var callSystemInfo = rpc.declare({
+@@ -18,6 +18,26 @@ var callSystemInfo = rpc.declare({
  	method: 'info'
  });
  
@@ -39,19 +27,18 @@
  return baseclass.extend({
  	title: _('System'),
  
-@@ -25,16 +40,28 @@ return baseclass.extend({
+@@ -25,6 +45,10 @@ return baseclass.extend({
  		return Promise.all([
  			L.resolveDefault(callSystemBoard(), {}),
  			L.resolveDefault(callSystemInfo(), {}),
--			L.resolveDefault(callLuciVersion(), { revision: _('unknown version'), branch: 'LuCI' })
 +			L.resolveDefault(callCPUBench(), {}),
 +			L.resolveDefault(callCPUInfo(), {}),
 +			L.resolveDefault(callCPUUsage(), {}),
 +			L.resolveDefault(callTempInfo(), {}),
-+			fs.lines('/usr/lib/lua/luci/version.lua')
+ 			L.resolveDefault(callLuciVersion(), { revision: _('unknown version'), branch: 'LuCI' })
  		]);
  	},
- 
+@@ -32,7 +56,11 @@ return baseclass.extend({
  	render: function(data) {
  		var boardinfo   = data[0],
  		    systeminfo  = data[1],
@@ -62,16 +49,9 @@
 +		    tempinfo    = data[5],
 +		    luciversion = data[6];
  
--		luciversion = luciversion.branch + ' ' + luciversion.revision;
-+		luciversion = luciversion.filter(function(l) {
-+			return l.match(/^\s*(luciname|luciversion)\s*=/);
-+		}).map(function(l) {
-+			return l.replace(/^\s*\w+\s*=\s*['"]([^'"]+)['"].*$/, '$1');
-+		}).join(' ');
+ 		luciversion = luciversion.branch + ' ' + luciversion.revision;
  
- 		var datestr = null;
- 
-@@ -51,10 +78,26 @@ return baseclass.extend({
+@@ -51,10 +79,26 @@ return baseclass.extend({
  			);
  		}
  
@@ -100,7 +80,7 @@
  			_('Target Platform'),  (L.isObject(boardinfo.release) ? boardinfo.release.target : ''),
  			_('Firmware Version'), (L.isObject(boardinfo.release) ? boardinfo.release.description + ' / ' : '') + (luciversion || ''),
  			_('Kernel Version'),   boardinfo.kernel,
-@@ -64,9 +107,16 @@ return baseclass.extend({
+@@ -64,9 +108,16 @@ return baseclass.extend({
  				systeminfo.load[0] / 65535.0,
  				systeminfo.load[1] / 65535.0,
  				systeminfo.load[2] / 65535.0
@@ -118,17 +98,3 @@
  		var table = E('table', { 'class': 'table' });
  
  		for (var i = 0; i < fields.length; i += 2) {
---- a/root/usr/share/rpcd/acl.d/luci-mod-status-index.json
-+++ b/root/usr/share/rpcd/acl.d/luci-mod-status-index.json
-@@ -5,10 +5,10 @@
- 			"file": {
- 				"/proc/sys/net/netfilter/nf_conntrack_count": [ "read" ],
- 				"/proc/sys/net/netfilter/nf_conntrack_max": [ "read" ],
-+				"/usr/lib/lua/luci/version.lua": [ "read" ],
- 				"/www/luci-static/resources/view/status/include": [ "list" ]
- 			},
- 			"ubus": {
--				"luci": [ "getVersion" ],
- 				"file": [ "list", "read" ],
- 				"system": [ "board", "info" ]
- 			}
