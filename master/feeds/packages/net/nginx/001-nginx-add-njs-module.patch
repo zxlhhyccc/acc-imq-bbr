@@ -1,5 +1,3 @@
-diff --git a/Config_ssl.in b/Config_ssl.in
-index df54624..d167d5e 100644
 --- a/Config_ssl.in
 +++ b/Config_ssl.in
 @@ -264,4 +264,11 @@ config NGINX_TS_MODULE
@@ -14,8 +12,6 @@ index df54624..d167d5e 100644
 +	default n
 +
  endmenu
-diff --git a/Makefile b/Makefile
-index 41436aa..c86379f 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -16,7 +16,8 @@ PKG_SOURCE_URL:=https://nginx.org/download/
@@ -36,27 +32,17 @@ index 41436aa..c86379f 100644
  	CONFIG_OPENSSL_ENGINE \
  	CONFIG_OPENSSL_WITH_NPN
  
-@@ -265,7 +267,7 @@ ifneq ($(BUILD_VARIANT),all-module)
-     ADDITIONAL_MODULES += --with-http_secure_link_module
-   endif
-   ifeq ($(CONFIG_NGINX_HTTP_SUB),y)
--	ADDITIONAL_MODULES += --with-http_sub_module
-+    ADDITIONAL_MODULES += --with-http_sub_module
-   endif
-   ifeq ($(CONFIG_NGINX_STREAM_CORE_MODULE),y)
-     ADDITIONAL_MODULES += --with-stream
-@@ -288,6 +290,10 @@ ifneq ($(BUILD_VARIANT),all-module)
+@@ -288,6 +290,9 @@ ifneq ($(BUILD_VARIANT),all-module)
    ifeq ($(CONFIG_NGINX_TS_MODULE),y)
      ADDITIONAL_MODULES += --add-module=$(PKG_BUILD_DIR)/nginx-ts
    endif
 +  ifeq ($(CONFIG_NGINX_NJS_MODULE),y)
 +    ADDITIONAL_MODULES += --add-module=$(PKG_BUILD_DIR)/nginx-njs
 +  endif
-+
  else
    CONFIG_NGINX_HEADERS_MORE:=y
    CONFIG_NGINX_HTTP_BROTLI:=y
-@@ -327,6 +333,21 @@ define Package/nginx-mod-luci/description
+@@ -327,6 +332,21 @@ define Package/nginx-mod-luci/description
   Support file for LuCI in nginx. Include custom nginx configuration, autostart script for uwsgi.
  endef
  
@@ -78,16 +64,7 @@ index 41436aa..c86379f 100644
  
  TARGET_CFLAGS += -fvisibility=hidden -ffunction-sections -fdata-sections -DNGX_LUA_NO_BY_LUA_BLOCK
  TARGET_LDFLAGS += -Wl,--gc-sections
-@@ -376,7 +397,7 @@ ifeq ($(CONFIG_NGINX_NAXSI),y)
- endif
- 	$(if $(CONFIG_NGINX_NAXSI),$($(INSTALL_BIN) $(PKG_BUILD_DIR)/nginx-naxsi/naxsi_config/naxsi_core.rules $(1)/etc/nginx))
- 	$(if $(CONFIG_NGINX_NAXSI),$(chmod 0640 $(1)/etc/nginx/naxsi_core.rules))
--
-+	
- 	$(INSTALL_DIR) $(1)/etc/hotplug.d/acme
- 	$(INSTALL_DATA) ./files/acme.hotplug $(1)/etc/hotplug.d/acme/00-nginx
- endef
-@@ -452,6 +473,20 @@ define Prepare/nginx-ts
+@@ -449,6 +469,20 @@ define Prepare/nginx-ts
  	xzcat $(DL_DIR)/$(FILE) | tar -C $(PKG_BUILD_DIR) $(TAR_OPTIONS)
  endef
  
@@ -108,7 +85,7 @@ index 41436aa..c86379f 100644
  define Download/nginx-naxsi
    VERSION:=951123ad456bdf5ac94e8d8819342fe3d49bc002
    SUBDIR:=nginx-naxsi
-@@ -565,6 +600,11 @@ ifeq ($(CONFIG_NGINX_TS_MODULE),y)
+@@ -562,6 +596,11 @@ ifeq ($(CONFIG_NGINX_TS_MODULE),y)
    $(Prepare/nginx-ts)
  endif
  
@@ -120,7 +97,7 @@ index 41436aa..c86379f 100644
  ifneq "$(or $(CONFIG_NGINX_DAV),$(QUILT))" ""
    $(eval $(call Download,nginx-dav-ext-module))
    $(Prepare/nginx-dav-ext-module)
-@@ -581,6 +621,7 @@ endef
+@@ -578,6 +617,7 @@ endef
  $(eval $(call BuildPackage,nginx-ssl))
  $(eval $(call BuildPackage,nginx-all-module))
  $(eval $(call BuildPackage,nginx-mod-luci))

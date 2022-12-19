@@ -2,7 +2,7 @@ diff --git a/files/bin/config_generate b/files/bin/config_generate
 index f062c10..20f6bdf 100755
 --- a/files/bin/config_generate
 +++ b/files/bin/config_generate
-@@ -311,10 +311,10 @@ generate_static_system() {
+@@ -320,10 +320,10 @@ generate_static_system() {
  		set system.ntp='timeserver'
  		set system.ntp.enabled='1'
  		set system.ntp.enable_server='0'
