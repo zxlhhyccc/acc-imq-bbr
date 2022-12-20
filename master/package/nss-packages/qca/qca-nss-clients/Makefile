@@ -31,7 +31,7 @@ define KernelPackage/qca-nss-drv-bridge-mgr
   CATEGORY:=Kernel modules
   SUBMENU:=Network Devices
   TITLE:=Kernel driver for NSS bridge manager
-  DEPENDS:=@(LINUX_5_10||LINUX_5_15) @(TARGET_ipq60xx||TARGET_ipq807x) +kmod-qca-nss-drv +kmod-qca-nss-drv-vlan-mgr
+  DEPENDS:=@(TARGET_ipq60xx||TARGET_ipq807x) +kmod-qca-nss-drv +kmod-qca-nss-drv-vlan-mgr
   FILES:=$(PKG_BUILD_DIR)/bridge/qca-nss-bridge-mgr.ko
   AUTOLOAD:=$(call AutoLoad,51,qca-nss-bridge-mgr)
 endef
@@ -45,7 +45,7 @@ define KernelPackage/qca-nss-drv-vlan-mgr
   CATEGORY:=Kernel modules
   SUBMENU:=Network Devices
   TITLE:=Kernel driver for NSS vlan manager
-  DEPENDS:=@(LINUX_5_10||LINUX_5_15) @(TARGET_ipq60xx||TARGET_ipq807x) +kmod-qca-nss-drv +kmod-bonding
+  DEPENDS:=@(TARGET_ipq60xx||TARGET_ipq807x) +kmod-qca-nss-drv +kmod-bonding
   FILES:=$(PKG_BUILD_DIR)/vlan/qca-nss-vlan.ko
   AUTOLOAD:=$(call AutoLoad,51,qca-nss-vlan)
 endef
