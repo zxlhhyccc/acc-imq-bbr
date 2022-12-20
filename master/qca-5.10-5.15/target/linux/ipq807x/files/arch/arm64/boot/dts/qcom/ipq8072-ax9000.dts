@@ -768,11 +768,6 @@
 			/* ath11k has no DT compatible for PCI cards */
 			compatible = "pci17cb,1104";
 			reg = <0x00010000 0 0 0 0>;
-			/*
-			 * Override the default QRTR instance ID, otherwise
-			 * a clash will occur with the AHB radio.
-			 */
-			qcom,qrtr_instance_id = <0x20>;
 
 			qcom,ath11k-calibration-variant = "Xiaomi-AX9000";
 		};

@@ -159,7 +159,7 @@ diff --git a/net/netfilter/nf_conntrack_netlink.c b/net/netfilter/nf_conntrack_n
 index 722af5e309ba28..f5905b5201a798 100644
 --- a/net/netfilter/nf_conntrack_netlink.c
 +++ b/net/netfilter/nf_conntrack_netlink.c
-@@ -1206,6 +1206,7 @@ ctnetlink_dump_table(struct sk_buff *skb, struct netlink_callback *cb)
+@@ -1211,6 +1211,7 @@ ctnetlink_dump_table(struct sk_buff *skb, struct netlink_callback *cb)
  				continue;
  			ct = nf_ct_tuplehash_to_ctrack(h);
  			if (nf_ct_is_expired(ct)) {

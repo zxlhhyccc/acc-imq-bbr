@@ -11,7 +11,7 @@
 # append "pad-to 64k" to the image definition
 # this is based on the ipq806x zyxel.sh mmc upgrade
 
-. /lib/functions.sh
+. "$IPKG_INSTROOT/lib/functions.sh"
 
 mmc_do_upgrade() {
 	local tar_file="$1"
