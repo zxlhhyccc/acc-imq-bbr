@@ -12,8 +12,7 @@ PKG_CONFIG_DEPENDS += \
 	CONFIG_ATH9K_TX99 \
 	CONFIG_ATH10K_LEDS \
 	CONFIG_ATH10K_THERMAL \
-	CONFIG_ATH11K_MEM_PROFILE_512MB \
-	CONFIG_ATH11K_MEM_PROFILE_1GB \
+	CONFIG_ATH11K_THERMAL \
 	CONFIG_ATH_USER_REGD
 
 ifdef CONFIG_PACKAGE_MAC80211_DEBUGFS
@@ -56,8 +55,7 @@ config-$(CONFIG_ATH9K_TX99) += ATH9K_TX99
 config-$(CONFIG_ATH9K_UBNTHSR) += ATH9K_UBNTHSR
 config-$(CONFIG_ATH10K_LEDS) += ATH10K_LEDS
 config-$(CONFIG_ATH10K_THERMAL) += ATH10K_THERMAL
-config-$(CONFIG_ATH11K_MEM_PROFILE_512MB) += ATH11K_MEM_PROFILE_512MB
-config-$(CONFIG_ATH11K_MEM_PROFILE_1GB) += ATH11K_MEM_PROFILE_1GB
+config-$(CONFIG_ATH11K_THERMAL) += ATH11K_THERMAL
 
 config-$(call config_package,ath9k-htc) += ATH9K_HTC
 config-$(call config_package,ath10k) += ATH10K ATH10K_PCI
@@ -163,7 +161,7 @@ define KernelPackage/ath6kl
   TITLE:=Atheros FullMAC wireless devices (common code for ath6kl_sdio and ath6kl_usb)
   URL:=https://wireless.wiki.kernel.org/en/users/drivers/ath6kl
   HIDDEN:=1
-  DEPENDS+= +kmod-ath +@DRIVER_11N_SUPPORT
+  DEPENDS+= +kmod-ath
   FILES:= $(PKG_BUILD_DIR)/drivers/net/wireless/ath/ath6kl/ath6kl_core.ko
 endef
 
@@ -200,7 +198,7 @@ define KernelPackage/ath9k-common
   TITLE:=Atheros 802.11n wireless devices (common code for ath9k and ath9k_htc)
   URL:=https://wireless.wiki.kernel.org/en/users/drivers/ath9k
   HIDDEN:=1
-  DEPENDS+= @PCI_SUPPORT||USB_SUPPORT||TARGET_ath79 +kmod-ath +@DRIVER_11N_SUPPORT
+  DEPENDS+= @PCI_SUPPORT||USB_SUPPORT||TARGET_ath79 +kmod-ath +kmod-random-core
   FILES:= \
 	$(PKG_BUILD_DIR)/drivers/net/wireless/ath/ath9k/ath9k_common.ko \
 	$(PKG_BUILD_DIR)/drivers/net/wireless/ath/ath9k/ath9k_hw.ko
@@ -264,7 +262,7 @@ define KernelPackage/ath10k
   $(call KernelPackage/mac80211/Default)
   TITLE:=Atheros 802.11ac wireless cards support
   URL:=https://wireless.wiki.kernel.org/en/users/drivers/ath10k
-  DEPENDS+= @PCI_SUPPORT +kmod-ath +@DRIVER_11N_SUPPORT +@DRIVER_11AC_SUPPORT \
+  DEPENDS+= @PCI_SUPPORT +kmod-ath +@DRIVER_11AC_SUPPORT \
 	+ATH10K_THERMAL:kmod-hwmon-core +ATH10K_THERMAL:kmod-thermal
   FILES:= \
 	$(PKG_BUILD_DIR)/drivers/net/wireless/ath/ath10k/ath10k_core.ko \
@@ -288,7 +286,6 @@ define KernelPackage/ath10k/config
                depends on PACKAGE_kmod-ath10k || PACKAGE_kmod-ath10k-smallbuffers
 
        config ATH10K_THERMAL
-               default y
                bool "Enable thermal sensors and throttling support"
                depends on PACKAGE_kmod-ath10k || PACKAGE_kmod-ath10k-smallbuffers
 
@@ -304,13 +301,10 @@ define KernelPackage/ath11k
   $(call KernelPackage/mac80211/Default)
   TITLE:=Qualcomm 802.11ax wireless chipset support (common code)
   URL:=https://wireless.wiki.kernel.org/en/users/drivers/ath11k
-  DEPENDS+= +kmod-ath +@DRIVER_11N_SUPPORT +@DRIVER_11AC_SUPPORT +@DRIVER_11AX_SUPPORT \
+  DEPENDS+= +kmod-ath +@DRIVER_11AC_SUPPORT +@DRIVER_11AX_SUPPORT \
   +kmod-crypto-michael-mic +ATH11K_THERMAL:kmod-hwmon-core +ATH11K_THERMAL:kmod-thermal
   FILES:=$(PKG_BUILD_DIR)/drivers/soc/qcom/qmi_helpers.ko \
   $(PKG_BUILD_DIR)/drivers/net/wireless/ath/ath11k/ath11k.ko
-  AUTOLOAD:=$(call AutoProbe,ath11k)
-  # Enable encapsulation/decapsulation offload by default
-  MODPARAMS.ath11k:=frame_mode=2
 endef
 
 define KernelPackage/ath11k/description
@@ -325,29 +319,13 @@ define KernelPackage/ath11k/config
                depends on PACKAGE_kmod-ath11k
                default y if TARGET_ipq807x
 
-       if PACKAGE_kmod-ath11k
-
-       choice
-        prompt "ath11k memory profile"
-        default ATH11K_MEM_PROFILE_512MB
-        help
-          This allows selecting the ath11k memory size profile to be used.
-
-       config ATH11K_MEM_PROFILE_512MB
-               bool "Use limits for the 512MB memory size"
-
-       config ATH11K_MEM_PROFILE_1GB
-               bool "Use limits for the 1GB memory size"
-
-       endchoice
-       endif
 endef
 
 define KernelPackage/ath11k-ahb
   $(call KernelPackage/mac80211/Default)
   TITLE:=Qualcomm 802.11ax AHB wireless chipset support
   URL:=https://wireless.wiki.kernel.org/en/users/drivers/ath11k
-  DEPENDS+= @TARGET_ipq807x +kmod-ath11k +(LINUX_5_15||LINUX_5_18):kmod-qrtr-smd
+  DEPENDS+= @TARGET_ipq807x +kmod-ath11k +kmod-qrtr-smd
   FILES:=$(PKG_BUILD_DIR)/drivers/net/wireless/ath/ath11k/ath11k_ahb.ko
   AUTOLOAD:=$(call AutoProbe,ath11k_ahb)
 endef
@@ -361,7 +339,7 @@ define KernelPackage/ath11k-pci
   $(call KernelPackage/mac80211/Default)
   TITLE:=Qualcomm 802.11ax PCI wireless chipset support
   URL:=https://wireless.wiki.kernel.org/en/users/drivers/ath11k
-  DEPENDS+= @PCI_SUPPORT +(LINUX_5_15||LINUX_5_18):kmod-qrtr-mhi +kmod-ath11k
+  DEPENDS+= @PCI_SUPPORT +kmod-qrtr-mhi +kmod-ath11k
   FILES:=$(PKG_BUILD_DIR)/drivers/net/wireless/ath/ath11k/ath11k_pci.ko
   AUTOLOAD:=$(call AutoProbe,ath11k_pci)
 endef
@@ -374,7 +352,7 @@ endef
 define KernelPackage/carl9170
   $(call KernelPackage/mac80211/Default)
   TITLE:=Driver for Atheros AR9170 USB sticks
-  DEPENDS:=@USB_SUPPORT +kmod-mac80211 +kmod-ath +kmod-usb-core +kmod-input-core +@DRIVER_11N_SUPPORT +carl9170-firmware
+  DEPENDS:=@USB_SUPPORT +kmod-mac80211 +kmod-ath +kmod-usb-core +kmod-input-core +carl9170-firmware
   FILES:=$(PKG_BUILD_DIR)/drivers/net/wireless/ath/carl9170/carl9170.ko
   AUTOLOAD:=$(call AutoProbe,carl9170)
 endef
@@ -399,7 +377,7 @@ endef
 define KernelPackage/ar5523
   $(call KernelPackage/mac80211/Default)
   TITLE:=Driver for Atheros AR5523 USB sticks
-  DEPENDS:=@USB_SUPPORT +kmod-mac80211 +kmod-ath +kmod-usb-core +kmod-input-core
+  DEPENDS:=@USB_SUPPORT +kmod-mac80211 +kmod-ath +kmod-usb-core +kmod-input-core 
   FILES:=$(PKG_BUILD_DIR)/drivers/net/wireless/ath/ar5523/ar5523.ko
   AUTOLOAD:=$(call AutoProbe,ar5523)
 endef

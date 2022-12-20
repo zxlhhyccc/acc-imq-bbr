@@ -1,6 +1,6 @@
 --- a/drivers/net/wireless/realtek/rtw88/debug.c
 +++ b/drivers/net/wireless/realtek/rtw88/debug.c
-@@ -143,7 +143,9 @@ static int rtw_debugfs_get_rf_read(struc
+@@ -144,7 +144,9 @@ static int rtw_debugfs_get_rf_read(struc
  	addr = debugfs_priv->rf_addr;
  	mask = debugfs_priv->rf_mask;
  
@@ -10,7 +10,7 @@
  
  	seq_printf(m, "rf_read path:%d addr:0x%08x mask:0x%08x val=0x%08x\n",
  		   path, addr, mask, val);
-@@ -401,7 +403,9 @@ static ssize_t rtw_debugfs_set_rf_write(
+@@ -414,7 +416,9 @@ static ssize_t rtw_debugfs_set_rf_write(
  		return count;
  	}
  
@@ -20,7 +20,7 @@
  	rtw_dbg(rtwdev, RTW_DBG_DEBUGFS,
  		"write_rf path:%d addr:0x%08x mask:0x%08x, val:0x%08x\n",
  		path, addr, mask, val);
-@@ -481,6 +485,8 @@ static int rtw_debug_get_rf_dump(struct
+@@ -519,6 +523,8 @@ static int rtw_debug_get_rf_dump(struct
  	u32 addr, offset, data;
  	u8 path;
  
@@ -29,7 +29,7 @@
  	for (path = 0; path < rtwdev->hal.rf_path_num; path++) {
  		seq_printf(m, "RF path:%d\n", path);
  		for (addr = 0; addr < 0x100; addr += 4) {
-@@ -495,6 +501,8 @@ static int rtw_debug_get_rf_dump(struct
+@@ -533,6 +539,8 @@ static int rtw_debug_get_rf_dump(struct
  		seq_puts(m, "\n");
  	}
  
@@ -38,7 +38,7 @@
  	return 0;
  }
  
-@@ -911,6 +919,8 @@ static void dump_gapk_status(struct rtw_
+@@ -1026,6 +1034,8 @@ static void dump_gapk_status(struct rtw_
  		   dm_info->dm_flags & BIT(RTW_DM_CAP_TXGAPK) ? '-' : '+',
  		   rtw_dm_cap_strs[RTW_DM_CAP_TXGAPK]);
  
@@ -47,7 +47,7 @@
  	for (path = 0; path < rtwdev->hal.rf_path_num; path++) {
  		val = rtw_read_rf(rtwdev, path, RF_GAINTX, RFREG_MASK);
  		seq_printf(m, "path %d:\n0x%x = 0x%x\n", path, RF_GAINTX, val);
-@@ -920,6 +930,7 @@ static void dump_gapk_status(struct rtw_
+@@ -1035,6 +1045,7 @@ static void dump_gapk_status(struct rtw_
  				   txgapk->rf3f_fs[path][i], i);
  		seq_puts(m, "\n");
  	}
@@ -87,7 +87,7 @@
  static inline u32
 --- a/drivers/net/wireless/realtek/rtw88/main.c
 +++ b/drivers/net/wireless/realtek/rtw88/main.c
-@@ -1843,7 +1843,6 @@ int rtw_core_init(struct rtw_dev *rtwdev
+@@ -2065,7 +2065,6 @@ int rtw_core_init(struct rtw_dev *rtwdev
  	skb_queue_head_init(&rtwdev->coex.queue);
  	skb_queue_head_init(&rtwdev->tx_report.queue);
  
@@ -97,7 +97,7 @@
  	spin_lock_init(&rtwdev->tx_report.q_lock);
 --- a/drivers/net/wireless/realtek/rtw88/main.h
 +++ b/drivers/net/wireless/realtek/rtw88/main.h
-@@ -1842,9 +1842,6 @@ struct rtw_dev {
+@@ -1994,9 +1994,6 @@ struct rtw_dev {
  	/* ensures exclusive access from mac80211 callbacks */
  	struct mutex mutex;
  

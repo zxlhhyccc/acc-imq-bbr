@@ -1,6 +1,6 @@
 --- a/drivers/net/wireless/realtek/rtw88/coex.c
 +++ b/drivers/net/wireless/realtek/rtw88/coex.c
-@@ -606,7 +606,7 @@ static struct sk_buff *rtw_coex_info_req
+@@ -633,7 +633,7 @@ static struct sk_buff *rtw_coex_info_req
  	struct rtw_coex *coex = &rtwdev->coex;
  	struct sk_buff *skb_resp = NULL;
  
@@ -9,7 +9,7 @@
  
  	rtw_fw_query_bt_mp_info(rtwdev, req);
  
-@@ -623,7 +623,6 @@ static struct sk_buff *rtw_coex_info_req
+@@ -650,7 +650,6 @@ static struct sk_buff *rtw_coex_info_req
  	}
  
  out:
@@ -19,7 +19,7 @@
  
 --- a/drivers/net/wireless/realtek/rtw88/debug.c
 +++ b/drivers/net/wireless/realtek/rtw88/debug.c
-@@ -794,7 +794,9 @@ static int rtw_debugfs_get_coex_info(str
+@@ -841,7 +841,9 @@ static int rtw_debugfs_get_coex_info(str
  	struct rtw_debugfs_priv *debugfs_priv = m->private;
  	struct rtw_dev *rtwdev = debugfs_priv->rtwdev;
  
@@ -31,7 +31,7 @@
  }
 --- a/drivers/net/wireless/realtek/rtw88/main.c
 +++ b/drivers/net/wireless/realtek/rtw88/main.c
-@@ -1847,7 +1847,6 @@ int rtw_core_init(struct rtw_dev *rtwdev
+@@ -2069,7 +2069,6 @@ int rtw_core_init(struct rtw_dev *rtwdev
  	spin_lock_init(&rtwdev->tx_report.q_lock);
  
  	mutex_init(&rtwdev->mutex);
@@ -39,7 +39,7 @@
  	mutex_init(&rtwdev->hal.tx_power_mutex);
  
  	init_waitqueue_head(&rtwdev->coex.wait);
-@@ -1918,7 +1917,6 @@ void rtw_core_deinit(struct rtw_dev *rtw
+@@ -2141,7 +2140,6 @@ void rtw_core_deinit(struct rtw_dev *rtw
  	}
  
  	mutex_destroy(&rtwdev->mutex);
@@ -49,7 +49,7 @@
  EXPORT_SYMBOL(rtw_core_deinit);
 --- a/drivers/net/wireless/realtek/rtw88/main.h
 +++ b/drivers/net/wireless/realtek/rtw88/main.h
-@@ -1429,8 +1429,6 @@ struct rtw_coex_stat {
+@@ -1501,8 +1501,6 @@ struct rtw_coex_stat {
  };
  
  struct rtw_coex {

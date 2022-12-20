@@ -1,6 +1,6 @@
 --- a/drivers/net/wireless/realtek/rtw88/mac80211.c
 +++ b/drivers/net/wireless/realtek/rtw88/mac80211.c
-@@ -85,7 +85,8 @@ static int rtw_ops_config(struct ieee802
+@@ -89,7 +89,8 @@ static int rtw_ops_config(struct ieee802
  	}
  
  	if (changed & IEEE80211_CONF_CHANGE_PS) {

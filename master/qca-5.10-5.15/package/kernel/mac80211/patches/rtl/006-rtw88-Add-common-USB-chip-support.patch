@@ -13,7 +13,7 @@
  	depends on m
 --- a/drivers/net/wireless/realtek/rtw88/Makefile
 +++ b/drivers/net/wireless/realtek/rtw88/Makefile
-@@ -45,3 +45,6 @@ rtw88_8821ce-objs		:= rtw8821ce.o
+@@ -46,3 +46,6 @@ rtw88_8821ce-objs		:= rtw8821ce.o
  
  obj-$(CPTCFG_RTW88_PCI)		+= rtw88_pci.o
  rtw88_pci-objs			:= pci.o
@@ -34,7 +34,7 @@
  
 --- a/drivers/net/wireless/realtek/rtw88/main.c
 +++ b/drivers/net/wireless/realtek/rtw88/main.c
-@@ -1561,6 +1561,10 @@ static int rtw_chip_parameter_setup(stru
+@@ -1781,6 +1781,10 @@ static int rtw_chip_parameter_setup(stru
  		rtwdev->hci.rpwm_addr = 0x03d9;
  		rtwdev->hci.cpwm_addr = 0x03da;
  		break;
@@ -47,10 +47,10 @@
  		return -EINVAL;
 --- a/drivers/net/wireless/realtek/rtw88/main.h
 +++ b/drivers/net/wireless/realtek/rtw88/main.h
-@@ -845,6 +845,10 @@ struct rtw_chip_ops {
- 			       enum rtw_bb_path tx_path_1ss,
- 			       enum rtw_bb_path tx_path_cck,
+@@ -871,6 +871,10 @@ struct rtw_chip_ops {
  			       bool is_tx2_path);
+ 	void (*config_txrx_mode)(struct rtw_dev *rtwdev, u8 tx_path,
+ 				 u8 rx_path, bool is_tx2_path);
 +	/* for USB/SDIO only */
 +	void (*fill_txdesc_checksum)(struct rtw_dev *rtwdev,
 +				     struct rtw_tx_pkt_info *pkt_info,
@@ -70,7 +70,7 @@
  #define BIT_TXDMA_BEQ_MAP(x)                                                   \
 --- a/drivers/net/wireless/realtek/rtw88/tx.h
 +++ b/drivers/net/wireless/realtek/rtw88/tx.h
-@@ -67,6 +67,14 @@
+@@ -71,6 +71,14 @@
  	le32p_replace_bits((__le32 *)(txdesc) + 0x03, value, BIT(15))
  #define SET_TX_DESC_BT_NULL(txdesc, value)				       \
  	le32p_replace_bits((__le32 *)(txdesc) + 0x02, value, BIT(23))
@@ -85,7 +85,7 @@
  
  enum rtw_tx_desc_queue_select {
  	TX_DESC_QSEL_TID0	= 0,
-@@ -119,4 +127,27 @@ rtw_tx_write_data_h2c_get(struct rtw_dev
+@@ -123,4 +131,27 @@ rtw_tx_write_data_h2c_get(struct rtw_dev
  			  struct rtw_tx_pkt_info *pkt_info,
  			  u8 *buf, u32 size);
  

@@ -1,6 +1,6 @@
 --- a/drivers/net/wireless/realtek/rtw88/phy.c
 +++ b/drivers/net/wireless/realtek/rtw88/phy.c
-@@ -240,7 +240,7 @@ static void rtw_phy_stat_rssi(struct rtw
+@@ -300,7 +300,7 @@ static void rtw_phy_stat_rssi(struct rtw
  
  	data.rtwdev = rtwdev;
  	data.min_rssi = U8_MAX;
@@ -9,7 +9,7 @@
  
  	dm_info->pre_min_rssi = dm_info->min_rssi;
  	dm_info->min_rssi = data.min_rssi;
-@@ -484,7 +484,7 @@ static void rtw_phy_ra_info_update(struc
+@@ -544,7 +544,7 @@ static void rtw_phy_ra_info_update(struc
  	if (rtwdev->watch_dog_cnt & 0x3)
  		return;
  
@@ -18,7 +18,7 @@
  }
  
  static u32 rtw_phy_get_rrsr_mask(struct rtw_dev *rtwdev, u8 rate_idx)
-@@ -537,7 +537,7 @@ static void rtw_phy_rrsr_update(struct r
+@@ -597,7 +597,7 @@ static void rtw_phy_rrsr_update(struct r
  	struct rtw_dm_info *dm_info = &rtwdev->dm_info;
  
  	dm_info->rrsr_mask_min = RRSR_RATE_ORDER_MAX;
@@ -29,7 +29,7 @@
  
 --- a/drivers/net/wireless/realtek/rtw88/ps.c
 +++ b/drivers/net/wireless/realtek/rtw88/ps.c
-@@ -58,7 +58,7 @@ int rtw_leave_ips(struct rtw_dev *rtwdev
+@@ -61,7 +61,7 @@ int rtw_leave_ips(struct rtw_dev *rtwdev
  		return ret;
  	}
  

@@ -1,6 +1,6 @@
 --- a/drivers/net/wireless/realtek/rtw88/debug.c
 +++ b/drivers/net/wireless/realtek/rtw88/debug.c
-@@ -379,7 +379,9 @@ static ssize_t rtw_debugfs_set_h2c(struc
+@@ -392,7 +392,9 @@ static ssize_t rtw_debugfs_set_h2c(struc
  		return -EINVAL;
  	}
  
@@ -12,7 +12,7 @@
  }
 --- a/drivers/net/wireless/realtek/rtw88/fw.c
 +++ b/drivers/net/wireless/realtek/rtw88/fw.c
-@@ -285,7 +285,7 @@ static void rtw_fw_send_h2c_command(stru
+@@ -322,7 +322,7 @@ static void rtw_fw_send_h2c_command(stru
  		h2c[3], h2c[2], h2c[1], h2c[0],
  		h2c[7], h2c[6], h2c[5], h2c[4]);
  
@@ -21,7 +21,7 @@
  
  	box = rtwdev->h2c.last_box_num;
  	switch (box) {
-@@ -307,7 +307,7 @@ static void rtw_fw_send_h2c_command(stru
+@@ -344,7 +344,7 @@ static void rtw_fw_send_h2c_command(stru
  		break;
  	default:
  		WARN(1, "invalid h2c mail box number\n");
@@ -30,7 +30,7 @@
  	}
  
  	ret = read_poll_timeout_atomic(rtw_read8, box_state,
-@@ -316,7 +316,7 @@ static void rtw_fw_send_h2c_command(stru
+@@ -353,7 +353,7 @@ static void rtw_fw_send_h2c_command(stru
  
  	if (ret) {
  		rtw_err(rtwdev, "failed to send h2c command\n");
@@ -39,7 +39,7 @@
  	}
  
  	for (idx = 0; idx < 4; idx++)
-@@ -326,9 +326,6 @@ static void rtw_fw_send_h2c_command(stru
+@@ -363,9 +363,6 @@ static void rtw_fw_send_h2c_command(stru
  
  	if (++rtwdev->h2c.last_box_num >= 4)
  		rtwdev->h2c.last_box_num = 0;
@@ -49,7 +49,7 @@
  }
  
  void rtw_fw_h2c_cmd_dbg(struct rtw_dev *rtwdev, u8 *h2c)
-@@ -340,15 +337,13 @@ static void rtw_fw_send_h2c_packet(struc
+@@ -377,15 +374,13 @@ static void rtw_fw_send_h2c_packet(struc
  {
  	int ret;
  
@@ -68,7 +68,7 @@
  void
 --- a/drivers/net/wireless/realtek/rtw88/main.c
 +++ b/drivers/net/wireless/realtek/rtw88/main.c
-@@ -1843,7 +1843,6 @@ int rtw_core_init(struct rtw_dev *rtwdev
+@@ -2065,7 +2065,6 @@ int rtw_core_init(struct rtw_dev *rtwdev
  	skb_queue_head_init(&rtwdev->coex.queue);
  	skb_queue_head_init(&rtwdev->tx_report.queue);
  
@@ -78,7 +78,7 @@
  
 --- a/drivers/net/wireless/realtek/rtw88/main.h
 +++ b/drivers/net/wireless/realtek/rtw88/main.h
-@@ -1865,8 +1865,6 @@ struct rtw_dev {
+@@ -2019,8 +2019,6 @@ struct rtw_dev {
  	struct {
  		/* incicate the mail box to use with fw */
  		u8 last_box_num;

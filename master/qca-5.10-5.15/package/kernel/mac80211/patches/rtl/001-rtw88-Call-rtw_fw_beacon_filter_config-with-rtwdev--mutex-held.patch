@@ -1,6 +1,6 @@
 --- a/drivers/net/wireless/realtek/rtw88/mac80211.c
 +++ b/drivers/net/wireless/realtek/rtw88/mac80211.c
-@@ -455,8 +455,8 @@ static int rtw_ops_sta_remove(struct iee
+@@ -487,8 +487,8 @@ static int rtw_ops_sta_remove(struct iee
  {
  	struct rtw_dev *rtwdev = hw->priv;
  
