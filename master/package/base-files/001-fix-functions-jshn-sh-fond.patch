@@ -1,0 +1,12 @@
+--- a/files/lib/functions/system.sh
++++ b/files/lib/functions/system.sh
+@@ -1,7 +1,7 @@
+ # Copyright (C) 2006-2013 OpenWrt.org
+ 
+-. /lib/functions.sh
+-. /usr/share/libubox/jshn.sh
++. "$IPKG_INSTROOT/lib/functions.sh"
++. "$IPKG_INSTROOT/usr/share/libubox/jshn.sh"
+ 
+ get_mac_binary() {
+ 	local path="$1"
