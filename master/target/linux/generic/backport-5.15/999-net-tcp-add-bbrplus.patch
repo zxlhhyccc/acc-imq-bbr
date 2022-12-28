@@ -78,7 +78,7 @@
  	default "cdg" if DEFAULT_CDG
  	default "bbr" if DEFAULT_BBR
 -	default "cubic"
-+        default "bbrplus" if DEFAULT_BBRPLUS
++	default "bbrplus" if DEFAULT_BBRPLUS
 +	default "bbrplus"
  
  config TCP_MD5SIG
