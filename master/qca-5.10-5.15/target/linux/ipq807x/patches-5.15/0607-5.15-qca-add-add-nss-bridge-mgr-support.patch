@@ -1,3 +1,13 @@
+From 3c17a0e1112be70071e98d5208da5b55dcec20a6 Mon Sep 17 00:00:00 2001
+From: Simon Casey <simon501098c@gmail.com>
+Date: Wed, 2 Feb 2022 19:37:29 +0100
+Subject: [PATCH] Update 607-qca-add-add-nss-bridge-mgr-support.patch for kernel 5.15
+
+---
+ include/linux/if_bridge.h |  4 ++++
+ net/bridge/br_fdb.c       | 25 +++++++++++++++++++++----
+ 2 files changed, 25 insertions(+), 4 deletions(-)
+
 --- a/include/linux/if_bridge.h
 +++ b/include/linux/if_bridge.h
 @@ -234,6 +234,10 @@ typedef struct net_bridge_port *br_get_d

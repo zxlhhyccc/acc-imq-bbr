@@ -1,26 +1,26 @@
 define Device/FitImage
-	KERNEL_SUFFIX := -fit-uImage.itb
+	KERNEL_SUFFIX := -uImage.itb
 	KERNEL = kernel-bin | gzip | fit gzip $$(KDIR)/image-$$(DEVICE_DTS).dtb
 	KERNEL_NAME := Image
 endef
 
 define Device/FitImageLzma
-	KERNEL_SUFFIX := -fit-uImage.itb
+	KERNEL_SUFFIX := -uImage.itb
 	KERNEL = kernel-bin | lzma | fit lzma $$(KDIR)/image-$$(DEVICE_DTS).dtb
 	KERNEL_NAME := Image
 endef
 
 define Device/FitzImage
-	KERNEL_SUFFIX := -fit-zImage.itb
+	KERNEL_SUFFIX := -zImage.itb
 	KERNEL = kernel-bin | fit none $$(KDIR)/image-$$(DEVICE_DTS).dtb
 	KERNEL_NAME := zImage
 endef
 
 define Device/UbiFit
 	KERNEL_IN_UBI := 1
-	IMAGES := nand-factory.ubi nand-sysupgrade.bin
-	IMAGE/nand-factory.ubi := append-ubi
-	IMAGE/nand-sysupgrade.bin := sysupgrade-tar | append-metadata
+	IMAGES := factory.ubi sysupgrade.bin
+	IMAGE/factory.ubi := append-ubi
+	IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
 
 define Device/dynalink_dl-wrx36
@@ -46,7 +46,7 @@ define Device/edgecore_eap102
 	DEVICE_DTS_CONFIG := config@ac02
 	SOC := ipq8071
 	DEVICE_PACKAGES := ipq-wifi-edgecore_eap102
-	IMAGE/nand-factory.ubi := append-ubi | qsdk-ipq-factory-nand
+	IMAGE/factory.ubi := append-ubi | qsdk-ipq-factory-nand
 endef
 TARGET_DEVICES += edgecore_eap102
 
