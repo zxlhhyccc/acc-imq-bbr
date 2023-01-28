@@ -4,7 +4,7 @@ index d5d26f5..962f8f5 100644
 +++ b/Makefile
 @@ -16,9 +16,15 @@ PKG_NAME:=shadowsocks-libev
  PKG_VERSION:=3.3.5
- PKG_RELEASE:=7
+ PKG_RELEASE:=8
  
 +#PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 +#PKG_SOURCE_URL:=https://github.com/shadowsocks/shadowsocks-libev/releases/download/v$(PKG_VERSION)
