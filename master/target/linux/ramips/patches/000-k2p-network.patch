@@ -98,15 +98,6 @@
    SUPPORTED_DEVICES += mikrotik,rbm33g
  endef
  TARGET_DEVICES += mikrotik_routerboard-m33g
-@@ -1783,7 +1783,7 @@ define Device/oraybox_x3a
-   IMAGE_SIZE := 15360k
-   DEVICE_VENDOR := OrayBox
-   DEVICE_MODEL := X3A
--  DEVICE_PACKAGES := kmod-mt7615-firmware
-+  DEVICE_PACKAGES := kmod-mt7615e kmod-mt7615-firmware
- endef
- TARGET_DEVICES += oraybox_x3a
- 
 @@ -1792,10 +1792,8 @@ define Device/phicomm_k2p
    IMAGE_SIZE := 15744k
    DEVICE_VENDOR := Phicomm
@@ -164,7 +155,7 @@
    SUPPORTED_DEVICES += unielec,u7621-06-512m-64m
  endef
  TARGET_DEVICES += unielec_u7621-06-64m
-@@ -2482,7 +2480,7 @@ define Device/xiaoyu_xy-c5
+@@ -2493,7 +2491,7 @@ define Device/xiaoyu_xy-c5
    IMAGE_SIZE := 32448k
    DEVICE_VENDOR := XiaoYu
    DEVICE_MODEL := XY-C5
@@ -173,7 +164,7 @@
  endef
  TARGET_DEVICES += xiaoyu_xy-c5
  
-@@ -2492,7 +2490,7 @@ define Device/xzwifi_creativebox-v1
+@@ -2503,7 +2501,7 @@ define Device/xzwifi_creativebox-v1
    DEVICE_VENDOR := CreativeBox
    DEVICE_MODEL := v1
    DEVICE_PACKAGES := kmod-ata-ahci kmod-mt7603 kmod-mt76x2 kmod-sdhci-mt7620 \
