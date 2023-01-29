@@ -22,8 +22,8 @@
 +
 --- a/modules/lib.mk
 +++ b/modules/lib.mk
-@@ -170,6 +170,27 @@ endef
- $(eval $(call KernelPackage,lib-lz4))
+@@ -192,6 +192,27 @@ endef
+ $(eval $(call KernelPackage,lib-842))
  
  
 +define KernelPackage/lib-lz4hc
