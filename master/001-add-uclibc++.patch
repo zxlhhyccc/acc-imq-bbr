@@ -1,8 +1,6 @@
-diff --git a/config/Config-build.in b/config/Config-build.in
-index 92ec97a..ca6f513 100644
 --- a/config/Config-build.in
 +++ b/config/Config-build.in
-@@ -216,6 +216,20 @@ menu "Global build settings"
+@@ -207,6 +207,20 @@ menu "Global build settings"
  		  make the system libraries incompatible with most of the packages that are
  		  not selected during the build process.
  
@@ -23,8 +21,6 @@ index 92ec97a..ca6f513 100644
  	comment "Hardening build options"
  
  	config PKG_CHECK_FORMAT_SECURITY
-diff --git a/include/uclibc++.mk b/include/uclibc++.mk
-index 10f8d98..a1a61f2 100644
 --- a/include/uclibc++.mk
 +++ b/include/uclibc++.mk
 @@ -1,2 +1,16 @@
@@ -46,9 +42,6 @@ index 10f8d98..a1a61f2 100644
 +  TARGET_CXX=g++-uc
 + endif
 +endif
-diff --git a/package/libs/uclibc++/Makefile b/package/libs/uclibc++/Makefile
-new file mode 100644
-index 0000000..0e3210a
 --- /dev/null
 +++ b/package/libs/uclibc++/Makefile
 @@ -0,0 +1,105 @@
@@ -157,9 +150,6 @@ index 0000000..0e3210a
 +endef
 +
 +$(eval $(call BuildPackage,uclibcxx))
-diff --git a/package/libs/uclibc++/files/config.default b/package/libs/uclibc++/files/config.default
-new file mode 100644
-index 0000000..d76670e
 --- /dev/null
 +++ b/package/libs/uclibc++/files/config.default
 @@ -0,0 +1,58 @@
@@ -221,9 +211,6 @@ index 0000000..d76670e
 +BUILD_STATIC_LIB=y
 +# BUILD_ONLY_STATIC_LIB is not set
 +# DODEBUG is not set
-diff --git a/package/libs/uclibc++/patches/001-no-ansi.patch b/package/libs/uclibc++/patches/001-no-ansi.patch
-new file mode 100644
-index 0000000..7ddbf52
 --- /dev/null
 +++ b/package/libs/uclibc++/patches/001-no-ansi.patch
 @@ -0,0 +1,10 @@
@@ -237,9 +224,6 @@ index 0000000..7ddbf52
 + 
 + LIBGCC:=$(shell $(CC) -print-libgcc-file-name)
 + LIBGCC_DIR:=$(dir $(LIBGCC))
-diff --git a/package/libs/uclibc++/patches/002-undef-functions.patch b/package/libs/uclibc++/patches/002-undef-functions.patch
-new file mode 100644
-index 0000000..47fa158
 --- /dev/null
 +++ b/package/libs/uclibc++/patches/002-undef-functions.patch
 @@ -0,0 +1,35 @@
@@ -278,9 +262,6 @@ index 0000000..47fa158
 + 
 + namespace std{
 + 	using ::FILE;
-diff --git a/package/libs/uclibc++/patches/003-no-fPIC.patch b/package/libs/uclibc++/patches/003-no-fPIC.patch
-new file mode 100644
-index 0000000..dfd8833
 --- /dev/null
 +++ b/package/libs/uclibc++/patches/003-no-fPIC.patch
 @@ -0,0 +1,10 @@
@@ -294,9 +275,6 @@ index 0000000..dfd8833
 + 
 + # use '-Os' optimization if available, else use -O2, allow Config to override
 + $(eval $(call check-gcc-var,-Os))
-diff --git a/package/libs/uclibc++/patches/004-uClibc-Make-long-long-available-to-C-11.patch b/package/libs/uclibc++/patches/004-uClibc-Make-long-long-available-to-C-11.patch
-new file mode 100644
-index 0000000..6e13f22
 --- /dev/null
 +++ b/package/libs/uclibc++/patches/004-uClibc-Make-long-long-available-to-C-11.patch
 @@ -0,0 +1,143 @@
@@ -443,9 +421,6 @@ index 0000000..6e13f22
 + 	a.str("678 76 54");
 + 	a >> ll >> ull >> s;
 + 	std::cout << "ll (should be 678): " << ll << std::endl;
-diff --git a/package/libs/uclibc++/patches/005-istream_helpers-Fix-sscanf-typo.patch b/package/libs/uclibc++/patches/005-istream_helpers-Fix-sscanf-typo.patch
-new file mode 100644
-index 0000000..66b62c1
 --- /dev/null
 +++ b/package/libs/uclibc++/patches/005-istream_helpers-Fix-sscanf-typo.patch
 @@ -0,0 +1,37 @@
