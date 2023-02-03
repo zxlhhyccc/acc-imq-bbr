@@ -52,7 +52,7 @@
    TITLE:=RAID6 algorithm support
 --- a/modules/other.mk
 +++ b/modules/other.mk
-@@ -1344,3 +1344,96 @@ define KernelPackage/mhi-pci-generic/description
+@@ -1360,3 +1360,96 @@ define KernelPackage/mhi-pci-generic/description
  endef
  
  $(eval $(call KernelPackage,mhi-pci-generic))
