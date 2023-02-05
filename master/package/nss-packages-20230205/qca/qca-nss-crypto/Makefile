@@ -1,13 +1,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=qca-nss-crypto
-PKG_RELEASE:=$(AUTORELEASE)
+PKG_RELEASE:=1
 
 PKG_SOURCE_URL:=https://git.codelinaro.org/clo/qsdk/oss/lklm/nss-crypto.git
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2021-03-20
+PKG_SOURCE_DATE:=2022-03-20
 PKG_SOURCE_VERSION:=2271a3a66f7e8284d42a9e787ddec6f24a1d2e15
-PKG_MIRROR_HASH:=afd2b746779bf9abb72dfb58c755acf54d1cb51085b879013dd0edf9ba98d3c9
+PKG_MIRROR_HASH:=cd8049f6ab05f5dda6b5d563cf28aad3c3e3160d48214a6773e769e813ba11aa
 
 PKG_BUILD_PARALLEL:=1
 
@@ -29,14 +29,14 @@ NSS_CRYPTO_DIR:=v1.0
 endif
 
 define KernelPackage/qca-nss-crypto
-  SECTION:=kernel
-  CATEGORY:=Kernel modules
-  SUBMENU:=Cryptographic API modules
-  DEPENDS:=@(TARGET_ipq807x||TARGET_ipq60xx) +kmod-qca-nss-drv +nss-eip-firmware
-  TITLE:=Kernel driver for NSS crypto driver
-  FILES:=$(PKG_BUILD_DIR)/$(NSS_CRYPTO_DIR)/src/qca-nss-crypto.ko \
-	 $(PKG_BUILD_DIR)/$(NSS_CRYPTO_DIR)/tool/qca-nss-crypto-tool.ko
-  AUTOLOAD:=$(call AutoLoad,52,qca-nss-crypto)
+	SECTION:=kernel
+	CATEGORY:=Kernel modules
+	SUBMENU:=Cryptographic API modules
+	DEPENDS:=@(TARGET_ipq807x||TARGET_ipq60xx) +kmod-qca-nss-drv +nss-eip-firmware
+	TITLE:=Kernel driver for NSS crypto driver
+	FILES:=$(PKG_BUILD_DIR)/$(NSS_CRYPTO_DIR)/src/qca-nss-crypto.ko \
+	$(PKG_BUILD_DIR)/$(NSS_CRYPTO_DIR)/tool/qca-nss-crypto-tool.ko
+	AUTOLOAD:=$(call AutoProbe,qca-nss-crypto)
 endef
 
 define KernelPackage/qca-nss-crypto/Description

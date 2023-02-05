@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=qca-nss-drv
-PKG_RELEASE:=$(AUTORELEASE)
+PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://git.codelinaro.org/clo/qsdk/oss/lklm/nss-drv.git
@@ -21,7 +21,7 @@ define KernelPackage/qca-nss-drv
   CATEGORY:=Kernel modules
   SUBMENU:=Network Devices
   DEPENDS:=@(TARGET_ipq807x||TARGET_ipq60xx) +kmod-qca-nss-dp
-  TITLE:=Kernel driver for NSS (core driver)
+  TITLE:=Qualcomm NSS core driver
   FILES:=$(PKG_BUILD_DIR)/qca-nss-drv.ko
   AUTOLOAD:=$(call AutoLoad,32,qca-nss-drv)
 endef
@@ -72,9 +72,9 @@ DRV_MAKE_OPTS+= \
 	NSS_DRV_CLMAP_ENABLE=n \
 	NSS_DRV_CRYPTO_ENABLE=y \
 	NSS_DRV_DTLS_ENABLE=n \
-	NSS_DRV_GRE_ENABLE=y \
-	NSS_DRV_GRE_REDIR_ENABLE=y \
-	NSS_DRV_GRE_TUNNEL_ENABLE=y \
+	NSS_DRV_GRE_ENABLE=n \
+	NSS_DRV_GRE_REDIR_ENABLE=n \
+	NSS_DRV_GRE_TUNNEL_ENABLE=n \
 	NSS_DRV_IGS_ENABLE=n \
 	NSS_DRV_IPSEC_ENABLE=y \
 	NSS_DRV_LAG_ENABLE=n \
@@ -101,9 +101,7 @@ DRV_MAKE_OPTS+= \
 	NSS_DRV_VIRT_IF_ENABLE=n \
 	NSS_DRV_VLAN_ENABLE=y \
 	NSS_DRV_UDP_ST_ENABLE=y \
-	NSS_DRV_IPV4_ENABLE=y \
 	NSS_DRV_IPV4_REASM_ENABLE=y \
-	NSS_DRV_IPV6_ENABLE=y \
 	NSS_DRV_IPV6_REASM_ENABLE=y \
 	NSS_DRV_ETH_RX_ENABLE=n \
 	NSS_DRV_WIFIOFFLOAD_ENABLE=y \

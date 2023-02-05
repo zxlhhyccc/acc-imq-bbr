@@ -1,4 +1,4 @@
-From 4c0cc66cde0c4a30aa049b586af311501304e9ce Mon Sep 17 00:00:00 2001
+From 96da3ca01ac172e5d858209b3d3d9aefad04423c Mon Sep 17 00:00:00 2001
 From: Robert Marko <robimarko@gmail.com>
 Date: Sun, 13 Mar 2022 13:47:24 +0100
 Subject: [PATCH 3/3] nss-crypto: fix SHA header include in 5.15

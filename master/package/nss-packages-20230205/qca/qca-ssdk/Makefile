@@ -4,38 +4,38 @@ PKG_NAME:=qca-ssdk
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://source.codeaurora.org/quic/qsdk/oss/lklm/qca-ssdk
+PKG_SOURCE_URL:=https://git.codelinaro.org/clo/qsdk/oss/lklm/qca-ssdk.git
 PKG_SOURCE_DATE:=2022-09-12
 PKG_SOURCE_VERSION:=628b22bc3d5ee81414b75ab3de6a255c82754dec
 PKG_MIRROR_HASH:=859344f79504b9953639dc5aa27042249f68e3a9a269e66d7f7a25e1ab38c110
 
-LOCAL_VARIANT=$(patsubst qca-ssdk-%,%,$(patsubst qca-ssdk-%,%,$(BUILD_VARIANT)))
+PKG_FLAGS:=nonshared
 
 include $(INCLUDE_DIR)/kernel.mk
 include $(INCLUDE_DIR)/package.mk
 
-define KernelPackage/qca-ssdk/default-nohnat
+define KernelPackage/qca-ssdk/default
   SECTION:=kernel
   CATEGORY:=Kernel modules
   SUBMENU:=Network Devices
-  TITLE:=Kernel driver for QCA SSDK
+  TITLE:=Qualcom SSDK switch driver
   FILES:=$(PKG_BUILD_DIR)/build/bin/qca-ssdk.ko
   AUTOLOAD:=$(call AutoLoad,30,qca-ssdk)
   PROVIDES:=qca-ssdk
 endef
 
 define KernelPackage/qca-ssdk-nohnat
-$(call KernelPackage/qca-ssdk/default-nohnat)
+$(call KernelPackage/qca-ssdk/default)
   DEPENDS:=@(TARGET_ipq806x||TARGET_ipq807x||TARGET_ipq60xx)
   VARIANT:=nohnat
 endef
 
 define KernelPackage/qca-ssdk-nohnat/Description
-This package contains a qca-ssdk driver for QCA chipset
+  Driver for Qualcomm Atheros switches.
 endef
 
 define KernelPackage/qca-ssdk-hnat
-$(call KernelPackage/qca-ssdk/default-nohnat)
+$(call KernelPackage/qca-ssdk/default)
   DEPENDS:=@TARGET_ipq40xx +kmod-ipt-extra +kmod-ipt-filter \
 	+kmod-ppp +TARGET_ipq40xx:kmod-qca-rfs
   TITLE+= (hnat)
@@ -46,43 +46,49 @@ define KernelPackage/qca-ssdk-hnat/Description
 This package contains a qca-ssdk-hnat driver for QCA chipset
 endef
 
+LOCAL_VARIANT=$(patsubst qca-ssdk-%,%,$(patsubst qca-ssdk-%,%,$(BUILD_VARIANT)))
+
+GCC_VERSION=$(shell echo "$(CONFIG_GCC_VERSION)" | sed 's/[^0-9.]*\([0-9.]*\).*/\1/')
+
 ifdef CONFIG_TOOLCHAIN_BIN_PATH
 TOOLCHAIN_BIN_PATH=$(CONFIG_TOOLCHAIN_BIN_PATH)
 else
 TOOLCHAIN_BIN_PATH=$(TOOLCHAIN_DIR)/bin
 endif
 
-QCASSDK_CONFIG_OPTS+= \
-	$(KERNEL_MAKE_FLAGS) \
-	KVER=$(LINUX_VERSION) \
-	SYS_PATH=$(LINUX_DIR) \
-	GCC_VERSION=$(GCC_VERSION) \
-	TOOLPREFIX=$(TARGET_CROSS) \
+MAKE_FLAGS+= \
+	TARGET_NAME=$(CONFIG_TARGET_NAME) \
 	TOOL_PATH=$(TOOLCHAIN_BIN_PATH) \
+	SYS_PATH=$(LINUX_DIR) \
+	TOOLPREFIX=$(TARGET_CROSS) \
+	KVER=$(LINUX_VERSION) \
+	ARCH=$(LINUX_KARCH) \
 	TARGET_SUFFIX=$(CONFIG_TARGET_SUFFIX) \
-	EXTRA_CFLAGS='-fno-PIC -fno-stack-protector -I$(STAGING_DIR)/usr/include'
+	GCC_VERSION=$(GCC_VERSION) \
+	EXTRA_CFLAGS='-fno-PIC -fno-stack-protector -I$(STAGING_DIR)/usr/include' \
+	$(KERNEL_MAKE_FLAGS)
 
 ifeq ($(LOCAL_VARIANT),hnat)
-    QCASSDK_CONFIG_OPTS+= HNAT_FEATURE=enable
+	MAKE_FLAGS+= HNAT_FEATURE=enable
 ifeq ($(BOARD),ipq40xx)
-    QCASSDK_CONFIG_OPTS+= RFS_FEATURE=enable
+	MAKE_FLAGS+= RFS_FEATURE=enable
 endif
 endif
 
 ifeq ($(BOARD),ipq60xx)
-    QCASSDK_CONFIG_OPTS+= CHIP_TYPE=CPPE
+	MAKE_FLAGS+= CHIP_TYPE=CPPE
 else ifeq ($(BOARD),ipq807x)
-    QCASSDK_CONFIG_OPTS+= CHIP_TYPE=HPPE
+	MAKE_FLAGS+= CHIP_TYPE=HPPE
 else
-    QCASSDK_CONFIG_OPTS+= HK_CHIP=enable
+	MAKE_FLAGS+= HK_CHIP=enable
 endif
 
 ifneq (, $(findstring $(BOARD), ipq60xx ipq807x))
-    QCASSDK_CONFIG_OPTS+= PTP_FEATURE=disable SWCONFIG_FEATURE=disable
+	MAKE_FLAGS+= PTP_FEATURE=disable SWCONFIG_FEATURE=disable
 endif
 
 define Build/Compile
-	$(MAKE) -C $(PKG_BUILD_DIR) $(strip $(QCASSDK_CONFIG_OPTS))
+	$(MAKE) -C $(PKG_BUILD_DIR) $(strip $(MAKE_FLAGS))
 endef
 
 define Build/InstallDev
@@ -109,6 +115,7 @@ define Build/InstallDev
 	$(CP) -rf $(PKG_BUILD_DIR)/include/common/*.h $(1)/usr/include/qca-ssdk
 	$(CP) -rf $(PKG_BUILD_DIR)/include/sal/os/linux/*.h $(1)/usr/include/qca-ssdk
 	$(CP) -rf $(PKG_BUILD_DIR)/include/sal/os/*.h $(1)/usr/include/qca-ssdk
+
 endef
 
 define KernelPackage/qca-ssdk-nohnat/install
