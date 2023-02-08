@@ -1,6 +1,6 @@
 --- a/htdocs/luci-static/resources/view/network/wireless.js
 +++ b/htdocs/luci-static/resources/view/network/wireless.js
-@@ -957,6 +957,9 @@ return view.extend({
+@@ -950,6 +950,9 @@ return view.extend({
  					o.value('2', _('High'));
  					o.value('3', _('Very High'));
  
@@ -10,13 +10,13 @@
  					o = ss.taboption('advanced', form.Value, 'distance', _('Distance Optimization'), _('Distance to farthest network member in meters.'));
  					o.datatype = 'or(range(0,114750),"auto")';
  					o.placeholder = 'auto';
-@@ -976,6 +979,9 @@ return view.extend({
+@@ -969,6 +972,9 @@ return view.extend({
  					o.datatype = 'range(15,65535)';
  					o.placeholder = 100;
  					o.rmempty = true;
 +
-+					o = ss.taboption('advanced', form.Flag, 'vendor_vht', _('Enable 256-QAM'), _('Enable 256QAM modulation. May not supported by some hardware!'));
-+					o.rmempty = true;
+++					o = ss.taboption('advanced', form.Flag, 'vendor_vht', _('Enable 256-QAM'), _('Enable 256QAM modulation. May not supported by some hardware!'));
+++					o.rmempty = true;
  				}
  
  
