@@ -15,8 +15,8 @@
  					o.placeholder = 100;
  					o.rmempty = true;
 +
-++					o = ss.taboption('advanced', form.Flag, 'vendor_vht', _('Enable 256-QAM'), _('Enable 256QAM modulation. May not supported by some hardware!'));
-++					o.rmempty = true;
++					o = ss.taboption('advanced', form.Flag, 'vendor_vht', _('Enable 256-QAM'), _('Enable 256QAM modulation. May not supported by some hardware!'));
++					o.rmempty = true;
  				}
  
  
