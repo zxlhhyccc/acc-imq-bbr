@@ -52,7 +52,17 @@
    TITLE:=RAID6 algorithm support
 --- a/modules/other.mk
 +++ b/modules/other.mk
-@@ -1360,3 +1360,96 @@ define KernelPackage/mhi-pci-generic/description
+@@ -1228,7 +1228,8 @@ $(eval $(call KernelPackage,keys-encrypted))
+ define KernelPackage/keys-trusted
+   SUBMENU:=$(OTHER_MENU)
+   TITLE:=TPM trusted keys on kernel keyring
+-  DEPENDS:=@KERNEL_KEYS +kmod-crypto-hash +kmod-crypto-hmac +kmod-crypto-sha1 +kmod-tpm
++  DEPENDS:=@KERNEL_KEYS +(LINUX_5_15):kmod-asn1-encoder +kmod-crypto-hash \
++           +kmod-crypto-hmac +kmod-crypto-sha1 +kmod-tpm
+   KCONFIG:=CONFIG_TRUSTED_KEYS
+   FILES:= $(LINUX_DIR)/security/keys/trusted-keys/trusted.ko
+   AUTOLOAD:=$(call AutoLoad,01,trusted-keys,1)
+@@ -1360,3 +1361,96 @@ define KernelPackage/mhi-pci-generic/description
  endef
  
  $(eval $(call KernelPackage,mhi-pci-generic))
