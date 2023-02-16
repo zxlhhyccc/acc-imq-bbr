@@ -1,6 +1,6 @@
 --- a/modules/netdevices.mk
 +++ b/modules/netdevices.mk
-@@ -1247,6 +1247,26 @@ endef
+@@ -1263,6 +1263,26 @@ endef
  
  $(eval $(call KernelPackage,bnx2x))
  
