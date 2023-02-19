@@ -29,7 +29,7 @@
    TITLE:=Broadcom Emulex OneConnect 10Gbps NIC
 --- a/modules/netfilter.mk
 +++ b/modules/netfilter.mk
-@@ -502,6 +502,24 @@ endef
+@@ -514,6 +514,24 @@ endef
  $(eval $(call KernelPackage,ipt-nat))
  
  
@@ -54,7 +54,7 @@
  define KernelPackage/ipt-raw
    TITLE:=Netfilter IPv4 raw table support
    KCONFIG:=CONFIG_IP_NF_RAW
-@@ -513,6 +531,75 @@ endef
+@@ -525,6 +543,75 @@ endef
  $(eval $(call KernelPackage,ipt-raw))
  
  
