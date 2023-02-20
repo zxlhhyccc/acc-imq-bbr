@@ -59,10 +59,10 @@ tools-y += patch-image
 tools-y += patchelf
 tools-y += pkgconf
 tools-y += quilt
-tools-y += squashfskit4
-tools-y += sstrip
+tools-y += squashfs4
 tools-y += ucl
 tools-y += upx
+tools-y += sstrip
 tools-y += zip
 tools-y += zlib
 tools-y += zstd
@@ -120,11 +120,11 @@ $(curdir)/pkgconf/compile := $(curdir)/meson/compile
 $(curdir)/quilt/compile := $(curdir)/autoconf/compile $(curdir)/findutils/compile
 $(curdir)/sdcc/compile := $(curdir)/bison/compile
 $(curdir)/squashfs3-lzma/compile := $(curdir)/lzma-old/compile
-$(curdir)/squashfskit4/compile := $(curdir)/xz/compile $(curdir)/zlib/compile
+$(curdir)/squashfs4/compile := $(curdir)/xz/compile $(curdir)/zlib/compile
 $(curdir)/zstd/compile := $(curdir)/meson/compile
 
 ifneq ($(HOST_OS),Linux)
-  $(curdir)/squashfskit4/compile += $(curdir)/coreutils/compile
+  $(curdir)/squashfs4/compile += $(curdir)/coreutils/compile
   tools-y += coreutils
 endif
 ifeq ($(HOST_OS),Darwin)
