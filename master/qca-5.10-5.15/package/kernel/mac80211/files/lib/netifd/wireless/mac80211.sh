@@ -140,8 +140,9 @@ mac80211_hostapd_setup_base() {
 	[ -n "$acs_exclude_dfs" ] && [ "$acs_exclude_dfs" -gt 0 ] &&
 		append base_cfg "acs_exclude_dfs=1" "$N"
 
-	json_get_vars noscan ht_coex vendor_vht min_tx_power:0 tx_burst
+	json_get_vars noscan ht_coex vendor_vht min_tx_power:0
 	json_get_values ht_capab_list ht_capab
+	json_get_vars tx_burst
 	json_get_values channel_list channels
 
 	[ "$auto_channel" = 0 ] && [ -z "$channel_list" ] && \
@@ -901,8 +902,8 @@ mac80211_setup_supplicant_noctl() {
 
 mac80211_prepare_iw_htmode() {
 	case "$htmode" in
-		VHT20|HT20) iw_htmode=HT20;;
-		HT40*|VHT40|VHT160)
+		VHT20|HT20|HE20) iw_htmode=HT20;;
+		HT40*|VHT40|VHT160|HE40)
 			case "$band" in
 				2g)
 					case "$htmode" in
@@ -926,7 +927,7 @@ mac80211_prepare_iw_htmode() {
 			esac
 			[ "$auto_channel" -gt 0 ] && iw_htmode="HT40+"
 		;;
-		VHT80)
+		VHT80|HE80)
 			iw_htmode="80MHZ"
 		;;
 		NONE|NOHT)
