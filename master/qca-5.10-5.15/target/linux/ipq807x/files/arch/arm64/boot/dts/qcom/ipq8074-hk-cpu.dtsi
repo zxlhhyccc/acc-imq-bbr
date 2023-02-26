@@ -5,66 +5,23 @@
 
 &CPU0 {
 	cpu-supply = <&apc_vreg>;
-	operating-points-v2 = <&cpu_opp_table>;
 	voltage-tolerance = <1>;
 };
 
 &CPU1 {
 	cpu-supply = <&apc_vreg>;
-	operating-points-v2 = <&cpu_opp_table>;
 	voltage-tolerance = <1>;
 };
 
 &CPU2 {
 	cpu-supply = <&apc_vreg>;
-	operating-points-v2 = <&cpu_opp_table>;
 	voltage-tolerance = <1>;
 };
 
 &CPU3 {
 	cpu-supply = <&apc_vreg>;
-	operating-points-v2 = <&cpu_opp_table>;
 	voltage-tolerance = <1>;
 };
-
-&cpus {
-	cpu_opp_table: cpu_opp_table {
-		compatible = "operating-points-v2";
-		opp-shared;
-
-		opp-1017600000 {
-			opp-hz = /bits/ 64 <1017600000>;
-			opp-microvolt = <1>;
-			clock-latency-ns = <200000>;
-		};
-		opp-1382400000 {
-			opp-hz = /bits/ 64 <1382400000>;
-			opp-microvolt = <2>;
-			clock-latency-ns = <200000>;
-		};
-		opp-1651200000 {
-			opp-hz = /bits/ 64 <1651200000>;
-			opp-microvolt = <3>;
-			clock-latency-ns = <200000>;
-		};
-		opp-1843200000 {
-			opp-hz = /bits/ 64 <1843200000>;
-			opp-microvolt = <4>;
-			clock-latency-ns = <200000>;
-		};
-		opp-1920000000 {
-			opp-hz = /bits/ 64 <1920000000>;
-			opp-microvolt = <5>;
-			clock-latency-ns = <200000>;
-		};
-		opp-2208000000 {
-			opp-hz = /bits/ 64 <2208000000>;
-			opp-microvolt = <6>;
-			clock-latency-ns = <200000>;
-		};
-	};
-};
-
 &cpu0_thermal {
 	trips {
 		cpu0_passive_low: cpu-passive-low {

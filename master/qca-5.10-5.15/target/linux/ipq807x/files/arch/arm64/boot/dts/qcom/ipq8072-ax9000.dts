@@ -6,6 +6,7 @@
 #include "ipq8074.dtsi"
 #include "ipq8074-hk-cpu.dtsi"
 #include "ipq8074-ess.dtsi"
+#include "ipq8074-nss.dtsi"
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/leds/common.h>
@@ -700,6 +701,7 @@
 		local-mac-address = [000000000000];
 		phy-handle = <&qca8075_0>;
 		phy-mode = "sgmii";
+		label = "lan4";
 	};
 
 	dp2: dp2 {
@@ -711,6 +713,7 @@
 		local-mac-address = [000000000000];
 		phy-handle = <&qca8075_1>;
 		phy-mode = "sgmii";
+		label = "lan3";
 	};
 
 	dp3: dp3 {
@@ -722,6 +725,7 @@
 		local-mac-address = [000000000000];
 		phy-handle = <&qca8075_2>;
 		phy-mode = "sgmii";
+		label = "lan2";
 	};
 
 	dp4: dp4 {
@@ -733,6 +737,7 @@
 		local-mac-address = [000000000000];
 		phy-handle = <&qca8075_3>;
 		phy-mode = "sgmii";
+		label = "lan1";
 	};
 
 	dp5: dp5 {
@@ -744,6 +749,7 @@
 		local-mac-address = [000000000000];
 		phy-handle = <&qca8081>;
 		phy-mode = "sgmii";
+		label = "wan";
 	};
 };
 

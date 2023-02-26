@@ -1,6 +1,6 @@
 define Device/FitImage
 	KERNEL_SUFFIX := -uImage.itb
-	KERNEL = kernel-bin | gzip | fit gzip $$(KDIR)/image-$$(DEVICE_DTS).dtb
+	KERNEL = kernel-bin | libdeflate-gzip | fit gzip $$(KDIR)/image-$$(DEVICE_DTS).dtb
 	KERNEL_NAME := Image
 endef
 
@@ -10,12 +10,6 @@ define Device/FitImageLzma
 	KERNEL_NAME := Image
 endef
 
-define Device/FitzImage
-	KERNEL_SUFFIX := -zImage.itb
-	KERNEL = kernel-bin | fit none $$(KDIR)/image-$$(DEVICE_DTS).dtb
-	KERNEL_NAME := zImage
-endef
-
 define Device/UbiFit
 	KERNEL_IN_UBI := 1
 	IMAGES := factory.ubi sysupgrade.bin
@@ -23,9 +17,22 @@ define Device/UbiFit
 	IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
 
+define Device/IfnameMigration
+	DEVICE_COMPAT_VERSION := 1.1
+	DEVICE_COMPAT_MESSAGE := Network interface names have changed
+endef
+
+define Device/partition-layout-migration
+  DEVICE_COMPAT_VERSION := 2.0
+  DEVICE_COMPAT_MESSAGE := *** Partition layout has changed from earlier \
+	versions. You need to reinstall the firmware from UART or a migration \
+	initramfs image. Settings will be lost. ***
+endef
+
 define Device/dynalink_dl-wrx36
 	$(call Device/FitImage)
 	$(call Device/UbiFit)
+	$(call Device/IfnameMigration)
 	DEVICE_VENDOR := Dynalink
 	DEVICE_MODEL := DL-WRX36
 	BLOCKSIZE := 128k
@@ -39,6 +46,7 @@ TARGET_DEVICES += dynalink_dl-wrx36
 define Device/edgecore_eap102
 	$(call Device/FitImage)
 	$(call Device/UbiFit)
+	$(call Device/IfnameMigration)
 	DEVICE_VENDOR := Edgecore
 	DEVICE_MODEL := EAP102
 	BLOCKSIZE := 128k
@@ -53,6 +61,7 @@ TARGET_DEVICES += edgecore_eap102
 define Device/edimax_cax1800
 	$(call Device/FitImage)
 	$(call Device/UbiFit)
+	$(call Device/IfnameMigration)
 	DEVICE_VENDOR := Edimax
 	DEVICE_MODEL := CAX1800
 	BLOCKSIZE := 128k
@@ -65,6 +74,7 @@ TARGET_DEVICES += edimax_cax1800
 
 define Device/qnap_301w
 	$(call Device/FitImage)
+	$(call Device/IfnameMigration)
 	DEVICE_VENDOR := QNAP
 	DEVICE_MODEL := 301w
 	DEVICE_DTS_CONFIG := config@hk01
@@ -78,9 +88,58 @@ define Device/qnap_301w
 endef
 TARGET_DEVICES += qnap_301w
 
+define Device/redmi_ax6
+	$(call Device/xiaomi_ax3600)
+	DEVICE_VENDOR := Redmi
+	DEVICE_MODEL := AX6
+	DEVICE_PACKAGES := ipq-wifi-redmi_ax6 -kmod-usb3 -kmod-usb-dwc3 -kmod-usb-dwc3-qcom
+endef
+TARGET_DEVICES += redmi_ax6
+
+define Device/xiaomi_ax3600
+	$(call Device/FitImage)
+	$(call Device/UbiFit)
+	$(call Device/IfnameMigration)
+	DEVICE_VENDOR := Xiaomi
+	DEVICE_MODEL := AX3600
+	BLOCKSIZE := 128k
+	PAGESIZE := 2048
+	DEVICE_DTS_CONFIG := config@ac04
+	SOC := ipq8071
+	KERNEL_SIZE := 36608k
+	DEVICE_PACKAGES := ipq-wifi-xiaomi_ax3600 kmod-ath10k-ct-smallbuffers ath10k-firmware-qca9887-ct \
+		-kmod-usb3 -kmod-usb-dwc3 -kmod-usb-dwc3-qcom
+ifneq ($(CONFIG_TARGET_ROOTFS_INITRAMFS),)
+	ARTIFACTS := initramfs-factory.ubi
+	ARTIFACT/initramfs-factory.ubi := append-image-stage initramfs-uImage.itb | ubinize-kernel
+endif
+endef
+TARGET_DEVICES += xiaomi_ax3600
+
+define Device/xiaomi_ax9000
+	$(call Device/FitImage)
+	$(call Device/UbiFit)
+	$(call Device/IfnameMigration)
+	DEVICE_VENDOR := Xiaomi
+	DEVICE_MODEL := AX9000
+	BLOCKSIZE := 128k
+	PAGESIZE := 2048
+	DEVICE_DTS_CONFIG := config@hk14
+	SOC := ipq8072
+	KERNEL_SIZE := 57344k
+	DEVICE_PACKAGES := ipq-wifi-xiaomi_ax9000 kmod-ath11k-pci ath11k-firmware-qcn9074 \
+	kmod-ath10k-ct ath10k-firmware-qca9887-ct
+ifneq ($(CONFIG_TARGET_ROOTFS_INITRAMFS),)
+	ARTIFACTS := initramfs-factory.ubi
+	ARTIFACT/initramfs-factory.ubi := append-image-stage initramfs-uImage.itb | ubinize-kernel
+endif
+endef
+TARGET_DEVICES += xiaomi_ax9000
+
 define Device/zte_mf269
     $(call Device/FitImage)
     $(call Device/UbiFit)
+    $(call Device/IfnameMigration)
     DEVICE_VENDOR := ZTE
     DEVICE_MODEL := MF269
     BLOCKSIZE := 128k
@@ -91,17 +150,10 @@ define Device/zte_mf269
 endef
 TARGET_DEVICES += zte_mf269
 
-define Device/redmi_ax6
-	$(call Device/xiaomi_ax3600)
-	DEVICE_VENDOR := Redmi
-	DEVICE_MODEL := AX6
-	DEVICE_PACKAGES := ipq-wifi-redmi_ax6
-endef
-TARGET_DEVICES += redmi_ax6
-
 define Device/tplink_xtr10890
 	$(call Device/FitImage)
 	$(call Device/UbiFit)
+	$(call Device/IfnameMigration)
 	DEVICE_VENDOR := TPLINK
 	DEVICE_MODEL := XTR10890
 	BLOCKSIZE := 128k
@@ -111,30 +163,3 @@ define Device/tplink_xtr10890
 	DEVICE_PACKAGES := ipq-wifi-tplink_xtr10890 uboot-envtools
 endef
 TARGET_DEVICES += tplink_xtr10890
-
-define Device/xiaomi_ax3600
-	$(call Device/FitImage)
-	$(call Device/UbiFit)
-	DEVICE_VENDOR := Xiaomi
-	DEVICE_MODEL := AX3600
-	BLOCKSIZE := 128k
-	PAGESIZE := 2048
-	DEVICE_DTS_CONFIG := config@ac04
-	SOC := ipq8071
-	DEVICE_PACKAGES := ipq-wifi-xiaomi_ax3600 kmod-ath10k-ct-smallbuffers ath10k-firmware-qca9887-ct
-endef
-TARGET_DEVICES += xiaomi_ax3600
-
-define Device/xiaomi_ax9000
-	$(call Device/FitImage)
-	$(call Device/UbiFit)
-	DEVICE_VENDOR := Xiaomi
-	DEVICE_MODEL := AX9000
-	BLOCKSIZE := 128k
-	PAGESIZE := 2048
-	DEVICE_DTS_CONFIG := config@hk14
-	SOC := ipq8072
-	DEVICE_PACKAGES := ipq-wifi-xiaomi_ax9000 kmod-ath11k-pci ath11k-firmware-qcn9074 \
-	kmod-ath10k-ct ath10k-firmware-qca9887-ct
-endef
-TARGET_DEVICES += xiaomi_ax9000
