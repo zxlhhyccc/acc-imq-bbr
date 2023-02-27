@@ -25,10 +25,10 @@ index bc7e743..ac52285 100644
 +msgid "Enable FullCone NAT"
 +msgstr "启用 FullCone-NAT"
 +
- #: applications/luci-app-firewall/htdocs/luci-static/resources/view/firewall/zones.js:264
+ #: applications/luci-app-firewall/htdocs/luci-static/resources/view/firewall/zones.js:265
  msgid "Enable logging on this zone"
  msgstr "启用此区域的日志记录"
-@@ -1203,3 +1206,9 @@ msgstr "未指定"
+@@ -1210,3 +1213,9 @@ msgstr "未指定"
  #: applications/luci-app-firewall/htdocs/luci-static/resources/tools/firewall.js:338
  msgid "valid firewall mark"
  msgstr "有效的防火墙标记"
