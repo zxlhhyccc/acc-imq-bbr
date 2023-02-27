@@ -57,7 +57,7 @@
  			_('Localise queries'),
 @@ -557,6 +591,13 @@ return view.extend({
  		o.datatype = 'range(0,10000)';
- 		o.placeholder = 150;
+ 		o.placeholder = 1000;
  
 +		o = s.taboption('advanced', form.Value, 'mini_ttl',
 +			_('Minimum TTL to send to clients'),
