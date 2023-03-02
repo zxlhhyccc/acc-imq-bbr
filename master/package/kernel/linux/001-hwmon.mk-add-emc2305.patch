@@ -1,5 +1,3 @@
-diff --git a/modules/hwmon.mk b/modules/hwmon.mk
-index e0810c9..9d80a72 100644
 --- a/modules/hwmon.mk
 +++ b/modules/hwmon.mk
 @@ -108,6 +108,22 @@ endef
@@ -22,6 +20,6 @@ index e0810c9..9d80a72 100644
 +$(eval $(call KernelPackage,hwmon-emc2305))
 +
 +
- define KernelPackage/hwmon-gpiofan
-   TITLE:=Generic GPIO FAN support
-   KCONFIG:=CONFIG_SENSORS_GPIO_FAN
+ define KernelPackage/hwmon-gsc
+   TITLE:=Gateworks System Controller support
+   KCONFIG:=CONFIG_MFD_GATEWORKS_GSC \
