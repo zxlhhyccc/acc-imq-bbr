@@ -1,0 +1,10 @@
+--- a/net/netfilter/nf_conntrack_ecache.c
++++ b/net/netfilter/nf_conntrack_ecache.c
+@@ -371,7 +371,6 @@ int nf_conntrack_register_notifier(struc
+ 	mutex_lock(&nf_ct_ecache_mutex);
+ 	notify = rcu_dereference_protected(net->ct.nf_conntrack_event_cb,
+ 					   lockdep_is_held(&nf_ct_ecache_mutex));
+-	WARN_ON_ONCE(notify);
+ 	if (notify != NULL) {
+ 		ret = -EBUSY;
+ 		goto out_unlock;
