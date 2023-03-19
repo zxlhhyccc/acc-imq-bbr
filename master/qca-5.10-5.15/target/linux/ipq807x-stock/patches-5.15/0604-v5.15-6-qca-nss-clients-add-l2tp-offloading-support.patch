@@ -115,7 +115,7 @@
  	local_bh_disable();
  	l2tp_xmit_skb(session, skb);
  	local_bh_enable();
-@@ -1724,6 +1743,109 @@ static void __exit pppol2tp_exit(void)
+@@ -1733,6 +1740,109 @@ static void __exit pppol2tp_exit(void)
  	unregister_pernet_device(&pppol2tp_net_ops);
  }
 
@@ -368,7 +368,7 @@
 
   static const struct proto_ops pppol2tp_ops;
 *************** static int pppol2tp_connect(struct socke
-*** 816,822 ****
+*** 826,832 ****
   	po->chan.hdrlen = PPPOL2TP_L2TP_HDR_SIZE_NOSEQ;
 
   	po->chan.private = sk;
