@@ -6,9 +6,9 @@ PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL=$(PROJECT_GIT)/project/firmware/qca-wireless.git
-PKG_SOURCE_DATE:=2023-02-12
-PKG_SOURCE_VERSION:=c3ece63d6879e14c8d65a8dc3e32f47e0f891f27
-PKG_MIRROR_HASH:=7637fb1df3ad577650284b526ffaa4c038e1ba6b196a88724d63e4d1c1ab3c53
+PKG_SOURCE_DATE:=2023-03-19
+PKG_SOURCE_VERSION:=31ff96d9f99f993cb43d79f0c411fe6bf55633bb
+PKG_MIRROR_HASH:=8005a884059925a627024b9022ed06a36ebf4ed7a20e8aab191585afbdd6895f
 
 PKG_FLAGS:=nonshared
 
@@ -28,6 +28,8 @@ endef
 # <https://wireless.wiki.kernel.org/en/users/drivers/ath10k/boardfiles>
 
 ALLWIFIBOARDS:= \
+	8dev_habanero \
+	8dev_jalapeno \
 	aruba_ap-365 \
 	buffalo_wxr-5950ax12 \
 	devolo_magic-2-wifi-next \
@@ -44,6 +46,8 @@ ALLWIFIBOARDS:= \
 	linksys_ea8300 \
 	linksys_whw03v2 \
 	netgear_sxr80 \
+	netgear_wax218 \
+	nokia_ac400i \
 	p2w_r619ac \
 	pakedge_wr-1 \
 	qnap_301w \
@@ -132,6 +136,8 @@ endef
 # Place files in this directory as board-<devicename>.<qca4019|qca9888|qca9889|qca9984|qca99x0|ipq8074>
 # Add $(eval $(call generate-ipq-wifi-package,<devicename>,<display name>))
 
+$(eval $(call generate-ipq-wifi-package,8dev_habanero,8devices Habanero))
+$(eval $(call generate-ipq-wifi-package,8dev_jalapeno,8devices Jalapeno))
 $(eval $(call generate-ipq-wifi-package,aruba_ap-365,Aruba AP-365))
 $(eval $(call generate-ipq-wifi-package,buffalo_wxr-5950ax12,Buffalo WXR-5950AX12))
 $(eval $(call generate-ipq-wifi-package,devolo_magic-2-wifi-next,devolo Magic 2 WiFi next))
@@ -148,6 +154,8 @@ $(eval $(call generate-ipq-wifi-package,hiwifi_c526a,HiWiFi C526A))
 $(eval $(call generate-ipq-wifi-package,linksys_ea8300,Linksys EA8300))
 $(eval $(call generate-ipq-wifi-package,linksys_whw03v2,Linksys WHW03 V2))
 $(eval $(call generate-ipq-wifi-package,netgear_sxr80,Netgear SXR80))
+$(eval $(call generate-ipq-wifi-package,netgear_wax218,Netgear WAX218))
+$(eval $(call generate-ipq-wifi-package,nokia_ac400i,Nokia AC400i))
 $(eval $(call generate-ipq-wifi-package,p2w_r619ac,P&W R619AC))
 $(eval $(call generate-ipq-wifi-package,pakedge_wr-1,Pakedge WR-1))
 $(eval $(call generate-ipq-wifi-package,qnap_301w,QNAP 301w))
