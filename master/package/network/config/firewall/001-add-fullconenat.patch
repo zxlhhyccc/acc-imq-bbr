@@ -1,6 +1,6 @@
 --- a/Makefile
 +++ b/Makefile
-@@ -28,7 +28,9 @@ define Package/firewall
+@@ -30,7 +30,9 @@ define Package/firewall
    SECTION:=net
    CATEGORY:=Base system
    TITLE:=OpenWrt C Firewall
