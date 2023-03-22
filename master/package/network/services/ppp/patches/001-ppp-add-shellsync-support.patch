@@ -1,8 +1,6 @@
-diff --git a/Makefile b/Makefile
-index 8476204..6bd379d 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -39,7 +39,7 @@ endef
+@@ -40,7 +40,7 @@ endef
  
  define Package/ppp
  $(call Package/ppp/Default)
@@ -11,8 +9,6 @@ index 8476204..6bd379d 100644
    TITLE:=PPP daemon
    VARIANT:=default
  endef
-diff --git a/files/ppp.sh b/files/ppp.sh
-index 6d3a8e2..965be9d 100755
 --- a/files/ppp.sh
 +++ b/files/ppp.sh
 @@ -231,7 +231,15 @@ proto_pppoe_setup() {
@@ -31,9 +27,6 @@ index 6d3a8e2..965be9d 100755
  		plugin pppoe.so \
  		${ac:+rp_pppoe_ac "$ac"} \
  		${service:+rp_pppoe_service "$service"} \
-diff --git a/patches/512-syncppp.patch b/patches/512-syncppp.patch
-new file mode 100644
-index 0000000..39ff520
 --- /dev/null
 +++ b/patches/512-syncppp.patch
 @@ -0,0 +1,204 @@
@@ -241,8 +234,6 @@ index 0000000..39ff520
 +     output(u->us_unit, outpacket_buf, outlen + PPP_HDRLEN);
 + 
 +     TIMEOUT(upap_timeout, u, u->us_timeouttime);
-diff --git a/patches/600-Revert-pppd-Use-openssl-for-the-DES-instead-of-the-l.patch b/patches/600-Revert-pppd-Use-openssl-for-the-DES-instead-of-the-l.patch
-index dc18156..a3042af 100644
 --- a/patches/600-Revert-pppd-Use-openssl-for-the-DES-instead-of-the-l.patch
 +++ b/patches/600-Revert-pppd-Use-openssl-for-the-DES-instead-of-the-l.patch
 @@ -17,7 +17,7 @@ This reverts commit 3c7b86229f7bd2600d74db14b1fe5b3896be3875.
