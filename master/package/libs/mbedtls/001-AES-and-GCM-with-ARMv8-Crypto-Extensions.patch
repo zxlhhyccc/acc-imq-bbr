@@ -69,9 +69,11 @@
    CONFIG_MBEDTLS_HKDF_C \
    CONFIG_MBEDTLS_PLATFORM_C \
    CONFIG_MBEDTLS_SELF_TEST \
-@@ -123,6 +125,9 @@ endef
+@@ -121,7 +123,11 @@ This package contains mbedtls helper programs for private key and
+ CSR generation (gen_key, cert_req)
+ endef
  
- TARGET_CFLAGS += -ffunction-sections -fdata-sections
++TARGET_CFLAGS += -ffunction-sections -fdata-sections
  TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS))
 +ifneq ($(CONFIG_MBEDTLS_ARMV8CE_AES_C),)
 +  TARGET_CFLAGS := $(filter-out -march=%,$(TARGET_CFLAGS)) -march=armv8-a+crypto
