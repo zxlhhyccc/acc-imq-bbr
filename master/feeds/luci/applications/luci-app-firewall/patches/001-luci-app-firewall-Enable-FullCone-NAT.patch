@@ -14,23 +14,19 @@
  			s.option(form.ListValue, 'output', _('Output')),
 --- a/po/zh_Hans/firewall.po
 +++ b/po/zh_Hans/firewall.po
-@@ -303,6 +303,9 @@ msgstr "启用 NAT 环回"
- msgid "Enable SYN-flood protection"
- msgstr "启用 SYN-flood 防御"
+@@ -1226,6 +1226,15 @@ msgstr "未指定"
+ msgid "valid firewall mark"
+ msgstr "有效的防火墙标记"
  
 +msgid "Enable FullCone NAT"
 +msgstr "启用 FullCone-NAT"
-+
- #: applications/luci-app-firewall/htdocs/luci-static/resources/view/firewall/zones.js:265
- msgid "Enable logging on this zone"
- msgstr "启用此区域的日志记录"
-@@ -1211,3 +1214,9 @@ msgstr "未指定"
- #: applications/luci-app-firewall/htdocs/luci-static/resources/tools/firewall.js:338
- msgid "valid firewall mark"
- msgstr "有效的防火墙标记"
 +
 +msgid "Compatible Mode"
 +msgstr "兼容模式"
 +
 +msgid "High Performing Mode"
 +msgstr "高性能模式"
++
+ #~ msgid ""
+ #~ "Forwarded IPv4%{proto?, protocol %{proto#%{next?, }<var>%{item.name}</"
+ #~ "var>}}%{mark?, mark <var%{mark.inv? data-tooltip=\"Match fwmarks except "
