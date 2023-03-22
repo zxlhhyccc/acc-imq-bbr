@@ -1,5 +1,3 @@
-diff --git a/Makefile b/Makefile
-index 82ba304..8a88023 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -23,7 +23,7 @@ define Package/firewall4
@@ -11,12 +9,9 @@ index 82ba304..8a88023 100644
  	+nftables-json \
  	+ucode +ucode-mod-fs +ucode-mod-ubus +ucode-mod-uci
    EXTRA_DEPENDS:=ucode (>= 2022-03-22)
-diff --git a/patches/001-firewall4-add-support-for-fullcone-nat.patch b/patches/001-firewall4-add-support-for-fullcone-nat.patch
-new file mode 100644
-index 0000000..cc3c640
 --- /dev/null
 +++ b/patches/001-firewall4-add-support-for-fullcone-nat.patch
-@@ -0,0 +1,220 @@
+@@ -0,0 +1,215 @@
 +From aa3b56e289fba7425e649a608c333622ffd9c367 Mon Sep 17 00:00:00 2001
 +From: Syrone Wong <wong.syrone@gmail.com>
 +Date: Sat, 9 Apr 2022 13:24:19 +0800
@@ -35,8 +30,8 @@ index 0000000..cc3c640
 + root/etc/config/firewall                      |  2 ++
 + root/usr/share/firewall4/templates/ruleset.uc | 16 ++++++++++++++--
 + .../firewall4/templates/zone-fullcone.uc      |  4 ++++
-+ root/usr/share/ucode/fw4.uc                   | 70 ++++++++++++++++++-
-+ 4 files changed, 89 insertions(+), 3 deletions(-)
++ root/usr/share/ucode/fw4.uc                   | 69 ++++++++++++++++++-
++ 4 files changed, 89 insertions(+), 4 deletions(-)
 + create mode 100644 root/usr/share/firewall4/templates/zone-fullcone.uc
 +
 +--- a/root/etc/config/firewall
@@ -53,20 +48,20 @@ index 0000000..cc3c640
 + 	option name		lan
 +--- a/root/usr/share/firewall4/templates/ruleset.uc
 ++++ b/root/usr/share/firewall4/templates/ruleset.uc
-+@@ -310,6 +310,12 @@ table inet fw4 {
++@@ -316,6 +316,12 @@ table inet fw4 {
 + {%   for (let redirect in fw4.redirects(`dstnat_${zone.name}`)): %}
 + 		{%+ include("redirect.uc", { fw4, redirect }) %}
 + {%   endfor %}
-++{%   if (fw4.default_option("fullcone")): %}
+++{%   if (zone.masq && fw4.default_option("fullcone")): %}
 ++		{%+ include("zone-fullcone.uc", { fw4, zone, family: 4, direction: "dstnat" }) %}
 ++{%   endif %}
-++{%   if (fw4.default_option("fullcone6")): %}
+++{%   if (zone.masq6 && fw4.default_option("fullcone6")): %}
 ++		{%+ include("zone-fullcone.uc", { fw4, zone, family: 6, direction: "dstnat" }) %}
 ++{%   endif %}
 + {%   fw4.includes('chain-append', `dstnat_${zone.name}`) %}
 + 	}
 + 
-+@@ -320,20 +326,26 @@ table inet fw4 {
++@@ -326,20 +326,26 @@ table inet fw4 {
 + {%   for (let redirect in fw4.redirects(`srcnat_${zone.name}`)): %}
 + 		{%+ include("redirect.uc", { fw4, redirect }) %}
 + {%   endfor %}
@@ -86,10 +81,10 @@ index 0000000..cc3c640
 + {%     endfor %}
 + {%    endfor %}
 + {%   endif %}
-++{%   if (fw4.default_option("fullcone")): %}
+++{%   if (zone.masq && fw4.default_option("fullcone")): %}
 ++		{%+ include("zone-fullcone.uc", { fw4, zone, family: 4, direction: "srcnat" }) %}
 ++{%   endif %}
-++{%   if (fw4.default_option("fullcone6")): %}
+++{%   if (zone.masq6 && fw4.default_option("fullcone6")): %}
 ++		{%+ include("zone-fullcone.uc", { fw4, zone, family: 6, direction: "srcnat" }) %}
 ++{%   endif %}
 + {%   fw4.includes('chain-append', `srcnat_${zone.name}`) %}
@@ -206,34 +201,71 @@ index 0000000..cc3c640
 + 		this.state.defaults = defs;
 + 	},
 + 
-+@@ -1955,6 +2011,13 @@ return {
-+ 			}
-+ 		}
-+ 
-++		if (this.state.defaults.fullcone) {
-++			this.myinfo_section(data, "IPv4 fullcone enabled for zone '" + zone.name + "'");
-++		}
-++		if (this.state.defaults.fullcone6) {
-++			this.myinfo_section(data, "IPv6 fullcone enabled for zone '" + zone.name + "'");
-++		}
-++
-+ 		if (zone.mtu_fix && this.kernel < 0x040a0000) {
-+ 			this.warn_section(data, "option 'mtu_fix' requires kernel 4.10 or later");
-+ 			return;
-+@@ -2124,10 +2187,15 @@ return {
++@@ -2124,10 +2180,23 @@ return {
 + 		zone.related_subnets = related_subnets;
 + 		zone.related_physdevs = related_physdevs;
 + 
-++		if (this.state.defaults.fullcone || this.state.defaults.fullcone6) {
-++			zone.dflags.snat = true;
-++			zone.dflags.dnat = true;
++-		if (zone.masq || zone.masq6)
+++		if (zone.masq) {
++ 			zone.dflags.snat = true;
+++			if (this.state.defaults.fullcone) {
+++				zone.dflags.dnat = true;
+++				this.myinfo_section(data, "IPv4 fullcone enabled for zone '" + zone.name + "'");
+++			}
 ++		}
 ++
-+ 		if (zone.masq || zone.masq6)
-+ 			zone.dflags.snat = true;
-+ 
+++		if (zone.masq6) {
+++			zone.dflags.snat = true;
+++			if (this.state.defaults.fullcone6) {
+++				zone.dflags.dnat = true;
+++				this.myinfo_section(data, "IPv6 fullcone enabled for zone '" + zone.name + "'");
+++			}
+++		}
++
 +-		if ((zone.auto_helper && !(zone.masq || zone.masq6)) || length(zone.helper)) {
 ++		if ((zone.auto_helper && !(zone.masq || zone.masq6 || this.state.defaults.fullcone || this.state.defaults.fullcone6)) || length(zone.helper)) {
 + 			zone.dflags.helper = true;
 + 
 + 			for (let helper in (length(zone.helper) ? zone.helper : this.state.helpers)) {
+--- /dev/null
++++ b/patches/002-firewall4-Fix-MSS-clamping-with-PBR.patch
+@@ -0,0 +1,39 @@
++diff --git a/root/usr/share/firewall4/templates/ruleset.uc b/root/usr/share/firewall4/templates/ruleset.uc
++index d6eedfd..57b9094 100644
++--- a/root/usr/share/firewall4/templates/ruleset.uc
+++++ b/root/usr/share/firewall4/templates/ruleset.uc
++@@ -413,6 +413,13 @@ table inet fw4 {
++ {% for (let rule in fw4.rules("mangle_postrouting")): %}
++                {%+ include("rule.uc", { fw4, rule }) %}
++ {% endfor %}
+++{% for (let zone in fw4.zones()): %}
+++{%  if (zone.mtu_fix): %}
+++{%   for (let rule in zone.match_rules): %}
+++               {%+ include("zone-mssfix.uc", { fw4, zone, rule, egress: true }) %}
+++{%   endfor %}
+++{%  endif %}
+++{% endfor %}
++ {% fw4.includes('chain-append', 'mangle_postrouting') %}
++        }
++
++@@ -463,7 +463,6 @@ table inet fw4 {
++ {%  if (zone.mtu_fix): %}
++ {%   for (let rule in zone.match_rules): %}
++ 		{%+ include("zone-mssfix.uc", { fw4, zone, rule, egress: false }) %}
++-		{%+ include("zone-mssfix.uc", { fw4, zone, rule, egress: true }) %}
++ {%   endfor %}
++ {%  endif %}
++ {% endfor %}
++diff --git a/root/usr/share/firewall4/templates/zone-mssfix.uc b/root/usr/share/firewall4/templates/zone-mssfix.uc
++index b76cfb6..17b6e92 100644
++--- a/root/usr/share/firewall4/templates/zone-mssfix.uc
+++++ b/root/usr/share/firewall4/templates/zone-mssfix.uc
++@@ -1,7 +1,7 @@
++ {%+ if (rule.family): -%}
++ 	meta nfproto {{ fw4.nfproto(rule.family) }} {%+ endif -%}
++ {%+ include("zone-match.uc", { egress, rule }) -%}
++-tcp flags syn tcp option maxseg size set rt mtu {%+ if (zone.log & 2): -%}
+++tcp flags syn / syn,fin,rst tcp option maxseg size set rt mtu {%+ if (zone.log & 2): -%}
++ 	log prefix "MSSFIX {{ zone.name }} out: " {%+ endif -%}
++ comment "!fw4: Zone {{ zone.name }} {{
++ 	fw4.nfproto(rule.family, true)
