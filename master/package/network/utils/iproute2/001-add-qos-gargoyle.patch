@@ -1,6 +1,6 @@
 --- a/Makefile
 +++ b/Makefile
-@@ -204,6 +204,10 @@ define Build/InstallDev
+@@ -205,6 +205,10 @@ define Build/InstallDev
  	$(CP) $(PKG_BUILD_DIR)/include/{libgenl,libnetlink}.h $(1)/usr/include/
  	$(INSTALL_DIR) $(1)/usr/lib
  	$(CP) $(PKG_BUILD_DIR)/lib/libnetlink.a $(1)/usr/lib/
