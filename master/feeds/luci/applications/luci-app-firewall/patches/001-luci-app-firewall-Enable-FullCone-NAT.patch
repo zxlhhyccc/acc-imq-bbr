@@ -1,6 +1,6 @@
 --- a/htdocs/luci-static/resources/view/firewall/zones.js
 +++ b/htdocs/luci-static/resources/view/firewall/zones.js
-@@ -57,6 +57,11 @@ return view.extend({
+@@ -58,6 +58,11 @@ return view.extend({
  
  		o = s.option(form.Flag, 'drop_invalid', _('Drop invalid packets'));
  
