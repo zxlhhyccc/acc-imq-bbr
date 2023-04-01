@@ -14,7 +14,7 @@
  			s.option(form.ListValue, 'output', _('Output')),
 --- a/po/zh_Hans/firewall.po
 +++ b/po/zh_Hans/firewall.po
-@@ -1243,6 +1243,15 @@ msgstr "未指定"
+@@ -1496,6 +1496,15 @@ msgstr ""
  msgid "valid firewall mark"
  msgstr "有效的防火墙标记"
  
@@ -28,5 +28,5 @@
 +msgstr "高性能模式"
 +
  #~ msgid ""
- #~ "Forwarded IPv4%{proto?, protocol %{proto#%{next?, }<var>%{item.name}</"
- #~ "var>}}%{mark?, mark <var%{mark.inv? data-tooltip=\"Match fwmarks except "
+ #~ "Enable network address and port translation (NAT or NAPT) for outbound "
+ #~ "traffic on this zone. This is typically enabled on the <em>wan</em> zone."
