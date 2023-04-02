@@ -133,7 +133,7 @@
 -  DEVICE_ALT0_MODEL := KE 2P
    SUPPORTED_DEVICES += k2p
 -  DEVICE_PACKAGES := kmod-mt7615-firmware -uboot-envtools
-+  DEVICE_PACKAGES := kmod-mt7615-firmware kmod-mt7615d_dbdc -uboot-envtools
++  DEVICE_PACKAGES := -luci-newapi -wpad-openssl kmod-mt7615d_dbdc wireless-tools
  endef
  TARGET_DEVICES += phicomm_k2p
  
