@@ -25,7 +25,7 @@
  ADD_WAN_FQDN=0
  ADD_LOCAL_FQDN=""
  
-@@ -965,9 +967,14 @@ dnsmasq_start()
+@@ -967,9 +969,14 @@ dnsmasq_start()
  
  	append_bool "$cfg" filter_aaaa "--filter-AAAA"
  	append_bool "$cfg" filter_a "--filter-A"
@@ -40,7 +40,7 @@
  	append_parm "$cfg" cachesize "--cache-size"
  	append_parm "$cfg" dnsforwardmax "--dns-forward-max"
  	append_parm "$cfg" port "--port"
-@@ -1026,6 +1033,8 @@ dnsmasq_start()
+@@ -1028,6 +1035,8 @@ dnsmasq_start()
  
  	config_get_bool ADD_LOCAL_DOMAIN "$cfg" add_local_domain 1
  	config_get_bool ADD_LOCAL_HOSTNAME "$cfg" add_local_hostname 1
@@ -49,7 +49,7 @@
  	config_get ADD_LOCAL_FQDN "$cfg" add_local_fqdn ""
  	config_get ADD_WAN_FQDN "$cfg" add_wan_fqdn 0
  
-@@ -1182,8 +1191,12 @@ dnsmasq_start()
+@@ -1184,8 +1193,12 @@ dnsmasq_start()
  		[ $ADD_LOCAL_DOMAIN -eq 1 ] && [ -n "$DOMAIN" ] && {
  			echo "search $DOMAIN" >> /tmp/resolv.conf
  		}
@@ -64,39 +64,39 @@
  		for DNS_SERVER in $DNS_SERVERS ; do
  			echo "nameserver $DNS_SERVER" >> /tmp/resolv.conf
  		done
-@@ -1214,6 +1227,20 @@ dnsmasq_start()
- 	esac
+@@ -1217,6 +1230,20 @@ dnsmasq_start()
+ 	[ -e "$hostsfile" ] && procd_add_jail_mount $hostsfile
  
  	procd_close_instance
 +
 +	config_get_bool dns_redirect "$cfg" dns_redirect 0
 +	config_get dns_port "$cfg" port 53
 +	if [ "$dns_redirect" = 1 ]; then
-+		if [ -e "$nftsets" ]; then
-+		nft add table inet dnsmasq
-+		nft add chain inet dnsmasq prerouting "{ type nat hook prerouting priority -105; policy accept; }"
-+		nft add rule inet dnsmasq prerouting "meta nfproto { ipv4, ipv6 } udp dport 53 counter redirect to :$dns_port comment \"DNSMASQ HIJACK\""
++		if [ ! -z "$nftsets" ]; then
++			nft add table inet dnsmasq
++			nft add chain inet dnsmasq prerouting "{ type nat hook prerouting priority -105; policy accept; }"
++			nft add rule inet dnsmasq prerouting "meta nfproto { ipv4, ipv6 } udp dport 53 counter redirect to :$dns_port comment \"DNSMASQ HIJACK\""
 +		fi
-+		if [ -e "$ipsets" ]; then
-+		iptables -t nat -A PREROUTING -m comment --comment "DNSMASQ" -p udp --dport 53 -j REDIRECT --to-ports $dns_port
-+		[ -n "$(command -v ip6tables)" ] && ip6tables -t nat -A PREROUTING -m comment --comment "DNSMASQ" -p udp --dport 53 -j REDIRECT --to-ports $dns_port
++		if [ ! -z "$ipsets" ]; then
++			iptables -t nat -A PREROUTING -m comment --comment "DNSMASQ" -p udp --dport 53 -j REDIRECT --to-ports $dns_port
++			[ -n "$(command -v ip6tables)" ] && ip6tables -t nat -A PREROUTING -m comment --comment "DNSMASQ" -p udp --dport 53 -j REDIRECT --to-ports $dns_port
 +		fi
 +	fi
  }
  
  dnsmasq_stop()
-@@ -1231,6 +1258,19 @@ dnsmasq_stop()
+@@ -1234,6 +1261,19 @@ dnsmasq_stop()
  	rm -f ${BASEDHCPSTAMPFILE}.${cfg}.*.dhcp
  }
  
 +iptables_nftables_clear()
 +{
-+	if [ -e "$nftsets" ]; then
-+	! nft --check list table inet dnsmasq > "/dev/null" 2>&1 || \
++	if [ ! -z "$nftsets" ]; then
++		! nft --check list table inet dnsmasq > "/dev/null" 2>&1 || \
 +		nft delete table inet dnsmasq
 +	fi
-+	if [ -e "$ipsets" ]; then
-+	config_get dns_port "$cfg" port 53
++	if [ ! -z "$ipsets" ]; then
++		config_get dns_port "$cfg" port 53
 +		iptables -t nat -D PREROUTING -m comment --comment "DNSMASQ" -p udp --dport 53 -j REDIRECT --to-ports $dns_port 2>"/dev/null"
 +		[ -n "$(command -v ip6tables)" ] && ip6tables -t nat -D PREROUTING -m comment --comment "DNSMASQ" -p udp --dport 53 -j REDIRECT --to-ports $dns_port 2>"/dev/null"
 +	fi
@@ -105,7 +105,7 @@
  add_interface_trigger()
  {
  	local interface ignore
-@@ -1301,6 +1341,7 @@ start_service() {
+@@ -1304,6 +1344,7 @@ start_service() {
  }
  
  reload_service() {
@@ -113,7 +113,7 @@
  	rc_procd start_service "$@"
  	procd_send_signal dnsmasq "$@"
  }
-@@ -1327,4 +1368,5 @@ stop_service() {
+@@ -1330,4 +1371,5 @@ stop_service() {
  	else
  		config_foreach dnsmasq_stop dnsmasq
  	fi
