@@ -14,7 +14,7 @@
  			s.option(form.ListValue, 'output', _('Output')),
 --- a/po/zh_Hans/firewall.po
 +++ b/po/zh_Hans/firewall.po
-@@ -1496,6 +1496,15 @@ msgstr ""
+@@ -1504,6 +1504,15 @@ msgstr ""
  msgid "valid firewall mark"
  msgstr "有效的防火墙标记"
  
