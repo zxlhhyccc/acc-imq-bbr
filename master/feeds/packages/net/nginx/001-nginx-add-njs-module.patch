@@ -24,7 +24,7 @@
  PKG_LICENSE:=2-clause BSD-like license
  PKG_CPE_ID:=cpe:/a:nginx:nginx
  
-@@ -71,6 +72,7 @@ PKG_CONFIG_DEPENDS := \
+@@ -72,6 +73,7 @@ PKG_CONFIG_DEPENDS := \
  	CONFIG_NGINX_STREAM_SSL_PREREAD_MODULE \
  	CONFIG_NGINX_RTMP_MODULE \
  	CONFIG_NGINX_TS_MODULE \
@@ -32,7 +32,7 @@
  	CONFIG_OPENSSL_ENGINE \
  	CONFIG_OPENSSL_WITH_NPN
  
-@@ -288,6 +290,9 @@ ifneq ($(BUILD_VARIANT),all-module)
+@@ -289,6 +291,9 @@ ifneq ($(BUILD_VARIANT),all-module)
    ifeq ($(CONFIG_NGINX_TS_MODULE),y)
      ADDITIONAL_MODULES += --add-module=$(PKG_BUILD_DIR)/nginx-ts
    endif
@@ -42,7 +42,7 @@
  else
    CONFIG_NGINX_HEADERS_MORE:=y
    CONFIG_NGINX_HTTP_BROTLI:=y
-@@ -327,6 +332,21 @@ define Package/nginx-mod-luci/description
+@@ -328,6 +333,21 @@ define Package/nginx-mod-luci/description
   Support file for LuCI in nginx. Include custom nginx configuration, autostart script for uwsgi.
  endef
  
@@ -62,8 +62,8 @@
 +endef
 +
  
- TARGET_CFLAGS += -fvisibility=hidden -ffunction-sections -fdata-sections -DNGX_LUA_NO_BY_LUA_BLOCK
- TARGET_LDFLAGS += -Wl,--gc-sections
+ TARGET_CFLAGS += -fvisibility=hidden -DNGX_LUA_NO_BY_LUA_BLOCK
+ 
 @@ -449,6 +469,20 @@ define Prepare/nginx-ts
  	xzcat $(DL_DIR)/$(FILE) | tar -C $(PKG_BUILD_DIR) $(TAR_OPTIONS)
  endef

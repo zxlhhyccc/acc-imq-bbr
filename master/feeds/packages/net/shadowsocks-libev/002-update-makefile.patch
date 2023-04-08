@@ -1,5 +1,3 @@
-diff --git a/Makefile b/Makefile
-index d5d26f5..962f8f5 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -16,9 +16,15 @@ PKG_NAME:=shadowsocks-libev
@@ -15,8 +13,8 @@ index d5d26f5..962f8f5 100644
 -PKG_SOURCE_URL:=https://github.com/shadowsocks/shadowsocks-libev/releases/download/v$(PKG_VERSION)
 -PKG_HASH:=cfc8eded35360f4b67e18dc447b0c00cddb29cc57a3cec48b135e5fb87433488
 +PKG_SOURCE_URL:=https://github.com/shadowsocks/shadowsocks-libev.git
-+PKG_SOURCE_VERSION:=01dd7df1da98710a619a4a853f6f357dfc46f60f
-+PKG_MIRROR_HASH:=f5b9807c3a6f4d6d09d5f906e3b2e1233800bcbac00b7e8e7df1806144c48cbd
++PKG_SOURCE_VERSION:=d83ace0f0d9c05656c13d66aa4a449bf70143254
++PKG_MIRROR_HASH:=fdcd84cadd5b0b9162b2e81c4ce8e135d944e735a8c5bb79d349627df6ca76c2
  
  PKG_MAINTAINER:=Yousong Zhou <yszhou4tech@gmail.com>
  
