@@ -474,3 +474,17 @@
 + #if defined(MBEDTLS_AES_C)
 +     "MBEDTLS_AES_C",
 + #endif /* MBEDTLS_AES_C */
+--- /dev/null
++++ b/patches/300.Enable-config.SSE2.patch
+@@ -0,0 +1,11 @@
++--- a/include/mbedtls/config.h
+++++ b/include/mbedtls/config.h
++@@ -116,7 +116,7 @@
++  *
++  * Uncomment if the CPU supports SSE2 (IA-32 specific).
++  */
++-//#define MBEDTLS_HAVE_SSE2
+++#define MBEDTLS_HAVE_SSE2
++ 
++ /**
++  * \def MBEDTLS_HAVE_TIME
