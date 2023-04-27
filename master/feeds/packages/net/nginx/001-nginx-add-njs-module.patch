@@ -1,7 +1,7 @@
 --- a/Config_ssl.in
 +++ b/Config_ssl.in
-@@ -272,4 +272,11 @@ config NGINX_TS_MODULE
- 		Add support for MPEG-TS Live Module module.
+@@ -218,4 +218,11 @@ config NGINX_STREAM_SSL_PREREAD_MODULE
+ 		Add support for NGINX request streaming using information from the ClientHello message without terminating SSL/TLS.
  	default n
  
 +config NGINX_NJS_MODULE
@@ -15,7 +15,7 @@
 --- a/Makefile
 +++ b/Makefile
 @@ -16,7 +16,8 @@ PKG_SOURCE_URL:=https://nginx.org/download/
- PKG_HASH:=14774aae0d151da350417efc4afda5cce5035056e71894836797e1f6e2d1175a
+ PKG_HASH:=77a2541637b92a621e3ee76776c8b7b40cf6d707e69ba53a940283e30ff2f55d
  
  PKG_MAINTAINER:=Thomas Heil <heil@terminal-consulting.de> \
 -				Ansuel Smith <ansuelsmth@gmail.com>
@@ -24,25 +24,25 @@
  PKG_LICENSE:=2-clause BSD-like license
  PKG_CPE_ID:=cpe:/a:nginx:nginx
  
-@@ -73,6 +74,7 @@ PKG_CONFIG_DEPENDS := \
+@@ -65,6 +66,7 @@ PKG_CONFIG_DEPENDS := \
+ 	CONFIG_NGINX_STREAM_CORE_MODULE \
+ 	CONFIG_NGINX_STREAM_SSL_MODULE \
  	CONFIG_NGINX_STREAM_SSL_PREREAD_MODULE \
- 	CONFIG_NGINX_RTMP_MODULE \
- 	CONFIG_NGINX_TS_MODULE \
 +	CONFIG_NGINX_NJS_MODULE \
  	CONFIG_OPENSSL_ENGINE \
  	CONFIG_OPENSSL_WITH_NPN
  
-@@ -293,6 +295,9 @@ ifneq ($(BUILD_VARIANT),all-module)
-   ifeq ($(CONFIG_NGINX_TS_MODULE),y)
-     ADDITIONAL_MODULES += --add-module=$(PKG_BUILD_DIR)/nginx-ts
+@@ -252,6 +254,9 @@ ifneq ($(BUILD_VARIANT),all-module)
+   ifeq ($(CONFIG_NGINX_HTTP_SUB),y)
+ 	ADDITIONAL_MODULES += --with-http_sub_module
    endif
 +  ifeq ($(CONFIG_NGINX_NJS_MODULE),y)
 +    ADDITIONAL_MODULES += --add-module=$(PKG_BUILD_DIR)/nginx-njs
 +  endif
  else
-   CONFIG_NGINX_HEADERS_MORE:=y
-   CONFIG_NGINX_HTTP_BROTLI:=y
-@@ -333,6 +338,21 @@ define Package/nginx-mod-luci/description
+   ADDITIONAL_MODULES += --with-ipv6 --with-http_stub_status_module --with-http_flv_module \
+ 	--with-http_dav_module \
+@@ -308,6 +313,21 @@ define Package/nginx-mod-luci/description
   Support file for LuCI in nginx. Include custom nginx configuration, autostart script for uwsgi.
  endef
  
@@ -54,17 +54,17 @@
 +  TITLE:=dynamic module for Nginx
 +  URL:=http://nginx.org/
 +  DEPENDS:=+nginx
-+  CONFLICTS:=nginx-all-module
++  CONFLICTS:=nginx-full
 +endef
 +
 +define Package/nginx-mod-njs/description
 + Dynamic njs module for Nginx.
 +endef
 +
+ NGINX_MODULES :=
  
- TARGET_CFLAGS += -fvisibility=hidden -DNGX_LUA_NO_BY_LUA_BLOCK
- 
-@@ -454,6 +474,20 @@ define Prepare/nginx-ts
+ # $(1) module name
+@@ -507,6 +527,20 @@ define Prepare/nginx-ts
  	xzcat $(DL_DIR)/$(FILE) | tar -C $(PKG_BUILD_DIR) $(TAR_OPTIONS)
  endef
  
@@ -85,7 +85,7 @@
  define Download/nginx-naxsi
    VERSION:=951123ad456bdf5ac94e8d8819342fe3d49bc002
    SUBDIR:=nginx-naxsi
-@@ -567,6 +601,11 @@ ifeq ($(CONFIG_NGINX_TS_MODULE),y)
+@@ -620,6 +654,11 @@ ifneq ($(CONFIG_PACKAGE_nginx-mod-ts),)
    $(Prepare/nginx-ts)
  endif
  
@@ -94,14 +94,14 @@
 +  $(Prepare/nginx-njs)
 +endif
 +
- ifneq "$(or $(CONFIG_NGINX_DAV_EXT),$(QUILT))" ""
+ ifneq "$(or $(CONFIG_PACKAGE_nginx-mod-dav-ext),$(QUILT))" ""
    $(eval $(call Download,nginx-dav-ext-module))
    $(Prepare/nginx-dav-ext-module)
-@@ -583,6 +622,7 @@ endef
+@@ -636,6 +675,7 @@ endef
  $(eval $(call BuildPackage,nginx-ssl))
- $(eval $(call BuildPackage,nginx-all-module))
+ $(eval $(call BuildPackage,nginx-full))
  $(eval $(call BuildPackage,nginx-mod-luci))
 +$(eval $(call BuildPackage,nginx-mod-njs))
  
- # TODO: remove after a transition period (together with pkg nginx-util):
- # It is for smoothly substituting nginx and nginx-mod-luci-ssl (by nginx-ssl
+ $(foreach m,$(NGINX_MODULES),$(eval $(call BuildPackage,$(m))))
+ 
