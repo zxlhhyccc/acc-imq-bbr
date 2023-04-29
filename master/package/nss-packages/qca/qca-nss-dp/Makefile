@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=qca-nss-dp
-PKG_RELEASE:=$(AUTORELEASE)
+PKG_RELEASE:=1
 
 PKG_SOURCE_URL:=https://git.codelinaro.org/clo/qsdk/oss/lklm/nss-dp.git
 PKG_SOURCE_PROTO:=git
@@ -10,6 +10,7 @@ PKG_SOURCE_VERSION:=2976b05cb8ddfaa695fc00372c8538a3dfb32277
 PKG_MIRROR_HASH:=c11d73e27385212fce6701b02146ee615d44c8e340c73917cbe4067502bdfc24
 
 PKG_BUILD_PARALLEL:=1
+PKG_FLAGS:=nonshared
 
 include $(INCLUDE_DIR)/kernel.mk
 include $(INCLUDE_DIR)/package.mk
@@ -19,13 +20,13 @@ define KernelPackage/qca-nss-dp
   CATEGORY:=Kernel modules
   SUBMENU:=Network Devices
   DEPENDS:=@(TARGET_ipq807x||TARGET_ipq60xx) +kmod-qca-ssdk
-  TITLE:=Kernel driver for NSS data plane
+  TITLE:=Qualcom NSS dataplane ethernet driver
   FILES:=$(PKG_BUILD_DIR)/qca-nss-dp.ko
   AUTOLOAD:=$(call AutoLoad,31,qca-nss-dp,1)
 endef
 
 define KernelPackage/qca-nss-dp/Description
-This package contains a NSS data plane driver for QCA chipset
+  NSS dataplane ethernet driver for Qualcom SoCs.
 endef
 
 define Build/InstallDev

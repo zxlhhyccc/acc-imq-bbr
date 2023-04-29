@@ -11,8 +11,6 @@ Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
  ecm_interface.c | 9 +++++++++
  1 file changed, 9 insertions(+)
 
-diff --git a/ecm_interface.c b/ecm_interface.c
-index b461456..6be872a 100644
 --- a/ecm_interface.c
 +++ b/ecm_interface.c
 @@ -7630,9 +7630,13 @@ static int ecm_interface_wifi_event_hand
@@ -27,7 +25,7 @@ index b461456..6be872a 100644
 +#else
 +    struct kvec iov;
 +#endif
-
+ 
  	iov.iov_base = buf;
  	iov.iov_len  = len;
 @@ -7642,7 +7646,8 @@ static int ecm_interface_wifi_event_rx(s
@@ -42,13 +40,11 @@ index b461456..6be872a 100644
  #if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 7, 0))
 @@ -7653,6 +7658,9 @@ static int ecm_interface_wifi_event_rx(s
  	set_fs(oldfs);
-
+ 
  	return size;
 +#else
 +   return kernel_recvmsg(sock, &msg, &iov, 1, iov.iov_len, 0);
 +#endif
  }
-
+ 
  /*
---
-2.34.1

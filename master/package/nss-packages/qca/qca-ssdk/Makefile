@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=qca-ssdk
-PKG_RELEASE:=$(AUTORELEASE)
+PKG_RELEASE:=1
 
 PKG_SOURCE_URL:=https://git.codelinaro.org/clo/qsdk/oss/lklm/qca-ssdk.git
 PKG_SOURCE_PROTO:=git
@@ -27,6 +27,11 @@ endef
 
 define KernelPackage/qca-ssdk/Description
   Driver for Qualcomm Atheros switches.
+endef
+
+define KernelPackage/qca-ssdk/install
+	$(INSTALL_DIR) $(1)/etc/init.d
+	$(INSTALL_BIN) ./files/qca-ssdk $(1)/etc/init.d/qca-ssdk
 endef
 
 GCC_VERSION=$(shell echo "$(CONFIG_GCC_VERSION)" | sed 's/[^0-9.]*\([0-9.]*\).*/\1/')
@@ -78,11 +83,6 @@ define Build/InstallDev
 	$(CP) -rf $(PKG_BUILD_DIR)/include/sal/os/linux/*.h $(1)/usr/include/qca-ssdk
 	$(CP) -rf $(PKG_BUILD_DIR)/include/sal/os/*.h $(1)/usr/include/qca-ssdk
 
-endef
-
-define KernelPackage/qca-ssdk/install
-	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_BIN) ./files/qca-ssdk $(1)/etc/init.d/qca-ssdk
 endef
 
 $(eval $(call KernelPackage,qca-ssdk))
