@@ -768,7 +768,7 @@
 		#size-cells = <2>;
 		ranges;
 
-		wifi@1,0 {
+		wifi1: wifi@1,0 {
 			status = "okay";
 
 			/* ath11k has no DT compatible for PCI cards */

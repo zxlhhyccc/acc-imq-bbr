@@ -11,14 +11,21 @@ ipq807x_setup_interfaces()
 	local board="$1"
 
 	case "$board" in
-	dynalink,dl-wrx36)
+	buffalo,wxr-5950ax12|\
+	dynalink,dl-wrx36|\
+	tplink,xtr10890|\
+	xiaomi,ax9000)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4" "wan"
 		;;
-	edgecore,eap102)
+	edgecore,eap102|\
+	zte,mf269)
 		ucidef_set_interfaces_lan_wan "lan" "wan"
 		;;
 	edimax,cax1800)
 		ucidef_set_interfaces_lan_wan "lan"
+		;;
+	netgear,wax218)
+		ucidef_set_interface_lan "lan" "dhcp"
 		;;
 	qnap,301w)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4 10g-2" "10g-1"
@@ -27,17 +34,8 @@ ipq807x_setup_interfaces()
 	xiaomi,ax3600)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3" "wan"
 		;;
-	xiaomi,ax9000)
-		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4" "wan"
-		;;
 	zyxel,nbg7815)
 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4 10g" "wan"
-		;;
-	zte,mf269)
-		ucidef_set_interfaces_lan_wan "eth0" "eth1"
-		;;
-	tplink,xtr10890)
-		ucidef_set_interfaces_lan_wan "eth0 eth1 eth2 eth3 eth4" "eth5"
 		;;
 	*)
 		echo "Unsupported hardware. Network interfaces not initialized"
