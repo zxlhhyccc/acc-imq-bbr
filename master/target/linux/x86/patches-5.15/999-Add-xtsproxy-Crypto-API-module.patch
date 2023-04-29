@@ -17,7 +17,7 @@ diff --git a/crypto/Kconfig b/crypto/Kconfig
 index 094ef56ab7b4..9964667cef85 100644
 --- a/crypto/Kconfig
 +++ b/crypto/Kconfig
-@@ -457,6 +457,16 @@ config CRYPTO_XTS
+@@ -463,6 +463,16 @@ config CRYPTO_XTS
  	  key size 256, 384 or 512 bits. This implementation currently
  	  can't handle a sectorsize which is not a multiple of 16 bytes.
  
@@ -38,7 +38,7 @@ diff --git a/crypto/Makefile b/crypto/Makefile
 index b279483fba50..4f6ddcbdc6d4 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
-@@ -90,6 +90,7 @@ obj-$(CONFIG_CRYPTO_PCBC) += pcbc.o
+@@ -91,6 +91,7 @@ obj-$(CONFIG_CRYPTO_PCBC) += pcbc.o
  obj-$(CONFIG_CRYPTO_CTS) += cts.o
  obj-$(CONFIG_CRYPTO_LRW) += lrw.o
  obj-$(CONFIG_CRYPTO_XTS) += xts.o
