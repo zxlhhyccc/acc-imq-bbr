@@ -1,7 +1,7 @@
 --- a/Config_ssl.in
 +++ b/Config_ssl.in
-@@ -218,4 +218,11 @@ config NGINX_STREAM_SSL_PREREAD_MODULE
- 		Add support for NGINX request streaming using information from the ClientHello message without terminating SSL/TLS.
+@@ -195,4 +195,10 @@ config NGINX_HTTP_SUB
+ 	prompt "Enable HTTP sub module"
  	default n
  
 +config NGINX_NJS_MODULE
@@ -10,7 +10,6 @@
 +	help
 +		Add support for Javascript dynamic module.
 +	default n
-+
  endmenu
 --- a/Makefile
 +++ b/Makefile
@@ -24,15 +23,15 @@
  PKG_LICENSE:=2-clause BSD-like license
  PKG_CPE_ID:=cpe:/a:nginx:nginx
  
-@@ -65,6 +66,7 @@ PKG_CONFIG_DEPENDS := \
- 	CONFIG_NGINX_STREAM_CORE_MODULE \
- 	CONFIG_NGINX_STREAM_SSL_MODULE \
- 	CONFIG_NGINX_STREAM_SSL_PREREAD_MODULE \
+@@ -62,6 +63,7 @@ PKG_CONFIG_DEPENDS := \
+ 	CONFIG_NGINX_PCRE \
+ 	CONFIG_NGINX_HTTP_REAL_IP \
+ 	CONFIG_NGINX_HTTP_SECURE_LINK \
 +	CONFIG_NGINX_NJS_MODULE \
  	CONFIG_OPENSSL_ENGINE \
  	CONFIG_OPENSSL_WITH_NPN
  
-@@ -252,6 +254,9 @@ ifneq ($(BUILD_VARIANT),all-module)
+@@ -249,6 +251,9 @@ ifneq ($(BUILD_VARIANT),all-module)
    ifeq ($(CONFIG_NGINX_HTTP_SUB),y)
  	ADDITIONAL_MODULES += --with-http_sub_module
    endif
@@ -42,7 +41,7 @@
  else
    ADDITIONAL_MODULES += --with-ipv6 --with-http_stub_status_module --with-http_flv_module \
  	--with-http_dav_module \
-@@ -308,6 +313,21 @@ define Package/nginx-mod-luci/description
+@@ -304,6 +309,21 @@ define Package/nginx-mod-luci/description
   Support file for LuCI in nginx. Include custom nginx configuration, autostart script for uwsgi.
  endef
  
@@ -64,7 +63,7 @@
  NGINX_MODULES :=
  
  # $(1) module name
-@@ -507,6 +527,20 @@ define Prepare/nginx-ts
+@@ -503,6 +523,20 @@ define Prepare/nginx-ts
  	xzcat $(DL_DIR)/$(FILE) | tar -C $(PKG_BUILD_DIR) $(TAR_OPTIONS)
  endef
  
@@ -85,7 +84,7 @@
  define Download/nginx-naxsi
    VERSION:=951123ad456bdf5ac94e8d8819342fe3d49bc002
    SUBDIR:=nginx-naxsi
-@@ -620,6 +654,11 @@ ifneq ($(CONFIG_PACKAGE_nginx-mod-ts),)
+@@ -616,6 +650,11 @@ ifneq ($(CONFIG_PACKAGE_nginx-mod-ts),)
    $(Prepare/nginx-ts)
  endif
  
@@ -97,7 +96,7 @@
  ifneq "$(or $(CONFIG_PACKAGE_nginx-mod-dav-ext),$(QUILT))" ""
    $(eval $(call Download,nginx-dav-ext-module))
    $(Prepare/nginx-dav-ext-module)
-@@ -636,6 +675,7 @@ endef
+@@ -632,6 +671,7 @@ endef
  $(eval $(call BuildPackage,nginx-ssl))
  $(eval $(call BuildPackage,nginx-full))
  $(eval $(call BuildPackage,nginx-mod-luci))
