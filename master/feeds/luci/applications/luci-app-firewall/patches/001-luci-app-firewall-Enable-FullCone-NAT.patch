@@ -14,7 +14,7 @@
  			s.option(form.ListValue, 'output', _('Output')),
 --- a/po/zh_Hans/firewall.po
 +++ b/po/zh_Hans/firewall.po
-@@ -1504,6 +1504,15 @@ msgstr ""
+@@ -1504,6 +1504,15 @@ msgstr "最多 65536 个条目。"
  msgid "valid firewall mark"
  msgstr "有效的防火墙标记"
  
