@@ -1,8 +1,6 @@
-diff --git a/mt7621.dtsi b/mt7621.dtsi
-index 1c19545..51e2747 100644
 --- a/dts/mt7621.dtsi
 +++ b/dts/mt7621.dtsi
-@@ -462,6 +462,14 @@
+@@ -437,6 +437,14 @@
  		clock-names = "nfi_clk";
  	};
  
