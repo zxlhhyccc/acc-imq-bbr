@@ -1,8 +1,16 @@
-From 3ee3529e5a31e6183f3ea7f7624533bd582432fc Mon Sep 17 00:00:00 2001
-From: W_Y_CPP <383152993@qq.com>
-Date: Tue, 18 Jan 2022 21:45:34 -0500
-Subject: [PATCH] add net-conntrack-events-support-multiple-registrant for 5.15
+From 42824d4b753f84ccf885eca602c5037338b546c8 Mon Sep 17 00:00:00 2001
+From: Zhi Chen <zhichen@codeaurora.org>
+Date: Tue, 13 Jan 2015 14:28:18 -0800
+Subject: [PATCH 3/3] net: conntrack events, support multiple registrant
 
+Merging this patch from kernel 3.4:
+This was supported by old (.28) kernel versions but removed
+because of it's overhead.
+But we need this feature for NA connection manager. Both ipv4
+and ipv6 modules needs to register themselves to ct events.
+
+Change-Id: Iebfb254590fb594f5baf232f849d1b7ae45ef757
+Signed-off-by: Zhi Chen <zhichen@codeaurora.org>
 ---
  include/net/netfilter/nf_conntrack_ecache.h |  15 ++-
  include/net/netns/conntrack.h               |   3 +
@@ -125,21 +133,10 @@ Subject: [PATCH] add net-conntrack-events-support-multiple-registrant for 5.15
  #include <linux/netdevice.h>
  #include <linux/slab.h>
  #include <linux/export.h>
-@@ -130,6 +133,8 @@ static void ecache_work(stru
- 		schedule_delayed_work(&cnet->ecache_dwork, delay);
- }
- 
-+#ifdef CONFIG_NF_CONNTRACK_EVENTS
-+#ifndef CONFIG_NF_CONNTRACK_CHAIN_EVENTS
- static int __nf_conntrack_eventmask_report(struct nf_conntrack_ecache *e,
- 					   const unsigned int events,
- 					   const unsigned long missed,
-@@ -166,7 +171,37 @@ static int __nf_conntrack_eventmask_repo
- 
+@@ -167,6 +170,35 @@ static int __nf_conntrack_eventmask_repo
  	return ret;
  }
-+#endif
-+#endif
+ 
 +#ifdef CONFIG_NF_CONNTRACK_CHAIN_EVENTS
 +int nf_conntrack_eventmask_report(unsigned int eventmask, struct nf_conn *ct,
 +				  u32 portid, int report)
@@ -150,7 +147,7 @@ Subject: [PATCH] add net-conntrack-events-support-multiple-registrant for 5.15
 +	e = nf_ct_ecache_find(ct);
 +	if (e == NULL)
 +		return 0;
- 
++
 +	if (nf_ct_is_confirmed(ct)) {
 +		struct nf_ct_event item = {
 +			.ct = ct,
@@ -172,7 +169,7 @@ Subject: [PATCH] add net-conntrack-events-support-multiple-registrant for 5.15
  int nf_conntrack_eventmask_report(unsigned int events, struct nf_conn *ct,
  				  u32 portid, int report)
  {
-@@ -203,10 +238,52 @@ int nf_conntrack_eventmask_report(unsign
+@@ -203,10 +235,52 @@ int nf_conntrack_eventmask_report(unsign
  
  	return ret;
  }
@@ -225,7 +222,7 @@ Subject: [PATCH] add net-conntrack-events-support-multiple-registrant for 5.15
  void nf_ct_deliver_cached_events(struct nf_conn *ct)
  {
  	struct nf_conntrack_ecache *e;
-@@ -232,6 +309,7 @@ void nf_ct_deliver_cached_events(struct
+@@ -232,6 +306,7 @@ void nf_ct_deliver_cached_events(struct
  	 */
  	__nf_conntrack_eventmask_report(e, events, e->missed, &item);
  }
@@ -233,7 +230,7 @@ Subject: [PATCH] add net-conntrack-events-support-multiple-registrant for 5.15
  EXPORT_SYMBOL_GPL(nf_ct_deliver_cached_events);
  
  void nf_ct_expect_event_report(enum ip_conntrack_expect_events event,
-@@ -264,20 +342,43 @@ out_unlock:
+@@ -264,20 +339,43 @@ out_unlock:
  	rcu_read_unlock();
  }
  
@@ -279,7 +276,7 @@ Subject: [PATCH] add net-conntrack-events-support-multiple-registrant for 5.15
  void nf_conntrack_unregister_notifier(struct net *net)
  {
  	mutex_lock(&nf_ct_ecache_mutex);
-@@ -285,6 +386,7 @@ void nf_conntrack_unregister_notifier(st
+@@ -285,6 +383,7 @@ void nf_conntrack_unregister_notifier(st
  	mutex_unlock(&nf_ct_ecache_mutex);
  	/* synchronize_rcu() is called after netns pre_exit */
  }
@@ -309,23 +306,7 @@ Subject: [PATCH] add net-conntrack-events-support-multiple-registrant for 5.15
  	struct nf_conn *ct = item->ct;
  	struct sk_buff *skb;
  	unsigned int type;
-@@ -3118,6 +3125,7 @@ nla_put_failure:
- }
- 
- #ifdef CONFIG_NF_CONNTRACK_EVENTS
-+#ifndef CONFIG_NF_CONNTRACK_CHAIN_EVENTS
- static int
- ctnetlink_expect_event(unsigned int events, const struct nf_exp_event *item)
- {
-@@ -3167,6 +3175,7 @@ errout:
- 	return 0;
- }
- #endif
-+#endif
- static int ctnetlink_exp_done(struct netlink_callback *cb)
- {
- 	if (cb->args[1])
-@@ -3769,11 +3778,17 @@ static int ctnetlink_stat_exp_cpu(struct
+@@ -3769,11 +3776,17 @@ static int ctnetlink_stat_exp_cpu(struct
  }
  
  #ifdef CONFIG_NF_CONNTRACK_EVENTS
@@ -343,7 +324,7 @@ Subject: [PATCH] add net-conntrack-events-support-multiple-registrant for 5.15
  
  static const struct nfnl_callback ctnl_cb[IPCTNL_MSG_MAX] = {
  	[IPCTNL_MSG_CT_NEW]	= {
-@@ -3872,8 +3887,12 @@ static int __net_init ctnetlink_net_init
+@@ -3872,8 +3885,12 @@ static int __net_init ctnetlink_net_init
  static void ctnetlink_net_pre_exit(struct net *net)
  {
  #ifdef CONFIG_NF_CONNTRACK_EVENTS
