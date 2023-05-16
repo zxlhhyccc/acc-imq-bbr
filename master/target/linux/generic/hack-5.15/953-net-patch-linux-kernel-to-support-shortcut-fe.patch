@@ -168,7 +168,7 @@ Subject: [PATCH] net-patch-linux-kernel-to-support-shortcut-fe
  
 --- a/net/netfilter/nf_conntrack_ecache.c
 +++ b/net/netfilter/nf_conntrack_ecache.c
-@@ -149,12 +149,23 @@ static int __nf_conntrack_eventmask_repo
+@@ -151,12 +151,23 @@ static int __nf_conntrack_eventmask_repo
  	rcu_read_lock();
  
  	notify = rcu_dereference(net->ct.nf_conntrack_event_cb);
@@ -194,7 +194,7 @@ Subject: [PATCH] net-patch-linux-kernel-to-support-shortcut-fe
  	rcu_read_unlock();
  
  	if (likely(ret >= 0 && missed == 0))
-@@ -345,6 +356,11 @@ int nf_conntrack_register_notifier(struc
+@@ -348,6 +359,11 @@ int nf_conntrack_register_notifier(struc
  {
  	return atomic_notifier_chain_register(&net->ct.nf_conntrack_chain, nb);
  }
@@ -206,7 +206,7 @@ Subject: [PATCH] net-patch-linux-kernel-to-support-shortcut-fe
  #else
  int nf_conntrack_register_notifier(struct net *net,
  				    const struct nf_ct_event_notifier *new)
-@@ -375,6 +391,11 @@ int nf_conntrack_unregister_notifier(str
+@@ -378,6 +394,11 @@ int nf_conntrack_unregister_notifier(str
  {
  	return atomic_notifier_chain_unregister(&net->ct.nf_conntrack_chain, nb);
  }
