@@ -1,6 +1,6 @@
 --- a/Makefile
 +++ b/Makefile
-@@ -17,6 +17,15 @@ PKG_MIRROR_HASH:=f1124cf305710b0f04e2ea6dd42ba96ba4a3367da4d4afb4c19d5af9905b1cc
+@@ -17,6 +17,15 @@ PKG_MIRROR_HASH:=0d9263cbbe79d62966398af66b3b3ce7b58991da6b266f8f4ec2ec4be3d4ad97
  PKG_MAINTAINER:=Jo-Philipp Wich <jo@mein.io>
  PKG_LICENSE:=GPL-2.0
  
