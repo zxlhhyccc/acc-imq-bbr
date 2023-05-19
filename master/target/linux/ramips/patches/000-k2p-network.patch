@@ -1,6 +1,6 @@
 --- a/image/mt7621.mk
 +++ b/image/mt7621.mk
-@@ -175,7 +175,7 @@ define Device/alfa-network_quad-e4g
+@@ -184,7 +184,7 @@ define Device/alfa-network_quad-e4g
    DEVICE_VENDOR := ALFA Network
    DEVICE_MODEL := Quad-E4G
    DEVICE_PACKAGES := kmod-ata-ahci kmod-sdhci-mt7620 kmod-usb3 \
@@ -9,7 +9,7 @@
    SUPPORTED_DEVICES += quad-e4g
  endef
  TARGET_DEVICES += alfa-network_quad-e4g
-@@ -238,7 +238,7 @@ define Device/asiarf_ap7621-001
+@@ -241,7 +241,7 @@ define Device/asiarf_ap7621-001
    DEVICE_VENDOR := AsiaRF
    DEVICE_MODEL := AP7621-001
    DEVICE_PACKAGES := kmod-sdhci-mt7620 kmod-mt76x2 kmod-usb3 \
@@ -18,7 +18,7 @@
  endef
  TARGET_DEVICES += asiarf_ap7621-001
  
-@@ -248,7 +248,7 @@ define Device/asiarf_ap7621-nv1
+@@ -251,7 +251,7 @@ define Device/asiarf_ap7621-nv1
    DEVICE_VENDOR := AsiaRF
    DEVICE_MODEL := AP7621-NV1
    DEVICE_PACKAGES := kmod-sdhci-mt7620 kmod-mt76x2 kmod-usb3 \
@@ -27,7 +27,7 @@
  endef
  TARGET_DEVICES += asiarf_ap7621-nv1
  
-@@ -766,7 +766,7 @@ define Device/dual-q_h721
+@@ -730,7 +730,7 @@ define Device/dual-q_h721
    DEVICE_VENDOR := Dual-Q
    DEVICE_MODEL := H721
    DEVICE_PACKAGES := kmod-ata-ahci kmod-sdhci-mt7620 kmod-usb3 \
@@ -36,7 +36,7 @@
  endef
  TARGET_DEVICES += dual-q_h721
  
-@@ -1010,7 +1010,7 @@ define Device/gnubee_gb-pc1
+@@ -974,7 +974,7 @@ define Device/gnubee_gb-pc1
    DEVICE_VENDOR := GnuBee
    DEVICE_MODEL := Personal Cloud One
    DEVICE_PACKAGES := kmod-ata-ahci kmod-usb3 kmod-sdhci-mt7620 \
@@ -45,7 +45,7 @@
    IMAGE_SIZE := 32448k
  endef
  TARGET_DEVICES += gnubee_gb-pc1
-@@ -1021,7 +1021,7 @@ define Device/gnubee_gb-pc2
+@@ -985,7 +985,7 @@ define Device/gnubee_gb-pc2
    DEVICE_VENDOR := GnuBee
    DEVICE_MODEL := Personal Cloud Two
    DEVICE_PACKAGES := kmod-ata-ahci kmod-usb3 kmod-sdhci-mt7620 \
@@ -54,8 +54,8 @@
    IMAGE_SIZE := 32448k
  endef
  TARGET_DEVICES += gnubee_gb-pc2
-@@ -1358,7 +1358,7 @@ define Device/iptime_t5004
-   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+@@ -1288,7 +1288,7 @@ define Device/iptime_t5004
+   UIMAGE_NAME := t5004
    DEVICE_VENDOR := ipTIME
    DEVICE_MODEL := T5004
 -  DEVICE_PACKAGES := -wpad-basic-mbedtls -uboot-envtools
@@ -63,7 +63,7 @@
  endef
  TARGET_DEVICES += iptime_t5004
  
-@@ -1552,7 +1552,7 @@ define Device/mediatek_ap-mt7621a-v60
+@@ -1466,7 +1466,7 @@ define Device/mediatek_ap-mt7621a-v60
    DEVICE_VENDOR := Mediatek
    DEVICE_MODEL := AP-MT7621A-V60 EVB
    DEVICE_PACKAGES := kmod-usb3 kmod-sdhci-mt7620 kmod-sound-mt7620 \
@@ -72,7 +72,7 @@
  endef
  TARGET_DEVICES += mediatek_ap-mt7621a-v60
  
-@@ -1562,7 +1562,7 @@ define Device/mediatek_mt7621-eval-board
+@@ -1475,7 +1475,7 @@ define Device/mediatek_mt7621-eval-board
    IMAGE_SIZE := 15104k
    DEVICE_VENDOR := MediaTek
    DEVICE_MODEL := MT7621 EVB
@@ -81,7 +81,7 @@
    SUPPORTED_DEVICES += mt7621
  endef
  TARGET_DEVICES += mediatek_mt7621-eval-board
-@@ -1603,7 +1603,7 @@ TARGET_DEVICES += mikrotik_ltap-2hnd
+@@ -1515,7 +1515,7 @@ TARGET_DEVICES += mikrotik_ltap-2hnd
  define Device/mikrotik_routerboard-750gr3
    $(Device/MikroTik)
    DEVICE_MODEL := RouterBOARD 750Gr3
@@ -90,7 +90,7 @@
    SUPPORTED_DEVICES += mikrotik,rb750gr3
  endef
  TARGET_DEVICES += mikrotik_routerboard-750gr3
-@@ -1611,14 +1611,14 @@ TARGET_DEVICES += mikrotik_routerboard-750gr3
+@@ -1523,14 +1523,14 @@ TARGET_DEVICES += mikrotik_routerboard-750gr3
  define Device/mikrotik_routerboard-760igs
    $(Device/MikroTik)
    DEVICE_MODEL := RouterBOARD 760iGS
@@ -107,7 +107,7 @@
    SUPPORTED_DEVICES += mikrotik,rbm11g
  endef
  TARGET_DEVICES += mikrotik_routerboard-m11g
-@@ -1626,7 +1626,7 @@ TARGET_DEVICES += mikrotik_routerboard-m11g
+@@ -1538,7 +1538,7 @@ TARGET_DEVICES += mikrotik_routerboard-m11g
  define Device/mikrotik_routerboard-m33g
    $(Device/MikroTik)
    DEVICE_MODEL := RouterBOARD M33G
@@ -116,7 +116,7 @@
    SUPPORTED_DEVICES += mikrotik,rbm33g
  endef
  TARGET_DEVICES += mikrotik_routerboard-m33g
-@@ -1919,7 +1919,7 @@ define Device/oraybox_x3a
+@@ -1812,7 +1812,7 @@ define Device/oraybox_x3a
    IMAGE_SIZE := 15360k
    DEVICE_VENDOR := OrayBox
    DEVICE_MODEL := X3A
@@ -125,7 +125,7 @@
  endef
  TARGET_DEVICES += oraybox_x3a
  
-@@ -1928,10 +1928,8 @@ define Device/phicomm_k2p
+@@ -1821,10 +1821,8 @@ define Device/phicomm_k2p
    IMAGE_SIZE := 15744k
    DEVICE_VENDOR := Phicomm
    DEVICE_MODEL := K2P
@@ -137,7 +137,7 @@
  endef
  TARGET_DEVICES += phicomm_k2p
  
-@@ -1941,7 +1939,7 @@ define Device/planex_vr500
+@@ -1834,7 +1832,7 @@ define Device/planex_vr500
    IMAGE_SIZE := 65216k
    DEVICE_VENDOR := Planex
    DEVICE_MODEL := VR500
@@ -146,7 +146,7 @@
    SUPPORTED_DEVICES += vr500
  endef
  TARGET_DEVICES += planex_vr500
-@@ -2110,7 +2108,7 @@ define Device/thunder_timecloud
+@@ -1988,7 +1986,7 @@ define Device/thunder_timecloud
    IMAGE_SIZE := 16064k
    DEVICE_VENDOR := Thunder
    DEVICE_MODEL := Timecloud
@@ -155,16 +155,16 @@
    SUPPORTED_DEVICES += timecloud
  endef
  TARGET_DEVICES += thunder_timecloud
-@@ -2258,7 +2256,7 @@ define Device/tplink_er605-v2
+@@ -2141,7 +2139,7 @@ define Device/tplink_er605-v2
    DEVICE_VENDOR := TP-Link
    DEVICE_MODEL := ER605
    DEVICE_VARIANT := v2
 -  DEVICE_PACKAGES := -wpad-basic-mbedtls kmod-usb3 -uboot-envtools
 +  DEVICE_PACKAGES := -wpad-openssl kmod-usb3 -uboot-envtools
-   BLOCKSIZE := 128k
-   PAGESIZE := 2048
-   KERNEL_SIZE := 4096k
-@@ -2353,7 +2351,7 @@ define Device/ubnt_edgerouter_common
+   KERNEL_IN_UBI := 1
+   KERNEL_LOADADDR := 0x82000000
+   KERNEL := kernel-bin | relocate-kernel 0x80001000 | lzma | fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb
+@@ -2232,7 +2230,7 @@ define Device/ubnt_edgerouter_common
    KERNEL_INITRAMFS := $$(KERNEL) | \
  	ubnt-erx-factory-image $(KDIR)/tmp/$$(KERNEL_INITRAMFS_PREFIX)-factory.tar
    IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
@@ -173,7 +173,7 @@
  endef
  
  define Device/ubnt_edgerouter-x
-@@ -2438,7 +2436,7 @@ define Device/unielec_u7621-06-16m
+@@ -2317,7 +2315,7 @@ define Device/unielec_u7621-06-16m
    DEVICE_MODEL := U7621-06
    DEVICE_VARIANT := 16M
    DEVICE_PACKAGES := kmod-ata-ahci kmod-sdhci-mt7620 kmod-usb3 \
@@ -182,7 +182,7 @@
    SUPPORTED_DEVICES += u7621-06-256M-16M unielec,u7621-06-256m-16m
  endef
  TARGET_DEVICES += unielec_u7621-06-16m
-@@ -2451,7 +2449,7 @@ define Device/unielec_u7621-06-32m
+@@ -2330,7 +2328,7 @@ define Device/unielec_u7621-06-32m
    DEVICE_MODEL := U7621-06
    DEVICE_VARIANT := 32M
    DEVICE_PACKAGES := kmod-ata-ahci kmod-sdhci-mt7620 kmod-usb3 \
@@ -191,7 +191,7 @@
    SUPPORTED_DEVICES += unielec,u7621-06-32m
  endef
  TARGET_DEVICES += unielec_u7621-06-32m
-@@ -2464,7 +2462,7 @@ define Device/unielec_u7621-06-64m
+@@ -2343,7 +2341,7 @@ define Device/unielec_u7621-06-64m
    DEVICE_MODEL := U7621-06
    DEVICE_VARIANT := 64M
    DEVICE_PACKAGES := kmod-ata-ahci kmod-sdhci-mt7620 kmod-usb3 \
@@ -200,7 +200,7 @@
    SUPPORTED_DEVICES += unielec,u7621-06-512m-64m
  endef
  TARGET_DEVICES += unielec_u7621-06-64m
-@@ -2686,7 +2684,7 @@ define Device/xiaoyu_xy-c5
+@@ -2549,7 +2547,7 @@ define Device/xiaoyu_xy-c5
    IMAGE_SIZE := 32448k
    DEVICE_VENDOR := XiaoYu
    DEVICE_MODEL := XY-C5
@@ -209,7 +209,7 @@
  	-uboot-envtools
  endef
  TARGET_DEVICES += xiaoyu_xy-c5
-@@ -2697,7 +2695,7 @@ define Device/xzwifi_creativebox-v1
+@@ -2560,7 +2558,7 @@ define Device/xzwifi_creativebox-v1
    DEVICE_VENDOR := CreativeBox
    DEVICE_MODEL := v1
    DEVICE_PACKAGES := kmod-ata-ahci kmod-mt7603 kmod-mt76x2 kmod-sdhci-mt7620 \
