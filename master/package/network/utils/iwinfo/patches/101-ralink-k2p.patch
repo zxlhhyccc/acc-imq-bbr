@@ -1,45 +1,30 @@
 --- a/Makefile
 +++ b/Makefile
-@@ -17,6 +17,15 @@ PKG_MIRROR_HASH:=0d9263cbbe79d62966398af66b3b3ce7b58991da6b266f8f4ec2ec4be3d4ad97
+@@ -17,6 +17,12 @@ PKG_MIRROR_HASH:=0d9263cbbe79d62966398af66b3b3ce7b58991da6b266f8f4ec2ec4be3d4ad9
  PKG_MAINTAINER:=Jo-Philipp Wich <jo@mein.io>
  PKG_LICENSE:=GPL-2.0
  
 +PKG_FLAGS := nonshared
 +
 +PKG_CONFIG_DEPENDS := \
-+	CONFIG_PACKAGE_kmod-brcm-wl \
-+	CONFIG_PACKAGE_kmod-brcm-wl-mini \
-+	CONFIG_PACKAGE_kmod-brcm-wl-mimo \
 +	CONFIG_PACKAGE_kmod-mt7615d_dbdc \
 +	CONFIG_PACKAGE_kmod-cfg80211
 +
  IWINFO_ABI_VERSION:=20230121
  
  include $(INCLUDE_DIR)/package.mk
-@@ -26,7 +35,7 @@ define Package/libiwinfo
-   SECTION:=libs
-   CATEGORY:=Libraries
-   TITLE:=Generalized Wireless Information Library (iwinfo)
--  DEPENDS:=+libnl-tiny +libuci +libubus +libiwinfo-data
-+  DEPENDS:=+PACKAGE_kmod-cfg80211:libnl-tiny +libuci +libubus +libiwinfo-data
-   ABI_VERSION:=$(IWINFO_ABI_VERSION)
- endef
- 
-@@ -71,6 +80,13 @@ endef
+@@ -71,6 +77,10 @@ endef
  define Build/Configure
  endef
  
 +IWINFO_BACKENDS := \
-+	$(if $(CONFIG_PACKAGE_kmod-brcm-wl),wl) \
-+	$(if $(CONFIG_PACKAGE_kmod-brcm-wl-mini),wl) \
-+	$(if $(CONFIG_PACKAGE_kmod-brcm-wl-mimo),wl) \
 +	$(if $(CONFIG_PACKAGE_kmod-mt7615d_dbdc),ra) \
 +	$(if $(CONFIG_PACKAGE_kmod-cfg80211),nl80211)
 +
  TARGET_CFLAGS += \
  	-I$(STAGING_DIR)/usr/include/libnl-tiny \
  	-I$(STAGING_DIR)/usr/include \
-@@ -80,7 +96,7 @@ MAKE_FLAGS += \
+@@ -80,7 +90,7 @@ MAKE_FLAGS += \
  	FPIC="$(FPIC)" \
  	CFLAGS="$(TARGET_CFLAGS)" \
  	LDFLAGS="$(TARGET_LDFLAGS)" \
@@ -50,7 +35,7 @@
  define Build/InstallDev
 --- /dev/null
 +++ b/patches/001-ralink.patch
-@@ -0,0 +1,1537 @@
+@@ -0,0 +1,1496 @@
 +--- /dev/null
 ++++ b/api/ralink.h
 +@@ -0,0 +1,207 @@
@@ -276,7 +261,7 @@
 + #endif
 +--- a/include/iwinfo.h
 ++++ b/include/iwinfo.h
-+@@ -313,6 +313,7 @@ extern const struct iwinfo_ops wext_ops;
++@@ -412,6 +412,7 @@ extern const struct iwinfo_ops wext_ops;
 + extern const struct iwinfo_ops madwifi_ops;
 + extern const struct iwinfo_ops nl80211_ops;
 + extern const struct iwinfo_ops wl_ops;
@@ -286,19 +271,19 @@
 + 
 +--- a/iwinfo_lib.c
 ++++ b/iwinfo_lib.c
-+@@ -344,6 +344,9 @@ static const struct iwinfo_ops *backends
-+ #ifdef USE_WL
-+ 	&wl_ops,
++@@ -388,6 +388,9 @@ static const struct iwinfo_ops *backends
++ #ifdef USE_MADWIFI
++ 	&madwifi_ops,
 + #endif
 ++#ifdef USE_RA
 ++	&ra_ops,
 ++#endif
-+ #ifdef USE_WEXT
-+ 	&wext_ops,
++ #ifdef USE_WL
++ 	&wl_ops,
 + #endif
 +--- a/iwinfo_lua.c
 ++++ b/iwinfo_lua.c
-+@@ -684,6 +684,35 @@ static int iwinfo_L_countrylist(lua_State *L, int (*func)(const char *, char *,
++@@ -686,6 +686,35 @@ static int iwinfo_L_countrylist(lua_Stat
 + 	return 1;
 + }
 + 
@@ -334,7 +319,7 @@
 + 
 + #ifdef USE_WL
 + /* Broadcom */
-+@@ -937,6 +966,41 @@ static const luaL_reg R_wext[] = {
++@@ -906,6 +935,40 @@ static const luaL_reg
 + };
 + #endif
 + 
@@ -372,15 +357,13 @@
 ++
 ++#endif
 ++
-++
-+ /* Common */
-+ static const luaL_reg R_common[] = {
-+ 	{ "type", iwinfo_L_type },
-+@@ -948,6 +1012,15 @@ static const luaL_reg R_common[] = {
++ /* Wext table */
++ #ifdef USE_WEXT
++ static const luaL_reg R_wext[] = {
++@@ -950,6 +1013,14 @@ static const luaL_reg R_common[] = {
 + LUALIB_API int luaopen_iwinfo(lua_State *L) {
 + 	luaL_register(L, IWINFO_META, R_common);
 + 
-++
 ++#ifdef USE_RA
 ++   luaL_newmetatable(L, IWINFO_RA_META);
 ++   luaL_register(L, NULL, R_ra);
@@ -1474,7 +1457,7 @@
 ++#endif
 +--- a/iwinfo_wext.c
 ++++ b/iwinfo_wext.c
-+@@ -197,7 +197,7 @@ static int wext_get_channel(const char *
++@@ -197,7 +197,7 @@ static int wext_get_center_chan2(const c
 + 	return -1;
 + }
 + 
@@ -1519,6 +1502,18 @@
 + {
 + 	char chans[IWINFO_BUFSIZE] = { 0 };
 + 	struct iwinfo_freqlist_entry *e = NULL;
++--- a/iwinfo_utils.c
+++++ b/iwinfo_utils.c
++@@ -407,7 +407,8 @@ int iwinfo_hardware_id_from_mtd(struct i
++ 
++ 				/* subsystem from EEPROM_NIC_CONF0_RF_TYPE */
++ 				id->subsystem_device_id = (bc[off + 0x1a] & 0x0f00) >> 8;
++-			} else if ((bc[off] == 0x7620) || (bc[off] == 0x2076) ||
+++			} else if ((bc[off] == 0x7615) || (bc[off] == 0x1576) ||
+++			           (bc[off] == 0x7620) || (bc[off] == 0x2076) ||
++ 			           (bc[off] == 0x7628) || (bc[off] == 0x2876) ||
++ 			           (bc[off] == 0x7688) || (bc[off] == 0x8876)) {
++ 				/* vendor: MediaTek */
 +--- a/Makefile
 ++++ b/Makefile
 +@@ -39,6 +39,15 @@ ifneq ($(filter nl80211,$(IWINFO_BACKEND
@@ -1537,54 +1532,3 @@
 + 
 + compile: clean $(IWINFO_LIB) $(IWINFO_LUA) $(IWINFO_CLI)
 + 
-+--- a/devices.txt
-++++ b/devices.txt
-+@@ -180,6 +180,36 @@
-+ 0x1814 0x3662 0x1814 0x000d    0      0  "Ralink"   "Rt3662"
-+ 0x1814 0x3883 0x1814 0x000d    0      0  "Ralink"   "Rt3883"
-+ 0x1814 0x5350 0x1814 0x000f    0      0  "Ralink"   "Rt5350"
-++/* MT7620 */
-++0x1814 0x7620 0x1814 0x0000    0      0  "Mediatek" "MT7620"
-++0x1814 0x7620 0x1814 0xffff    0      0  "Mediatek" "MT7620"
-++0x1814 0x7620 0x1814 0x7620    0      0  "Mediatek" "MT7620"
-++/* MT7610 */
-++0x1814 0x7610 0x1814 0x0000    0      0  "Mediatek" "MT7610"
-++0x1814 0x7610 0x1814 0xffff    0      0  "Mediatek" "MT7610"
-++0x1814 0x7610 0x1814 0x7610    0      0  "Mediatek" "MT7610"
-++/* MT7602/MT7612/MT7662 */
-++0x1814 0x7662 0x1814 0x0000    0      0  "Mediatek" "MT7612"
-++0x1814 0x7662 0x1814 0xffff    0      0  "Mediatek" "MT7612"
-++0x1814 0x7662 0x1814 0x7602    0      0  "Mediatek" "MT7602"
-++0x1814 0x7662 0x1814 0x7612    0      0  "Mediatek" "MT7612"
-++0x1814 0x7662 0x1814 0x7662    0      0  "Mediatek" "MT7662"
-++/* MT7603 */
-++0x1814 0x7603 0x1814 0x0000    0      0  "Mediatek" "MT7603"
-++0x1814 0x7603 0x1814 0xffff    0      0  "Mediatek" "MT7603"
-++0x1814 0x7603 0x1814 0x7603    0      0  "Mediatek" "MT7603"
-++/* MT7628/MT7688 */
-++0x1814 0x7628 0x1814 0x0000    0      0  "Mediatek" "MT7628"
-++0x1814 0x7628 0x1814 0xffff    0      0  "Mediatek" "MT7628"
-++0x1814 0x7628 0x1814 0x7628    0      0  "Mediatek" "MT7628"
-++0x1814 0x7628 0x1814 0x7688    0      0  "Mediatek" "MT7688"
-++/* MT7615 */
-++0x1814 0x7615 0x1814 0x0000    0      0  "Mediatek" "MT7615"
-++0x1814 0x7615 0x1814 0xffff    0      0  "Mediatek" "MT7615"
-++0x1814 0x7615 0x1814 0x7615    0      0  "Mediatek" "MT7615"
-++
-++0x14c3 0x7615 0x14c3 0x0000    0      0  "MediaTek" "MT7615E"
-++
-+ 0x11ab 0x2a55 0x11ab 0x0000    0      0  "Marvell"  "88W8864"
-+ 0x02df 0x9135 0x0000 0x0000    0      0  "Marvell"  "88W8887"
-+ 0x11ab 0x2b40 0x11ab 0x0000    0      0  "Marvell"  "88W8964"
-+--- a/iwinfo_utils.c
-++++ b/iwinfo_utils.c
-+@@ -259,7 +259,8 @@ int iwinfo_hardware_id_from_mtd(struct i
-+ 
-+ 				/* subsystem from EEPROM_NIC_CONF0_RF_TYPE */
-+ 				id->subsystem_device_id = (bc[off + 0x1a] & 0x0f00) >> 8;
-+-			} else if ((bc[off] == 0x7620) || (bc[off] == 0x2076) ||
-++			} else if ((bc[off] == 0x7615) || (bc[off] == 0x1576) ||
-++			           (bc[off] == 0x7620) || (bc[off] == 0x2076) ||
-+ 			           (bc[off] == 0x7628) || (bc[off] == 0x2876) ||
-+ 			           (bc[off] == 0x7688) || (bc[off] == 0x8876)) {
-+ 				/* vendor: MediaTek */
