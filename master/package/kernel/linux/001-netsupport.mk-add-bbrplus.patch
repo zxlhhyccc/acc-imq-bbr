@@ -32,8 +32,8 @@
 +net.ipv4.tcp_congestion_control=tsunamio
 --- a/modules/netsupport.mk
 +++ b/modules/netsupport.mk
-@@ -1043,6 +1043,122 @@ endef
- $(eval $(call KernelPackage,tcp-bbr))
+@@ -1062,6 +1062,122 @@ endef
+ $(eval $(call KernelPackage,tls))
  
  
 +define KernelPackage/tcp-nanqinlang
