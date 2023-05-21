@@ -63,7 +63,7 @@
  NGINX_MODULES :=
  
  # $(1) module name
-@@ -503,6 +523,20 @@ define Prepare/nginx-ts
+@@ -504,6 +524,20 @@ define Prepare/nginx-ts
  	xzcat $(DL_DIR)/$(FILE) | tar -C $(PKG_BUILD_DIR) $(TAR_OPTIONS)
  endef
  
@@ -84,7 +84,7 @@
  define Download/nginx-naxsi
    VERSION:=951123ad456bdf5ac94e8d8819342fe3d49bc002
    SUBDIR:=nginx-naxsi
-@@ -616,6 +650,11 @@ ifneq ($(CONFIG_PACKAGE_nginx-mod-ts),)
+@@ -617,6 +651,11 @@ ifneq ($(CONFIG_PACKAGE_nginx-mod-ts),)
    $(Prepare/nginx-ts)
  endif
  
@@ -96,7 +96,7 @@
  ifneq "$(or $(CONFIG_PACKAGE_nginx-mod-dav-ext),$(QUILT))" ""
    $(eval $(call Download,nginx-dav-ext-module))
    $(Prepare/nginx-dav-ext-module)
-@@ -632,6 +671,7 @@ endef
+@@ -633,6 +672,7 @@ endef
  $(eval $(call BuildPackage,nginx-ssl))
  $(eval $(call BuildPackage,nginx-full))
  $(eval $(call BuildPackage,nginx-mod-luci))
