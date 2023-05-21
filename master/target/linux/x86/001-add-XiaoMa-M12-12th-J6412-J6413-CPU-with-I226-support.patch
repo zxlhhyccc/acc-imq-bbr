@@ -1,6 +1,8 @@
+diff --git a/base-files/etc/board.d/02_network b/base-files/etc/board.d/02_network
+index e00e8c0..cd819e8 100644
 --- a/base-files/etc/board.d/02_network
 +++ b/base-files/etc/board.d/02_network
-@@ -71,6 +71,9 @@ traverse-technologies-geos)
+@@ -75,6 +75,9 @@ traverse-technologies-geos)
  	macaddr="$(cat /sys/class/net/eth0/address)" 2>/dev/null
  	[ -n "$macaddr" ] && ucidef_set_interface_macaddr "wan" "$macaddr"
  	;;
