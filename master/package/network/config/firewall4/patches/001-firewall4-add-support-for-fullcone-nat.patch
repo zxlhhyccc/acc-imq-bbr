@@ -229,33 +229,40 @@
 + 			for (let helper in (length(zone.helper) ? zone.helper : this.state.helpers)) {
 --- /dev/null
 +++ b/patches/002-firewall4-Fix-MSS-clamping-with-PBR.patch
-@@ -0,0 +1,39 @@
+@@ -0,0 +1,46 @@
 +diff --git a/root/usr/share/firewall4/templates/ruleset.uc b/root/usr/share/firewall4/templates/ruleset.uc
-+index d6eedfd..57b9094 100644
++index 7bd9309..a05f820 100644
 +--- a/root/usr/share/firewall4/templates/ruleset.uc
 ++++ b/root/usr/share/firewall4/templates/ruleset.uc
-+@@ -413,6 +413,13 @@ table inet fw4 {
++@@ -417,6 +417,13 @@ table inet fw4 {
 + {% for (let rule in fw4.rules("mangle_postrouting")): %}
-+                {%+ include("rule.uc", { fw4, rule }) %}
++ 		{%+ include("rule.uc", { fw4, rule }) %}
 + {% endfor %}
 ++{% for (let zone in fw4.zones()): %}
 ++{%  if (zone.mtu_fix): %}
 ++{%   for (let rule in zone.match_rules): %}
-++               {%+ include("zone-mssfix.uc", { fw4, zone, rule, egress: true }) %}
+++                {%+ include("zone-mssfix.uc", { fw4, zone, rule, egress: true }) %}
 ++{%   endfor %}
 ++{%  endif %}
 ++{% endfor %}
 + {% fw4.includes('chain-append', 'mangle_postrouting') %}
-+        }
++ 	}
 +
-+@@ -463,7 +463,6 @@ table inet fw4 {
-+ {%  if (zone.mtu_fix): %}
-+ {%   for (let rule in zone.match_rules): %}
-+ 		{%+ include("zone-mssfix.uc", { fw4, zone, rule, egress: false }) %}
-+-		{%+ include("zone-mssfix.uc", { fw4, zone, rule, egress: true }) %}
-+ {%   endfor %}
-+ {%  endif %}
++@@ -444,14 +451,6 @@ table inet fw4 {
++ {% for (let rule in fw4.rules("mangle_forward")): %}
++ 		{%+ include("rule.uc", { fw4, rule }) %}
 + {% endfor %}
++-{% for (let zone in fw4.zones()): %}
++-{%  if (zone.mtu_fix): %}
++-{%   for (let rule in zone.match_rules): %}
++-		{%+ include("zone-mssfix.uc", { fw4, zone, rule, egress: false }) %}
++-		{%+ include("zone-mssfix.uc", { fw4, zone, rule, egress: true }) %}
++-{%   endfor %}
++-{%  endif %}
++-{% endfor %}
++ {% fw4.includes('chain-append', 'mangle_forward') %}
++ 	}
++ {% fw4.includes('table-append') %}
 +diff --git a/root/usr/share/firewall4/templates/zone-mssfix.uc b/root/usr/share/firewall4/templates/zone-mssfix.uc
 +index b76cfb6..17b6e92 100644
 +--- a/root/usr/share/firewall4/templates/zone-mssfix.uc
