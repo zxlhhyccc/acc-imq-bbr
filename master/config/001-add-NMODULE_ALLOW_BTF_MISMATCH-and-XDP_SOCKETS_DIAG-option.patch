@@ -1,0 +1,47 @@
+--- a/Config-kernel.in
++++ b/Config-kernel.in
+@@ -363,6 +363,7 @@ config KERNEL_DEBUG_INFO
+ config KERNEL_DEBUG_INFO_BTF
+ 
+ 	bool "Enable additional BTF type information"
++	default y if TARGET_bcm27xx || TARGET_ipq807x || TARGET_mediatek_filogic || TARGET_mvebu_cortexa53 || TARGET_mvebu_cortexa72 || TARGET_rockchip || TARGET_sunxi || TARGET_x86
+ 	depends on !HOST_OS_MACOS
+ 	depends on KERNEL_DEBUG_INFO && !KERNEL_DEBUG_INFO_REDUCED
+ 	select DWARVES
+@@ -376,6 +377,7 @@ config KERNEL_DEBUG_INFO_BTF
+ config KERNEL_MODULE_ALLOW_BTF_MISMATCH
+ 	bool "Allow loading modules with non-matching BTF type info"
+ 	depends on KERNEL_DEBUG_INFO_BTF
++	default y
+ 	help
+ 	  For modules whose split BTF does not match vmlinux, load without
+ 	  BTF rather than refusing to load. The default behavior with
+@@ -385,7 +387,7 @@ config KERNEL_MODULE_ALLOW_BTF_MISMATCH
+ 
+ config KERNEL_DEBUG_INFO_REDUCED
+ 	bool "Reduce debugging information"
+-	default y
++	default y if !(TARGET_bcm27xx || TARGET_ipq807x || TARGET_mediatek_filogic || TARGET_mvebu_cortexa53 || TARGET_mvebu_cortexa72 || TARGET_rockchip || TARGET_sunxi || TARGET_x86)
+ 	depends on KERNEL_DEBUG_INFO
+ 	help
+ 	  If you say Y here gcc is instructed to generate less debugging
+@@ -462,6 +464,7 @@ config KERNEL_KPROBE_EVENTS
+ config KERNEL_BPF_EVENTS
+ 	bool "Compile the kernel with BPF event support"
+ 	select KERNEL_KPROBES
++	default y if KERNEL_DEBUG_INFO_BTF
+ 	help
+ 	  Allows to attach BPF programs to kprobe, uprobe and tracepoint events.
+ 	  This is required to use BPF maps of type BPF_MAP_TYPE_PERF_EVENT_ARRAY
+@@ -473,6 +476,11 @@ config KERNEL_BPF_KPROBE_OVERRIDE
+ 	depends on KERNEL_KPROBES
+ 	default n
+ 
++config KERNEL_BPF_STREAM_PARSER
++	bool "Allow a TCP stream parser to be used with BPF_MAP_TYPE_SOCKMAP"
++	depends on KERNEL_CGROUP_BPF
++	default y if KERNEL_DEBUG_INFO_BTF
++
+ config KERNEL_AIO
+ 	bool "Compile the kernel with asynchronous IO support"
+ 	default y if !SMALL_FLASH
