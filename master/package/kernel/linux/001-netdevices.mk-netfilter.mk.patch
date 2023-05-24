@@ -1,6 +1,29 @@
 --- a/modules/netdevices.mk
 +++ b/modules/netdevices.mk
-@@ -1263,6 +1263,26 @@ endef
+@@ -892,6 +892,22 @@ endef
+ $(eval $(call KernelPackage,iavf))
+ 
+ 
++define KernelPackage/ice
++  SUBMENU:=$(NETWORK_DEVICES_MENU)
++  TITLE:=Intel(R) Ethernet Controller E810 Series support
++  DEPENDS:=@PCI_SUPPORT +kmod-ptp
++  KCONFIG:=CONFIG_ICE
++  FILES:=$(LINUX_DIR)/drivers/net/ethernet/intel/ice/ice.ko
++  AUTOLOAD:=$(call AutoProbe,ice)
++endef
++
++define KernelPackage/ice/description
++  Kernel modules for Intel(R) Ethernet Controller E810 Series
++endef
++
++$(eval $(call KernelPackage,ice))
++
++
+ define KernelPackage/b44
+   TITLE:=Broadcom 44xx driver
+   KCONFIG:=CONFIG_B44
+@@ -1263,6 +1279,26 @@ endef
  
  $(eval $(call KernelPackage,bnx2x))
  
@@ -27,28 +50,35 @@
  define KernelPackage/be2net
    SUBMENU:=$(NETWORK_DEVICES_MENU)
    TITLE:=Broadcom Emulex OneConnect 10Gbps NIC
-@@ -1406,6 +1426,21 @@ endef
+@@ -1372,6 +1408,28 @@ endef
+ $(eval $(call KernelPackage,qlcnic))
  
- $(eval $(call KernelPackage,igc))
  
-+define KernelPackage/ice
++define KernelPackage/qede
 +  SUBMENU:=$(NETWORK_DEVICES_MENU)
-+  TITLE:=Intel(R) Ethernet Controller E810 Series support
 +  DEPENDS:=@PCI_SUPPORT +kmod-ptp
-+  KCONFIG:=CONFIG_ICE
-+  FILES:=$(LINUX_DIR)/drivers/net/ethernet/intel/ice/ice.ko
-+  AUTOLOAD:=$(call AutoProbe,ice)
++  TITLE:=QLogic FastLinQ 10/25/40/100Gb Ethernet NIC device support
++  KCONFIG:= \
++	CONFIG_QED \
++	CONFIG_QED_SRIOV=y \
++	CONFIG_QEDE
++  FILES:= \
++	$(LINUX_DIR)/drivers/net/ethernet/qlogic/qed/qed.ko \
++	$(LINUX_DIR)/drivers/net/ethernet/qlogic/qede/qede.ko
++  AUTOLOAD:=$(call AutoProbe,qed qede)
 +endef
 +
-+define KernelPackage/ice/description
-+  Kernel modules for Intel(R) Ethernet Controller E810 Series
++define KernelPackage/qede/description
++  This driver supports QLogic FastLinQ 25/40/100Gb Ethernet NIC
++  devices.
 +endef
 +
-+$(eval $(call KernelPackage,ice))
++$(eval $(call KernelPackage,qede))
 +
- define KernelPackage/sfc
++
+ define KernelPackage/sfp
    SUBMENU:=$(NETWORK_DEVICES_MENU)
-   TITLE:=Solarflare SFC9000/SFC9100/EF100-family support
+   TITLE:=SFP cage support
 --- a/modules/netfilter.mk
 +++ b/modules/netfilter.mk
 @@ -514,6 +514,24 @@ endef
