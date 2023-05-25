@@ -1,0 +1,69 @@
+diff --git a/ecm_conntrack_notifier.c b/ecm_conntrack_notifier.c
+index 7e8f4b6..76f46a3 100644
+--- a/ecm_conntrack_notifier.c
++++ b/ecm_conntrack_notifier.c
+@@ -332,8 +332,15 @@ EXPORT_SYMBOL(ecm_conntrack_ipv4_event);
+  * ecm_conntrack_event()
+  *	Callback event invoked when conntrack connection state changes, currently we handle destroy events to quickly release state
+  */
++#ifdef CONFIG_NF_CONNTRACK_CHAIN_EVENTS
++static int ecm_conntrack_event(struct notifier_block *this, unsigned long events, void *ptr)
++#else
+ static int ecm_conntrack_event(unsigned int events, const struct nf_ct_event *item)
++#endif
+ {
++#ifdef CONFIG_NF_CONNTRACK_CHAIN_EVENTS
++	struct nf_ct_event *item = (struct nf_ct_event *)ptr;
++#endif
+ 	struct nf_conn *ct = item->ct;
+ 
+ 	/*
+@@ -380,6 +387,15 @@ static int ecm_conntrack_event(unsigned int events, const struct nf_ct_event *it
+ 	return NOTIFY_DONE;
+ }
+ 
++#ifdef CONFIG_NF_CONNTRACK_CHAIN_EVENTS
++/*
++ * struct notifier_block ecm_conntrack_notifier
++ *	Netfilter conntrack event system to monitor connection tracking changes
++ */
++static struct notifier_block ecm_conntrack_notifier = {
++	.notifier_call	= ecm_conntrack_event,
++};
++#else
+ /*
+  * struct nf_ct_event_notifier ecm_conntrack_notifier
+  *	Netfilter conntrack event system to monitor connection tracking changes
+@@ -419,10 +435,12 @@ int ecm_conntrack_notifier_init(struct dentry *dentry)
+ 	debugfs_create_u32("stop", S_IRUGO | S_IWUSR, ecm_conntrack_notifier_dentry,
+ 					(u32 *)&ecm_conntrack_notifier_stopped);
+ 
+-#ifdef CONFIG_NF_CONNTRACK_EVENTS
+ 	/*
+ 	 * Eventing subsystem is available so we register a notifier hook to get fast notifications of expired connections
+ 	 */
++#ifdef CONFIG_NF_CONNTRACK_CHAIN_EVENTS
++	result = nf_conntrack_register_chain_notifier(&init_net, &ecm_conntrack_notifier);
++#else
+ #if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 15, 0))
+    result = nf_conntrack_register_notifier(&init_net, &ecm_conntrack_notifier);
+ 	if (result < 0) {
+@@ -432,6 +450,7 @@ int ecm_conntrack_notifier_init(struct dentry *dentry)
+ 	}
+ #else
+    nf_conntrack_register_notifier(&init_net, &ecm_conntrack_notifier);
++#endif
+ #endif
+ 
+     /*
+@@ -465,7 +484,9 @@ EXPORT_SYMBOL(ecm_conntrack_notifier_init);
+ void ecm_conntrack_notifier_exit(void)
+ {
+ 	DEBUG_INFO("ECM Conntrack Notifier exit\n");
+-#ifdef CONFIG_NF_CONNTRACK_EVENTS
++#ifdef CONFIG_NF_CONNTRACK_CHAIN_EVENTS
++	nf_conntrack_unregister_chain_notifier(&init_net, &ecm_conntrack_notifier);
++#else
+ 	/*
+ 	 * Release netns reference.
+ 	 */

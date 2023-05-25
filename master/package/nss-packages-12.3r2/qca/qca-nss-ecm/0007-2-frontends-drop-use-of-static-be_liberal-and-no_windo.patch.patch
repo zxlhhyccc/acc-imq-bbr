@@ -1,0 +1,76 @@
+From 6103e80ad89775eee55a97c8f8e07e9f2ac7d332 Mon Sep 17 00:00:00 2001
+From: Bit Thief <bitthief@protonmail.ch>
+Date: Tue, 4 Apr 2023 05:43:43 +0300
+Subject: [PATCH] frontends: drop use of static be_liberal and no_window_check
+
+---
+ frontends/nss/ecm_nss_ported_ipv4.c | 4 ++++
+ frontends/nss/ecm_nss_ported_ipv6.c | 4 ++++
+ frontends/sfe/ecm_sfe_ported_ipv4.c | 4 ++++
+ frontends/sfe/ecm_sfe_ported_ipv6.c | 4 ++++
+ 4 files changed, 16 insertions(+), 0 deletions(-)
+
+diff --git a/frontends/nss/ecm_nss_ported_ipv4.c b/frontends/nss/ecm_nss_ported_ipv4.c
+index f9c87d5..f706df0 100644
+--- a/frontends/nss/ecm_nss_ported_ipv4.c
++++ b/frontends/nss/ecm_nss_ported_ipv4.c
+@@ -1210,7 +1210,11 @@ static void ecm_nss_ported_ipv4_connection_accelerate(struct ecm_front_end_conne
+ 			nircm->tcp_rule.return_max_window = ct->proto.tcp.seen[return_dir].td_maxwin;
+ 			nircm->tcp_rule.return_end = ct->proto.tcp.seen[return_dir].td_end;
+ 			nircm->tcp_rule.return_max_end = ct->proto.tcp.seen[return_dir].td_maxend;
++#ifdef ECM_OPENWRT_SUPPORT
++			if (tn->tcp_be_liberal || tn->tcp_no_window_check
++#else			
+ 			if (tn->tcp_be_liberal
++#endif
+ 					|| (ct->proto.tcp.seen[flow_dir].flags & IP_CT_TCP_FLAG_BE_LIBERAL)
+ 					|| (ct->proto.tcp.seen[return_dir].flags & IP_CT_TCP_FLAG_BE_LIBERAL)) {
+ 				nircm->rule_flags |= NSS_IPV4_RULE_CREATE_FLAG_NO_SEQ_CHECK;
+diff --git a/frontends/nss/ecm_nss_ported_ipv6.c b/frontends/nss/ecm_nss_ported_ipv6.c
+index 558cdc4..376dd29 100644
+--- a/frontends/nss/ecm_nss_ported_ipv6.c
++++ b/frontends/nss/ecm_nss_ported_ipv6.c
+@@ -1136,7 +1136,11 @@ static void ecm_nss_ported_ipv6_connection_accelerate(struct ecm_front_end_conne
+ 			nircm->tcp_rule.return_max_window = ct->proto.tcp.seen[return_dir].td_maxwin;
+ 			nircm->tcp_rule.return_end = ct->proto.tcp.seen[return_dir].td_end;
+ 			nircm->tcp_rule.return_max_end = ct->proto.tcp.seen[return_dir].td_maxend;
++#ifdef ECM_OPENWRT_SUPPORT
++			if (tn->tcp_be_liberal || tn->tcp_no_window_check
++#else
+ 			if (tn->tcp_be_liberal
++#endif
+ 					|| (ct->proto.tcp.seen[flow_dir].flags & IP_CT_TCP_FLAG_BE_LIBERAL)
+ 					|| (ct->proto.tcp.seen[return_dir].flags & IP_CT_TCP_FLAG_BE_LIBERAL)) {
+ 				nircm->rule_flags |= NSS_IPV6_RULE_CREATE_FLAG_NO_SEQ_CHECK;
+diff --git a/frontends/sfe/ecm_sfe_ported_ipv4.c b/frontends/sfe/ecm_sfe_ported_ipv4.c
+index 9aebdc6..4d6bdff 100644
+--- a/frontends/sfe/ecm_sfe_ported_ipv4.c
++++ b/frontends/sfe/ecm_sfe_ported_ipv4.c
+@@ -1284,7 +1284,11 @@ static void ecm_sfe_ported_ipv4_connection_accelerate(struct ecm_front_end_conne
+ 			nircm->tcp_rule.return_max_window = ct->proto.tcp.seen[return_dir].td_maxwin;
+ 			nircm->tcp_rule.return_end = ct->proto.tcp.seen[return_dir].td_end;
+ 			nircm->tcp_rule.return_max_end = ct->proto.tcp.seen[return_dir].td_maxend;
++#ifdef ECM_OPENWRT_SUPPORT
++			if (tn->tcp_be_liberal || tn->tcp_no_window_check
++#else
+ 			if (tn->tcp_be_liberal
++#endif
+ 					|| (ct->proto.tcp.seen[flow_dir].flags & IP_CT_TCP_FLAG_BE_LIBERAL)
+ 					|| (ct->proto.tcp.seen[return_dir].flags & IP_CT_TCP_FLAG_BE_LIBERAL)) {
+ 				nircm->rule_flags |= SFE_RULE_CREATE_FLAG_NO_SEQ_CHECK;
+diff --git a/frontends/sfe/ecm_sfe_ported_ipv6.c b/frontends/sfe/ecm_sfe_ported_ipv6.c
+index 07e227c..61b7096 100644
+--- a/frontends/sfe/ecm_sfe_ported_ipv6.c
++++ b/frontends/sfe/ecm_sfe_ported_ipv6.c
+@@ -1245,7 +1245,11 @@ static void ecm_sfe_ported_ipv6_connection_accelerate(struct ecm_front_end_conne
+ 			nircm->tcp_rule.return_max_window = ct->proto.tcp.seen[return_dir].td_maxwin;
+ 			nircm->tcp_rule.return_end = ct->proto.tcp.seen[return_dir].td_end;
+ 			nircm->tcp_rule.return_max_end = ct->proto.tcp.seen[return_dir].td_maxend;
++#ifdef ECM_OPENWRT_SUPPORT
++			if (tn->tcp_be_liberal || tn->tcp_no_window_check
++#else
+ 			if (tn->tcp_be_liberal
++#endif
+ 					|| (ct->proto.tcp.seen[flow_dir].flags & IP_CT_TCP_FLAG_BE_LIBERAL)
+ 					|| (ct->proto.tcp.seen[return_dir].flags & IP_CT_TCP_FLAG_BE_LIBERAL)) {
+ 				nircm->rule_flags |= SFE_RULE_CREATE_FLAG_NO_SEQ_CHECK;
