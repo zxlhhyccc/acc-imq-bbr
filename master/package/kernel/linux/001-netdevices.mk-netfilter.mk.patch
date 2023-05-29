@@ -50,7 +50,16 @@
  define KernelPackage/be2net
    SUBMENU:=$(NETWORK_DEVICES_MENU)
    TITLE:=Broadcom Emulex OneConnect 10Gbps NIC
-@@ -1372,6 +1408,30 @@ endef
+@@ -1318,7 +1354,7 @@ define KernelPackage/mlx5-core
+ 	CONFIG_MLX5_EN_IPSEC=n \
+ 	CONFIG_MLX5_EN_RXNFC=y \
+ 	CONFIG_MLX5_EN_TLS=n \
+-	CONFIG_MLX5_ESWITCH=n \
++	CONFIG_MLX5_ESWITCH=y \
+ 	CONFIG_MLX5_FPGA=n \
+ 	CONFIG_MLX5_FPGA_IPSEC=n \
+ 	CONFIG_MLX5_FPGA_TLS=n \
+@@ -1372,6 +1408,28 @@ endef
  $(eval $(call KernelPackage,qlcnic))
  
  
@@ -61,9 +70,7 @@
 +  KCONFIG:= \
 +	CONFIG_QED \
 +	CONFIG_QED_SRIOV=y \
-+	CONFIG_QEDE \
-+	CONFIG_QEDF=n \
-+	CONFIG_QEDI=n
++	CONFIG_QEDE
 +  FILES:= \
 +	$(LINUX_DIR)/drivers/net/ethernet/qlogic/qed/qed.ko \
 +	$(LINUX_DIR)/drivers/net/ethernet/qlogic/qede/qede.ko
