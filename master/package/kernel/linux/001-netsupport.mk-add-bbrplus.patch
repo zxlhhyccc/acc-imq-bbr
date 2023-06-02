@@ -155,7 +155,7 @@
  define KernelPackage/tcp-hybla
    SUBMENU:=$(NETWORK_SUPPORT_MENU)
    TITLE:=TCP-Hybla congestion control algorithm
-@@ -1419,6 +1535,23 @@ endef
+@@ -1434,6 +1550,23 @@ endef
  $(eval $(call KernelPackage,inet-diag))
  
  
