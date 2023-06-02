@@ -1,6 +1,6 @@
 --- a/modules/netdevices.mk
 +++ b/modules/netdevices.mk
-@@ -892,6 +892,22 @@ endef
+@@ -893,6 +893,22 @@ endef
  $(eval $(call KernelPackage,iavf))
  
  
@@ -23,14 +23,14 @@
  define KernelPackage/b44
    TITLE:=Broadcom 44xx driver
    KCONFIG:=CONFIG_B44
-@@ -1263,6 +1279,26 @@ endef
+@@ -1264,6 +1280,26 @@ endef
  
  $(eval $(call KernelPackage,bnx2x))
  
 +define KernelPackage/bnxt-en
 +  SUBMENU:=$(NETWORK_DEVICES_MENU)
 +  TITLE:=BCM 574xx/575xx 10/25/50-Gigabit ethernet adapter driver
-+  DEPENDS:=@PCI_SUPPORT  +kmod-lib-crc32c +kmod-mdio +kmod-ptp +kmod-lib-zlib-inflate +kmod-hwmon-core
++  DEPENDS:=@PCI_SUPPORT +kmod-lib-crc32c +kmod-mdio +kmod-ptp +kmod-lib-zlib-inflate +kmod-hwmon-core
 +  FILES:=$(LINUX_DIR)/drivers/net/ethernet/broadcom/bnxt/bnxt_en.ko
 +  KCONFIG:= \
 +	CONFIG_BNXT \
@@ -50,7 +50,7 @@
  define KernelPackage/be2net
    SUBMENU:=$(NETWORK_DEVICES_MENU)
    TITLE:=Broadcom Emulex OneConnect 10Gbps NIC
-@@ -1318,12 +1354,13 @@ define KernelPackage/mlx5-core
+@@ -1319,12 +1355,13 @@ define KernelPackage/mlx5-core
  	CONFIG_MLX5_EN_IPSEC=n \
  	CONFIG_MLX5_EN_RXNFC=y \
  	CONFIG_MLX5_EN_TLS=n \
@@ -65,18 +65,20 @@
  	CONFIG_MLX5_TC_CT=n \
  	CONFIG_MLX5_TLS=n
    AUTOLOAD:=$(call AutoProbe,mlx5_core)
-@@ -1372,6 +1409,28 @@ endef
+@@ -1373,6 +1410,30 @@ endef
  $(eval $(call KernelPackage,qlcnic))
  
  
 +define KernelPackage/qede
 +  SUBMENU:=$(NETWORK_DEVICES_MENU)
-+  DEPENDS:=@PCI_SUPPORT +kmod-ptp
++  DEPENDS:=@PCI_SUPPORT +kmod-ptp +kmod-lib-crc8 +kmod-lib-zlib-inflate
 +  TITLE:=QLogic FastLinQ 10/25/40/100Gb Ethernet NIC device support
 +  KCONFIG:= \
 +	CONFIG_QED \
 +	CONFIG_QED_SRIOV=y \
-+	CONFIG_QEDE
++	CONFIG_QEDE \
++	CONFIG_QEDF=n \
++	CONFIG_QEDI=n
 +  FILES:= \
 +	$(LINUX_DIR)/drivers/net/ethernet/qlogic/qed/qed.ko \
 +	$(LINUX_DIR)/drivers/net/ethernet/qlogic/qede/qede.ko
