@@ -164,7 +164,7 @@
    KERNEL_IN_UBI := 1
    KERNEL_LOADADDR := 0x82000000
    KERNEL := kernel-bin | relocate-kernel 0x80001000 | lzma | fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb
-@@ -2232,7 +2230,7 @@ define Device/ubnt_edgerouter_common
+@@ -2235,7 +2233,7 @@ define Device/ubnt_edgerouter_common
    KERNEL_INITRAMFS := $$(KERNEL) | \
  	ubnt-erx-factory-image $(KDIR)/tmp/$$(KERNEL_INITRAMFS_PREFIX)-factory.tar
    IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
@@ -173,7 +173,7 @@
  endef
  
  define Device/ubnt_edgerouter-x
-@@ -2317,7 +2315,7 @@ define Device/unielec_u7621-06-16m
+@@ -2320,7 +2318,7 @@ define Device/unielec_u7621-06-16m
    DEVICE_MODEL := U7621-06
    DEVICE_VARIANT := 16M
    DEVICE_PACKAGES := kmod-ata-ahci kmod-sdhci-mt7620 kmod-usb3 \
@@ -182,7 +182,7 @@
    SUPPORTED_DEVICES += u7621-06-256M-16M unielec,u7621-06-256m-16m
  endef
  TARGET_DEVICES += unielec_u7621-06-16m
-@@ -2330,7 +2328,7 @@ define Device/unielec_u7621-06-32m
+@@ -2333,7 +2331,7 @@ define Device/unielec_u7621-06-32m
    DEVICE_MODEL := U7621-06
    DEVICE_VARIANT := 32M
    DEVICE_PACKAGES := kmod-ata-ahci kmod-sdhci-mt7620 kmod-usb3 \
@@ -191,7 +191,7 @@
    SUPPORTED_DEVICES += unielec,u7621-06-32m
  endef
  TARGET_DEVICES += unielec_u7621-06-32m
-@@ -2343,7 +2341,7 @@ define Device/unielec_u7621-06-64m
+@@ -2346,7 +2344,7 @@ define Device/unielec_u7621-06-64m
    DEVICE_MODEL := U7621-06
    DEVICE_VARIANT := 64M
    DEVICE_PACKAGES := kmod-ata-ahci kmod-sdhci-mt7620 kmod-usb3 \
@@ -200,7 +200,7 @@
    SUPPORTED_DEVICES += unielec,u7621-06-512m-64m
  endef
  TARGET_DEVICES += unielec_u7621-06-64m
-@@ -2549,7 +2547,7 @@ define Device/xiaoyu_xy-c5
+@@ -2552,7 +2550,7 @@ define Device/xiaoyu_xy-c5
    IMAGE_SIZE := 32448k
    DEVICE_VENDOR := XiaoYu
    DEVICE_MODEL := XY-C5
@@ -209,7 +209,7 @@
  	-uboot-envtools
  endef
  TARGET_DEVICES += xiaoyu_xy-c5
-@@ -2560,7 +2558,7 @@ define Device/xzwifi_creativebox-v1
+@@ -2563,7 +2561,7 @@ define Device/xzwifi_creativebox-v1
    DEVICE_VENDOR := CreativeBox
    DEVICE_MODEL := v1
    DEVICE_PACKAGES := kmod-ata-ahci kmod-mt7603 kmod-mt76x2 kmod-sdhci-mt7620 \
