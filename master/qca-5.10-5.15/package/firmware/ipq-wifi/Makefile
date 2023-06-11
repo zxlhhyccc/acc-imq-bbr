@@ -6,9 +6,9 @@ PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL=$(PROJECT_GIT)/project/firmware/qca-wireless.git
-PKG_SOURCE_DATE:=2023-05-22
-PKG_SOURCE_VERSION:=0f73d32e641c4f17e64597da0e6c40ed3cbebe69
-PKG_MIRROR_HASH:=70bd8ecda004528ec74de078d00df792f92322c58c4ec4b0630d1da097a8bc89
+PKG_SOURCE_DATE:=2023-06-03
+PKG_SOURCE_VERSION:=cd9c30ca47b8e5388b770c523a7f6b8b969e2f92
+PKG_MIRROR_HASH:=45e623fcc512b514ade0f22e217275536aa8de4afba7dfdb11696482b8fa71a2
 
 PKG_FLAGS:=nonshared
 
@@ -36,6 +36,7 @@ ALLWIFIBOARDS:= \
 	hiwifi_c526a \
 	netgear_sxr80 \
 	netgear_wax218 \
+	prpl_haze \
 	qnap_301w \
 	redmi_ax6 \
 	tplink_xtr10890 \
@@ -126,6 +127,7 @@ $(eval $(call generate-ipq-wifi-package,hiwifi_c526a,HiWiFi C526A))
 $(eval $(call generate-ipq-wifi-package,netgear_sxr80,Netgear SXR80))
 $(eval $(call generate-ipq-wifi-package,netgear_wax218,Netgear WAX218))
 $(eval $(call generate-ipq-wifi-package,qnap_301w,QNAP 301w))
+$(eval $(call generate-ipq-wifi-package,prpl_haze,prpl Haze))
 $(eval $(call generate-ipq-wifi-package,redmi_ax6,Redmi AX6))
 $(eval $(call generate-ipq-wifi-package,tplink_xtr10890,TPLINK XTR10890))
 $(eval $(call generate-ipq-wifi-package,wallys_dr40x9,Wallys DR40X9))
