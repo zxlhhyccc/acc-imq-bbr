@@ -9,13 +9,15 @@ CPU_TYPE:=cortex-a53
 SUBTARGETS:=generic
 
 KERNEL_PATCHVER:=5.15
+KERNEL_TESTING_PATCHVER:=6.1
 
 include $(INCLUDE_DIR)/target.mk
 DEFAULT_PACKAGES += \
 	kmod-usb3 kmod-usb-dwc3 kmod-usb-dwc3-qcom \
 	kmod-leds-gpio kmod-gpio-button-hotplug \
-	kmod-qca-nss-dp qca-ssdk-shell kmod-phy-aquantia \
-	ath11k-firmware-ipq8074 kmod-ath11k-ahb wpad-openssl \
-	wpad-openssl uboot-envtools -automount
+	kmod-phy-aquantia kmod-qca-nss-dp qca-ssdk-shell \
+	ath11k-firmware-ipq8074 kmod-ath11k-ahb \
+	wpad-openssl uboot-envtools \
+	e2fsprogs kmod-fs-ext4 losetup
 
 $(eval $(call BuildTarget))
