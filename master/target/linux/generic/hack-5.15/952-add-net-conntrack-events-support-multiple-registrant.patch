@@ -309,7 +309,7 @@ Subject: [PATCH] add net-conntrack-events-support-multiple-registrant for 5.15
  	struct nf_conn *ct = item->ct;
  	struct sk_buff *skb;
  	unsigned int type;
-@@ -3118,6 +3125,7 @@ nla_put_failure:
+@@ -3112,6 +3119,7 @@ nla_put_failure:
  }
  
  #ifdef CONFIG_NF_CONNTRACK_EVENTS
@@ -317,7 +317,7 @@ Subject: [PATCH] add net-conntrack-events-support-multiple-registrant for 5.15
  static int
  ctnetlink_expect_event(unsigned int events, const struct nf_exp_event *item)
  {
-@@ -3167,6 +3175,7 @@ errout:
+@@ -3161,6 +3169,7 @@ errout:
  	return 0;
  }
  #endif
@@ -325,7 +325,7 @@ Subject: [PATCH] add net-conntrack-events-support-multiple-registrant for 5.15
  static int ctnetlink_exp_done(struct netlink_callback *cb)
  {
  	if (cb->args[1])
-@@ -3769,11 +3778,17 @@ static int ctnetlink_stat_exp_cpu(struct
+@@ -3765,11 +3774,17 @@ static int ctnetlink_stat_exp_cpu(struct
  }
  
  #ifdef CONFIG_NF_CONNTRACK_EVENTS
@@ -343,7 +343,7 @@ Subject: [PATCH] add net-conntrack-events-support-multiple-registrant for 5.15
  
  static const struct nfnl_callback ctnl_cb[IPCTNL_MSG_MAX] = {
  	[IPCTNL_MSG_CT_NEW]	= {
-@@ -3872,8 +3887,12 @@ static int __net_init ctnetlink_net_init
+@@ -3868,8 +3883,12 @@ static int __net_init ctnetlink_net_init
  static void ctnetlink_net_pre_exit(struct net *net)
  {
  #ifdef CONFIG_NF_CONNTRACK_EVENTS
