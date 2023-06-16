@@ -1,0 +1,39 @@
+diff --git a/nss_data_plane/nss_data_plane.c b/nss_data_plane/nss_data_plane.c
+index cfc9ab3..a488082 100644
+--- a/nss_data_plane/nss_data_plane.c
++++ b/nss_data_plane/nss_data_plane.c
+@@ -87,7 +87,7 @@ static int __nss_data_plane_link_state(struct nss_dp_data_plane_ctx *dpc, uint32
+  * __nss_data_plane_mac_addr()
+  *	Called by nss-dp to set mac address
+  */
+-static int __nss_data_plane_mac_addr(struct nss_dp_data_plane_ctx *dpc, uint8_t *addr)
++static int __nss_data_plane_mac_addr(struct nss_dp_data_plane_ctx *dpc, const uint8_t *addr)
+ {
+ 	struct nss_data_plane_param *dp = (struct nss_data_plane_param *)dpc;
+ 
+diff --git a/nss_phys_if.c b/nss_phys_if.c
+index 4e5811a..86af26a 100644
+--- a/nss_phys_if.c
++++ b/nss_phys_if.c
+@@ -402,7 +402,7 @@ nss_tx_status_t nss_phys_if_link_state(struct nss_ctx_instance *nss_ctx, uint32_
+  * nss_phys_if_mac_addr()
+  *	Send a MAC address to physical interface
+  */
+-nss_tx_status_t nss_phys_if_mac_addr(struct nss_ctx_instance *nss_ctx, uint8_t *addr, uint32_t if_num)
++nss_tx_status_t nss_phys_if_mac_addr(struct nss_ctx_instance *nss_ctx, const uint8_t *addr, uint32_t if_num)
+ {
+ 	struct nss_phys_if_msg nim;
+ 	struct nss_if_mac_address_set *nmas;
+diff --git a/nss_phys_if.h b/nss_phys_if.h
+index 8dd4417..62b4baf 100644
+--- a/nss_phys_if.h
++++ b/nss_phys_if.h
+@@ -284,7 +284,7 @@ nss_tx_status_t nss_phys_if_link_state(struct nss_ctx_instance *nss_ctx, uint32_
+  *
+  * @return nss_tx_status_t Tx status
+  */
+-nss_tx_status_t nss_phys_if_mac_addr(struct nss_ctx_instance *nss_ctx, uint8_t *addr, uint32_t if_num);
++nss_tx_status_t nss_phys_if_mac_addr(struct nss_ctx_instance *nss_ctx, const uint8_t *addr, uint32_t if_num);
+ 
+ /**
+  * @brief Send MTU change notification to NSS
