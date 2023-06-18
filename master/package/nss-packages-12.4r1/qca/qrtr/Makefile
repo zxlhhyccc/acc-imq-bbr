@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=qrtr
-PKG_RELEASE:=$(AUTORELEASE)
+PKG_RELEASE:=1
 
 PKG_SOURCE_URL:=https://git.codelinaro.org/clo/qsdk/qrtr.git
 PKG_SOURCE_PROTO:=git
@@ -15,7 +15,7 @@ define Package/qrtr
   SECTION:=utils
   CATEGORY:=Utilities
   TITLE:=QRTR tools
-  DEPENDS:=@(TARGET_ipq807x)
+  DEPENDS:=@(TARGET_qualcommax)
 endef
 
 define Package/qrtr/description

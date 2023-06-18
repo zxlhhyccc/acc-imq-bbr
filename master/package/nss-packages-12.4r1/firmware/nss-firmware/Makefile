@@ -31,7 +31,7 @@ define Package/nss-firmware-default
   SECTION:=firmware
   CATEGORY:=Firmware
   URL:=$(PKG_SOURCE_URL)
-  DEPENDS:=@(TARGET_ipq807x||TARGET_ipq60xx)
+  DEPENDS:=@(TARGET_qualcommax||TARGET_ipq60xx)
 endef
 
 define Package/nss-firmware-ipq6018

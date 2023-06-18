@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=nss-eip-firmware
 PKG_VERSION=2.5.7
-PKG_RELEASE:=$(AUTORELEASE)
+PKG_RELEASE:=1
 
 PKG_MAINTAINER:=Robert Marko <robimarko@gmail.com>
 
@@ -12,7 +12,7 @@ define Package/nss-eip-firmware
   SECTION:=firmware
   CATEGORY:=Firmware
   TITLE:=NSS EIP-197 firmware
-  DEPENDS:=@(TARGET_ipq807x||TARGET_ipq60xx)
+  DEPENDS:=@(TARGET_qualcommax||TARGET_ipq60xx)
 endef
 
 define Build/Compile

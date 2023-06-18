@@ -14,7 +14,7 @@ PKG_BUILD_PARALLEL:=1
 include $(INCLUDE_DIR)/kernel.mk
 include $(INCLUDE_DIR)/package.mk
 
-ifneq (, $(findstring $(CONFIG_TARGET_BOARD), "ipq807x"))
+ifneq (, $(findstring $(CONFIG_TARGET_SUBTARGET), "ipq807x"))
 #4.4/5.4 + ipq807x/ipq60xx/ipq50xx
   CFI_OCF_DIR:=ocf/v2.0
   CFI_CRYPTOAPI_DIR:=cryptoapi/v2.0
@@ -29,7 +29,7 @@ define KernelPackage/qca-nss-cfi-cryptoapi
   SECTION:=kernel
   CATEGORY:=Kernel modules
   SUBMENU:=Cryptographic API modules
-  DEPENDS:=@TARGET_ipq807x +kmod-qca-nss-crypto +kmod-crypto-authenc
+  DEPENDS:=@TARGET_qualcommax +kmod-qca-nss-crypto +kmod-crypto-authenc
   TITLE:=Kernel driver for NSS cfi
   FILES:=$(PKG_BUILD_DIR)/$(CFI_CRYPTOAPI_DIR)/qca-nss-cfi-cryptoapi.ko
   AUTOLOAD:=$(call AutoLoad,59,qca-nss-cfi-cryptoapi)
@@ -52,7 +52,7 @@ EXTRA_CFLAGS+= \
 	-I$(STAGING_DIR)/usr/include/crypto \
 	-I$(STAGING_DIR)/usr/include/qca-nss-drv
 
-ifneq (, $(findstring $(CONFIG_TARGET_BOARD), "ipq807x"))
+ifneq (, $(findstring $(CONFIG_TARGET_SUBTARGET), "ipq807x"))
 EXTRA_CFLAGS+= -I$(STAGING_DIR)/usr/include/qca-nss-clients
 endif
 
@@ -74,7 +74,7 @@ define Build/Compile
 		CFI_CRYPTOAPI_DIR=$(CFI_CRYPTOAPI_DIR) \
 		CFI_OCF_DIR=$(CFI_OCF_DIR) \
 		CFI_IPSEC_DIR=$(CFI_IPSEC_DIR) \
-		SoC=$(CONFIG_TARGET_BOARD) \
+		SoC=$(CONFIG_TARGET_SUBTARGET) \
 		$(KERNEL_MAKE_FLAGS) \
 		$(PKG_JOBS) \
 		modules

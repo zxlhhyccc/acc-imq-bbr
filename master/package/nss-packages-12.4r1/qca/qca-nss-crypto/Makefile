@@ -14,15 +14,15 @@ PKG_BUILD_PARALLEL:=1
 include $(INCLUDE_DIR)/kernel.mk
 include $(INCLUDE_DIR)/package.mk
 
-ifeq ($(CONFIG_TARGET_BOARD), "ipq807x")
+ifeq ($(CONFIG_TARGET_SUBTARGET), "ipq807x")
     SOC="ipq807x_64"
-else ifeq ($(CONFIG_TARGET_BOARD), "ipq60xx")
+else ifeq ($(CONFIG_TARGET_SUBTARGET), "ipq60xx")
     SOC="ipq60xx_64"
 endif
 
 # v1.0 is for Akronite
 # v2.0 is for Hawkeye/Cypress/Maple
-ifneq (, $(findstring $(CONFIG_TARGET_BOARD), "ipq807x" "ipq60xx"))
+ifneq (, $(findstring $(CONFIG_TARGET_SUBTARGET), "ipq807x" "ipq60xx"))
 NSS_CRYPTO_DIR:=v2.0
 else
 NSS_CRYPTO_DIR:=v1.0
@@ -32,7 +32,7 @@ define KernelPackage/qca-nss-crypto
   SECTION:=kernel
   CATEGORY:=Kernel modules
   SUBMENU:=Cryptographic API modules
-  DEPENDS:=@(TARGET_ipq807x||TARGET_ipq60xx) \
+  DEPENDS:=@(TARGET_qualcommax||TARGET_ipq60xx) \
 		   +@NSS_DRV_CRYPTO_ENABLE \
 		   +kmod-qca-nss-drv \
 		   +nss-eip-firmware

@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=qca-nss-ecm
-PKG_RELEASE:=$(AUTORELEASE)
+PKG_RELEASE:=1
 
 PKG_SOURCE_URL:=https://git.codelinaro.org/clo/qsdk/oss/lklm/qca-nss-ecm.git
 PKG_SOURCE_PROTO:=git
@@ -20,7 +20,7 @@ define KernelPackage/qca-nss-ecm
   SECTION:=kernel
   CATEGORY:=Kernel modules
   SUBMENU:=Network Support
-  DEPENDS:=@(TARGET_ipq807x||TARGET_ipq60xx) \
+  DEPENDS:=@(TARGET_qualcommax||TARGET_ipq60xx) \
   		   +@NSS_DRV_IPV6_ENABLE \
 		   +@NSS_DRV_PPE_ENABLE \
 		   +@NSS_DRV_TUN6RD_ENABLE \
@@ -29,7 +29,7 @@ define KernelPackage/qca-nss-ecm
 		   +@NSS_DRV_VIRT_IF_ENABLE \
 		   +@NSS_DRV_WIFI_ENABLE \
 		   +kmod-qca-nss-drv \
-    	   +kmod-nf-conntrack \
+		   +kmod-nf-conntrack \
 		   +kmod-ppp +kmod-pppoe +kmod-pptp +kmod-bonding \
 		   +PACKAGE_kmod-pppol2tp:kmod-pppol2tp \
 		   +PACKAGE_kmod-qca-mcs:kmod-qca-mcs \
@@ -64,7 +64,7 @@ EXTRA_CFLAGS+= \
 		 -I$(STAGING_DIR)/usr/include/qca-mcs \
 		 -I$(STAGING_DIR)/usr/include/nat46
 
-ifneq (, $(findstring $(CONFIG_TARGET_BOARD), "ipq807x" "ipq60xx"))
+ifneq (, $(findstring $(CONFIG_TARGET_SUBTARGET), "ipq807x" "ipq60xx"))
 ECM_MAKE_OPTS+=ECM_FRONT_END_NSS_ENABLE=y \
 		ECM_FRONT_END_SFE_ENABLE=n \
 		ECM_NON_PORTED_SUPPORT_ENABLE=y \
@@ -150,7 +150,7 @@ define Build/Compile
 		ARCH="$(LINUX_KARCH)" \
 		M="$(PKG_BUILD_DIR)" \
 		EXTRA_CFLAGS="$(EXTRA_CFLAGS) -Wno-error=unused-function " \
-		SoC=$(CONFIG_TARGET_BOARD) \
+		SoC=$(CONFIG_TARGET_SUBTARGET) \
 		$(KERNEL_MAKE_FLAGS) \
 		$(PKG_JOBS) \
 		modules

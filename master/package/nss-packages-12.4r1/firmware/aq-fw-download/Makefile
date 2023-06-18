@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=aq-fw-download
-PKG_RELEASE:=$(AUTORELEASE)
+PKG_RELEASE:=1
 
 PKG_FLAGS:=nonshared
 
@@ -10,7 +10,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/aq-fw-download
 	SECTION:=firmware
 	CATEGORY:=Firmware
-	DEPENDS:=@TARGET_ipq807x
+	DEPENDS:=@TARGET_qualcommax
 	TITLE:=Aquantia FW downloader utitlity
 endef
 
