@@ -16,7 +16,7 @@ Subject: [PATCH] net-patch-linux-kernel-to-support-shortcut-fe
 
 --- a/include/linux/if_bridge.h
 +++ b/include/linux/if_bridge.h
-@@ -70,6 +70,9 @@ void brioctl_set(int (*hook)(struct net
+@@ -69,6 +69,9 @@ void brioctl_set(int (*hook)(struct net
  int br_ioctl_call(struct net *net, struct net_bridge *br, unsigned int cmd,
  		  struct ifreq *ifr, void __user *uarg);
  
@@ -77,8 +77,8 @@ Subject: [PATCH] net-patch-linux-kernel-to-support-shortcut-fe
  	default y
 --- a/net/bridge/br_if.c
 +++ b/net/bridge/br_if.c
-@@ -777,6 +777,28 @@ void br_port_flags_change(struct net_bri
- 		br_offload_port_state(p);
+@@ -773,6 +773,28 @@ void br_port_flags_change(struct net_bri
+ 		br_recalculate_neigh_suppress_enabled(br);
  }
  
 +void br_dev_update_stats(struct net_device *dev,
@@ -127,7 +127,7 @@ Subject: [PATCH] net-patch-linux-kernel-to-support-shortcut-fe
  
  #ifdef CONFIG_ETHERNET_PACKET_MANGLE
  	if (dev->eth_mangle_tx && !(skb = dev->eth_mangle_tx(dev, skb)))
-@@ -5219,6 +5227,11 @@ void netdev_rx_handler_unregister(struct
+@@ -5221,6 +5229,11 @@ void netdev_rx_handler_unregister(struct
  }
  EXPORT_SYMBOL_GPL(netdev_rx_handler_unregister);
  
@@ -139,7 +139,7 @@ Subject: [PATCH] net-patch-linux-kernel-to-support-shortcut-fe
  /*
   * Limit the use of PFMEMALLOC reserves to those protocols that implement
   * the special handling of PFMEMALLOC skbs.
-@@ -5267,6 +5280,10 @@ static int __netif_receive_skb_core(stru
+@@ -5269,6 +5282,10 @@ static int __netif_receive_skb_core(stru
  	int ret = NET_RX_DROP;
  	__be16 type;
  
@@ -150,7 +150,7 @@ Subject: [PATCH] net-patch-linux-kernel-to-support-shortcut-fe
  	net_timestamp_check(!READ_ONCE(netdev_tstamp_prequeue), skb);
  
  	trace_netif_receive_skb(skb);
-@@ -5304,6 +5321,15 @@ another_round:
+@@ -5306,6 +5323,15 @@ another_round:
  			goto out;
  	}
  

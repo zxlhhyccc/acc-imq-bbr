@@ -10,3 +10,29 @@ index 2fd9d7bf..35419491 100755
  
  phy_info_t *phy_info[SW_MAX_NR_DEV] = {0};
  a_uint32_t port_bmp[SW_MAX_NR_DEV] = {0};
+@@ -1678,8 +1678,9 @@ hsl_port_combo_phy_driver_update(a_uint32_t dev_id,
+ 	}
+ 	mutex_unlock(&phydev->lock);
+ 
+-	/*reprobe phy driver*/
+-	device_reprobe(dev);
++	/* reprobe phy driver, the return value must be checked incase of warning. */
++	if (device_reprobe(dev))
++		SSDK_ERROR("reprobe failed\n");
+ 
+ 	SSDK_DEBUG("combo phy switched to: phy_type %d, phyid 0x%x, is_c45 %d, "
+ 		"phydrv %s, phydev state %d\n", phy_info[dev_id]->phy_type[port_id],
+diff --git a/src/hsl/isisc/isisc_acl_prv.h b/src/hsl/isisc/isisc_acl_prv.h
+index cd5540a..e378273 100755
+--- a/src/hsl/isisc/isisc_acl_prv.h
++++ b/src/hsl/isisc/isisc_acl_prv.h
+@@ -91,6 +91,9 @@ typedef struct
+ #define ISISC_FILTER_MSK_ADDR    0x59000
+ #define ISISC_FILTER_ACT_ADDR    0x5a000
+ 
++#if defined(FIELD_GET)
++#undef FIELD_GET
++#endif
+ 
+ #define FIELD_SET(reg, field, val) \
+     SW_REG_SET_BY_FIELD_U32(hw->vlu[reg], val, reg##_##field##_BOFFSET, \
