@@ -1,20 +1,24 @@
+diff --git a/patches/0001-mt76-allow-VHT-rate-on-2.4GHz.patch b/patches/0001-mt76-allow-VHT-rate-on-2.4GHz.patch
+new file mode 100644
+index 0000000..1c2baba
 --- /dev/null
 +++ b/patches/0001-mt76-allow-VHT-rate-on-2.4GHz.patch
-@@ -0,0 +1,59 @@
-+From 62468f0b5a72e506915cf50176b701626767e353 Mon Sep 17 00:00:00 2001
+@@ -0,0 +1,234 @@
++From 12c2b3f818d2e0c53e14f0d1b13242cee7138feb Mon Sep 17 00:00:00 2001
 +From: DENG Qingfang <dengqf6@mail2.sysu.edu.cn>
 +Date: Mon, 23 Nov 2020 10:46:37 +0800
-+Subject: [PATCH] mt76: allow VHT rate on 2.4GHz
++Subject: [PATCH 1/6] mt76: allow VHT rate on 2.4GHz
 +
 +Allow chips that support 11ac to use 256QAM on 2.4GHz
 +
 +Signed-off-by: DENG Qingfang <dqfext@gmail.com>
++Signed-off-by: rany <ranygh@riseup.net>
 +---
 + mac80211.c | 10 +++++-----
 + 1 file changed, 5 insertions(+), 5 deletions(-)
 +
 +diff --git a/mac80211.c b/mac80211.c
-+index b117e4467..8bdcd59dd 100644
++index 2c4a5290..df3fbd35 100644
 +--- a/mac80211.c
 ++++ b/mac80211.c
 +@@ -282,7 +282,7 @@ static void mt76_init_stream_cap(struct mt76_phy *phy,
@@ -42,7 +46,7 @@
 + }
 + 
 + static int
-+@@ -507,7 +507,7 @@ int mt76_register_phy(struct mt76_phy *phy, bool vht,
++@@ -508,7 +508,7 @@ int mt76_register_phy(struct mt76_phy *phy, bool vht,
 + 		return ret;
 + 
 + 	if (phy->cap.has_2ghz) {
@@ -51,7 +55,7 @@
 + 		if (ret)
 + 			return ret;
 + 	}
-+@@ -686,7 +686,7 @@ int mt76_register_device(struct mt76_dev *dev, bool vht,
++@@ -691,7 +691,7 @@ int mt76_register_device(struct mt76_dev *dev, bool vht,
 + 		return ret;
 + 
 + 	if (phy->cap.has_2ghz) {
@@ -60,3 +64,177 @@
 + 		if (ret)
 + 			return ret;
 + 	}
++-- 
++2.34.1
++
++
++From 1eee3cd65b71ad465b07fae78db7a1e6d766e572 Mon Sep 17 00:00:00 2001
++From: rany <ranygh@riseup.net>
++Date: Fri, 12 May 2023 19:49:38 +0300
++Subject: [PATCH 2/6] wifi: mt76: mt7615: add 256-QAM support in 2.4GHz
++
++Signed-off-by: rany <ranygh@riseup.net>
++---
++ mt7615/init.c | 2 ++
++ 1 file changed, 2 insertions(+)
++
++diff --git a/mt7615/init.c b/mt7615/init.c
++index 621e69f0..13ada39b 100644
++--- a/mt7615/init.c
+++++ b/mt7615/init.c
++@@ -410,6 +410,8 @@ mt7615_init_wiphy(struct ieee80211_hw *hw)
++ 		hw->max_tx_fragments = MT_HW_TXP_MAX_BUF_NUM;
++ 
++ 	phy->mt76->sband_2g.sband.ht_cap.cap |= IEEE80211_HT_CAP_LDPC_CODING;
+++	phy->mt76->sband_2g.sband.vht_cap.cap |=
+++			IEEE80211_VHT_CAP_MAX_A_MPDU_LENGTH_EXPONENT_MASK;
++ 	phy->mt76->sband_5g.sband.ht_cap.cap |= IEEE80211_HT_CAP_LDPC_CODING;
++ 	phy->mt76->sband_5g.sband.vht_cap.cap |=
++ 			IEEE80211_VHT_CAP_MAX_A_MPDU_LENGTH_EXPONENT_MASK;
++-- 
++2.34.1
++
++
++From b8628fd465befe391a5bdaeb64d6fe34d864dcab Mon Sep 17 00:00:00 2001
++From: rany <ranygh@riseup.net>
++Date: Fri, 12 May 2023 20:01:24 +0300
++Subject: [PATCH 3/6] wifi: mt76: mt7915: add 256-QAM support in 2.4Ghz
++
++Signed-off-by: rany <ranygh@riseup.net>
++---
++ mt7915/init.c | 13 +++++++++++++
++ 1 file changed, 13 insertions(+)
++
++diff --git a/mt7915/init.c b/mt7915/init.c
++index ada878e0..2ef0040e 100644
++--- a/mt7915/init.c
+++++ b/mt7915/init.c
++@@ -395,11 +395,24 @@ mt7915_init_wiphy(struct mt7915_phy *phy)
++ 		wiphy->txq_memory_limit = 32 << 20; /* 32 MiB */
++ 
++ 	if (phy->mt76->cap.has_2ghz) {
+++		struct ieee80211_sta_vht_cap *vht_cap;
+++
+++		vht_cap = &phy->mt76->sband_2g.sband.vht_cap;
++ 		phy->mt76->sband_2g.sband.ht_cap.cap |=
++ 			IEEE80211_HT_CAP_LDPC_CODING |
++ 			IEEE80211_HT_CAP_MAX_AMSDU;
++ 		phy->mt76->sband_2g.sband.ht_cap.ampdu_density =
++ 			IEEE80211_HT_MPDU_DENSITY_4;
+++
+++		if (is_mt7915(&dev->mt76)) {
+++			vht_cap->cap |=
+++				IEEE80211_VHT_CAP_MAX_MPDU_LENGTH_7991 |
+++				IEEE80211_VHT_CAP_MAX_A_MPDU_LENGTH_EXPONENT_MASK;
+++		} else {
+++			vht_cap->cap |=
+++				IEEE80211_VHT_CAP_MAX_MPDU_LENGTH_11454 |
+++				IEEE80211_VHT_CAP_MAX_A_MPDU_LENGTH_EXPONENT_MASK;
+++		}
++ 	}
++ 
++ 	if (phy->mt76->cap.has_5ghz) {
++-- 
++2.34.1
++
++
++From 6eea63810b9ee351281f34f36d36f8fe6804d295 Mon Sep 17 00:00:00 2001
++From: rany <ranygh@riseup.net>
++Date: Fri, 12 May 2023 20:03:41 +0300
++Subject: [PATCH 4/6] wifi: mt76: mt7921: add 256-QAM support in 2.4Ghz
++
++Signed-off-by: rany <ranygh@riseup.net>
++---
++ mt7921/init.c | 6 ++++++
++ 1 file changed, 6 insertions(+)
++
++diff --git a/mt7921/init.c b/mt7921/init.c
++index e929f6eb..ba69b063 100644
++--- a/mt7921/init.c
+++++ b/mt7921/init.c
++@@ -431,6 +431,12 @@ int mt7921_register_device(struct mt7921_dev *dev)
++ 	dev->mphy.sband_5g.sband.ht_cap.cap |=
++ 			IEEE80211_HT_CAP_LDPC_CODING |
++ 			IEEE80211_HT_CAP_MAX_AMSDU;
+++	dev->mphy.sband_2g.sband.vht_cap.cap |=
+++			IEEE80211_VHT_CAP_MAX_MPDU_LENGTH_11454 |
+++			IEEE80211_VHT_CAP_MAX_A_MPDU_LENGTH_EXPONENT_MASK |
+++			IEEE80211_VHT_CAP_SU_BEAMFORMEE_CAPABLE |
+++			IEEE80211_VHT_CAP_MU_BEAMFORMEE_CAPABLE |
+++			(3 << IEEE80211_VHT_CAP_BEAMFORMEE_STS_SHIFT);
++ 	dev->mphy.sband_5g.sband.vht_cap.cap |=
++ 			IEEE80211_VHT_CAP_MAX_MPDU_LENGTH_11454 |
++ 			IEEE80211_VHT_CAP_MAX_A_MPDU_LENGTH_EXPONENT_MASK |
++-- 
++2.34.1
++
++
++From c8fac2a17aacb57b73ad139635169e3fd0b8e2fa Mon Sep 17 00:00:00 2001
++From: rany <ranygh@riseup.net>
++Date: Fri, 12 May 2023 20:04:23 +0300
++Subject: [PATCH 5/6] wifi: mt76: mt7996: add 256-QAM support in 2.4Ghz
++
++Signed-off-by: rany <ranygh@riseup.net>
++---
++ mt7996/init.c | 4 ++++
++ 1 file changed, 4 insertions(+)
++
++diff --git a/mt7996/init.c b/mt7996/init.c
++index f1b48cdd..1e4f1471 100644
++--- a/mt7996/init.c
+++++ b/mt7996/init.c
++@@ -201,6 +201,10 @@ mt7996_init_wiphy(struct ieee80211_hw *hw)
++ 		phy->mt76->sband_2g.sband.ht_cap.cap |=
++ 			IEEE80211_HT_CAP_LDPC_CODING |
++ 			IEEE80211_HT_CAP_MAX_AMSDU;
+++
+++		phy->mt76->sband_2g.sband.vht_cap.cap |=
+++			IEEE80211_VHT_CAP_MAX_MPDU_LENGTH_11454 |
+++			IEEE80211_VHT_CAP_MAX_A_MPDU_LENGTH_EXPONENT_MASK;
++ 		phy->mt76->sband_2g.sband.ht_cap.ampdu_density =
++ 			IEEE80211_HT_MPDU_DENSITY_2;
++ 	}
++-- 
++2.34.1
++
++
++From 4f0670343704f41b68378164092e31c7d2dd6207 Mon Sep 17 00:00:00 2001
++From: Rani Hod <rani.hod@gmail.com>
++Date: Thu, 15 Jun 2023 15:44:32 +0300
++Subject: [PATCH 6/6] Set the vendor_qam256_supported flag when initializing 2g
++ bands.
++
++Signed-off-by: Rani Hod <rani.hod@gmail.com>
++---
++ mac80211.c | 11 ++++++++++-
++ 1 file changed, 10 insertions(+), 1 deletion(-)
++
++diff --git a/mac80211.c b/mac80211.c
++index df3fbd35..c42be544 100644
++--- a/mac80211.c
+++++ b/mac80211.c
++@@ -351,11 +351,20 @@ static int
++ mt76_init_sband_2g(struct mt76_phy *phy, struct ieee80211_rate *rates,
++ 		   int n_rates, bool vht)
++ {
+++	int ret;
+++
++ 	phy->hw->wiphy->bands[NL80211_BAND_2GHZ] = &phy->sband_2g.sband;
++ 
++-	return mt76_init_sband(phy, &phy->sband_2g, mt76_channels_2ghz,
+++	ret = mt76_init_sband(phy, &phy->sband_2g, mt76_channels_2ghz,
++ 			       ARRAY_SIZE(mt76_channels_2ghz), rates,
++ 			       n_rates, true, vht);
+++
+++	if (ret)
+++		return ret;
+++
+++	phy->sband_2g.sband.vht_cap.vendor_qam256_supported = true;
+++
+++	return 0;
++ }
++ 
++ static int
++-- 
++2.34.1
++
