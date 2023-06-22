@@ -8,7 +8,7 @@
  				br2684ctl:  access('/usr/sbin/br2684ctl') == true,
  				swconfig:   access('/sbin/swconfig') == true,
  				odhcpd:     access('/usr/sbin/odhcpd') == true,
-@@ -538,6 +539,85 @@ const methods = {
+@@ -538,6 +539,105 @@ const methods = {
  		call: function() {
  			return { result: process_list() };
  		}
@@ -51,6 +51,26 @@
 +				return { cpuusage: cpuusage };
 +			} else {
 +				return { cpuusage: error() };
++			}
++		}
++	},
++
++	getETHInfo: {
++		call: function() {
++			if (!access('/sbin/ethinfo'))
++				return {};
++
++			const fd = popen('/sbin/ethinfo');
++			if (fd) {
++				let ethinfo = fd.read('all');
++				if (!ethinfo)
++					ethinfo = '{}';
++				ethinfo = json(ethinfo);
++				fd.close();
++
++				return { ethinfo: ethinfo };
++			} else {
++				return { ethinfo: error() };
 +			}
 +		}
 +	},
