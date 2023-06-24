@@ -10,7 +10,7 @@
 +
 +This reverts commit 1eb0fafaa9865b729509a7d47ecf1f05c2c0595c.
 +---
-+ device.c       | 13 -------------
++ device.c       | 14 --------------
 + device.h       |  6 ------
 + system-linux.c | 52 --------------------------------------------------
 + 3 files changed, 72 deletions(-)
