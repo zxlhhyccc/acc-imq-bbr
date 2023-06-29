@@ -14,12 +14,21 @@
  			s.option(form.ListValue, 'output', _('Output')),
 --- a/po/zh_Hans/firewall.po
 +++ b/po/zh_Hans/firewall.po
-@@ -1504,6 +1504,15 @@ msgstr "最多 65536 个条目。"
+@@ -1504,6 +1504,24 @@ msgstr "最多 65536 个条目。"
  msgid "valid firewall mark"
  msgstr "有效的防火墙标记"
  
 +msgid "Enable FullCone NAT"
-+msgstr "启用 FullCone-NAT"
++msgstr "启用 FullCone NAT"
++
++msgid "Using FullCone NAT can improve gaming performance effectively"
++msgstr "使用 FullCone NAT 加速可以有效提升游戏体验"
++
++msgid "Enable FullCone NAT6"
++msgstr "启用 FullCone NAT6"
++
++msgid "Disable"
++msgstr "禁用"
 +
 +msgid "Compatible Mode"
 +msgstr "兼容模式"
