@@ -1,6 +1,6 @@
 --- a/Makefile
 +++ b/Makefile
-@@ -17,6 +17,12 @@ PKG_MIRROR_HASH:=0d9263cbbe79d62966398af66b3b3ce7b58991da6b266f8f4ec2ec4be3d4ad9
+@@ -17,6 +17,12 @@ PKG_MIRROR_HASH:=5eddf584a1c3ed5637162d6bfc573ed1ce3691fcb38bdd55bf9f1e11e82ccc4
  PKG_MAINTAINER:=Jo-Philipp Wich <jo@mein.io>
  PKG_LICENSE:=GPL-2.0
  
@@ -10,7 +10,7 @@
 +	CONFIG_PACKAGE_kmod-mt7615d_dbdc \
 +	CONFIG_PACKAGE_kmod-cfg80211
 +
- IWINFO_ABI_VERSION:=20230121
+ IWINFO_ABI_VERSION:=20230701
  
  include $(INCLUDE_DIR)/package.mk
 @@ -71,6 +77,10 @@ endef
