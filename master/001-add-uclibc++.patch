@@ -1,6 +1,6 @@
 --- a/config/Config-build.in
 +++ b/config/Config-build.in
-@@ -222,6 +222,20 @@ menu "Global build settings"
+@@ -233,6 +233,20 @@ menu "Global build settings"
  		  make the system libraries incompatible with most of the packages that are
  		  not selected during the build process.
  
