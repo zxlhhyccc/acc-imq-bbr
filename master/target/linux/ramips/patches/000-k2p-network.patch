@@ -38,7 +38,7 @@
  
 @@ -1019,7 +1019,7 @@ define Device/gnubee_gb-pc1
    DEVICE_VENDOR := GnuBee
-   DEVICE_MODEL := Personal Cloud One
+   DEVICE_MODEL := GB-PC1
    DEVICE_PACKAGES := kmod-ata-ahci kmod-usb3 kmod-sdhci-mt7620 \
 -	-wpad-basic-mbedtls -uboot-envtools
 +	-wpad-openssl -uboot-envtools
@@ -47,7 +47,7 @@
  TARGET_DEVICES += gnubee_gb-pc1
 @@ -1030,7 +1030,7 @@ define Device/gnubee_gb-pc2
    DEVICE_VENDOR := GnuBee
-   DEVICE_MODEL := Personal Cloud Two
+   DEVICE_MODEL := GB-PC2
    DEVICE_PACKAGES := kmod-ata-ahci kmod-usb3 kmod-sdhci-mt7620 \
 -	-wpad-basic-mbedtls -uboot-envtools
 +	-wpad-openssl -uboot-envtools
