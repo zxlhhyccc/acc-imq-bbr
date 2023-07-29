@@ -2,7 +2,7 @@ diff --git a/Makefile b/Makefile
 index 5c8a0a4..ff00032 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -101,7 +101,6 @@ define Package/openvpn-$(BUILD_VARIANT)/install
+@@ -99,7 +99,6 @@ define Package/openvpn-$(BUILD_VARIANT)/install
  		$(1)/usr/sbin \
  		$(1)/usr/share/openvpn \
  		$(1)/etc/init.d \
@@ -10,7 +10,7 @@ index 5c8a0a4..ff00032 100644
  		$(1)/etc/openvpn \
  		$(1)/lib/functions \
  		$(1)/lib/upgrade/keep.d \
-@@ -136,9 +135,6 @@ define Package/openvpn-$(BUILD_VARIANT)/install
+@@ -134,9 +133,6 @@ define Package/openvpn-$(BUILD_VARIANT)/install
  		files/openvpn.options \
  		$(1)/usr/share/openvpn/openvpn.options
  
@@ -24,7 +24,7 @@ diff --git a/files/openvpn.options b/files/openvpn.options
 index 7c641f7..35e4fd6 100644
 --- a/files/openvpn.options
 +++ b/files/openvpn.options
-@@ -115,6 +115,7 @@ socks_proxy
+@@ -114,6 +114,7 @@ socks_proxy
  status
  status_version
  syslog
