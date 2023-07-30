@@ -1,6 +1,6 @@
 --- a/dts/mt7621.dtsi
 +++ b/dts/mt7621.dtsi
-@@ -437,6 +437,14 @@
+@@ -423,6 +423,14 @@
  		clock-names = "nfi_clk";
  	};
  
