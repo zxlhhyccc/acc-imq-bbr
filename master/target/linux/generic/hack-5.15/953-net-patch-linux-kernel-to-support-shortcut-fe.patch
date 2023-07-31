@@ -77,7 +77,7 @@ Subject: [PATCH] net-patch-linux-kernel-to-support-shortcut-fe
  	default y
 --- a/net/bridge/br_if.c
 +++ b/net/bridge/br_if.c
-@@ -773,6 +773,28 @@ void br_port_flags_change(struct net_bri
+@@ -774,6 +774,28 @@ void br_port_flags_change(struct net_bri
  		br_recalculate_neigh_suppress_enabled(br);
  }
  
