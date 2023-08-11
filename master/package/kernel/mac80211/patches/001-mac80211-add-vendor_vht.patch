@@ -1,18 +1,17 @@
 --- a/files/lib/netifd/wireless/mac80211.sh
 +++ b/files/lib/netifd/wireless/mac80211.sh
-@@ -275,22 +275,40 @@ mac80211_hostapd_setup_base() {
+@@ -275,22 +275,38 @@ mac80211_hostapd_setup_base() {
  			vht_center_seg0=$idx
  		;;
  	esac
 -	[ "$band" = "5g" ] && {
 -		json_get_vars background_radar:0
-+	if [ "$band" = "2g" ]; then
-+		enable_ac=0
- 
+-
 -		[ "$background_radar" -eq 1 ] && append base_cfg "enable_background_radar=1" "$N"
 -	}
 -	[ "$band" = "6g" ] && {
 -		op_class=
++	if [ "$band" = "2g" ]; then
  		case "$htmode" in
 -			HE20) op_class=131;;
 -			HE*) op_class=$((132 + $vht_oper_chwidth))
