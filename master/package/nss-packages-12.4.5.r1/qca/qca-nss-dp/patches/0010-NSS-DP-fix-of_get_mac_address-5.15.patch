@@ -1,0 +1,78 @@
+From cadeb62a42296563141d6954eec58e34ef86778d Mon Sep 17 00:00:00 2001
+From: Robert Marko <robimarko@gmail.com>
+Date: Fri, 13 Aug 2021 20:12:08 +0200
+Subject: [PATCH] NSS-DP: fix of_get_mac_address()
+
+Recently OpenWrt backported the updated of_get_mac_address()
+function which returns and error code instead.
+
+So, patch the SSDK to use it and fix the compilation error.
+
+Signed-off-by: Robert Marko <robimarko@gmail.com>
+---
+ nss_dp_main.c | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
+
+--- a/nss_dp_main.c
++++ b/nss_dp_main.c
+@@ -596,7 +596,12 @@ static int32_t nss_dp_of_get_pdata(struct device_node *np,
+ 				   struct net_device *netdev,
+ 				   struct nss_gmac_hal_platform_data *hal_pdata)
+ {
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
+ 	uint8_t *maddr;
++#else
++	u8 maddr[ETH_ALEN];
++	int ret;
++#endif
+ 	struct nss_dp_dev *dp_priv;
+ 	struct resource memres_devtree = {0};
+ #if (LINUX_VERSION_CODE > KERNEL_VERSION(6, 1, 0))
+@@ -634,13 +639,23 @@ static int32_t nss_dp_of_get_pdata(struct device_node *np,
+ 	hal_pdata->netdev = netdev;
+ 	hal_pdata->macid = dp_priv->macid;
+ 
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
+ #if (LINUX_VERSION_CODE < KERNEL_VERSION(6, 1, 0))
+ 	dp_priv->phy_mii_type = of_get_phy_mode(np);
+ #else
+ 	if (of_get_phy_mode(np, &dp_priv->phy_mii_type))
+ 		return -EFAULT;
+ #endif
++#else
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 15, 0))
++	dp_priv->phy_mii_type = of_get_phy_mode(np);
++#else
++	if (of_get_phy_mode(np, &dp_priv->phy_mii_type))
++		return -EFAULT;
++#endif
++#endif
+ 
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
+ #if (LINUX_VERSION_CODE < KERNEL_VERSION(6, 1, 0))
+ 	maddr = (uint8_t *)of_get_mac_address(np);
+ #if (LINUX_VERSION_CODE > KERNEL_VERSION(5, 4, 0))
+@@ -653,12 +670,23 @@ static int32_t nss_dp_of_get_pdata(struct device_node *np,
+ 	if (of_get_mac_address(np, maddr))
+ 		maddr = NULL;
+ #endif /* LINUX_VERSION_CODE 6.1.0 */
++#endif
+ 
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
+ 	if (maddr && is_valid_ether_addr(maddr)) {
+ #if (LINUX_VERSION_CODE < KERNEL_VERSION(6, 1, 0))
+ 		ether_addr_copy(netdev->dev_addr, (const uint8_t *)maddr);
+ #else
+ 		eth_hw_addr_set(netdev, maddr);
++#endif
++#else
++	ret = of_get_mac_address(np, maddr);
++	if (!ret && is_valid_ether_addr(maddr)) {
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 15, 0))
++		ether_addr_copy(netdev->dev_addr, (const uint8_t *)maddr);
++#else
++		eth_hw_addr_set(netdev, maddr);
++#endif
+ #endif
+ 
+ 	} else {

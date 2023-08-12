@@ -1,0 +1,53 @@
+--- a/ecm_interface.c
++++ b/ecm_interface.c
+@@ -341,7 +341,7 @@ static struct net_device *ecm_interface_dev_find_by_local_addr_ipv6(ip_addr_t ad
+ #if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 9, 0))
+ 	dev = (struct net_device *)ipv6_dev_find(&init_net, &addr6, 1);
+ #else
+-	dev = (struct net_device *)ipv6_dev_find(&init_net, &addr6, NULL);
++	dev = (struct net_device *)ipv6_dev_find_and_hold(&init_net, &addr6, 1);
+ #endif
+ 	return dev;
+ }
+@@ -788,7 +788,7 @@ static bool ecm_interface_mac_addr_get_ipv6_no_route(struct net_device *dev, ip_
+ #if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 9, 0))
+ 	local_dev = ipv6_dev_find(&init_net, &daddr, 1);
+ #else
+-	local_dev = ipv6_dev_find(&init_net, &daddr, NULL);
++	local_dev = ipv6_dev_find_and_hold(&init_net, &daddr, 1);
+ #endif
+ 	if (local_dev) {
+ 		DEBUG_TRACE("%pi6 is a local address\n", &daddr);
+diff --git a/frontends/ecm_front_end_common.c b/frontends/ecm_front_end_common.c
+index 8142be1..927e548 100644
+--- a/frontends/ecm_front_end_common.c
++++ b/frontends/ecm_front_end_common.c
+@@ -103,6 +103,10 @@
+ #endif
+ #endif
+ 
++#ifdef ECM_IPV6_ENABLE
++#include "ecm_front_end_ipv6.h"
++#endif
++
+ #ifdef ECM_FRONT_END_FSE_ENABLE
+ /*
+  * Callback object for ECM frontend interaction with wlan driver to add/delete FSE rules.
+@@ -600,7 +604,7 @@ bool ecm_front_end_gre_proto_is_accel_allowed(struct net_device *indev,
+ #if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 9, 0))
+ 		dev = ipv6_dev_find(&init_net, &(orig_tuple->src.u3.in6), 1);
+ #else
+-		dev = ipv6_dev_find(&init_net, &(orig_tuple->src.u3.in6), NULL);
++		dev = ipv6_dev_find_and_hold(&init_net, &(tuple->src.u3.in6), 1);
+ #endif
+ 		if (dev) {
+ 			/*
+@@ -614,7 +618,7 @@ bool ecm_front_end_gre_proto_is_accel_allowed(struct net_device *indev,
+ #if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 9, 0))
+ 		dev = ipv6_dev_find(&init_net, &(orig_tuple->dst.u3.in6), 1);
+ #else
+-		dev = ipv6_dev_find(&init_net, &(orig_tuple->dst.u3.in6), NULL);
++		dev = ipv6_dev_find_and_hold(&init_net, &(tuple->dst.u3.in6), 1);
+ #endif
+ 		if (dev) {
+ 			/*
