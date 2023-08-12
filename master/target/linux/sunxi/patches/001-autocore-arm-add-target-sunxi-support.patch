@@ -1,5 +1,3 @@
-diff --git a/Makefile b/Makefile
-index 1b1c306..7878969 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -24,7 +24,7 @@ KERNELNAME:=zImage dtbs
@@ -11,3 +9,14 @@ index 1b1c306..7878969 100644
  DEFAULT_PACKAGES += partx-utils mkf2fs e2fsprogs
  
  $(eval $(call BuildTarget))
+--- a/modules.mk
++++ b/modules.mk
+@@ -56,7 +56,7 @@ $(eval $(call KernelPackage,rtc-sunxi))
+ define KernelPackage/sunxi-ir
+     SUBMENU:=$(OTHER_MENU)
+     TITLE:=Sunxi SoC built-in IR support
+-    DEPENDS:=@(TARGET_sunxi&&RTC_SUPPORT) +kmod-input-core
++    DEPENDS:=@(TARGET_sunxi&&RTC_SUPPORT) +kmod-multimedia-input
+     KCONFIG:= \
+ 	CONFIG_MEDIA_SUPPORT=y \
+ 	CONFIG_MEDIA_RC_SUPPORT=y \
