@@ -1,6 +1,14 @@
 --- a/root/usr/share/rpcd/ucode/luci
 +++ b/root/usr/share/rpcd/ucode/luci
-@@ -197,6 +197,7 @@ const methods = {
+@@ -48,6 +48,7 @@ const methods = {
+ 		call: function(request) {
+ 			switch (request.args.action) {
+ 			case 'enable':
++			case 'enabled':
+ 			case 'disable':
+ 			case 'start':
+ 			case 'stop':
+@@ -197,6 +198,7 @@ const methods = {
  				firewall4:  access('/sbin/fw4') == true,
  				opkg:       access('/bin/opkg') == true,
  				offloading: access('/sys/module/xt_FLOWOFFLOAD/refcnt') == true || access('/sys/module/nft_flow_offload/refcnt') == true,
@@ -8,7 +16,7 @@
  				br2684ctl:  access('/usr/sbin/br2684ctl') == true,
  				swconfig:   access('/sbin/swconfig') == true,
  				odhcpd:     access('/usr/sbin/odhcpd') == true,
-@@ -538,6 +539,105 @@ const methods = {
+@@ -538,6 +540,105 @@ const methods = {
  		call: function() {
  			return { result: process_list() };
  		}
