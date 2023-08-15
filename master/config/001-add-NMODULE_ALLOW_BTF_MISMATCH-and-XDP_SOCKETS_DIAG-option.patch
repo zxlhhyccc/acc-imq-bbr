@@ -1,6 +1,6 @@
 --- a/Config-kernel.in
 +++ b/Config-kernel.in
-@@ -420,6 +420,7 @@ config KERNEL_DEBUG_INFO
+@@ -421,6 +421,7 @@ config KERNEL_DEBUG_INFO
  config KERNEL_DEBUG_INFO_BTF
  
  	bool "Enable additional BTF type information"
@@ -8,7 +8,7 @@
  	depends on !HOST_OS_MACOS
  	depends on KERNEL_DEBUG_INFO && !KERNEL_DEBUG_INFO_REDUCED
  	select DWARVES
-@@ -433,6 +434,7 @@ config KERNEL_DEBUG_INFO_BTF
+@@ -434,6 +435,7 @@ config KERNEL_DEBUG_INFO_BTF
  config KERNEL_MODULE_ALLOW_BTF_MISMATCH
  	bool "Allow loading modules with non-matching BTF type info"
  	depends on KERNEL_DEBUG_INFO_BTF
@@ -16,7 +16,7 @@
  	help
  	  For modules whose split BTF does not match vmlinux, load without
  	  BTF rather than refusing to load. The default behavior with
-@@ -442,7 +444,7 @@ config KERNEL_MODULE_ALLOW_BTF_MISMATCH
+@@ -443,7 +445,7 @@ config KERNEL_MODULE_ALLOW_BTF_MISMATCH
  
  config KERNEL_DEBUG_INFO_REDUCED
  	bool "Reduce debugging information"
@@ -25,7 +25,7 @@
  	depends on KERNEL_DEBUG_INFO
  	help
  	  If you say Y here gcc is instructed to generate less debugging
-@@ -530,6 +532,7 @@ config KERNEL_KPROBE_EVENTS
+@@ -531,6 +533,7 @@ config KERNEL_KPROBE_EVENTS
  config KERNEL_BPF_EVENTS
  	bool "Compile the kernel with BPF event support"
  	select KERNEL_KPROBES
@@ -33,7 +33,7 @@
  	help
  	  Allows to attach BPF programs to kprobe, uprobe and tracepoint events.
  	  This is required to use BPF maps of type BPF_MAP_TYPE_PERF_EVENT_ARRAY
-@@ -541,6 +544,11 @@ config KERNEL_BPF_KPROBE_OVERRIDE
+@@ -542,6 +545,11 @@ config KERNEL_BPF_KPROBE_OVERRIDE
  	depends on KERNEL_KPROBES
  	default n
  
