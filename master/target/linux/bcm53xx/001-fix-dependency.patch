@@ -1,6 +1,6 @@
 --- a/image/Makefile
 +++ b/image/Makefile
-@@ -465,7 +465,8 @@ define Device/phicomm_k3
+@@ -473,7 +473,8 @@ define Device/phicomm_k3
    DEVICE_ALT0_MODEL := QUANTUM DAX
    DEVICE_ALT1_VENDOR := Wavlink
    DEVICE_ALT1_MODEL := WL-WN538A8
