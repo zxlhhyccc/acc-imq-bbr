@@ -22,7 +22,7 @@
 +rtw88_usb-objs			:= usb.o
 --- a/drivers/net/wireless/realtek/rtw88/mac.c
 +++ b/drivers/net/wireless/realtek/rtw88/mac.c
-@@ -1032,6 +1032,9 @@ static int txdma_queue_mapping(struct rt
+@@ -1042,6 +1042,9 @@ static int txdma_queue_mapping(struct rt
  	if (rtw_chip_wcpu_11ac(rtwdev))
  		rtw_write32(rtwdev, REG_H2CQ_CSR, BIT_H2CQ_FULL);
  
