@@ -615,7 +615,7 @@
  	struct fib_table *tb;
 --- a/net/ipv6/ndisc.c
 +++ b/net/ipv6/ndisc.c
-@@ -649,6 +649,7 @@ void ndisc_send_ns(struct net_device *dev, const struct in6_addr *solicit,
+@@ -650,6 +650,7 @@ void ndisc_send_ns(struct net_device *dev, const struct in6_addr *solicit,
 
  	ndisc_send_skb(skb, daddr, saddr);
  }
@@ -737,7 +737,7 @@
 
 --- a/include/net/vxlan.h
 +++ b/include/net/vxlan.h
-@@ -376,6 +376,15 @@ static inline __be32 vxlan_compute_rco(u
+@@ -381,6 +381,15 @@ static inline __be32 vxlan_compute_rco(u
  	return vni_field;
  }
 
