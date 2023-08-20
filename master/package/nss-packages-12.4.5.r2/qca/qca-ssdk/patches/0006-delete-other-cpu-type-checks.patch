@@ -1,0 +1,83 @@
+--- a/src/init/ssdk_plat.c
++++ b/src/init/ssdk_plat.c
+@@ -1740,36 +1740,6 @@ int ssdk_uniphy_valid_check(a_uint32_t dev_id,
+ 				(mode == PORT_WRAPPER_UDXGMII))
+ 				ret = A_FALSE;
+ 			break;
+-		case QCOM_ID_IPQ9570:
+-		case QCOM_ID_IPQ9574:
+-			break;
+-		case QCOM_ID_IPQ9550:
+-		case QCOM_ID_IPQ9554:
+-			if (index == SSDK_UNIPHY_INSTANCE1)
+-				ret = A_FALSE;
+-			break;
+-		case QCOM_ID_IPQ9510:
+-		case QCOM_ID_IPQ9514:
+-			if ((index == SSDK_UNIPHY_INSTANCE1) ||
+-				(index == SSDK_UNIPHY_INSTANCE2))
+-				ret = A_FALSE;
+-			break;
+-		case QCOM_ID_IPQ5302:
+-		case QCOM_ID_IPQ5312:
+-			if (index == SSDK_UNIPHY_INSTANCE2)
+-				ret = A_FALSE;
+-			if ((mode == PORT_WRAPPER_USXGMII) ||
+-				(mode == PORT_WRAPPER_10GBASE_R) ||
+-				(mode == PORT_WRAPPER_UQXGMII) ||
+-				(mode == PORT_WRAPPER_UDXGMII))
+-				ret = A_FALSE;
+-			break;
+-		case QCOM_ID_IPQ5300:
+-		case QCOM_ID_IPQ5322:
+-		case QCOM_ID_IPQ5332:
+-			if (index == SSDK_UNIPHY_INSTANCE2)
+-				ret = A_FALSE;
+-			break;
+ 		default:
+ 			ret = A_FALSE;
+ 			break;
+@@ -1785,41 +1755,20 @@ int ssdk_uniphy_valid_check(a_uint32_t dev_id,
+ 					(mode == PORT_WRAPPER_UDXGMII))
+ 					ret = A_FALSE;
+ 			}
+-			if (cpu_is_ipq53xx() == A_TRUE) {
+-				if ((mode == PORT_WRAPPER_UQXGMII) ||
+-				(mode == PORT_WRAPPER_UDXGMII)) {
+-					ret = A_FALSE;
+-				}
+-				if ((cpu_is_ipq5302() == A_TRUE) ||
+-					(cpu_is_ipq5312() == A_TRUE)) {
+-					if ((mode == PORT_WRAPPER_10GBASE_R) ||
+-						(mode == PORT_WRAPPER_USXGMII))
+-						ret = A_FALSE;
+-				}
+-			}
+ 			break;
+ 		case SSDK_UNIPHY_INSTANCE1:
+ 			ret = cpu_is_uniphy1_enabled();
+ 			if ((cpu_is_ipq807x() == A_TRUE) ||
+-				(cpu_is_ipq60xx() == A_TRUE) ||
+-				(cpu_is_ipq53xx() == A_TRUE) ||
+-				(cpu_is_ipq95xx() == A_TRUE)) {
++				(cpu_is_ipq60xx() == A_TRUE)) {
+ 				if ((mode == PORT_WRAPPER_UQXGMII) ||
+ 				(mode == PORT_WRAPPER_UDXGMII))
+ 					ret = A_FALSE;
+ 			}
+-			if ((cpu_is_ipq5302() == A_TRUE) ||
+-				(cpu_is_ipq5312() == A_TRUE)) {
+-				if ((mode == PORT_WRAPPER_10GBASE_R) ||
+-					(mode == PORT_WRAPPER_USXGMII))
+-					ret = A_FALSE;
+-			}
+ 			break;
+ 		case SSDK_UNIPHY_INSTANCE2:
+ 			ret = cpu_is_uniphy2_enabled();
+ 			if ((cpu_is_ipq807x() == A_TRUE) ||
+-				(cpu_is_ipq60xx() == A_TRUE) ||
+-				(cpu_is_ipq95xx() == A_TRUE)) {
++				(cpu_is_ipq60xx() == A_TRUE)) {
+ 				if ((mode == PORT_WRAPPER_UQXGMII) ||
+ 				(mode == PORT_WRAPPER_UDXGMII))
+ 					ret = A_FALSE;

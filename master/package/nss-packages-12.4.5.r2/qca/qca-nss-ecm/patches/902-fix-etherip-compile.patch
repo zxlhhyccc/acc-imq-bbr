@@ -1,0 +1,39 @@
+diff --git a/ecm_interface.c b/ecm_interface.c
+index f99b6fe..e765359 100644
+--- a/ecm_interface.c
++++ b/ecm_interface.c
+@@ -4817,7 +4817,7 @@ static inline bool ecm_interface_is_tunnel_endpoint(struct sk_buff *skb, struct
+ 		return true;
+ 	}
+ 
+-	if (protocol == IPPROTO_GRE || protocol == IPPROTO_ESP || protocol == IPPROTO_ETHERIP) {
++	if (protocol == IPPROTO_GRE || protocol == IPPROTO_ESP || protocol == IPPROTO_ETHERNET) {
+ 		return true;
+ 	}
+ 
+diff --git a/ecm_tracker.c b/ecm_tracker.c
+index db0d201..5ccad22 100644
+--- a/ecm_tracker.c
++++ b/ecm_tracker.c
+@@ -980,7 +980,7 @@ static bool ecm_tracker_ip_header_helper_udp(struct ecm_tracker_ip_protocols *et
+ static bool ecm_tracker_ip_header_helper_etherip(struct ecm_tracker_ip_protocols *etip, struct ecm_tracker_ip_protocol_header *etiph, struct ecm_tracker_ip_header *ip_hdr,
+ 						struct sk_buff *skb, uint8_t protocol, ecm_tracker_ip_protocol_type_t ecm_ip_protocol, uint32_t offset, uint32_t remain, int16_t *next_hdr)
+ {
+-	DEBUG_ASSERT((protocol == IPPROTO_ETHERIP) && (ecm_ip_protocol == ECM_TRACKER_IP_PROTOCOL_TYPE_ETHERIP), "Bad protocol: %u or ecm_ip_protocol: %d", protocol, ecm_ip_protocol);
++	DEBUG_ASSERT((protocol == IPPROTO_ETHERNET) && (ecm_ip_protocol == ECM_TRACKER_IP_PROTOCOL_TYPE_ETHERIP), "Bad protocol: %u or ecm_ip_protocol: %d", protocol, ecm_ip_protocol);
+ 
+ 	DEBUG_TRACE("etherip helper skb: %px, protocol: %u, ecm_ip_proto: %d, offset: %u, remain: %u\n", skb, protocol, ecm_ip_protocol, offset, remain);
+ 	if (remain < 16) {
+diff --git a/frontends/cmn/ecm_non_ported_ipv6.c b/frontends/cmn/ecm_non_ported_ipv6.c
+index 274d723..f1be7f7 100644
+--- a/frontends/cmn/ecm_non_ported_ipv6.c
++++ b/frontends/cmn/ecm_non_ported_ipv6.c
+@@ -121,7 +121,7 @@ static inline bool ecm_non_ported_ipv6_is_protocol_supported(int protocol)
+ #if defined(ECM_INTERFACE_GRE_TAP_ENABLE) || defined(ECM_INTERFACE_GRE_TUN_ENABLE)
+ 	case IPPROTO_GRE:
+ #endif
+-	case IPPROTO_ETHERIP:
++	case IPPROTO_ETHERNET:
+ 	case IPPROTO_RAW:
+ 		return true;
+ 	}

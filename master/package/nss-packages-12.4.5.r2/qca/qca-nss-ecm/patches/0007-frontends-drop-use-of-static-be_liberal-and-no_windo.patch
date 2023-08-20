@@ -1,0 +1,83 @@
+From 15530431f3ce3273b3cfc2da356d7fb71ed48020 Mon Sep 17 00:00:00 2001
+From: Ansuel Smith <ansuelsmth@gmail.com>
+Date: Sun, 8 May 2022 16:16:34 +0200
+Subject: [PATCH 08/12] frontends: drop use of static be_liberal and
+ no_window_check
+
+Implementation changed, check these values indirectly instead of relying
+on an extern EXPORT_SYMBOL.
+
+Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+---
+ frontends/nss/ecm_nss_ported_ipv4.c |  5 ++++-
+ frontends/nss/ecm_nss_ported_ipv6.c |  5 ++++-
+ frontends/sfe/ecm_sfe_ported_ipv4.c |  5 ++++-
+ frontends/sfe/ecm_sfe_ported_ipv6.c |  5 ++++-
+ 4 files changed, 16 insertions(+), 4 deletions(-)
+
+diff --git a/frontends/nss/ecm_nss_ported_ipv4.c b/frontends/nss/ecm_nss_ported_ipv4.c
+index b3e1b25..a02aaf6 100644
+--- a/frontends/nss/ecm_nss_ported_ipv4.c
++++ b/frontends/nss/ecm_nss_ported_ipv4.c
+@@ -1206,7 +1206,11 @@ static void ecm_nss_ported_ipv4_connection_accelerate(struct ecm_front_end_conne
+ #else
+ 			struct nf_tcp_net *tn = nf_tcp_pernet(nf_ct_net(ct));
+ 			uint32_t tcp_be_liberal = tn->tcp_be_liberal;
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
+ 			uint32_t tcp_no_window_check = tn->tcp_no_window_check;
++#else
++			uint32_t tcp_no_window_check = tcp_no_window_check;
++#endif
+ #endif
+ 			ecm_db_connection_address_get(feci->ci, ECM_DB_OBJ_DIR_FROM, addr);
+ 			ecm_front_end_flow_and_return_directions_get(ct, addr, 4, &flow_dir, &return_dir);
+diff --git a/frontends/nss/ecm_nss_ported_ipv6.c b/frontends/nss/ecm_nss_ported_ipv6.c
+index 2501167..c7aa51f 100644
+--- a/frontends/nss/ecm_nss_ported_ipv6.c
++++ b/frontends/nss/ecm_nss_ported_ipv6.c
+@@ -1133,7 +1133,11 @@ static void ecm_nss_ported_ipv6_connection_accelerate(struct ecm_front_end_conne
+ #else
+ 			struct nf_tcp_net *tn = nf_tcp_pernet(nf_ct_net(ct));
+ 			uint32_t tcp_be_liberal = tn->tcp_be_liberal;
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
+ 			uint32_t tcp_no_window_check = tn->tcp_no_window_check;
++#else
++			uint32_t tcp_no_window_check = tcp_no_window_check;
++#endif
+ #endif
+ 			ecm_front_end_flow_and_return_directions_get(ct, src_ip, 6, &flow_dir, &return_dir);
+ 
+diff --git a/frontends/sfe/ecm_sfe_ported_ipv4.c b/frontends/sfe/ecm_sfe_ported_ipv4.c
+index 86cc37b..670101a 100644
+--- a/frontends/sfe/ecm_sfe_ported_ipv4.c
++++ b/frontends/sfe/ecm_sfe_ported_ipv4.c
+@@ -1339,7 +1339,11 @@ static void ecm_sfe_ported_ipv4_connection_accelerate(struct ecm_front_end_conne
+ #else
+ 			struct nf_tcp_net *tn = nf_tcp_pernet(nf_ct_net(ct));
+ 			uint32_t tcp_be_liberal = tn->tcp_be_liberal;
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
+ 			uint32_t tcp_no_window_check = tn->tcp_no_window_check;
++#else
++			uint32_t tcp_no_window_check = tcp_no_window_check;
++#endif
+ #endif
+ 			ecm_db_connection_address_get(feci->ci, ECM_DB_OBJ_DIR_FROM, addr);
+ 			ecm_front_end_flow_and_return_directions_get(ct, addr, 4, &flow_dir, &return_dir);
+diff --git a/frontends/sfe/ecm_sfe_ported_ipv6.c b/frontends/sfe/ecm_sfe_ported_ipv6.c
+index 93615af..9ea6fa7 100644
+--- a/frontends/sfe/ecm_sfe_ported_ipv6.c
++++ b/frontends/sfe/ecm_sfe_ported_ipv6.c
+@@ -1352,7 +1352,11 @@ static void ecm_sfe_ported_ipv6_connection_accelerate(struct ecm_front_end_conne
+ #else
+ 			struct nf_tcp_net *tn = nf_tcp_pernet(nf_ct_net(ct));
+ 			uint32_t tcp_be_liberal = tn->tcp_be_liberal;
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0))
+ 			uint32_t tcp_no_window_check = tn->tcp_no_window_check;
++#else
++			uint32_t tcp_no_window_check = tcp_no_window_check;
++#endif
+ #endif
+ 			ecm_front_end_flow_and_return_directions_get(ct, src_ip, 6, &flow_dir, &return_dir);
+ 
+--
+2.34.1
