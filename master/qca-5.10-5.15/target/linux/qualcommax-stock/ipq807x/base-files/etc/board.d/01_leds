@@ -14,6 +14,9 @@ netgear,wax218)
 	ucidef_set_led_wlan "wlan5g" "WIFI 5GHz" "blue:wlan5g" "phy0radio"
 	ucidef_set_led_wlan "wlan2g" "WIFI 2.4GHz" "blue:wlan2g" "phy1radio"
 	;;
+netgear,rax120v2)
+	ucidef_set_led_netdev "aqr" "AQR" "white:aqr" "lan5"
+	;;
 redmi,ax6|\
 redmi,ax6-stock|\
 xiaomi,ax3600|\

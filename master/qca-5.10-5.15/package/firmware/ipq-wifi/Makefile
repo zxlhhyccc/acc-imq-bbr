@@ -35,6 +35,7 @@ ALLWIFIBOARDS:= \
 	edimax_cax1800 \
 	hiwifi_c526a \
 	netgear_sxr80 \
+	netgear_rax120v2 \
 	netgear_wax218 \
 	prpl_haze \
 	qnap_301w \
@@ -127,6 +128,7 @@ $(eval $(call generate-ipq-wifi-package,edgecore_eap102,Edgecore EAP102))
 $(eval $(call generate-ipq-wifi-package,edimax_cax1800,Edimax CAX1800))
 $(eval $(call generate-ipq-wifi-package,hiwifi_c526a,HiWiFi C526A))
 $(eval $(call generate-ipq-wifi-package,netgear_sxr80,Netgear SXR80))
+$(eval $(call generate-ipq-wifi-package,netgear_rax120v2,Netgear RAX120v2))
 $(eval $(call generate-ipq-wifi-package,netgear_wax218,Netgear WAX218))
 $(eval $(call generate-ipq-wifi-package,qnap_301w,QNAP 301w))
 $(eval $(call generate-ipq-wifi-package,prpl_haze,prpl Haze))
