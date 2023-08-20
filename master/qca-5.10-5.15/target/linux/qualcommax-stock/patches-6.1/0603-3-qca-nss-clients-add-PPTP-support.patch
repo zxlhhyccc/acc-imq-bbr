@@ -1,6 +1,6 @@
 --- a/include/linux/if_pppox.h
 +++ b/include/linux/if_pppox.h
-@@ -38,6 +38,7 @@ struct pptp_opt {
+@@ -36,6 +36,7 @@ struct pptp_opt {
  	u32 ack_sent, ack_recv;
  	u32 seq_sent, seq_recv;
  	int ppp_flags;
@@ -8,7 +8,7 @@
  };
  #include <net/sock.h>
  
-@@ -102,8 +103,40 @@ struct pppoe_channel_ops {
+@@ -100,8 +101,40 @@ struct pppoe_channel_ops {
  	int (*get_addressing)(struct ppp_channel *, struct pppoe_opt *);
  };
  
@@ -51,7 +51,7 @@
  #endif /* !(__LINUX_IF_PPPOX_H) */
 --- a/drivers/net/ppp/ppp_generic.c
 +++ b/drivers/net/ppp/ppp_generic.c
-@@ -2972,6 +2972,20 @@ char *ppp_dev_name(struct ppp_channel *c
+@@ -2973,6 +2973,20 @@ char *ppp_dev_name(struct ppp_channel *c
  	return name;
  }
  
@@ -72,7 +72,7 @@
  
  /*
   * Disconnect a channel from the generic layer.
-@@ -3680,6 +3694,28 @@ void ppp_update_stats(struct net_device
+@@ -3681,6 +3695,28 @@ void ppp_update_stats(struct net_device
  	ppp_recv_unlock(ppp);
  }
  
@@ -101,7 +101,7 @@
  /* Returns >0 if the device is a multilink PPP netdevice, 0 if not or < 0 if
   * the device is not PPP.
   */
-@@ -3871,6 +3907,7 @@ EXPORT_SYMBOL(ppp_unregister_channel);
+@@ -3872,6 +3908,7 @@ EXPORT_SYMBOL(ppp_unregister_channel);
  EXPORT_SYMBOL(ppp_channel_index);
  EXPORT_SYMBOL(ppp_unit_number);
  EXPORT_SYMBOL(ppp_dev_name);
@@ -111,7 +111,7 @@
  EXPORT_SYMBOL(ppp_output_wakeup);
 --- a/include/linux/ppp_channel.h
 +++ b/include/linux/ppp_channel.h
-@@ -82,6 +82,9 @@ extern void ppp_unregister_channel(struc
+@@ -84,6 +84,9 @@ extern void ppp_unregister_channel(struc
  /* Get the channel number for a channel */
  extern int ppp_channel_index(struct ppp_channel *);
  
@@ -121,7 +121,7 @@
  /* Get the unit number associated with a channel, or -1 if none */
  extern int ppp_unit_number(struct ppp_channel *);
  
-@@ -114,6 +117,7 @@ extern int ppp_hold_channels(struct net_
+@@ -116,6 +119,7 @@ extern int ppp_hold_channels(struct net_
  /* Test if ppp xmit lock is locked */
  extern bool ppp_is_xmit_locked(struct net_device *dev);
  

@@ -10,10 +10,10 @@
  	__u32 flags;		/* tunnel flags */
 --- a/include/net/ip_tunnels.h
 +++ b/include/net/ip_tunnels.h
-@@ -535,4 +535,9 @@ static inline void ip_tunnel_info_opts_s
-
+@@ -554,4 +554,9 @@ static inline void ip_tunnel_info_opts_s
+ 
  #endif /* CONFIG_INET */
-
+ 
 +/* QCA NSS Clients Support - Start */
 +void ipip6_update_offload_stats(struct net_device *dev, void *ptr);
 +void ip6_update_offload_stats(struct net_device *dev, void *ptr);
@@ -22,10 +22,10 @@
  #endif /* __NET_IP_TUNNELS_H */
 --- a/net/ipv6/ip6_tunnel.c
 +++ b/net/ipv6/ip6_tunnel.c
-@@ -2430,6 +2430,26 @@ nla_put_failure:
+@@ -2398,6 +2398,26 @@ nla_put_failure:
  	return -EMSGSIZE;
  }
-
+ 
 +/* QCA NSS Client Support - Start */
 +/*
 + * Update offload stats
@@ -37,10 +37,10 @@
 +					(struct pcpu_sw_netstats *)ptr;
 +
 +	u64_stats_update_begin(&tstats->syncp);
-+	tstats->tx_packets += offload_stats->tx_packets;
-+	tstats->tx_bytes   += offload_stats->tx_bytes;
-+	tstats->rx_packets += offload_stats->rx_packets;
-+	tstats->rx_bytes   += offload_stats->rx_bytes;
++	u64_stats_add(&tstats->tx_packets, u64_stats_read(&offload_stats->tx_packets));
++	u64_stats_add(&tstats->tx_bytes, u64_stats_read(&offload_stats->tx_bytes));
++	u64_stats_add(&tstats->rx_packets, u64_stats_read(&offload_stats->rx_packets));
++	u64_stats_add(&tstats->rx_bytes, u64_stats_read(&offload_stats->rx_bytes));
 +	u64_stats_update_end(&tstats->syncp);
 +}
 +EXPORT_SYMBOL(ip6_update_offload_stats);
@@ -51,10 +51,10 @@
  	struct ip6_tnl *tunnel = netdev_priv(dev);
 --- a/net/ipv6/sit.c
 +++ b/net/ipv6/sit.c
-@@ -1798,6 +1798,23 @@ nla_put_failure:
+@@ -1733,6 +1733,23 @@ nla_put_failure:
  	return -EMSGSIZE;
  }
-
+ 
 +/* QCA NSS Clients Support - Start */
 +void ipip6_update_offload_stats(struct net_device *dev, void *ptr)
 +{
@@ -63,10 +63,10 @@
 +					(struct pcpu_sw_netstats *)ptr;
 +
 +	u64_stats_update_begin(&tstats->syncp);
-+	tstats->tx_packets += offload_stats->tx_packets;
-+	tstats->tx_bytes   += offload_stats->tx_bytes;
-+	tstats->rx_packets += offload_stats->rx_packets;
-+	tstats->rx_bytes   += offload_stats->rx_bytes;
++	u64_stats_add(&tstats->tx_packets, u64_stats_read(&offload_stats->tx_packets));
++	u64_stats_add(&tstats->tx_bytes, u64_stats_read(&offload_stats->tx_bytes));
++	u64_stats_add(&tstats->rx_packets, u64_stats_read(&offload_stats->rx_packets));
++	u64_stats_add(&tstats->rx_bytes, u64_stats_read(&offload_stats->rx_bytes));
 +	u64_stats_update_end(&tstats->syncp);
 +}
 +EXPORT_SYMBOL(ipip6_update_offload_stats);

@@ -1,0 +1,10 @@
+--- a/arch/arm64/boot/dts/qcom/msm8996.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8996.dtsi
+@@ -3466,6 +3466,7 @@
+ 			compatible = "qcom,msm8996-apcs-hmss-global";
+ 			reg = <0x09820000 0x1000>;
+ 
++			#clock-cells = <0>;
+ 			#mbox-cells = <1>;
+ 		};
+ 

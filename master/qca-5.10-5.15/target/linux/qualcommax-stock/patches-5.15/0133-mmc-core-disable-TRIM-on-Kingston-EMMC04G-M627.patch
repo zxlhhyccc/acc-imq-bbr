@@ -22,7 +22,7 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
 
 --- a/drivers/mmc/core/quirks.h
 +++ b/drivers/mmc/core/quirks.h
-@@ -107,6 +107,13 @@ static const struct mmc_fixup __maybe_un
+@@ -121,6 +121,13 @@ static const struct mmc_fixup __maybe_un
  		  MMC_QUIRK_TRIM_BROKEN),
  
  	/*
