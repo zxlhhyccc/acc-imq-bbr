@@ -1,6 +1,6 @@
 --- a/Makefile
 +++ b/Makefile
-@@ -24,7 +24,7 @@ KERNELNAME:=zImage dtbs
+@@ -25,7 +25,7 @@ KERNELNAME:=zImage dtbs
  
  include $(INCLUDE_DIR)/target.mk
  
