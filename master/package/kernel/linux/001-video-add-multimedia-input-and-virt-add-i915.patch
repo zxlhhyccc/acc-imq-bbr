@@ -166,10 +166,10 @@
  #
 --- a/modules/virt.mk
 +++ b/modules/virt.mk
-@@ -117,3 +117,49 @@ define KernelPackage/vfio-pci/description
+@@ -141,3 +141,49 @@ define KernelPackage/vhost-net
  endef
  
- $(eval $(call KernelPackage,vfio-pci))
+ $(eval $(call KernelPackage,vhost-net))
 +
 +
 +define KernelPackage/vfio-mdev
