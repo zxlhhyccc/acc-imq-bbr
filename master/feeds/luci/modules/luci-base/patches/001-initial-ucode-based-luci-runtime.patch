@@ -1,5 +1,14 @@
 --- a/root/usr/share/rpcd/ucode/luci
 +++ b/root/usr/share/rpcd/ucode/luci
+@@ -8,7 +8,7 @@ import { cursor } from 'uci';
+ 
+ import { init_list, init_index, init_enabled, init_action, conntrack_list, process_list } from 'luci.sys';
+ import { revision, branch } from 'luci.version';
+-import { statvfs, uname } from 'luci.core';
++import { statvfs } from 'luci.core';
+ 
+ import timezones from 'luci.zoneinfo';
+ 
 @@ -48,6 +48,7 @@ const methods = {
  		call: function(request) {
  			switch (request.args.action) {
@@ -16,23 +25,36 @@
  				br2684ctl:  access('/usr/sbin/br2684ctl') == true,
  				swconfig:   access('/sbin/swconfig') == true,
  				odhcpd:     access('/usr/sbin/odhcpd') == true,
-@@ -538,6 +540,105 @@ const methods = {
- 		call: function() {
- 			return { result: process_list() };
+@@ -540,46 +542,102 @@ const methods = {
  		}
-+	},
-+
+ 	},
+ 
+-	getBuiltinEthernetPorts: {
 +	getCPUBench: {
-+		call: function() {
+ 		call: function() {
+-			let fd = open('/etc/board.json', 'r');
+-			let board = fd ? json(fd) : {};
+-			let ports = [];
 +			return { cpubench: readfile('/etc/bench.log') || '' };
 +		}
 +	},
-+
+ 
+-			for (let k in [ 'lan', 'wan' ]) {
+-				if (!board?.network?.[k])
+-					continue;
 +	getCPUInfo: {
 +		call: function() {
 +			if (!access('/sbin/cpuinfo'))
 +				return {};
-+
+ 
+-				if (type(board.network[k].ports) == 'array') {
+-					for (let ifname in board.network[k].ports) {
+-						push(ports, { role: k, device: ifname });
+-					}
+-				}
+-				else if (type(board.network[k].device) == 'string') {
+-					push(ports, { role: k, device: board.network[k].device });
+-				}
 +			const fd = popen('/sbin/cpuinfo');
 +			if (fd) {
 +				let cpuinfo = fd.read('all');
@@ -43,10 +65,14 @@
 +				return { cpuinfo: cpuinfo };
 +			} else {
 +				return { cpuinfo: error() };
-+			}
+ 			}
 +		}
 +	},
-+
+ 
+-			/* Workaround for targets that do not enumerate  all netdevs in board.json */
+-			if (uname().machine in [ 'x86_64' ] &&
+-			    match(ports[0]?.device, /^eth\d+$/)) {
+-				let bus = readlink(`/sys/class/net/${ports[0].device}/device/subsystem`);
 +	getCPUUsage: {
 +		call: function() {
 +			const fd = popen('top -n1 | awk \'/^CPU/ {printf("%d%", 100 - $8)}\'');
@@ -55,19 +81,26 @@
 +				if (!cpuusage)
 +					cpuusage = '?';
 +				fd.close();
-+
+ 
+-				for (let netdev in lsdir('/sys/class/net')) {
+-					if (!match(netdev, /^eth\d+$/))
+-						continue;
 +				return { cpuusage: cpuusage };
 +			} else {
 +				return { cpuusage: error() };
 +			}
 +		}
 +	},
-+
+ 
+-					if (length(filter(ports, port => port.device == netdev)))
+-						continue;
 +	getETHInfo: {
 +		call: function() {
 +			if (!access('/sbin/ethinfo'))
 +				return {};
-+
+ 
+-					if (readlink(`/sys/class/net/${netdev}/device/subsystem`) != bus)
+-						continue;
 +			const fd = popen('/sbin/ethinfo');
 +			if (fd) {
 +				let ethinfo = fd.read('all');
@@ -75,11 +108,13 @@
 +					ethinfo = '{}';
 +				ethinfo = json(ethinfo);
 +				fd.close();
-+
+ 
+-					push(ports, { role: 'unknown', device: netdev });
+-				}
 +				return { ethinfo: ethinfo };
 +			} else {
 +				return { ethinfo: error() };
-+			}
+ 			}
 +		}
 +	},
 +
@@ -87,7 +122,8 @@
 +		call: function() {
 +			if (!access('/sbin/tempinfo'))
 +				return {};
-+
+ 
+-			return { result: ports };
 +			const fd = popen('/sbin/tempinfo');
 +			if (fd) {
 +				let tempinfo = fd.read('all');
@@ -118,7 +154,6 @@
 +			} else {
 +				return { onlineusers: error() };
 +			}
-+		}
+ 		}
  	}
  };
- 
