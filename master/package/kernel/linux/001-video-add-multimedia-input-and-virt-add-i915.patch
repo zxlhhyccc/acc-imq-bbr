@@ -166,7 +166,7 @@
  #
 --- a/modules/virt.mk
 +++ b/modules/virt.mk
-@@ -141,3 +141,49 @@ define KernelPackage/vhost-net
+@@ -139,3 +139,49 @@ define KernelPackage/vhost-net
  endef
  
  $(eval $(call KernelPackage,vhost-net))
