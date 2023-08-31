@@ -1,0 +1,11 @@
+--- a/root/usr/share/rpcd/acl.d/luci-mod-status-index.json
++++ b/root/usr/share/rpcd/acl.d/luci-mod-status-index.json
+@@ -9,7 +9,7 @@
+ 				"/www/luci-static/resources/view/status/include": [ "list" ]
+ 			},
+ 			"ubus": {
+-				"luci": [ "getVersion" ],
++				"luci": [ "getVersion", "getBuiltinEthernetPorts" ],
+ 				"file": [ "list", "read" ],
+ 				"system": [ "board", "info" ]
+ 			}
