@@ -1,14 +1,5 @@
 --- a/files/etc/init.d/zerotier
 +++ b/files/etc/init.d/zerotier
-@@ -18,7 +18,7 @@ start_instance() {
- 	local args=""
- 
- 	if ! section_enabled "$cfg"; then
--		echo "disabled in config"
-+		echo "disabled in /etc/config/zerotier"
- 		return 1
- 	fi
- 
 @@ -35,9 +35,10 @@ start_instance() {
  
  	# Create link or copy files from CONFIG_PATH to config_path
