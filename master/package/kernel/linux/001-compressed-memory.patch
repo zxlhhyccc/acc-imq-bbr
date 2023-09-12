@@ -1,6 +1,6 @@
 --- a/modules/crypto.mk
 +++ b/modules/crypto.mk
-@@ -1041,3 +1041,19 @@ endef
+@@ -1070,3 +1070,19 @@ endef
  
  $(eval $(call KernelPackage,crypto-xts))
  
