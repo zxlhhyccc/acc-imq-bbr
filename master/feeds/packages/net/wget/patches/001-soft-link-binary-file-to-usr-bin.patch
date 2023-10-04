@@ -1,6 +1,6 @@
 --- a/Makefile
 +++ b/Makefile
-@@ -50,7 +50,9 @@ $(call Package/wget/Default)
+@@ -49,7 +49,9 @@ $(call Package/wget/Default)
    DEPENDS+= +libopenssl +librt
    TITLE+= (with SSL support)
    VARIANT:=ssl
@@ -11,7 +11,7 @@
  endef
  
  define Package/wget-ssl/description
-@@ -62,7 +64,9 @@ define Package/wget-nossl
+@@ -61,7 +63,9 @@ define Package/wget-nossl
  $(call Package/wget/Default)
    TITLE+= (without SSL support)
    VARIANT:=nossl
