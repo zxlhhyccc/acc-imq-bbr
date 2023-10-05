@@ -108,7 +108,7 @@ Subject: [PATCH] net-patch-linux-kernel-to-support-shortcut-fe
  	struct net_bridge_port *p;
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -3588,9 +3588,17 @@ static int xmit_one(struct sk_buff *skb,
+@@ -3573,9 +3573,17 @@ static int xmit_one(struct sk_buff *skb,
  {
  	unsigned int len;
  	int rc;
@@ -127,7 +127,7 @@ Subject: [PATCH] net-patch-linux-kernel-to-support-shortcut-fe
  
  #ifdef CONFIG_ETHERNET_PACKET_MANGLE
  	if (dev->eth_mangle_tx && !(skb = dev->eth_mangle_tx(dev, skb)))
-@@ -5221,6 +5229,11 @@ void netdev_rx_handler_unregister(struct
+@@ -5206,6 +5214,11 @@ void netdev_rx_handler_unregister(struct
  }
  EXPORT_SYMBOL_GPL(netdev_rx_handler_unregister);
  
@@ -139,7 +139,7 @@ Subject: [PATCH] net-patch-linux-kernel-to-support-shortcut-fe
  /*
   * Limit the use of PFMEMALLOC reserves to those protocols that implement
   * the special handling of PFMEMALLOC skbs.
-@@ -5269,6 +5282,10 @@ static int __netif_receive_skb_core(stru
+@@ -5254,6 +5267,10 @@ static int __netif_receive_skb_core(stru
  	int ret = NET_RX_DROP;
  	__be16 type;
  
@@ -150,7 +150,7 @@ Subject: [PATCH] net-patch-linux-kernel-to-support-shortcut-fe
  	net_timestamp_check(!READ_ONCE(netdev_tstamp_prequeue), skb);
  
  	trace_netif_receive_skb(skb);
-@@ -5306,6 +5323,15 @@ another_round:
+@@ -5291,6 +5308,15 @@ another_round:
  			goto out;
  	}
  
