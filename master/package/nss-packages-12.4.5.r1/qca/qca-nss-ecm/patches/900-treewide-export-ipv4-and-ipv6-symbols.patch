@@ -57,7 +57,7 @@
  								struct ecm_db_connection_instance **nci);
 --- a/frontends/nss/ecm_nss_ported_ipv4.c
 +++ b/frontends/nss/ecm_nss_ported_ipv4.c
-@@ -1903,6 +1903,7 @@ struct ecm_front_end_connection_instance *ecm_nss_ported_ipv4_connection_instanc
+@@ -1899,6 +1899,7 @@ struct ecm_front_end_connection_instance *ecm_nss_ported_ipv4_connection_instanc
 
  	return feci;
  }
@@ -78,7 +78,7 @@
  								struct ecm_db_connection_instance **nci);
 --- a/frontends/nss/ecm_nss_ported_ipv6.c
 +++ b/frontends/nss/ecm_nss_ported_ipv6.c
-@@ -1816,6 +1816,7 @@ struct ecm_front_end_connection_instance *ecm_nss_ported_ipv6_connection_instanc
+@@ -1812,6 +1812,7 @@ struct ecm_front_end_connection_instance *ecm_nss_ported_ipv6_connection_instanc
 
  	return feci;
  }
