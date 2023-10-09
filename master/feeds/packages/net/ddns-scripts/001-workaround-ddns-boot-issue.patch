@@ -13,7 +13,7 @@
  if [ -n "$${IPKG_INSTROOT}" ]; then
  	/etc/init.d/ddns stop
  	/etc/init.d/ddns disable
-+	
++
 +	sed -i "/ddns restart/d" "/etc/rc.local"
  fi
  exit 0
