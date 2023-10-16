@@ -1,0 +1,196 @@
+From 6103e80ad89775eee55a97c8f8e07e9f2ac7d332 Mon Sep 17 00:00:00 2001
+From: Bit Thief <bitthief@protonmail.ch>
+Date: Tue, 4 Apr 2023 05:43:43 +0300
+Subject: [PATCH] frontends: drop use of static be_liberal and no_window_check
+
+---
+ frontends/nss/ecm_nss_ported_ipv4.c | 22 ++++++++--------------
+ frontends/nss/ecm_nss_ported_ipv6.c | 20 +++++++-------------
+ frontends/sfe/ecm_sfe_ported_ipv4.c | 22 ++++++++--------------
+ frontends/sfe/ecm_sfe_ported_ipv6.c | 22 ++++++++--------------
+ 4 files changed, 31 insertions(+), 55 deletions(-)
+
+--- a/frontends/nss/ecm_nss_ported_ipv4.c
++++ b/frontends/nss/ecm_nss_ported_ipv4.c
+@@ -99,6 +99,7 @@
+ static int ecm_nss_ported_ipv4_accelerated_count[ECM_FRONT_END_PORTED_PROTO_MAX] = {0};
+ 						/* Array of Number of TCP and UDP connections currently offloaded */
+ 
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 13, 0))
+ /*
+  * Expose what should be a static flag in the TCP connection tracker.
+  */
+@@ -106,6 +107,7 @@ static int ecm_nss_ported_ipv4_accelerated_count[ECM_FRONT_END_PORTED_PROTO_MAX]
+ extern int nf_ct_tcp_no_window_check;
+ #endif
+ extern int nf_ct_tcp_be_liberal;
++#endif
+ 
+ /*
+  * ecm_nss_ported_ipv4_connection_callback()
+@@ -1198,7 +1200,14 @@ static void ecm_nss_ported_ipv4_connection_accelerate(struct ecm_front_end_conne
+ 		} else {
+ 			int flow_dir;
+ 			int return_dir;
+-
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 13, 0))
++			uint32_t tcp_be_liberal = nf_ct_tcp_be_liberal;
++			uint32_t tcp_no_window_check = nf_ct_tcp_no_window_check;
++#else
++			struct nf_tcp_net *tn = nf_tcp_pernet(nf_ct_net(ct));
++			uint32_t tcp_be_liberal = tn->tcp_be_liberal;
++			uint32_t tcp_no_window_check = tcp_no_window_check;
++#endif
+ 			ecm_db_connection_address_get(feci->ci, ECM_DB_OBJ_DIR_FROM, addr);
+ 			ecm_front_end_flow_and_return_directions_get(ct, addr, 4, &flow_dir, &return_dir);
+ 
+@@ -1213,9 +1222,9 @@ static void ecm_nss_ported_ipv4_connection_accelerate(struct ecm_front_end_conne
+ 			nircm->tcp_rule.return_end = ct->proto.tcp.seen[return_dir].td_end;
+ 			nircm->tcp_rule.return_max_end = ct->proto.tcp.seen[return_dir].td_maxend;
+ #ifdef ECM_OPENWRT_SUPPORT
+-			if (nf_ct_tcp_be_liberal || nf_ct_tcp_no_window_check
++			if (tcp_be_liberal || tcp_no_window_check
+ #else
+-			if (nf_ct_tcp_be_liberal
++			if (tcp_be_liberal
+ #endif
+ 					|| (ct->proto.tcp.seen[flow_dir].flags & IP_CT_TCP_FLAG_BE_LIBERAL)
+ 					|| (ct->proto.tcp.seen[return_dir].flags & IP_CT_TCP_FLAG_BE_LIBERAL)) {
+--- a/frontends/nss/ecm_nss_ported_ipv6.c
++++ b/frontends/nss/ecm_nss_ported_ipv6.c
+@@ -100,6 +100,7 @@
+ static int ecm_nss_ported_ipv6_accelerated_count[ECM_FRONT_END_PORTED_PROTO_MAX] = {0};
+ 						/* Array of Number of TCP and UDP connections currently offloaded */
+ 
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 13, 0))
+ /*
+  * Expose what should be a static flag in the TCP connection tracker.
+  */
+@@ -107,6 +108,7 @@ static int ecm_nss_ported_ipv6_accelerated_count[ECM_FRONT_END_PORTED_PROTO_MAX]
+ extern int nf_ct_tcp_no_window_check;
+ #endif
+ extern int nf_ct_tcp_be_liberal;
++#endif
+ 
+ /*
+  * ecm_nss_ported_ipv6_connection_callback()
+@@ -1125,7 +1127,14 @@ static void ecm_nss_ported_ipv6_connection_accelerate(struct ecm_front_end_conne
+ 		} else {
+ 			int flow_dir;
+ 			int return_dir;
+-
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 13, 0))
++			uint32_t tcp_be_liberal = nf_ct_tcp_be_liberal;
++			uint32_t tcp_no_window_check = nf_ct_tcp_no_window_check;
++#else
++			struct nf_tcp_net *tn = nf_tcp_pernet(nf_ct_net(ct));
++			uint32_t tcp_be_liberal = tn->tcp_be_liberal;
++			uint32_t tcp_no_window_check = tcp_no_window_check;
++#endif
+ 			ecm_front_end_flow_and_return_directions_get(ct, src_ip, 6, &flow_dir, &return_dir);
+ 
+ 			DEBUG_TRACE("%px: TCP Accel Get window data from ct %px for conn %px\n", feci, ct, feci->ci);
+@@ -1139,9 +1148,9 @@ static void ecm_nss_ported_ipv6_connection_accelerate(struct ecm_front_end_conne
+ 			nircm->tcp_rule.return_end = ct->proto.tcp.seen[return_dir].td_end;
+ 			nircm->tcp_rule.return_max_end = ct->proto.tcp.seen[return_dir].td_maxend;
+ #ifdef ECM_OPENWRT_SUPPORT
+-			if (nf_ct_tcp_be_liberal || nf_ct_tcp_no_window_check
++			if (tcp_be_liberal || tcp_no_window_check
+ #else
+-			if (nf_ct_tcp_be_liberal
++			if (tcp_be_liberal
+ #endif
+ 					|| (ct->proto.tcp.seen[flow_dir].flags & IP_CT_TCP_FLAG_BE_LIBERAL)
+ 					|| (ct->proto.tcp.seen[return_dir].flags & IP_CT_TCP_FLAG_BE_LIBERAL)) {
+--- a/frontends/sfe/ecm_sfe_ported_ipv4.c
++++ b/frontends/sfe/ecm_sfe_ported_ipv4.c
+@@ -92,6 +92,7 @@
+ static int ecm_sfe_ported_ipv4_accelerated_count[ECM_FRONT_END_PORTED_PROTO_MAX] = {0};
+ 						/* Array of Number of TCP and UDP connections currently offloaded */
+ 
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 13, 0))
+ /*
+  * Expose what should be a static flag in the TCP connection tracker.
+  */
+@@ -99,6 +100,7 @@ static int ecm_sfe_ported_ipv4_accelerated_count[ECM_FRONT_END_PORTED_PROTO_MAX]
+ extern int nf_ct_tcp_no_window_check;
+ #endif
+ extern int nf_ct_tcp_be_liberal;
++#endif
+ 
+ /*
+  * ecm_sfe_ported_ipv4_connection_callback()
+@@ -1295,7 +1297,14 @@ static void ecm_sfe_ported_ipv4_connection_accelerate(struct ecm_front_end_conne
+ 		} else {
+ 			int flow_dir;
+ 			int return_dir;
+-
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 13, 0))
++			uint32_t tcp_be_liberal = nf_ct_tcp_be_liberal;
++			uint32_t tcp_no_window_check = nf_ct_tcp_no_window_check;
++#else
++			struct nf_tcp_net *tn = nf_tcp_pernet(nf_ct_net(ct));
++			uint32_t tcp_be_liberal = tn->tcp_be_liberal;
++			uint32_t tcp_no_window_check = tcp_no_window_check;
++#endif
+ 			ecm_db_connection_address_get(feci->ci, ECM_DB_OBJ_DIR_FROM, addr);
+ 			ecm_front_end_flow_and_return_directions_get(ct, addr, 4, &flow_dir, &return_dir);
+ 
+@@ -1310,9 +1319,9 @@ static void ecm_sfe_ported_ipv4_connection_accelerate(struct ecm_front_end_conne
+ 			nircm->tcp_rule.return_end = ct->proto.tcp.seen[return_dir].td_end;
+ 			nircm->tcp_rule.return_max_end = ct->proto.tcp.seen[return_dir].td_maxend;
+ #ifdef ECM_OPENWRT_SUPPORT
+-			if (nf_ct_tcp_be_liberal || nf_ct_tcp_no_window_check
++			if (tcp_be_liberal || tcp_no_window_check
+ #else
+-			if (nf_ct_tcp_be_liberal
++			if (tcp_be_liberal
+ #endif
+ 					|| (ct->proto.tcp.seen[flow_dir].flags & IP_CT_TCP_FLAG_BE_LIBERAL)
+ 					|| (ct->proto.tcp.seen[return_dir].flags & IP_CT_TCP_FLAG_BE_LIBERAL)) {
+--- a/frontends/sfe/ecm_sfe_ported_ipv6.c
++++ b/frontends/sfe/ecm_sfe_ported_ipv6.c
+@@ -92,6 +92,7 @@
+ static int ecm_sfe_ported_ipv6_accelerated_count[ECM_FRONT_END_PORTED_PROTO_MAX] = {0};
+ 						/* Array of Number of TCP and UDP connections currently offloaded */
+ 
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 13, 0))
+ /*
+  * Expose what should be a static flag in the TCP connection tracker.
+  */
+@@ -99,6 +100,7 @@ static int ecm_sfe_ported_ipv6_accelerated_count[ECM_FRONT_END_PORTED_PROTO_MAX]
+ extern int nf_ct_tcp_no_window_check;
+ #endif
+ extern int nf_ct_tcp_be_liberal;
++#endif
+ 
+ /*
+  * ecm_sfe_ported_ipv6_connection_callback()
+@@ -1258,7 +1260,14 @@ static void ecm_sfe_ported_ipv6_connection_accelerate(struct ecm_front_end_conne
+ 		} else {
+ 			int flow_dir;
+ 			int return_dir;
+-
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 13, 0))
++			uint32_t tcp_be_liberal = nf_ct_tcp_be_liberal;
++			uint32_t tcp_no_window_check = nf_ct_tcp_no_window_check;
++#else
++			struct nf_tcp_net *tn = nf_tcp_pernet(nf_ct_net(ct));
++			uint32_t tcp_be_liberal = tn->tcp_be_liberal;
++			uint32_t tcp_no_window_check = tcp_no_window_check;
++#endif
+ 			ecm_front_end_flow_and_return_directions_get(ct, src_ip, 6, &flow_dir, &return_dir);
+ 
+ 			DEBUG_TRACE("%px: TCP Accel Get window data from ct %px for conn %px\n", feci, ct, feci->ci);
+@@ -1272,9 +1281,9 @@ static void ecm_sfe_ported_ipv6_connection_accelerate(struct ecm_front_end_conne
+ 			nircm->tcp_rule.return_end = ct->proto.tcp.seen[return_dir].td_end;
+ 			nircm->tcp_rule.return_max_end = ct->proto.tcp.seen[return_dir].td_maxend;
+ #ifdef ECM_OPENWRT_SUPPORT
+-			if (nf_ct_tcp_be_liberal || nf_ct_tcp_no_window_check
++			if (tcp_be_liberal || tcp_no_window_check
+ #else
+-			if (nf_ct_tcp_be_liberal
++			if (tcp_be_liberal
+ #endif
+ 					|| (ct->proto.tcp.seen[flow_dir].flags & IP_CT_TCP_FLAG_BE_LIBERAL)
+ 					|| (ct->proto.tcp.seen[return_dir].flags & IP_CT_TCP_FLAG_BE_LIBERAL)) {

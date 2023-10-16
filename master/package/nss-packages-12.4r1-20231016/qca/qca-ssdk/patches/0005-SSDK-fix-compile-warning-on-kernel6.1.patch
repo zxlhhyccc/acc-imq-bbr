@@ -1,0 +1,53 @@
+From 4b5d4187d2d177bd6317e19a014495b150c43eb5 Mon Sep 17 00:00:00 2001
+From: Luo Jie <quic_luoj@quicinc.com>
+Date: Tue, 16 May 2023 13:44:03 +0800
+Subject: [PATCH] qca-ssdk: Fix compile warning on kernel6.1
+
+Change-Id: Ibe074607123201cd1b329c7d5b0857d1b035436f
+Signed-off-by: Luo Jie <quic_luoj@quicinc.com>
+---
+ src/adpt/adpt.c               | 12 ------------
+ 1 files changed, 12 deletions(-)
+
+diff --git a/src/adpt/adpt.c b/src/adpt/adpt.c
+index 3ca2ae8f..dac67e83 100755
+--- a/src/adpt/adpt.c
++++ b/src/adpt/adpt.c
+@@ -406,11 +406,7 @@ sw_error_t adpt_module_func_ctrl_set(a_uint32_t dev_id,
+ 			rv = adpt_appe_module_func_register(dev_id, module);
+ #endif
+ #if defined(HPPE)
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6,1,0))
+-			fallthrough;
+-#else
+ 			/* fall through */
+-#endif
+ 		case CHIP_HPPE:
+ 			rv = adpt_hppe_module_func_register(dev_id, module);
+ 			break;
+@@ -586,11 +582,7 @@ sw_error_t adpt_init(a_uint32_t dev_id, ssdk_init_cfg *cfg)
+ #endif
+ #endif
+ #if defined(HPPE)
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6,1,0))
+-			fallthrough;
+-#else
+ 			/* fall through */
+-#endif
+ 		case CHIP_HPPE:
+ 			if (g_adpt_api[dev_id] == NULL) {
+ 				g_adpt_api[dev_id] = aos_mem_alloc(sizeof(adpt_api_t));
+@@ -821,11 +813,7 @@ sw_error_t adpt_module_func_init(a_uint32_t dev_id, ssdk_init_cfg *cfg)
+ #endif
+ #endif
+ #if defined(HPPE)
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6,1,0))
+-			fallthrough;
+-#else
+ 			/* fall through */
+-#endif
+ 		case CHIP_HPPE:
+ 			g_adpt_api[dev_id]->adpt_mirror_func_bitmap = 0;
+ #if defined(IN_MIRROR)
+ -- 
+GitLab

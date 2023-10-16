@@ -1,0 +1,183 @@
+diff --git a/sfe_ipv4_esp.c b/sfe_ipv4_esp.c
+index 057d9c9..42023ec 100644
+--- a/sfe_ipv4_esp.c
++++ b/sfe_ipv4_esp.c
+@@ -331,7 +331,7 @@ int sfe_ipv4_recv_esp(struct sfe_ipv4 *si, struct sk_buff *skb, struct net_devic
+ 	 * We do per packet condition check before we could fast xmit the
+ 	 * packet.
+ 	 */
+-	if (likely(fast_xmit && dev_fast_xmit(skb, xmit_dev, features))) {
++	if (likely(fast_xmit)) {
+ 		this_cpu_inc(si->stats_pcpu->packets_fast_xmited64);
+ 		return 1;
+ 	}
+diff --git a/sfe_ipv4_pppoe_br.c b/sfe_ipv4_pppoe_br.c
+index 6d12853..cd90357 100644
+--- a/sfe_ipv4_pppoe_br.c
++++ b/sfe_ipv4_pppoe_br.c
+@@ -213,7 +213,7 @@ int sfe_ipv4_recv_pppoe_bridge(struct sfe_ipv4 *si, struct sk_buff *skb, struct
+ 	 * We do per packet condition check before we could fast xmit the
+ 	 * packet.
+ 	 */
+-	if (likely(fast_xmit && dev_fast_xmit(skb, xmit_dev, features))) {
++	if (likely(fast_xmit)) {
+ 		this_cpu_inc(si->stats_pcpu->packets_fast_xmited64);
+ 		return 1;
+ 	}
+diff --git a/sfe_ipv4_multicast.c b/sfe_ipv4_multicast.c
+index 886f70d..6c842d3 100644
+--- a/sfe_ipv4_multicast.c
++++ b/sfe_ipv4_multicast.c
+@@ -166,7 +166,7 @@ int sfe_ipv4_forward_multicast(struct sfe_ipv4 *si, struct sk_buff *skb, unsigne
+ 	 * We do per packet condition check before we could fast xmit the
+ 	 * packet.
+ 	 */
+-	if (likely(fast_xmit && dev_fast_xmit(skb, xmit_dev, features))) {
++	if (likely(fast_xmit)) {
+ 		this_cpu_inc(si->stats_pcpu->packets_fast_xmited64);
+ 		return 1;
+ 	}
+diff --git a/sfe_ipv4_tcp.c b/sfe_ipv4_tcp.c
+index 7f7e93b..5e11e3c 100644
+--- a/sfe_ipv4_tcp.c
++++ b/sfe_ipv4_tcp.c
+@@ -786,10 +786,8 @@ int sfe_ipv4_recv_tcp(struct sfe_ipv4 *si, struct sk_buff *skb, struct net_devic
+ 	 */
+ 	if (likely(fast_xmit)) {
+ 		if (likely(!skb_is_gso(skb))) {
+-			if (likely(dev_fast_xmit(skb, xmit_dev, features))) {
+ 				this_cpu_inc(si->stats_pcpu->packets_fast_xmited64);
+ 				return 1;
+-			}
+ 		} else {
+ 			cm->flags &= ~SFE_IPV4_CONNECTION_MATCH_FLAG_FAST_XMIT;
+ 			DEBUG_TRACE("%px: fast xmit disabled for xmit dev %s", skb, xmit_dev->name);
+@@ -811,7 +809,7 @@ int sfe_ipv4_recv_tcp(struct sfe_ipv4 *si, struct sk_buff *skb, struct net_devic
+ 	 * check if fast qdisc xmit is enabled and send the packet on its way.
+ 	 */
+         if (cm->flags & SFE_IPV4_CONNECTION_MATCH_FLAG_FAST_QDISC_XMIT) {
+-		if (likely(dev_fast_xmit_qdisc(skb, xmit_dev, cm->qdisc_xmit_dev))) {
++		if (likely(fast_xmit)) {
+ 			this_cpu_inc(si->stats_pcpu->packets_fast_qdisc_xmited64);
+ 			return 1;
+ 		}
+diff --git a/sfe_ipv4_udp.c b/sfe_ipv4_udp.c
+index c7bf58a..6a79772 100644
+--- a/sfe_ipv4_udp.c
++++ b/sfe_ipv4_udp.c
+@@ -650,7 +650,7 @@ int sfe_ipv4_recv_udp(struct sfe_ipv4 *si, struct sk_buff *skb, struct net_devic
+ 	 * We do per packet condition check before we could fast xmit the
+ 	 * packet.
+ 	 */
+-	if (likely(fast_xmit && dev_fast_xmit(skb, xmit_dev, features))) {
++	if (likely(fast_xmit)) {
+ 		this_cpu_inc(si->stats_pcpu->packets_fast_xmited64);
+ 		return 1;
+ 	}
+@@ -670,7 +670,7 @@ int sfe_ipv4_recv_udp(struct sfe_ipv4 *si, struct sk_buff *skb, struct net_devic
+ 	 * check if fast qdisc xmit is enabled and send the packet on its way.
+ 	 */
+ 	if (cm->flags & SFE_IPV4_CONNECTION_MATCH_FLAG_FAST_QDISC_XMIT) {
+-		if (likely(dev_fast_xmit_qdisc(skb, xmit_dev, cm->qdisc_xmit_dev))) {
++		if (likely(fast_xmit)) {
+ 			this_cpu_inc(si->stats_pcpu->packets_fast_qdisc_xmited64);
+ 			return 1;
+ 		}
+diff --git a/sfe_ipv6_multicast.c b/sfe_ipv6_multicast.c
+index 3eb459c..93cb35f 100644
+--- a/sfe_ipv6_multicast.c
++++ b/sfe_ipv6_multicast.c
+@@ -134,7 +134,7 @@ int sfe_ipv6_forward_multicast(struct sfe_ipv6 *si, struct sk_buff *skb, unsigne
+ 	 * We do per packet condition check before we could fast xmit the
+ 	 * packet.
+ 	 */
+-	if (likely(fast_xmit && dev_fast_xmit(skb, xmit_dev, features))) {
++	if (likely(fast_xmit)) {
+ 		this_cpu_inc(si->stats_pcpu->packets_fast_xmited64);
+ 		return 1;
+ 	}
+diff --git a/sfe_ipv6.c b/sfe_ipv6.c
+index e58deed..f3f06b1 100644
+--- a/sfe_ipv6.c
++++ b/sfe_ipv6.c
+@@ -924,7 +924,7 @@ static bool sfe_ipv6_is_local_ip(struct sfe_ipv6 *si, uint8_t *addr)
+ 	struct in6_addr ip_addr;
+ 	memcpy(ip_addr.s6_addr, addr, 16);
+ 
+-	dev = ipv6_dev_find(&init_net, &ip_addr, 1);
++	dev = ipv6_dev_find(&init_net, &ip_addr, NULL);
+ 	if (dev) {
+ 		dev_put(dev);
+ 		return true;
+diff --git a/sfe_ipv6_esp.c b/sfe_ipv6_esp.c
+index c5a65de..728fa69 100644
+--- a/sfe_ipv6_esp.c
++++ b/sfe_ipv6_esp.c
+@@ -311,7 +311,7 @@ int sfe_ipv6_recv_esp(struct sfe_ipv6 *si, struct sk_buff *skb, struct net_devic
+ 	 * We do per packet condition check before we could fast xmit the
+ 	 * packet.
+ 	 */
+-	if (likely(fast_xmit && dev_fast_xmit(skb, xmit_dev, features))) {
++	if (likely(fast_xmit)) {
+ 		this_cpu_inc(si->stats_pcpu->packets_fast_xmited64);
+ 		return 1;
+ 	}
+diff --git a/sfe_ipv6_pppoe_br.c b/sfe_ipv6_pppoe_br.c
+index f3c80b7..4280cde 100644
+--- a/sfe_ipv6_pppoe_br.c
++++ b/sfe_ipv6_pppoe_br.c
+@@ -216,7 +216,7 @@ int sfe_ipv6_recv_pppoe_bridge(struct sfe_ipv6 *si, struct sk_buff *skb, struct
+ 	 * We do per packet condition check before we could fast xmit the
+ 	 * packet.
+ 	 */
+-	if (likely(fast_xmit && dev_fast_xmit(skb, xmit_dev, features))) {
++	if (likely(fast_xmit)) {
+ 		this_cpu_inc(si->stats_pcpu->packets_fast_xmited64);
+ 		return 1;
+ 	}
+diff --git a/sfe_ipv6_tcp.c b/sfe_ipv6_tcp.c
+index 0f7694a..0313e91 100644
+--- a/sfe_ipv6_tcp.c
++++ b/sfe_ipv6_tcp.c
+@@ -785,10 +785,8 @@ int sfe_ipv6_recv_tcp(struct sfe_ipv6 *si, struct sk_buff *skb, struct net_devic
+ 	 */
+ 	if (likely(fast_xmit)) {
+ 		if (likely(!skb_is_gso(skb))) {
+-			if (likely(dev_fast_xmit(skb, xmit_dev, features))) {
+ 				this_cpu_inc(si->stats_pcpu->packets_fast_xmited64);
+ 				return 1;
+-			}
+ 		} else {
+ 			cm->flags &= ~SFE_IPV6_CONNECTION_MATCH_FLAG_FAST_XMIT;
+ 			DEBUG_TRACE("%px: fast xmit disabled for xmit dev %s", skb, xmit_dev->name);
+@@ -810,7 +808,7 @@ int sfe_ipv6_recv_tcp(struct sfe_ipv6 *si, struct sk_buff *skb, struct net_devic
+ 	 * check if fast qdisc xmit is enabled and send the packet on its way.
+ 	 */
+ 	if (cm->flags & SFE_IPV6_CONNECTION_MATCH_FLAG_FAST_QDISC_XMIT) {
+-		if (likely(dev_fast_xmit_qdisc(skb, xmit_dev, cm->qdisc_xmit_dev))) {
++		if (likely(fast_xmit)) {
+ 			this_cpu_inc(si->stats_pcpu->packets_fast_qdisc_xmited64);
+ 			return 1;
+ 		}
+diff --git a/sfe_ipv6_udp.c b/sfe_ipv6_udp.c
+index 6d4d477..1907b6d 100644
+--- a/sfe_ipv6_udp.c
++++ b/sfe_ipv6_udp.c
+@@ -623,7 +623,7 @@ int sfe_ipv6_recv_udp(struct sfe_ipv6 *si, struct sk_buff *skb, struct net_devic
+ 	 * We do per packet condition check before we could fast xmit the
+ 	 * packet.
+ 	 */
+-	if (likely(fast_xmit && dev_fast_xmit(skb, xmit_dev, features))) {
++	if (likely(fast_xmit)) {
+ 		this_cpu_inc(si->stats_pcpu->packets_fast_xmited64);
+ 		return 1;
+ 	}
+@@ -643,7 +643,7 @@ int sfe_ipv6_recv_udp(struct sfe_ipv6 *si, struct sk_buff *skb, struct net_devic
+ 	 * check if fast qdisc xmit is enabled and send the packet on its way.
+ 	 */
+ 	if (cm->flags & SFE_IPV6_CONNECTION_MATCH_FLAG_FAST_QDISC_XMIT) {
+-		if (likely(dev_fast_xmit_qdisc(skb, xmit_dev, cm->qdisc_xmit_dev))) {
++		if (likely(fast_xmit)) {
+ 			this_cpu_inc(si->stats_pcpu->packets_fast_qdisc_xmited64);
+ 			return 1;
+ 		}
