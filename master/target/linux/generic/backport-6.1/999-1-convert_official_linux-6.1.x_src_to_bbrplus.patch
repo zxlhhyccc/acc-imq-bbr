@@ -15,7 +15,7 @@ diff -ruaN a/include/net/inet_connection_sock.h b/include/net/inet_connection_so
 diff -ruaN a/include/net/tcp.h b/include/net/tcp.h
 --- a/include/net/tcp.h	2022-10-15 14:02:59.000000000 +0800
 +++ b/include/net/tcp.h	2022-10-19 11:55:45.078906246 +0800
-@@ -591,6 +591,8 @@
+@@ -592,6 +592,8 @@
  #endif
  /* tcp_output.c */
  
@@ -24,7 +24,7 @@ diff -ruaN a/include/net/tcp.h b/include/net/tcp.h
  void tcp_skb_entail(struct sock *sk, struct sk_buff *skb);
  void tcp_mark_push(struct tcp_sock *tp, struct sk_buff *skb);
  void __tcp_push_pending_frames(struct sock *sk, unsigned int cur_mss,
-@@ -1087,6 +1089,9 @@
+@@ -1089,6 +1091,9 @@
  	/* override sysctl_tcp_min_tso_segs */
  	u32 (*min_tso_segs)(struct sock *sk);
  
@@ -52,7 +52,7 @@ diff -ruaN a/net/ipv4/Kconfig b/net/ipv4/Kconfig
  
 +config TCP_CONG_BBRPLUS
 +        tristate "BBRPLUS TCP"
-+        default y
++        default m
 +        help
 +
 +          BBRplus is an enhanced version of BBR (Bottleneck Bandwidth and RTT).
@@ -81,7 +81,7 @@ diff -ruaN a/net/ipv4/Kconfig b/net/ipv4/Kconfig
  	default "cdg" if DEFAULT_CDG
  	default "bbr" if DEFAULT_BBR
 -	default "cubic"
-+        default "bbrplus" if DEFAULT_BBRPLUS
++	default "bbrplus" if DEFAULT_BBRPLUS
 +	default "bbrplus"
  
  config TCP_MD5SIG
@@ -1319,7 +1319,7 @@ diff -ruaN a/net/ipv4/tcp_bbrplus.c b/net/ipv4/tcp_bbrplus.c
 diff -ruaN a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
 --- a/net/ipv4/tcp_output.c	2022-10-15 14:02:59.000000000 +0800
 +++ b/net/ipv4/tcp_output.c	2022-10-19 11:55:45.078906246 +0800
-@@ -1970,7 +1970,7 @@
+@@ -1969,7 +1969,7 @@
   * for every 2^9 usec (aka 512 us) of RTT, so that the RTT-based allowance
   * is below 1500 bytes after 6 * ~500 usec = 3ms.
   */
@@ -1328,7 +1328,7 @@ diff -ruaN a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
  			    int min_tso_segs)
  {
  	unsigned long bytes;
-@@ -1986,6 +1986,7 @@
+@@ -1985,6 +1985,7 @@
  
  	return max_t(u32, bytes / mss_now, min_tso_segs);
  }
