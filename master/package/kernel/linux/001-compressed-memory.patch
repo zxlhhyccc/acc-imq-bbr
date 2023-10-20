@@ -1,6 +1,6 @@
 --- a/modules/crypto.mk
 +++ b/modules/crypto.mk
-@@ -1070,3 +1070,19 @@ endef
+@@ -1074,3 +1074,19 @@ endef
  
  $(eval $(call KernelPackage,crypto-xts))
  
@@ -52,7 +52,7 @@
    TITLE:=RAID6 algorithm support
 --- a/modules/other.mk
 +++ b/modules/other.mk
-@@ -1232,7 +1232,8 @@ $(eval $(call KernelPackage,keys-encrypted))
+@@ -1263,7 +1263,8 @@ $(eval $(call KernelPackage,keys-encrypted))
  define KernelPackage/keys-trusted
    SUBMENU:=$(OTHER_MENU)
    TITLE:=TPM trusted keys on kernel keyring
@@ -62,7 +62,7 @@
    KCONFIG:=CONFIG_TRUSTED_KEYS
    FILES:= $(LINUX_DIR)/security/keys/trusted-keys/trusted.ko
    AUTOLOAD:=$(call AutoLoad,01,trusted-keys,1)
-@@ -1363,3 +1364,97 @@ define KernelPackage/mhi-pci-generic/description
+@@ -1394,3 +1395,97 @@ define KernelPackage/mhi-pci-generic/description
  endef
  
  $(eval $(call KernelPackage,mhi-pci-generic))
