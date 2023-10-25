@@ -1,6 +1,6 @@
 --- a/modules/netdevices.mk
 +++ b/modules/netdevices.mk
-@@ -911,6 +911,22 @@ endef
+@@ -927,6 +927,22 @@ endef
  $(eval $(call KernelPackage,iavf))
  
  
@@ -23,7 +23,7 @@
  define KernelPackage/b44
    TITLE:=Broadcom 44xx driver
    KCONFIG:=CONFIG_B44
-@@ -1282,6 +1298,26 @@ endef
+@@ -1298,6 +1314,26 @@ endef
  
  $(eval $(call KernelPackage,bnx2x))
  
@@ -50,7 +50,7 @@
  define KernelPackage/be2net
    SUBMENU:=$(NETWORK_DEVICES_MENU)
    TITLE:=Broadcom Emulex OneConnect 10Gbps NIC
-@@ -1337,12 +1373,13 @@ define KernelPackage/mlx5-core
+@@ -1353,12 +1389,13 @@ define KernelPackage/mlx5-core
  	CONFIG_MLX5_EN_IPSEC=n \
  	CONFIG_MLX5_EN_RXNFC=y \
  	CONFIG_MLX5_EN_TLS=n \
@@ -65,7 +65,7 @@
  	CONFIG_MLX5_TC_CT=n \
  	CONFIG_MLX5_TLS=n \
  	CONFIG_MLX5_VFIO_PCI=n
-@@ -1392,6 +1429,30 @@ endef
+@@ -1408,6 +1445,30 @@ endef
  $(eval $(call KernelPackage,qlcnic))
  
  
