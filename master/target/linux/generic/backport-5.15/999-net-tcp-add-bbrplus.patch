@@ -13,7 +13,7 @@
  #define ICSK_TIME_RETRANS	1	/* Retransmit timer */
 --- a/include/net/tcp.h
 +++ b/include/net/tcp.h
-@@ -570,6 +570,8 @@ __u32 cookie_v6_init_sequence(const stru
+@@ -575,6 +575,8 @@ __u32 cookie_v6_init_sequence(const stru
  #endif
  /* tcp_output.c */
  
@@ -22,7 +22,7 @@
  void tcp_skb_entail(struct sock *sk, struct sk_buff *skb);
  void tcp_mark_push(struct tcp_sock *tp, struct sk_buff *skb);
  void __tcp_push_pending_frames(struct sock *sk, unsigned int cur_mss,
-@@ -1059,6 +1061,9 @@ struct tcp_congestion_ops {
+@@ -1064,6 +1066,9 @@ struct tcp_congestion_ops {
  	/* override sysctl_tcp_min_tso_segs */
  	u32 (*min_tso_segs)(struct sock *sk);
  
@@ -1285,7 +1285,7 @@
 +MODULE_DESCRIPTION("TCP BBR (Bottleneck Bandwidth and RTT)");
 --- a/net/ipv4/tcp_output.c
 +++ b/net/ipv4/tcp_output.c
-@@ -1962,7 +1962,7 @@ static bool tcp_nagle_check(bool partial
+@@ -1961,7 +1961,7 @@ static bool tcp_nagle_check(bool partial
  /* Return how many segs we'd like on a TSO packet,
   * to send one TSO packet per ms
   */
@@ -1294,7 +1294,7 @@
  			    int min_tso_segs)
  {
  	u32 bytes, segs;
-@@ -1980,6 +1980,7 @@ static u32 tcp_tso_autosize(const struct
+@@ -1979,6 +1979,7 @@ static u32 tcp_tso_autosize(const struct
  
  	return segs;
  }
