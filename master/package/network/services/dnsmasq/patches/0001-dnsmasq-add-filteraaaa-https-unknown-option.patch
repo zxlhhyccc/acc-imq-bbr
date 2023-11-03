@@ -16,7 +16,7 @@
  config dhcp lan
 --- a/files/dnsmasq.init
 +++ b/files/dnsmasq.init
-@@ -10,6 +10,8 @@ PROG=/usr/sbin/dnsmasq
+@@ -8,6 +8,8 @@ PROG=/usr/sbin/dnsmasq
  
  ADD_LOCAL_DOMAIN=1
  ADD_LOCAL_HOSTNAME=1
@@ -25,7 +25,7 @@
  ADD_WAN_FQDN=0
  ADD_LOCAL_FQDN=""
  
-@@ -972,9 +974,12 @@ dnsmasq_start()
+@@ -970,9 +972,12 @@ dnsmasq_start()
  
  	append_bool "$cfg" filter_aaaa "--filter-AAAA"
  	append_bool "$cfg" filter_a "--filter-A"
@@ -38,7 +38,7 @@
  	append_parm "$cfg" cachesize "--cache-size"
  	append_parm "$cfg" dnsforwardmax "--dns-forward-max"
  	append_parm "$cfg" port "--port"
-@@ -1033,6 +1038,8 @@ dnsmasq_start()
+@@ -1031,6 +1036,8 @@ dnsmasq_start()
  
  	config_get_bool ADD_LOCAL_DOMAIN "$cfg" add_local_domain 1
  	config_get_bool ADD_LOCAL_HOSTNAME "$cfg" add_local_hostname 1
@@ -47,7 +47,7 @@
  	config_get ADD_LOCAL_FQDN "$cfg" add_local_fqdn ""
  	config_get ADD_WAN_FQDN "$cfg" add_wan_fqdn 0
  
-@@ -1189,8 +1196,12 @@ dnsmasq_start()
+@@ -1187,8 +1194,12 @@ dnsmasq_start()
  		[ $ADD_LOCAL_DOMAIN -eq 1 ] && [ -n "$DOMAIN" ] && {
  			echo "search $DOMAIN" >> /tmp/resolv.conf
  		}
@@ -62,7 +62,7 @@
  		for DNS_SERVER in $DNS_SERVERS ; do
  			echo "nameserver $DNS_SERVER" >> /tmp/resolv.conf
  		done
-@@ -1222,6 +1233,20 @@ dnsmasq_start()
+@@ -1220,6 +1231,20 @@ dnsmasq_start()
  	[ -e "$hostsfile" ] && procd_add_jail_mount $hostsfile
  
  	procd_close_instance
@@ -83,7 +83,7 @@
  }
  
  dnsmasq_stop()
-@@ -1239,6 +1264,19 @@ dnsmasq_stop()
+@@ -1237,6 +1262,19 @@ dnsmasq_stop()
  	rm -f ${BASEDHCPSTAMPFILE}.${cfg}.*.dhcp
  }
  
@@ -103,7 +103,7 @@
  add_interface_trigger()
  {
  	local interface ignore
-@@ -1309,6 +1347,7 @@ start_service() {
+@@ -1307,6 +1345,7 @@ start_service() {
  }
  
  reload_service() {
@@ -111,7 +111,7 @@
  	rc_procd start_service "$@"
  	procd_send_signal dnsmasq "$@"
  }
-@@ -1335,4 +1374,6 @@ stop_service() {
+@@ -1333,4 +1372,6 @@ stop_service() {
  	else
  		config_foreach dnsmasq_stop dnsmasq
  	fi
