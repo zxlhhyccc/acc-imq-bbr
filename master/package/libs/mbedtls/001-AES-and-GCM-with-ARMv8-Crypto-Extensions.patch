@@ -45,8 +45,9 @@
  
  config MBEDTLS_HKDF_C
 -	bool "MBEDTLS_HKDF_C"
+-	default n
 +	bool "MBEDTLS_HKDF_C (RFC 5869)"
- 	default n
++ 	default n
 +	help
 +	 This option adds support for the Hashed Message Authentication Code
 +	 (HMAC)-based key derivation function (HKDF).
@@ -69,11 +70,9 @@
    CONFIG_MBEDTLS_HKDF_C \
    CONFIG_MBEDTLS_PLATFORM_C \
    CONFIG_MBEDTLS_SELF_TEST \
-@@ -121,7 +123,11 @@ This package contains mbedtls helper programs for private key and
- CSR generation (gen_key, cert_req)
+@@ -122,6 +124,9 @@ CSR generation (gen_key, cert_req)
  endef
  
-+TARGET_CFLAGS += -ffunction-sections -fdata-sections
  TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS))
 +ifneq ($(CONFIG_MBEDTLS_ARMV8CE_AES_C),)
 +  TARGET_CFLAGS := $(filter-out -march=%,$(TARGET_CFLAGS)) -march=armv8-a+crypto
