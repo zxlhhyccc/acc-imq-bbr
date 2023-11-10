@@ -1,3 +1,5 @@
+diff --git a/Config-kernel.in b/Config-kernel.in
+index 4c43190..51eda49 100644
 --- a/Config-kernel.in
 +++ b/Config-kernel.in
 @@ -421,6 +421,7 @@ config KERNEL_DEBUG_INFO
