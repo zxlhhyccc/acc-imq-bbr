@@ -31,17 +31,19 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
  	{ .compatible = "qcom,msm8960", },
 --- a/drivers/cpufreq/qcom-cpufreq-nvmem.c
 +++ b/drivers/cpufreq/qcom-cpufreq-nvmem.c
-@@ -32,6 +32,9 @@
+@@ -32,6 +32,11 @@
  
  #include <dt-bindings/arm/qcom,ids.h>
  
-+#define IPQ8074_HAWKEYE_VERSION		BIT(0)
-+#define IPQ8074_ACORN_VERSION		BIT(1)
++enum ipq8074_versions {
++	IPQ8074_HAWKEYE_VERSION = 0,
++	IPQ8074_ACORN_VERSION,
++};
 +
  struct qcom_cpufreq_drv;
  
  struct qcom_cpufreq_match_data {
-@@ -218,6 +221,37 @@ len_error:
+@@ -218,6 +221,43 @@ len_error:
  	return ret;
  }
  
@@ -60,16 +62,22 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
 +	switch (msm_id) {
 +	case QCOM_ID_IPQ8070A:
 +	case QCOM_ID_IPQ8071A:
-+		drv->versions = IPQ8074_ACORN_VERSION;
++	case QCOM_ID_IPQ8172:
++	case QCOM_ID_IPQ8173:
++	case QCOM_ID_IPQ8174:
++		drv->versions = BIT(IPQ8074_ACORN_VERSION);
 +		break;
 +	case QCOM_ID_IPQ8072A:
 +	case QCOM_ID_IPQ8074A:
 +	case QCOM_ID_IPQ8076A:
 +	case QCOM_ID_IPQ8078A:
-+		drv->versions = IPQ8074_HAWKEYE_VERSION;
++		drv->versions = BIT(IPQ8074_HAWKEYE_VERSION);
 +		break;
 +	default:
-+		BUG();
++		dev_err(cpu_dev,
++			"SoC ID %u is not part of IPQ8074 family, limiting to 1.4GHz!\n",
++			msm_id);
++		drv->versions = BIT(IPQ8074_ACORN_VERSION);
 +		break;
 +	}
 +

@@ -652,7 +652,7 @@
  void bond_work_init_all(struct bonding *bond);
 
  #ifdef CONFIG_PROC_FS
-@@ -771,4 +779,18 @@ static inline netdev_tx_t bond_tx_drop(s
+@@ -748,4 +756,18 @@ static inline netdev_tx_t bond_tx_drop(s
  	return NET_XMIT_DROP;
  }
 

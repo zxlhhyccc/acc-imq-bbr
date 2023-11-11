@@ -48,7 +48,7 @@
  	u32			flags;
  	unsigned long		cust_data;
  
--#ifdef CONFIG_SHORTCUT_FE
+-#if defined (CONFIG_SHORTCUT_FE) || defined (CONFIG_QCA_NSS_SFE)
 -	unsigned long		cust_data;
 -#endif
 -
