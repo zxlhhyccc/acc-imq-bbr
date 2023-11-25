@@ -1,5 +1,5 @@
---- a/drivers/net/vxlan.c
-+++ b/drivers/net/vxlan.c
+--- a/drivers/net/vxlan/vxlan_core.c
++++ b/drivers/net/vxlan/vxlan_core.c
 @@ -90,6 +90,20 @@ struct vxlan_fdb {
  /* salt for hash table */
  static u32 vxlan_salt __read_mostly;
@@ -59,7 +59,7 @@
  /* caller should hold vxlan->hash_lock */
  static struct vxlan_rdst *vxlan_fdb_find_rdst(struct vxlan_fdb *f,
  					      union vxlan_addr *ip, __be16 port,
-@@ -2744,6 +2775,9 @@ static void vxlan_xmit_one(struct sk_buf
+@@ -2742,6 +2773,9 @@ static void vxlan_xmit_one(struct sk_buf
  			goto out_unlock;
  		}
 
@@ -69,7 +69,7 @@
  		tos = ip_tunnel_ecn_encap(tos, old_iph, skb);
  		ttl = ttl ? : ip4_dst_hoplimit(&rt->dst);
  		err = vxlan_build_skb(skb, ndst, sizeof(struct iphdr),
-@@ -2814,6 +2848,9 @@ static void vxlan_xmit_one(struct sk_buf
+@@ -2813,6 +2847,9 @@ static void vxlan_xmit_one(struct sk_buf
  		if (err < 0)
  			goto tx_error;
 
