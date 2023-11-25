@@ -1,6 +1,6 @@
 --- a/modules/usb.mk
 +++ b/modules/usb.mk
-@@ -1128,6 +1128,7 @@ endef
+@@ -1129,6 +1129,7 @@ endef
  
  define KernelPackage/usb-net-aqc111
    TITLE:=Support for USB-to-Ethernet Aquantia AQtion 5/2.5GbE
