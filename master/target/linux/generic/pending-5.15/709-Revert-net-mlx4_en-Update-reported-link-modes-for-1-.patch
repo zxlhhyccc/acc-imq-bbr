@@ -16,7 +16,7 @@ diff --git a/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c b/drivers/net/ether
 index c3cffb32fb06..1ac178b2c1df 100644
 --- a/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c
 +++ b/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c
-@@ -663,7 +663,7 @@ void __init mlx4_en_init_ptys2ethtool_map(void)
+@@ -662,7 +662,7 @@ void __init mlx4_en_init_ptys2ethtool_map(void)
  	MLX4_BUILD_PTYS2ETHTOOL_CONFIG(MLX4_1000BASE_T, SPEED_1000,
  				       ETHTOOL_LINK_MODE_1000baseT_Full_BIT);
  	MLX4_BUILD_PTYS2ETHTOOL_CONFIG(MLX4_1000BASE_CX_SGMII, SPEED_1000,
@@ -25,7 +25,7 @@ index c3cffb32fb06..1ac178b2c1df 100644
  	MLX4_BUILD_PTYS2ETHTOOL_CONFIG(MLX4_1000BASE_KX, SPEED_1000,
  				       ETHTOOL_LINK_MODE_1000baseKX_Full_BIT);
  	MLX4_BUILD_PTYS2ETHTOOL_CONFIG(MLX4_10GBASE_T, SPEED_10000,
-@@ -675,9 +675,9 @@ void __init mlx4_en_init_ptys2ethtool_map(void)
+@@ -674,9 +674,9 @@ void __init mlx4_en_init_ptys2ethtool_map(void)
  	MLX4_BUILD_PTYS2ETHTOOL_CONFIG(MLX4_10GBASE_KR, SPEED_10000,
  				       ETHTOOL_LINK_MODE_10000baseKR_Full_BIT);
  	MLX4_BUILD_PTYS2ETHTOOL_CONFIG(MLX4_10GBASE_CR, SPEED_10000,
