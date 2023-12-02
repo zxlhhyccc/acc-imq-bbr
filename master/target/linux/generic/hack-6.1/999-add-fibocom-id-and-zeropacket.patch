@@ -1,6 +1,6 @@
 --- a/drivers/usb/serial/option.c
 +++ b/drivers/usb/serial/option.c
-@@ -632,6 +632,58 @@ static void option_instat_callback(struct urb *urb);
+@@ -635,6 +635,58 @@ static void option_instat_callback(struct urb *urb);
  
  
  static const struct usb_device_id option_ids[] = {
