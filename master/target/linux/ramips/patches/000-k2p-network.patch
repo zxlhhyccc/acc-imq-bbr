@@ -137,7 +137,7 @@
    SUPPORTED_DEVICES += vr500
  endef
  TARGET_DEVICES += planex_vr500
-@@ -2206,7 +2204,7 @@ define Device/thunder_timecloud
+@@ -2220,7 +2218,7 @@ define Device/thunder_timecloud
    IMAGE_SIZE := 16064k
    DEVICE_VENDOR := Thunder
    DEVICE_MODEL := Timecloud
@@ -146,7 +146,7 @@
    SUPPORTED_DEVICES += timecloud
  endef
  TARGET_DEVICES += thunder_timecloud
-@@ -2372,7 +2370,7 @@ define Device/tplink_er605-v2
+@@ -2386,7 +2384,7 @@ define Device/tplink_er605-v2
    DEVICE_VENDOR := TP-Link
    DEVICE_MODEL := ER605
    DEVICE_VARIANT := v2
@@ -155,7 +155,7 @@
    KERNEL_IN_UBI := 1
    KERNEL_LOADADDR := 0x82000000
    KERNEL := kernel-bin | relocate-kernel 0x80001000 | lzma | fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb
-@@ -2480,7 +2478,7 @@ define Device/ubnt_edgerouter_common
+@@ -2494,7 +2492,7 @@ define Device/ubnt_edgerouter_common
    KERNEL_INITRAMFS := $$(KERNEL) | \
  	ubnt-erx-factory-image $(KDIR)/tmp/$$(KERNEL_INITRAMFS_PREFIX)-factory.tar
    IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
@@ -164,7 +164,7 @@
  endef
  
  define Device/ubnt_edgerouter-x
-@@ -2565,7 +2563,7 @@ define Device/unielec_u7621-06-16m
+@@ -2579,7 +2577,7 @@ define Device/unielec_u7621-06-16m
    DEVICE_MODEL := U7621-06
    DEVICE_VARIANT := 16M
    DEVICE_PACKAGES := kmod-ata-ahci kmod-sdhci-mt7620 kmod-usb3 \
@@ -173,7 +173,7 @@
    SUPPORTED_DEVICES += u7621-06-256M-16M unielec,u7621-06-256m-16m
  endef
  TARGET_DEVICES += unielec_u7621-06-16m
-@@ -2578,7 +2576,7 @@ define Device/unielec_u7621-06-32m
+@@ -2592,7 +2590,7 @@ define Device/unielec_u7621-06-32m
    DEVICE_MODEL := U7621-06
    DEVICE_VARIANT := 32M
    DEVICE_PACKAGES := kmod-ata-ahci kmod-sdhci-mt7620 kmod-usb3 \
@@ -182,7 +182,7 @@
    SUPPORTED_DEVICES += unielec,u7621-06-32m
  endef
  TARGET_DEVICES += unielec_u7621-06-32m
-@@ -2591,7 +2589,7 @@ define Device/unielec_u7621-06-64m
+@@ -2605,7 +2603,7 @@ define Device/unielec_u7621-06-64m
    DEVICE_MODEL := U7621-06
    DEVICE_VARIANT := 64M
    DEVICE_PACKAGES := kmod-ata-ahci kmod-sdhci-mt7620 kmod-usb3 \
@@ -191,7 +191,7 @@
    SUPPORTED_DEVICES += unielec,u7621-06-512m-64m
  endef
  TARGET_DEVICES += unielec_u7621-06-64m
-@@ -2829,7 +2827,7 @@ define Device/xiaoyu_xy-c5
+@@ -2843,7 +2841,7 @@ define Device/xiaoyu_xy-c5
    IMAGE_SIZE := 32448k
    DEVICE_VENDOR := XiaoYu
    DEVICE_MODEL := XY-C5
@@ -200,7 +200,7 @@
  	-uboot-envtools
  endef
  TARGET_DEVICES += xiaoyu_xy-c5
-@@ -2840,7 +2838,7 @@ define Device/xzwifi_creativebox-v1
+@@ -2854,7 +2852,7 @@ define Device/xzwifi_creativebox-v1
    DEVICE_VENDOR := CreativeBox
    DEVICE_MODEL := v1
    DEVICE_PACKAGES := kmod-ata-ahci kmod-mt7603 kmod-mt76x2 kmod-sdhci-mt7620 \
