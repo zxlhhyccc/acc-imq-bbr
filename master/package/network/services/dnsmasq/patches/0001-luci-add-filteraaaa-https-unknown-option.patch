@@ -4,25 +4,25 @@
  		s.tab('mxhosts', _('MX'));
  		s.tab('cnamehosts', _('CNAME'));
  		s.tab('pxe_tftp', _('PXE/TFTP Settings'));
-+		s.tab('custom_domain', _('Custom Redirect Domain'));
++		//s.tab('custom_domain', _('Custom Redirect Domain'));
 +
-+		o = s.taboption('custom_domain', form.SectionValue, 'domain', form.GridSection, 'domain', null,
-+			_('Define a custom domain name and the corresponding PTR record'));
++		//o = s.taboption('custom_domain', form.SectionValue, 'domain', form.GridSection, 'domain', null,
++			//_('Define a custom domain name and the corresponding PTR record'));
 +
-+		ss = o.subsection;
++		//ss = o.subsection;
 +
-+		ss.addremove = true;
-+		ss.anonymous = true;
++		//ss.addremove = true;
++		//ss.anonymous = true;
 +
-+		so = ss.option(form.Value, 'name', _('Domain name'));
-+		so.datatype = 'hostname';
-+		so.rmempty  = true;
++		//so = ss.option(form.Value, 'name', _('Domain name'));
++		//so.datatype = 'hostname';
++		//so.rmempty  = true;
 +
-+		so = ss.option(form.Value, 'ip', _('<abbr title=\"Internet Protocol Version 4\">IPv4</abbr>-Address'));
-+		so.datatype = 'or(ip4addr,"ignore")';
++		//so = ss.option(form.Value, 'ip', _('<abbr title=\"Internet Protocol Version 4\">IPv4</abbr>-Address'));
++		//so.datatype = 'or(ip4addr,"ignore")';
 +
-+		so = ss.option(form.Value, 'comments', _('Comments'));
-+		so.rmempty  = true;
++		//so = ss.option(form.Value, 'comments', _('Comments'));
++		//so.rmempty  = true;
 +
 +		s.taboption('general', form.Flag, 'dns_redirect',
 +			_('DNS Redirect'),
