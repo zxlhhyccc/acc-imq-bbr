@@ -49,9 +49,9 @@
 + 	option name		lan
 +--- a/root/usr/share/firewall4/templates/ruleset.uc
 ++++ b/root/usr/share/firewall4/templates/ruleset.uc
-+@@ -320,6 +320,12 @@ table inet fw4 {
++@@ -327,6 +327,12 @@ table inet fw4 {
 + {%   for (let redirect in fw4.redirects(`dstnat_${zone.name}`)): %}
-+ 		{%+ include("redirect.uc", { fw4, redirect }) %}
++ 		{%+ include("redirect.uc", { fw4, zone, redirect }) %}
 + {%   endfor %}
 ++{%   if (zone.masq && fw4.default_option("fullcone")): %}
 ++		{%+ include("zone-fullcone.uc", { fw4, zone, family: 4, direction: "dstnat" }) %}
@@ -62,9 +62,9 @@
 + {%   fw4.includes('chain-append', `dstnat_${zone.name}`) %}
 + 	}
 + 
-+@@ -330,20 +336,26 @@ table inet fw4 {
++@@ -337,20 +343,26 @@ table inet fw4 {
 + {%   for (let redirect in fw4.redirects(`srcnat_${zone.name}`)): %}
-+ 		{%+ include("redirect.uc", { fw4, redirect }) %}
++ 		{%+ include("redirect.uc", { fw4, zone, redirect }) %}
 + {%   endfor %}
 +-{%   if (zone.masq): %}
 ++{%   if (zone.masq && !fw4.default_option("fullcone")): %}
@@ -106,7 +106,7 @@
 + const fs = require("fs");
 + const uci = require("uci");
 + const ubus = require("ubus");
-+@@ -490,6 +492,25 @@ function nft_try_hw_offload(devices) {
++@@ -489,6 +491,25 @@ function nft_try_hw_offload(devices) {
 + 	return (rc == 0);
 + }
 + 
@@ -132,7 +132,7 @@
 + 
 + return {
 + 	read_kernel_version: function() {
-+@@ -840,6 +861,18 @@ return {
++@@ -832,6 +853,18 @@ return {
 + 			warn(`[!] ${msg}\n`);
 + 	},
 + 
@@ -151,7 +151,7 @@
 + 	get: function(sid, opt) {
 + 		return this.cursor.get("firewall", sid, opt);
 + 	},
-+@@ -1021,6 +1054,21 @@ return {
++@@ -1013,6 +1046,21 @@ return {
 + 		}
 + 	},
 + 
@@ -173,7 +173,7 @@
 + 	parse_policy: function(val) {
 + 		return this.parse_enum(val, [
 + 			"accept",
-+@@ -1460,6 +1508,7 @@ return {
++@@ -1452,6 +1500,7 @@ return {
 + 			"dnat",
 + 			"snat",
 + 			"masquerade",
@@ -181,7 +181,7 @@
 + 			"accept",
 + 			"reject",
 + 			"drop"
-+@@ -1927,6 +1976,8 @@ return {
++@@ -1923,6 +1972,8 @@ return {
 + 		}
 + 
 + 		let defs = this.parse_options(data, {
@@ -190,7 +190,7 @@
 + 			input: [ "policy", "drop" ],
 + 			output: [ "policy", "drop" ],
 + 			forward: [ "policy", "drop" ],
-+@@ -1961,6 +2012,11 @@ return {
++@@ -1957,6 +2008,11 @@ return {
 + 
 + 		delete defs.syn_flood;
 + 
@@ -202,7 +202,7 @@
 + 		this.state.defaults = defs;
 + 	},
 + 
-+@@ -2186,10 +2242,23 @@ return {
++@@ -2182,10 +2238,23 @@ return {
 + 		zone.related_subnets = related_subnets;
 + 		zone.related_physdevs = related_physdevs;
 + 
@@ -229,51 +229,18 @@
 + 
 + 			for (let helper in (length(zone.helper) ? zone.helper : this.state.helpers)) {
 --- /dev/null
-+++ b/patches/002-firewall4-Fix-MSS-clamping-with-PBR.patch
-@@ -0,0 +1,46 @@
-+diff --git a/root/usr/share/firewall4/templates/ruleset.uc b/root/usr/share/firewall4/templates/ruleset.uc
-+index 7bd9309..a05f820 100644
-+--- a/root/usr/share/firewall4/templates/ruleset.uc
-++++ b/root/usr/share/firewall4/templates/ruleset.uc
-+@@ -417,6 +417,13 @@ table inet fw4 {
-+ {% for (let rule in fw4.rules("mangle_postrouting")): %}
-+ 		{%+ include("rule.uc", { fw4, rule }) %}
-+ {% endfor %}
-++{% for (let zone in fw4.zones()): %}
-++{%  if (zone.mtu_fix): %}
-++{%   for (let rule in zone.match_rules): %}
-++                {%+ include("zone-mssfix.uc", { fw4, zone, rule, egress: true }) %}
-++{%   endfor %}
-++{%  endif %}
-++{% endfor %}
-+ {% fw4.includes('chain-append', 'mangle_postrouting') %}
-+ 	}
-+
-+@@ -444,14 +451,6 @@ table inet fw4 {
-+ {% for (let rule in fw4.rules("mangle_forward")): %}
-+ 		{%+ include("rule.uc", { fw4, rule }) %}
-+ {% endfor %}
-+-{% for (let zone in fw4.zones()): %}
-+-{%  if (zone.mtu_fix): %}
-+-{%   for (let rule in zone.match_rules): %}
-+-		{%+ include("zone-mssfix.uc", { fw4, zone, rule, egress: false }) %}
-+-		{%+ include("zone-mssfix.uc", { fw4, zone, rule, egress: true }) %}
-+-{%   endfor %}
-+-{%  endif %}
-+-{% endfor %}
-+ {% fw4.includes('chain-append', 'mangle_forward') %}
-+ 	}
-+ {% fw4.includes('table-append') %}
-+diff --git a/root/usr/share/firewall4/templates/zone-mssfix.uc b/root/usr/share/firewall4/templates/zone-mssfix.uc
-+index b76cfb6..17b6e92 100644
-+--- a/root/usr/share/firewall4/templates/zone-mssfix.uc
-++++ b/root/usr/share/firewall4/templates/zone-mssfix.uc
-+@@ -1,7 +1,7 @@
-+ {%+ if (rule.family): -%}
-+ 	meta nfproto {{ fw4.nfproto(rule.family) }} {%+ endif -%}
-+ {%+ include("zone-match.uc", { egress, rule }) -%}
-+-tcp flags syn tcp option maxseg size set rt mtu {%+ if (zone.log & 2): -%}
-++tcp flags syn / syn,fin,rst tcp option maxseg size set rt mtu {%+ if (zone.log & 2): -%}
-+ 	log prefix "MSSFIX {{ zone.name }} out: " {%+ endif -%}
-+ comment "!fw4: Zone {{ zone.name }} {{
-+ 	fw4.nfproto(rule.family, true)
++++ b/patches/002-fix-adding-offloading-device.patch
+@@ -0,0 +1,13 @@
++--- a/root/usr/share/ucode/fw4.uc
+++++ b/root/usr/share/ucode/fw4.uc
++@@ -2101,8 +2101,8 @@ return {
++ 					});
++ 				}
++ 
++-				if (net.physdev && !e.invert)
++-					push(related_physdevs, net.physdev);
+++				if (net.up && net.device && !e.invert)
+++					push(related_physdevs, net.device);
++ 
++ 				push(related_subnets, ...(net.ipaddrs || []));
++ 			}
