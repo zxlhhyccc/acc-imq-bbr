@@ -46,7 +46,17 @@
  define KernelPackage/drm-ttm
    SUBMENU:=$(VIDEO_MENU)
    TITLE:=GPU memory management subsystem
-@@ -437,6 +469,45 @@ endef
+@@ -342,7 +374,8 @@ define KernelPackage/drm-amdgpu
+   TITLE:=AMDGPU DRM support
+   DEPENDS:=@TARGET_x86 @DISPLAY_SUPPORT +kmod-backlight +kmod-drm-ttm \
+ 	+kmod-drm-ttm-helper +kmod-drm-kms-helper +kmod-i2c-algo-bit +amdgpu-firmware \
+-	+kmod-drm-display-helper +kmod-drm-buddy +kmod-acpi-video
++	+LINUX_6_1:kmod-drm-display-helper +LINUX_6_1:kmod-drm-buddy \
++	+LINUX_6_1:kmod-acpi-video
+   KCONFIG:=CONFIG_DRM_AMDGPU \
+ 	CONFIG_DRM_AMDGPU_SI=y \
+ 	CONFIG_DRM_AMDGPU_CIK=y \
+@@ -436,12 +469,51 @@ endef
  
  $(eval $(call KernelPackage,drm-imx-ldb))
  
@@ -92,7 +102,14 @@
  define KernelPackage/drm-radeon
    SUBMENU:=$(VIDEO_MENU)
    TITLE:=Radeon DRM support
-@@ -1101,6 +1172,43 @@ endef
+   DEPENDS:=@TARGET_x86 @DISPLAY_SUPPORT +kmod-backlight +kmod-drm-kms-helper \
+ 	+kmod-drm-ttm +kmod-drm-ttm-helper +kmod-i2c-algo-bit +radeon-firmware \
+-	+kmod-drm-display-helper +kmod-acpi-video
++	+LINUX_6_1:kmod-drm-display-helper +LINUX_6_1:kmod-acpi-video
+   KCONFIG:=CONFIG_DRM_RADEON
+   FILES:=$(LINUX_DIR)/drivers/gpu/drm/radeon/radeon.ko
+   AUTOLOAD:=$(call AutoProbe,radeon)
+@@ -1100,6 +1172,43 @@ endef
  
  $(eval $(call KernelPackage,video-gspca-konica))
  
