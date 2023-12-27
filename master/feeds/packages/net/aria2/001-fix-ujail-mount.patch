@@ -1,3 +1,16 @@
+--- a/Makefile
++++ b/Makefile
+@@ -53,7 +53,7 @@ define Package/aria2
+   SUBMENU:=File Transfer
+   TITLE:=lightweight download utility
+   URL:=https://aria2.github.io/
+-  DEPENDS:=+zlib +libstdcpp +ARIA2_OPENSSL:libopenssl +ARIA2_GNUTLS:libgnutls \
++  DEPENDS:=+zlib +libstdcpp +ARIA2_OPENSSL:libopenssl +ARIA2_OPENSSL:libopenssl-legacy +ARIA2_GNUTLS:libgnutls \
+ 	+ARIA2_NETTLE:libnettle +ARIA2_LIBGCRYPT:libgcrypt +ARIA2_GMP:libgmp \
+ 	+ARIA2_LIBXML2:libxml2 +ARIA2_EXPAT:libexpat +ARIA2_SFTP:libssh2 \
+ 	+ARIA2_ASYNC_DNS:libcares +ARIA2_COOKIE:libsqlite3
+diff --git a/files/aria2.init b/files/aria2.init
+index deef307..2cca006 100755
 --- a/files/aria2.init
 +++ b/files/aria2.init
 @@ -105,7 +105,7 @@ aria2_validate() {
@@ -21,3 +34,11 @@
  	_make_dir "$config_dir" || {
  		_err "Can't create config dir: $config_dir"
  		return 1
+@@ -341,6 +346,7 @@ aria2_start() {
+ 		procd_set_param user "$user"
+ 
+ 	procd_add_jail "$NAME.$section" log
++	procd_add_jail_mount "/usr/lib"
+ 	procd_add_jail_mount "$ca_certificate" "$certificate" "$rpc_certificate" "$rpc_private_key"
+ 	procd_add_jail_mount_rw "$dir" "$config_dir" "$log"
+ 	procd_close_instance
