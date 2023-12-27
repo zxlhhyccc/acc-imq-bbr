@@ -73,7 +73,7 @@ Subject: [PATCH] add net-conntrack-events-support-multiple-registrant for 5.15
  #else
 --- a/include/net/netns/conntrack.h
 +++ b/include/net/netns/conntrack.h
-@@ -112,6 +112,9 @@ struct netns_ct {
+@@ -113,6 +113,9 @@ struct netns_ct {
  
  	struct ct_pcpu __percpu *pcpu_lists;
  	struct ip_conntrack_stat __percpu *stat;
