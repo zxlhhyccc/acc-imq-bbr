@@ -257,14 +257,14 @@
 + struct tc_fifo_qopt {
 +--- a/tc/Makefile
 ++++ b/tc/Makefile
-+@@ -81,6 +81,7 @@ TCMODULES += q_etf.o
++@@ -77,6 +77,7 @@ TCMODULES += q_etf.o
 + TCMODULES += q_taprio.o
 + TCMODULES += q_plug.o
 + TCMODULES += q_ets.o
 ++TCMODULES += q_nss.o
-+
++ 
 + TCSO :=
-+ ifeq ($(TC_CONFIG_ATM),y)
++ 
 +--- /dev/null
 ++++ b/tc/q_nss.c
 +@@ -0,0 +1,1826 @@
@@ -2102,7 +2102,7 @@ index 0000000..d5b0d23
 @@ -0,0 +1,243 @@
 +--- a/tc/Makefile
 ++++ b/tc/Makefile
-+@@ -54,6 +54,7 @@ TCMODULES += m_tunnel_key.o
++@@ -50,6 +50,7 @@ TCMODULES += m_tunnel_key.o
 + TCMODULES += m_sample.o
 + TCMODULES += m_ct.o
 + TCMODULES += m_gate.o
