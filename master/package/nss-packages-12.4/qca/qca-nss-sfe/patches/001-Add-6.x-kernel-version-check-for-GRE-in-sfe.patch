@@ -1,0 +1,31 @@
+--- a/Makefile
++++ b/Makefile
+@@ -9,7 +9,7 @@ SFE_IPV4_OBJS := sfe_ipv4.o sfe_ipv4_udp
+ SFE_IPV6_OBJS := sfe_ipv6.o sfe_ipv6_udp.o sfe_ipv6_tcp.o sfe_ipv6_icmp.o sfe_ipv6_tunipip6.o sfe_ipv6_pppoe_br.o sfe_ipv6_esp.o sfe_ipv6_multicast.o sfe_ipv6_etherip.o sfe_ipv6_frag.o
+ SFE_PPPOE_OBJS := sfe_pppoe.o sfe_pppoe_mgr.o
+ 
+-ifeq ($(findstring 4.4, $(KERNELVERSION)),)
++ifneq ($(findstring 4.4, $(KERNELVERSION)),)
+   SFE_IPV4_OBJS += sfe_ipv4_gre.o
+   SFE_IPV6_OBJS += sfe_ipv6_gre.o
+   ccflags-y += -DSFE_GRE_TUN_ENABLE
+--- a/sfe.c
++++ b/sfe.c
+@@ -189,7 +189,7 @@ inline bool sfe_dev_is_layer_3_interface
+ 		 * could be map-t, dslite or tun6rd interface, otherwise we
+ 		 * can't do anything interesting here!
+ 		 */
+-		if (likely(in4_dev->ifa_list || (dev->priv_flags_ext & IFF_EXT_MAPT)
++		if (likely(in4_dev->ifa_list || (dev->priv_flags_ext)
+ 					     || (dev->rtnl_link_ops
+ 					     && (!strcmp(dev->rtnl_link_ops->kind, "ip6tnl")
+ 					     || !strcmp(dev->rtnl_link_ops->kind, "sit"))))) {
+@@ -210,7 +210,7 @@ inline bool sfe_dev_is_layer_3_interface
+ 	 * Does it have an IPv6 address?  If it doesn't then it could be MAP-T interface,
+ 	 * else we can't do anything interesting here!
+ 	 */
+-	if (likely(!list_empty(&in6_dev->addr_list) || (dev->priv_flags_ext & IFF_EXT_MAPT))) {
++	if (likely(!list_empty(&in6_dev->addr_list) || (dev->priv_flags_ext))) {
+ 		return true;
+ 	}
+ 
