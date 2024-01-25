@@ -30,7 +30,7 @@
  
  		s.taboption('general', form.Flag, 'domainneeded',
  			_('Domain required'),
-@@ -536,6 +559,16 @@ return view.extend({
+@@ -540,6 +563,16 @@ return view.extend({
  		o.optional = true;
  		o.placeholder = '/etc/dnsmasq.hosts';
  
@@ -47,7 +47,7 @@
  		o = s.taboption('advanced', form.Flag, 'quietdhcp',
  			_('Suppress logging'),
  			_('Suppress logging of the routine operation for the DHCP protocol.'));
-@@ -568,6 +601,7 @@ return view.extend({
+@@ -572,6 +605,7 @@ return view.extend({
  			_('Filter IPv4 A records'),
  			_('Remove IPv4 addresses from the results and only return IPv6 addresses.'));
  		o.optional = true;
@@ -55,7 +55,7 @@
  
  		s.taboption('advanced', form.Flag, 'localise_queries',
  			_('Localise queries'),
-@@ -661,6 +695,13 @@ return view.extend({
+@@ -665,6 +699,13 @@ return view.extend({
  		o.datatype = 'range(0,10000)';
  		o.placeholder = 1000;
  
