@@ -331,6 +331,17 @@ define KernelPackage/usb-bcma
 endef
 $(eval $(call KernelPackage,usb-bcma))
 
+define KernelPackage/usb-fotg210
+  TITLE:=Support for FOTG210 USB host controllers
+  DEPENDS:=@USB_SUPPORT @TARGET_gemini
+  KCONFIG:=CONFIG_USB_FOTG210_HCD
+  FILES:= \
+	$(if $(CONFIG_USB_FOTG210_HCD),$(LINUX_DIR)/drivers/usb/host/fotg210-hcd.ko)
+  AUTOLOAD:=$(call AutoLoad,50,fotg210-hcd,1)
+  $(call AddDepends/usb)
+endef
+$(eval $(call KernelPackage,usb-fotg210))
+
 define KernelPackage/usb-ssb
   TITLE:=Support for SSB USB controllers
   DEPENDS:=@USB_SUPPORT @TARGET_bcm47xx
@@ -483,7 +494,7 @@ $(eval $(call KernelPackage,usb-dwc3))
 
 define KernelPackage/usb-dwc3-qcom
   TITLE:=DWC3 Qualcomm USB driver
-  DEPENDS:=@(TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax) +kmod-usb-dwc3
+  DEPENDS:=@(TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax||TARGET_ipq60xx) +kmod-usb-dwc3
   KCONFIG:= CONFIG_USB_DWC3_QCOM
   FILES:= $(LINUX_DIR)/drivers/usb/dwc3/dwc3-qcom.ko
   AUTOLOAD:=$(call AutoLoad,53,dwc3-qcom,1)
@@ -538,6 +549,7 @@ define KernelPackage/usb-audio
 	CONFIG_SND_USB_AUDIO
   $(call AddDepends/usb)
   $(call AddDepends/sound)
+  DEPENDS += +LINUX_6_1:kmod-media-core
   FILES:= \
 	$(LINUX_DIR)/sound/usb/snd-usbmidi-lib.ko \
 	$(LINUX_DIR)/sound/usb/snd-usb-audio.ko
@@ -1740,6 +1752,7 @@ define KernelPackage/usb3
 	+TARGET_ramips_mt7621:kmod-usb-xhci-mtk \
 	+TARGET_mediatek:kmod-usb-xhci-mtk \
 	+TARGET_apm821xx_nand:kmod-usb-xhci-pci-renesas \
+	+TARGET_lantiq_xrx200:kmod-usb-xhci-pci-renesas \
 	+TARGET_mvebu_cortexa9:kmod-usb-xhci-pci-renesas
   KCONFIG:= \
 	CONFIG_USB_PCI=y \
