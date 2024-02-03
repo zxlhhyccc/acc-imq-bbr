@@ -57,11 +57,10 @@
    FILES:= \
  	$(LINUX_DIR)/drivers/gpu/drm/drm.ko \
  	$(LINUX_DIR)/drivers/gpu/drm/drm_panel_orientation_quirks.ko
-@@ -289,6 +330,19 @@ endef
+@@ -289,6 +331,17 @@ endef
  
  $(eval $(call KernelPackage,drm-display-helper))
  
-+
 +define KernelPackage/drm-gem-shmem-helper
 +  SUBMENU:=$(VIDEO_MENU)
 +  TITLE:=GEM shmem helper functions
@@ -73,11 +72,10 @@
 +
 +$(eval $(call KernelPackage,drm-gem-shmem-helper))
 +
-+
  define KernelPackage/drm-ttm
    SUBMENU:=$(VIDEO_MENU)
    TITLE:=GPU memory management subsystem
-@@ -342,7 +396,8 @@ define KernelPackage/drm-amdgpu
+@@ -342,7 +395,8 @@ define KernelPackage/drm-amdgpu
    TITLE:=AMDGPU DRM support
    DEPENDS:=@TARGET_x86 @DISPLAY_SUPPORT +kmod-backlight +kmod-drm-ttm \
  	+kmod-drm-ttm-helper +kmod-drm-kms-helper +kmod-i2c-algo-bit +amdgpu-firmware \
@@ -87,7 +85,7 @@
    KCONFIG:=CONFIG_DRM_AMDGPU \
  	CONFIG_DRM_AMDGPU_SI=y \
  	CONFIG_DRM_AMDGPU_CIK=y \
-@@ -436,12 +491,51 @@ endef
+@@ -437,12 +491,51 @@ endef
  
  $(eval $(call KernelPackage,drm-imx-ldb))
  
@@ -140,7 +138,7 @@
    KCONFIG:=CONFIG_DRM_RADEON
    FILES:=$(LINUX_DIR)/drivers/gpu/drm/radeon/radeon.ko
    AUTOLOAD:=$(call AutoProbe,radeon)
-@@ -453,6 +547,39 @@ endef
+@@ -454,6 +547,39 @@ endef
  
  $(eval $(call KernelPackage,drm-radeon))
  
@@ -180,7 +178,7 @@
  #
  # Video Capture
  #
-@@ -460,10 +587,9 @@ $(eval $(call KernelPackage,drm-radeon))
+@@ -461,7 +587,8 @@ $(eval $(call KernelPackage,drm-radeon))
  define KernelPackage/video-core
    SUBMENU:=$(VIDEO_MENU)
    TITLE=Video4Linux support
@@ -188,12 +186,9 @@
 +  DEPENDS:=+PACKAGE_kmod-i2c-core:kmod-i2c-core \
 +	+LINUX_6_1:kmod-media-core
    KCONFIG:= \
--	CONFIG_MEDIA_SUPPORT \
--	CONFIG_MEDIA_CAMERA_SUPPORT=y \
- 	CONFIG_VIDEO_DEV \
- 	CONFIG_V4L_PLATFORM_DRIVERS=y
-   FILES:= \
-@@ -1100,6 +1226,44 @@ endef
+ 	CONFIG_MEDIA_SUPPORT \
+ 	CONFIG_MEDIA_CAMERA_SUPPORT=y \
+@@ -1102,6 +1229,44 @@ endef
  
  $(eval $(call KernelPackage,video-gspca-konica))
  
