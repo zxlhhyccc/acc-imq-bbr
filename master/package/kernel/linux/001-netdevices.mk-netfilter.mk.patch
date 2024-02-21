@@ -1,13 +1,13 @@
 --- a/modules/netdevices.mk
 +++ b/modules/netdevices.mk
-@@ -927,6 +927,25 @@ endef
+@@ -944,6 +944,25 @@ endef
  $(eval $(call KernelPackage,iavf))
  
  
 +define KernelPackage/ice
 +  SUBMENU:=$(NETWORK_DEVICES_MENU)
 +  TITLE:=Intel(R) Ethernet Controller E810 Series support
-+  DEPENDS:=@PCI_SUPPORT +kmod-ptp
++  DEPENDS:=@PCI_SUPPORT +kmod-ptp @!TARGET_apm821xx
 +  KCONFIG:=\
 +	CONFIG_ICE \
 +	CONFIG_ICE_HWTS=y \
@@ -26,7 +26,7 @@
  define KernelPackage/b44
    TITLE:=Broadcom 44xx driver
    KCONFIG:=CONFIG_B44
-@@ -1298,6 +1317,26 @@ endef
+@@ -1315,6 +1334,26 @@ endef
  
  $(eval $(call KernelPackage,bnx2x))
  
@@ -53,7 +53,7 @@
  define KernelPackage/be2net
    SUBMENU:=$(NETWORK_DEVICES_MENU)
    TITLE:=Broadcom Emulex OneConnect 10Gbps NIC
-@@ -1353,12 +1392,13 @@ define KernelPackage/mlx5-core
+@@ -1370,12 +1409,13 @@ define KernelPackage/mlx5-core
  	CONFIG_MLX5_EN_IPSEC=n \
  	CONFIG_MLX5_EN_RXNFC=y \
  	CONFIG_MLX5_EN_TLS=n \
@@ -68,7 +68,7 @@
  	CONFIG_MLX5_TC_CT=n \
  	CONFIG_MLX5_TLS=n \
  	CONFIG_MLX5_VFIO_PCI=n
-@@ -1521,6 +1561,30 @@ endef
+@@ -1538,6 +1578,30 @@ endef
  $(eval $(call KernelPackage,qlcnic))
  
  
@@ -99,6 +99,31 @@
  define KernelPackage/sfp
    SUBMENU:=$(NETWORK_DEVICES_MENU)
    TITLE:=SFP cage support
+@@ -1706,6 +1770,24 @@ endef
+ 
+ $(eval $(call KernelPackage,mhi-wwan-mbim))
+ 
++define KernelPackage/mtk-t7xx
++  SUBMENU:=$(NETWORK_DEVICES_MENU)
++  TITLE:=MediaTek PCIe 5G WWAN modem T7xx device
++  DEPENDS:=@PCI_SUPPORT +kmod-wwan
++  KCONFIG:=CONFIG_MTK_T7XX
++  FILES:=$(LINUX_DIR)/drivers/net/wwan/t7xx/mtk_t7xx.ko
++  AUTOLOAD:=$(call AutoProbe,mtk_t7xx)
++endef
++
++define KernelPackage/mtk-t7xx/description
++  Enables MediaTek PCIe based 5G WWAN modem (T7xx series) device.
++  Adapts WWAN framework and provides network interface like wwan0
++  and tty interfaces like wwan0at0 (AT protocol), wwan0mbim0
++  (MBIM protocol), etc.
++endef
++
++$(eval $(call KernelPackage,mtk-t7xx))
++
+ define KernelPackage/atlantic
+   SUBMENU:=$(NETWORK_DEVICES_MENU)
+   TITLE:=Aquantia AQtion 10Gbps Ethernet NIC
 --- a/modules/netfilter.mk
 +++ b/modules/netfilter.mk
 @@ -514,6 +514,24 @@ endef
