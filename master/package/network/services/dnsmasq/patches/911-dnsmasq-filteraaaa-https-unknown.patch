@@ -58,16 +58,16 @@
  				union all_addr *addr, time_t now, 
 --- a/src/option.c
 +++ b/src/option.c
-@@ -187,6 +187,8 @@ struct myoption {
+@@ -186,6 +186,8 @@ struct myoption {
+ #define LOPT_STALE_CACHE   377
  #define LOPT_NORR          378
  #define LOPT_NO_IDENT      379
- #define LOPT_MINTTL        380
-+#define LOPT_FILTER_HTTPS  381
-+#define LOPT_FILTER_UNKNOWN 382
++#define LOPT_FILTER_HTTPS  380
++#define LOPT_FILTER_UNKNOWN 381
  
  #ifdef HAVE_GETOPT_LONG
  static const struct option opts[] =  
-@@ -378,6 +380,8 @@ static const struct myoption opts[] =
+@@ -376,6 +378,8 @@ static const struct myoption opts[] =
      { "fast-dns-retry", 2, 0, LOPT_FAST_RETRY },
      { "use-stale-cache", 2, 0 , LOPT_STALE_CACHE },
      { "no-ident", 0, 0, LOPT_NO_IDENT },
@@ -76,7 +76,7 @@
      { NULL, 0, 0, 0 }
    };
  
-@@ -576,6 +580,8 @@ static struct {
+@@ -573,6 +577,8 @@ static struct {
    { LOPT_QUIET_TFTP, OPT_QUIET_TFTP, NULL, gettext_noop("Do not log routine TFTP."), NULL },
    { LOPT_NORR, OPT_NORR, NULL, gettext_noop("Suppress round-robin ordering of DNS records."), NULL },
    { LOPT_NO_IDENT, OPT_NO_IDENT, NULL, gettext_noop("Do not add CHAOS TXT records."), NULL },
@@ -87,7 +87,7 @@
  
 --- a/src/rfc1035.c
 +++ b/src/rfc1035.c
-@@ -2167,6 +2167,29 @@ size_t answer_request(struct dns_header *header, char *limit, size_t qlen,
+@@ -2149,6 +2149,29 @@ size_t answer_request(struct dns_header
  	    }
  	}
  
