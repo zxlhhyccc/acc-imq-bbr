@@ -1,26 +1,15 @@
---- a/files/50-dnsmasq-migrate-resolv-conf-auto.sh
-+++ b/files/50-dnsmasq-migrate-resolv-conf-auto.sh
-@@ -1,5 +1,7 @@
- #!/bin/sh
- 
-+uci -q get dhcp.@dnsmasq[0].mini_ttl >"/dev/null" && uci -q delete dhcp.@dnsmasq[0].mini_ttl
-+
- [ "$(uci get dhcp.@dnsmasq[0].resolvfile)" = "/tmp/resolv.conf.auto" ] && {
- 	uci set dhcp.@dnsmasq[0].resolvfile="/tmp/resolv.conf.d/resolv.conf.auto"
- 	uci commit dhcp
 --- a/files/dhcp.conf
 +++ b/files/dhcp.conf
-@@ -22,8 +22,13 @@ config dnsmasq
+@@ -22,8 +22,12 @@ config dnsmasq
  	#list bogusnxdomain     '64.94.110.11'
  	option localservice	1  # disable to allow DNS requests from non-local subnets
  	option ednspacket_max	1232
 -	option filter_aaaa	0
 +	option filter_aaaa	1
  	option filter_a		0
-+	#option filter_https	1
-+	#option filter_unknown	1
-+	#option mini_ttl	3600
-+	option min_cache_ttl	3600
++	option filter_https	1
++	option filter_unknown	1
++	option mini_ttl		3600
 +	option dns_redirect	1
  	#list addnmount		/some/path # read-only mount path to expose it to dnsmasq
  
@@ -40,12 +29,12 @@
  
  	append_bool "$cfg" filter_aaaa "--filter-AAAA"
  	append_bool "$cfg" filter_a "--filter-A"
-+	# append_bool "$cfg" filter_https "--filter-https"
-+	# append_bool "$cfg" filter_unknown "--filter-unknown"
++	append_bool "$cfg" filter_https "--filter-https"
++	append_bool "$cfg" filter_unknown "--filter-unknown"
  
  	append_parm "$cfg" logfacility "--log-facility"
  	config_get logfacility "$cfg" "logfacility"
-+	# append_parm "$cfg" mini_ttl "--min-ttl"
++	append_parm "$cfg" mini_ttl "--min-ttl"
  	append_parm "$cfg" cachesize "--cache-size"
  	append_parm "$cfg" dnsforwardmax "--dns-forward-max"
  	append_parm "$cfg" port "--port"
@@ -113,8 +102,8 @@
 +
  add_interface_trigger()
  {
- 	local interface ifname ignore
-@@ -1313,6 +1351,7 @@ start_service() {
+ 	local interface ignore
+@@ -1312,6 +1350,7 @@ start_service() {
  }
  
  reload_service() {
@@ -122,7 +111,7 @@
  	rc_procd start_service "$@"
  	procd_send_signal dnsmasq "$@"
  }
-@@ -1339,4 +1378,6 @@ stop_service() {
+@@ -1338,4 +1377,6 @@ stop_service() {
  	else
  		config_foreach dnsmasq_stop dnsmasq
  	fi
