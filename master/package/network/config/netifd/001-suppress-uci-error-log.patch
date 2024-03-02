@@ -1,0 +1,13 @@
+diff --git a/files/usr/libexec/network/packet-steering.sh b/files/usr/libexec/network/packet-steering.sh
+index 799c080..cdda39f 100755
+--- a/files/usr/libexec/network/packet-steering.sh
++++ b/files/usr/libexec/network/packet-steering.sh
+@@ -32,7 +32,7 @@ set_hex_val() {
+ 	echo "$val" > "$file"
+ }
+ 
+-packet_steering="$(uci get "network.@globals[0].packet_steering")"
++packet_steering="$(uci -q get "network.@globals[0].packet_steering")"
+ [ "$packet_steering" != 1 ] && exit 0
+ 
+ exec 512>/var/lock/smp_tune.lock
