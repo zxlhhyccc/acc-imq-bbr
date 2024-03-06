@@ -1,0 +1,34 @@
+--- a/include/download.mk
++++ b/include/download.mk
+@@ -31,7 +31,7 @@ define dl_method
+ $(strip \
+   $(if $(filter git,$(2)),$(call dl_method_git,$(1),$(2)),
+     $(if $(2),$(2), \
+-      $(if $(filter @OPENWRT @APACHE/% @DEBIAN/% @GITHUB/% @GNOME/% @GNU/% @KERNEL/% @SF/% @SAVANNAH/% ftp://% http://% https://% file://%,$(1)),default, \
++      $(if $(filter @OPENWRT @IMMORTALWRT @APACHE/% @DEBIAN/% @GITHUB/% @GNOME/% @GNU/% @KERNEL/% @SF/% @SAVANNAH/% ftp://% http://% https://% file://%,$(1)),default, \
+         $(if $(filter git://%,$(1)),$(call dl_method_git,$(1),$(2)), \
+           $(if $(filter svn://%,$(1)),svn, \
+             $(if $(filter cvs://%,$(1)),cvs, \
+--- a/scripts/download.pl
++++ b/scripts/download.pl
+@@ -248,6 +248,8 @@ foreach my $mirror (@ARGV) {
+ 		}
+ 	} elsif ($mirror =~ /^\@OPENWRT$/) {
+ 		# use OpenWrt source server directly
++	} elsif ($mirror =~ /^\@IMMORTALWRT$/) {
++		# use ImmortalWrt source server directly
+ 	} elsif ($mirror =~ /^\@DEBIAN\/(.+)$/) {
+ 		push @mirrors, "https://ftp.debian.org/debian/$1";
+ 		push @mirrors, "https://mirror.leaseweb.com/debian/$1";
+@@ -315,6 +317,11 @@ foreach my $mirror (@ARGV) {
+ 	}
+ }
+ 
++# push @mirrors, 'https://mirror01.download.immortalwrt.eu.org';
++push @mirrors, 'https://mirror2.immortalwrt.org/sources';
++push @mirrors, 'https://mirror.immortalwrt.org/sources';
++push @mirrors, 'https://sources-cdn.immortalwrt.org';
++push @mirrors, 'https://sources.immortalwrt.org';
+ push @mirrors, 'https://sources.cdn.openwrt.org';
+ push @mirrors, 'https://sources.openwrt.org';
+ push @mirrors, 'https://mirror2.openwrt.org/sources';
