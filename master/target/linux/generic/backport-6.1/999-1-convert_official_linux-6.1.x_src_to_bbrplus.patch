@@ -1339,7 +1339,7 @@ diff -ruaN a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
 diff -ruaN a/net/sched/Kconfig b/net/sched/Kconfig
 --- a/net/sched/Kconfig	2022-10-15 14:02:59.000000000 +0800
 +++ b/net/sched/Kconfig	2022-10-19 11:55:45.078906246 +0800
-@@ -332,7 +332,8 @@ config NET_SCH_CAKE
+@@ -290,7 +290,8 @@ config NET_SCH_CAKE
  	  If unsure, say N.
  
  config NET_SCH_FQ
@@ -1349,7 +1349,7 @@ diff -ruaN a/net/sched/Kconfig b/net/sched/Kconfig
  	help
  	  Say Y here if you want to use the FQ packet scheduling algorithm.
  
-@@ -439,8 +440,9 @@ config NET_SCH_ETS
+@@ -397,8 +398,9 @@ config NET_SCH_ETS
  
  	  If unsure, say N.
  
@@ -1360,7 +1360,7 @@ diff -ruaN a/net/sched/Kconfig b/net/sched/Kconfig
  	help
  	  Support for selection of default queuing discipline.
  
-@@ -450,11 +452,15 @@ menuconfig NET_SCH_DEFAULT
+@@ -408,11 +410,15 @@ menuconfig NET_SCH_DEFAULT
  
  	  If unsure, say N.
  
@@ -1378,7 +1378,7 @@ diff -ruaN a/net/sched/Kconfig b/net/sched/Kconfig
  	help
  	  Select the queueing discipline that will be used by default
  	  for all network devices.
-@@ -485,7 +491,7 @@ config DEFAULT_NET_SCH
+@@ -443,7 +449,7 @@ config DEFAULT_NET_SCH
  	default "fq_codel" if DEFAULT_FQ_CODEL
  	default "fq_pie" if DEFAULT_FQ_PIE
  	default "sfq" if DEFAULT_SFQ
