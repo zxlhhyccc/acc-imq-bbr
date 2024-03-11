@@ -11,18 +11,18 @@
 # append "pad-to 64k" to the image definition
 # this is based on the ipq806x zyxel.sh mmc upgrade
 
-. "$IPKG_INSTROOT/lib/functions.sh"
+. /lib/functions.sh
 
 mmc_do_upgrade() {
 	local tar_file="$1"
 	local rootfs=
 	local kernel=
 
-			[ -z "$kernel" ] && kernel=$(find_mmc_part ${kernelname})
-			[ -z "$rootfs" ] && rootfs=$(find_mmc_part ${rootfsname})
+	[ -z "$kernel" ] && kernel=$(find_mmc_part ${kernelname})
+	[ -z "$rootfs" ] && rootfs=$(find_mmc_part ${rootfsname})
 
-			[ -z "$kernel" ] && echo "Upgrade failed: kernel partition not found! Rebooting..." && reboot -f
-			[ -z "$rootfs" ] && echo "Upgrade failed: rootfs partition not found! Rebooting..." && reboot -f
+	[ -z "$kernel" ] && echo "Upgrade failed: kernel partition not found! Rebooting..." && reboot -f
+	[ -z "$rootfs" ] && echo "Upgrade failed: rootfs partition not found! Rebooting..." && reboot -f
 
 	mmc_do_flash $tar_file $kernel $rootfs
 

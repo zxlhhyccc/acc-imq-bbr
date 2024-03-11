@@ -1,0 +1,29 @@
+From 82d61e19fccbf2fe7c018765b3799791916e7f31 Mon Sep 17 00:00:00 2001
+From: Shawn Guo <shawn.guo@linaro.org>
+Date: Wed, 29 Sep 2021 11:42:46 +0800
+Subject: [PATCH] arm64: dts: qcom: msm8996: Add '#clock-cells' to QMP PHY
+ child node
+
+'#clock-cells' is a required property of QMP PHY child node, not itself.
+Move it to fix the dtbs_check warnings.
+
+There are only '#clock-cells' removal from SM8350 QMP PHY nodes, because
+child nodes already have the property.
+
+Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20210929034253.24570-4-shawn.guo@linaro.org
+---
+ arch/arm64/boot/dts/qcom/msm8996.dtsi | 1 +
+ 1 files changed, 1 insertions(+)
+
+--- a/arch/arm64/boot/dts/qcom/msm8996.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8996.dtsi
+@@ -3469,6 +3469,7 @@
+ 			compatible = "qcom,msm8996-apcs-hmss-global";
+ 			reg = <0x09820000 0x1000>;
+ 
++			#clock-cells = <0>;
+ 			#mbox-cells = <1>;
+ 		};
+ 

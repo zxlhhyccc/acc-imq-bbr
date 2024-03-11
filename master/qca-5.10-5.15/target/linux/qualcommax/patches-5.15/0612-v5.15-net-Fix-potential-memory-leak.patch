@@ -12,11 +12,9 @@ Signed-off-by: Ken Zhu <quic_guigenz@quicinc.com>
  net/bridge/br_input.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
-index 26dc637ad564b..6d3ce7699b9b1 100644
 --- a/net/bridge/br_input.c
 +++ b/net/bridge/br_input.c
-@@ -418,7 +418,7 @@ rx_handler_result_t br_handle_frame(struct sk_buff **pskb)
+@@ -418,7 +418,7 @@ forward:
  			br_handle_local_finish) == 1) {
  			return RX_HANDLER_PASS;
  		}
@@ -25,6 +23,3 @@ index 26dc637ad564b..6d3ce7699b9b1 100644
  
  	case BR_STATE_FORWARDING:
  	case BR_STATE_LEARNING:
--- 
-GitLab
-

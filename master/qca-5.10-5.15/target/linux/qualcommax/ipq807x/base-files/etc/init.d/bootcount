@@ -2,8 +2,6 @@
 
 START=99
 
-. "$IPKG_INSTROOT/lib/functions/system.sh"
-
 boot() {
 	case $(board_name) in
 	edgecore,eap102|\
@@ -11,6 +9,11 @@ boot() {
 		fw_setenv upgrade_available 0
 		# Unset changed flag after sysupgrade complete
 		fw_setenv changed
+	;;
+	linksys,mx4200v1|\
+	linksys,mx4200v2|\
+	linksys,mx5300)
+		mtd resetbc s_env || true
 	;;
 	redmi,ax6|\
 	xiaomi,ax3600)

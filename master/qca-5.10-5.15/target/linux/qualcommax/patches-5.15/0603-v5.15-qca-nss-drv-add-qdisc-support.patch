@@ -30,7 +30,7 @@
 @@ -776,4 +777,14 @@ enum {
  	TCF_EM_OPND_LT
  };
-
+ 
 +/* QCA NSS Qdisc Support - Start */
 +#define _TC_MAKE32(x)		((x))
 +#define _TC_MAKEMASK1(n)	(_TC_MAKE32(1) << _TC_MAKE32(n))

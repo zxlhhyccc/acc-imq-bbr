@@ -19,7 +19,7 @@ Link: https://lore.kernel.org/r/20210929034253.24570-4-shawn.guo@linaro.org
 
 --- a/arch/arm64/boot/dts/qcom/msm8996.dtsi
 +++ b/arch/arm64/boot/dts/qcom/msm8996.dtsi
-@@ -3469,6 +3469,7 @@
+@@ -3490,6 +3490,7 @@
  			compatible = "qcom,msm8996-apcs-hmss-global";
  			reg = <0x09820000 0x1000>;
  

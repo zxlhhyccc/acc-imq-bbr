@@ -10,10 +10,10 @@ Subject: [PATCH] Update 607-qca-add-add-nss-bridge-mgr-support.patch for kernel 
 
 --- a/include/linux/if_bridge.h
 +++ b/include/linux/if_bridge.h
-@@ -238,4 +238,8 @@ typedef struct net_bridge_port *br_get_d
+@@ -238,4 +238,8 @@ extern int br_fdb_delete_by_netdev(struc
                   			const unsigned char *addr, u16 vid);
  /* QCA SSDK support - End */
-
+ 
 +/* QCA NSS bridge-mgr support - Start */
 +extern struct net_device *br_fdb_bridge_dev_get_and_hold(struct net_bridge *br);
 +/* QCA NSS bridge-mgr support - End */
@@ -24,7 +24,7 @@ Subject: [PATCH] Update 607-qca-add-add-nss-bridge-mgr-support.patch for kernel 
 @@ -66,6 +66,15 @@ void br_fdb_update_unregister_notify(str
  EXPORT_SYMBOL_GPL(br_fdb_update_unregister_notify);
  /* QCA NSS ECM support - End */
-
+ 
 +/* QCA NSS bridge-mgr support - Start */
 +struct net_device *br_fdb_bridge_dev_get_and_hold(struct net_bridge *br)
 +{
@@ -43,7 +43,7 @@ Subject: [PATCH] Update 607-qca-add-add-nss-bridge-mgr-support.patch for kernel 
  	unsigned long now = jiffies;
 -	u8 mac_addr[6]; /* QCA NSS ECM support */
 +	struct br_fdb_event fdb_event; /* QCA NSS bridge-mgr support */
-
+ 
  	/* this part is tricky, in order to avoid blocking learning and
  	 * consequently forwarding, we rely on rcu to delete objects with
 @@ -399,12 +408,13 @@ void br_fdb_cleanup(struct work_struct *
@@ -67,7 +67,7 @@ Subject: [PATCH] Update 607-qca-add-add-nss-bridge-mgr-support.patch for kernel 
  {
  	struct net_bridge_fdb_entry *fdb;
 +	struct br_fdb_event fdb_event; /* QCA NSS bridge-mgr support */
-
+ 
  	/* some users want to always flood. */
  	if (hold_time(br) == 0)
 @@ -645,6 +656,12 @@ void br_fdb_update(struct net_bridge *br
@@ -91,3 +91,4 @@ Subject: [PATCH] Update 607-qca-add-add-nss-bridge-mgr-support.patch for kernel 
 +					0, (void *)&fdb_event);
  				/* QCA NSS ECM support - End */
  			}
+ 

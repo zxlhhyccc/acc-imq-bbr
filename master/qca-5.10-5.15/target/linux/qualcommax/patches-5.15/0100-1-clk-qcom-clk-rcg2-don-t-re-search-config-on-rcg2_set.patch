@@ -26,7 +26,7 @@ Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 
 --- a/drivers/clk/qcom/clk-rcg2.c
 +++ b/drivers/clk/qcom/clk-rcg2.c
-@@ -352,23 +352,12 @@ static int clk_rcg2_configure(struct clk
+@@ -346,23 +346,12 @@ static int clk_rcg2_configure(struct clk
  	return update_config(rcg);
  }
  
@@ -52,7 +52,7 @@ Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
  	if (!f)
  		return -EINVAL;
  
-@@ -378,25 +367,25 @@ static int __clk_rcg2_set_rate(struct cl
+@@ -372,25 +361,25 @@ static int __clk_rcg2_set_rate(struct cl
  static int clk_rcg2_set_rate(struct clk_hw *hw, unsigned long rate,
  			    unsigned long parent_rate)
  {

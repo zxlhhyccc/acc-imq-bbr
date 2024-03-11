@@ -3,7 +3,7 @@
 @@ -90,6 +90,20 @@ struct vxlan_fdb {
  /* salt for hash table */
  static u32 vxlan_salt __read_mostly;
-
+ 
 +ATOMIC_NOTIFIER_HEAD(vxlan_fdb_notifier_list);
 +
 +void vxlan_fdb_register_notify(struct notifier_block *nb)
@@ -27,11 +27,11 @@
  	struct sk_buff *skb;
 +	struct vxlan_fdb_event vfe;
  	int err = -ENOBUFS;
-
+ 
  	skb = nlmsg_new(vxlan_nlmsg_size(), GFP_ATOMIC);
 @@ -382,6 +397,10 @@ static void __vxlan_fdb_notify(struct vx
  	}
-
+ 
  	rtnl_notify(skb, net, 0, RTNLGRP_NEIGH, NULL, GFP_ATOMIC);
 +	vfe.dev = vxlan->dev;
 +	vfe.rdst = rd;
@@ -43,7 +43,7 @@
 @@ -548,6 +567,18 @@ static struct vxlan_fdb *vxlan_find_mac(
  	return f;
  }
-
+ 
 +/* Find and update age of fdb entry corresponding to MAC. */
 +void vxlan_fdb_update_mac(struct vxlan_dev *vxlan, const u8 *mac, uint32_t vni)
 +{
@@ -62,7 +62,7 @@
 @@ -2742,6 +2773,9 @@ static void vxlan_xmit_one(struct sk_buf
  			goto out_unlock;
  		}
-
+ 
 +		/* Reset the skb_iif to Tunnels interface index */
 +		skb->skb_iif = dev->ifindex;
 +
@@ -72,7 +72,7 @@
 @@ -2813,6 +2847,9 @@ static void vxlan_xmit_one(struct sk_buf
  		if (err < 0)
  			goto tx_error;
-
+ 
 +		/* Reset the skb_iif to Tunnels interface index */
 +		skb->skb_iif = dev->ifindex;
 +
@@ -84,7 +84,7 @@
 @@ -293,6 +293,19 @@ struct vxlan_dev {
  					 VXLAN_F_UDP_ZERO_CSUM6_RX |	\
  					 VXLAN_F_COLLECT_METADATA)
-
+ 
 +/*
 + * Application data for fdb notifier event
 + */
@@ -100,3 +100,4 @@
 +
  struct net_device *vxlan_dev_create(struct net *net, const char *name,
  				    u8 name_assign_type, struct vxlan_config *conf);
+ 

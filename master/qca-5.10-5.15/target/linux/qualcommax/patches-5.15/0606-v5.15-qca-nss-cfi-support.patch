@@ -3,7 +3,7 @@
 @@ -417,6 +417,8 @@ static int crypto_authenc_create(struct
  		     enc->base.cra_driver_name) >= CRYPTO_MAX_ALG_NAME)
  		goto err_free_inst;
-
+ 
 +	inst->alg.base.cra_flags |= (auth_base->cra_flags |
 +				    enc->base.cra_flags) & CRYPTO_ALG_NOSUPP_SG;
  	inst->alg.base.cra_priority = enc->base.cra_priority * 10 +
@@ -13,7 +13,7 @@
 +++ b/include/linux/crypto.h
 @@ -101,6 +101,11 @@
  #define CRYPTO_NOLOAD			0x00008000
-
+ 
  /*
 + * Set this flag if algorithm does not support SG list transforms
 + */
@@ -30,13 +30,13 @@
  	struct crypto_aead *aead;
  	struct esp_info esp;
 +	bool nosupp_sg;
-
+ 
  	esp.inplace = true;
-
+ 
 @@ -670,6 +671,11 @@ static int esp_output(struct xfrm_state
  	aead = x->data;
  	alen = crypto_aead_authsize(aead);
-
+ 
 +	nosupp_sg = crypto_tfm_alg_type(&aead->base) & CRYPTO_ALG_NOSUPP_SG;
 +	if (nosupp_sg && skb_linearize(skb)) {
 +		return -ENOMEM;
@@ -50,13 +50,13 @@
  	struct scatterlist *sg;
  	int err = -EINVAL;
 +	bool nosupp_sg;
-
+ 
  	if (!pskb_may_pull(skb, sizeof(struct ip_esp_hdr) + ivlen))
  		goto out;
 @@ -904,6 +911,12 @@ static int esp_input(struct xfrm_state *
  	if (elen <= 0)
  		goto out;
-
+ 
 +	nosupp_sg = crypto_tfm_alg_type(&aead->base) & CRYPTO_ALG_NOSUPP_SG;
 +	if (nosupp_sg && skb_linearize(skb)) {
 +		err = -ENOMEM;
@@ -65,7 +65,7 @@
 +
  	assoclen = sizeof(struct ip_esp_hdr);
  	seqhilen = 0;
-
+ 
 --- a/net/ipv6/esp6.c
 +++ b/net/ipv6/esp6.c
 @@ -696,6 +696,7 @@ static int esp6_output(struct xfrm_state
@@ -73,13 +73,13 @@
  	struct crypto_aead *aead;
  	struct esp_info esp;
 +	bool nosupp_sg;
-
+ 
  	esp.inplace = true;
-
+ 
 @@ -707,6 +708,11 @@ static int esp6_output(struct xfrm_state
  	aead = x->data;
  	alen = crypto_aead_authsize(aead);
-
+ 
 +	nosupp_sg = crypto_tfm_alg_type(&aead->base) & CRYPTO_ALG_NOSUPP_SG;
 +	if (nosupp_sg && skb_linearize(skb)) {
 +		return -ENOMEM;
@@ -93,13 +93,13 @@
  	u8 *iv;
  	struct scatterlist *sg;
 +	bool nosupp_sg;
-
+ 
  	if (!pskb_may_pull(skb, sizeof(struct ip_esp_hdr) + ivlen)) {
  		ret = -EINVAL;
 @@ -951,6 +958,12 @@ static int esp6_input(struct xfrm_state
  		goto out;
  	}
-
+ 
 +	nosupp_sg = crypto_tfm_alg_type(&aead->base) & CRYPTO_ALG_NOSUPP_SG;
 +	if (nosupp_sg && skb_linearize(skb)) {
 +		ret = -ENOMEM;
@@ -108,3 +108,4 @@
 +
  	assoclen = sizeof(struct ip_esp_hdr);
  	seqhilen = 0;
+ 
