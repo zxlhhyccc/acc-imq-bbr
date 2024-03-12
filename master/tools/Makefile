@@ -68,6 +68,7 @@ tools-y += squashfs4
 tools-y += sstrip
 tools-y += ucl
 tools-y += upx
+tools-y += util-linux
 tools-y += zip
 tools-y += zlib
 tools-y += zstd
@@ -131,6 +132,7 @@ $(curdir)/quilt/compile := $(curdir)/autoconf/compile $(curdir)/findutils/compil
 $(curdir)/sdcc/compile := $(curdir)/bison/compile
 $(curdir)/squashfs3-lzma/compile := $(curdir)/lzma-old/compile
 $(curdir)/squashfs4/compile := $(curdir)/xz/compile $(curdir)/zlib/compile
+$(curdir)/util-linux/compile := $(curdir)/bison/compile
 $(curdir)/zstd/compile := $(curdir)/meson/compile
 
 ifneq ($(HOST_OS),Linux)
