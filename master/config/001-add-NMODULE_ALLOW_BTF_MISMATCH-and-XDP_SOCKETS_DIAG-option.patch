@@ -1,12 +1,10 @@
-diff --git a/Config-kernel.in b/Config-kernel.in
-index 4c43190..51eda49 100644
 --- a/Config-kernel.in
 +++ b/Config-kernel.in
 @@ -421,6 +421,7 @@ config KERNEL_DEBUG_INFO
  config KERNEL_DEBUG_INFO_BTF
  
  	bool "Enable additional BTF type information"
-+	default y if TARGET_armsr || TARGET_bcm27xx || TARGET_ipq806x_chromium || TARGET_mediatek_filogic || TARGET_mvebu_cortexa53 || TARGET_mvebu_cortexa72 || TARGET_qualcommax || TARGET_rockchip || TARGET_sunxi || TARGET_x86_64
++	default y if TARGET_armsr || TARGET_bcm27xx || TARGET_ipq806x_chromium || TARGET_mediatek_filogic || TARGET_mvebu_cortexa53 || TARGET_mvebu_cortexa72 || TARGET_rockchip || TARGET_sunxi || TARGET_x86_64
  	depends on !HOST_OS_MACOS
  	depends on KERNEL_DEBUG_INFO && !KERNEL_DEBUG_INFO_REDUCED
  	select DWARVES
@@ -23,11 +21,11 @@ index 4c43190..51eda49 100644
  config KERNEL_DEBUG_INFO_REDUCED
  	bool "Reduce debugging information"
 -	default y
-+	default y if !(TARGET_armsr || TARGET_bcm27xx || TARGET_ipq806x_chromium || TARGET_mediatek_filogic || TARGET_mvebu_cortexa53 || TARGET_mvebu_cortexa72 || TARGET_qualcommax || TARGET_rockchip || TARGET_sunxi || TARGET_x86_64)
++	default y if !(TARGET_armsr || TARGET_bcm27xx || TARGET_ipq806x_chromium || TARGET_mediatek_filogic || TARGET_mvebu_cortexa53 || TARGET_mvebu_cortexa72 || TARGET_rockchip || TARGET_sunxi || TARGET_x86_64)
  	depends on KERNEL_DEBUG_INFO
  	help
  	  If you say Y here gcc is instructed to generate less debugging
-@@ -531,6 +533,7 @@ config KERNEL_KPROBE_EVENTS
+@@ -531,17 +533,28 @@ config KERNEL_KPROBE_EVENTS
  config KERNEL_BPF_EVENTS
  	bool "Compile the kernel with BPF event support"
  	select KERNEL_KPROBES
@@ -35,7 +33,16 @@ index 4c43190..51eda49 100644
  	help
  	  Allows to attach BPF programs to kprobe, uprobe and tracepoint events.
  	  This is required to use BPF maps of type BPF_MAP_TYPE_PERF_EVENT_ARRAY
-@@ -542,6 +545,11 @@ config KERNEL_BPF_KPROBE_OVERRIDE
+ 	  for sending data from BPF programs to user-space for post-processing
+ 	  or logging.
+ 
++config KERNEL_PROBE_EVENTS_BTF_ARGS
++	bool
++	depends on KERNEL_KPROBE_EVENTS && KERNEL_DEBUG_INFO_BTF
++	default n
++
+ config KERNEL_BPF_KPROBE_OVERRIDE
+ 	bool
  	depends on KERNEL_KPROBES
  	default n
  
@@ -47,3 +54,20 @@ index 4c43190..51eda49 100644
  config KERNEL_AIO
  	bool "Compile the kernel with asynchronous IO support"
  	default y if !SMALL_FLASH
+@@ -1180,6 +1193,7 @@ config KERNEL_NET_L3_MASTER_DEV
+ 
+ config KERNEL_XDP_SOCKETS
+ 	bool "XDP sockets support"
++	default y if KERNEL_DEBUG_INFO_BTF
+ 	help
+ 	  XDP sockets allows a channel between XDP programs and
+ 	  userspace applications.
+@@ -1408,8 +1422,6 @@ config KERNEL_JFFS2_FS_SECURITY
+ 
+ config KERNEL_WERROR
+ 	bool "Compile the kernel with warnings as errors"
+-	default BUILDBOT
+-	default y if GCC_USE_VERSION_12
+ 	help
+ 	  A kernel build should not cause any compiler warnings, and this
+ 	  enables the '-Werror' (for C) and '-Dwarnings' (for Rust) flags
