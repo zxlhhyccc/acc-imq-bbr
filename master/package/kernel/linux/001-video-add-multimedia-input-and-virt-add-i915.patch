@@ -30,7 +30,7 @@
  $(eval $(call KernelPackage,acpi-video))
  
  define KernelPackage/backlight
-@@ -240,15 +244,56 @@ endef
+@@ -240,13 +244,54 @@ endef
  $(eval $(call KernelPackage,fb-tft-ili9486))
  
  
@@ -78,29 +78,27 @@
    HIDDEN:=1
    DEPENDS:=+kmod-dma-buf +kmod-i2c-core +PACKAGE_kmod-backlight:kmod-backlight \
 -	+kmod-fb
+-  KCONFIG:=CONFIG_DRM
 +	+(LINUX_5_15||LINUX_6_1||LINUX_6_6):kmod-fb
-   KCONFIG:=CONFIG_DRM \
- 	CONFIG_DRM_EXEC@ge6.6 \
--	CONFIG_DRM_SUBALLOC_HELPER@ge6.4
-+	CONFIG_DRM_SUBALLOC_HELPER@ge6.4 \
++  KCONFIG:=CONFIG_DRM \
 +	CONFIG_DRM_FBDEV_EMULATION=y \
 +	CONFIG_DRM_FBDEV_OVERALLOC=100 \
 +	CONFIG_DRM_PANEL_ORIENTATION_QUIRKS=y
    FILES:= \
  	$(LINUX_DIR)/drivers/gpu/drm/drm.ko \
- 	$(LINUX_DIR)/drivers/gpu/drm/drm_panel_orientation_quirks.ko \
-@@ -281,7 +326,7 @@ $(eval $(call KernelPackage,drm-buddy))
+ 	$(LINUX_DIR)/drivers/gpu/drm/drm_panel_orientation_quirks.ko
+@@ -277,7 +322,7 @@ $(eval $(call KernelPackage,drm-buddy))
  define KernelPackage/drm-display-helper
    SUBMENU:=$(VIDEO_MENU)
    TITLE:=DRM helpers for display adapters drivers
 -  DEPENDS:=@DISPLAY_SUPPORT +kmod-drm-kms-helper @LINUX_6_1||LINUX_6_6
-+  DEPENDS:=@DISPLAY_SUPPORT +kmod-drm +(TARGET_x86||TARGET_loongarch64):kmod-drm-buddy @LINUX_6_1||LINUX_6_6
++  DEPENDS:=@DISPLAY_SUPPORT +kmod-drm-kms-helper +(TARGET_x86||TARGET_loongarch64):kmod-drm-buddy @LINUX_6_1||LINUX_6_6
    KCONFIG:=CONFIG_DRM_DISPLAY_HELPER
    FILES:=$(LINUX_DIR)/drivers/gpu/drm/display/drm_display_helper.ko
    AUTOLOAD:=$(call AutoProbe,drm_display_helper)
-@@ -293,6 +338,17 @@ endef
+@@ -305,6 +350,17 @@ endef
  
- $(eval $(call KernelPackage,drm-display-helper))
+ $(eval $(call KernelPackage,drm-exec))
  
 +define KernelPackage/drm-gem-shmem-helper
 +  SUBMENU:=$(VIDEO_MENU)
@@ -116,16 +114,16 @@
  define KernelPackage/drm-ttm
    SUBMENU:=$(VIDEO_MENU)
    TITLE:=GPU memory management subsystem
-@@ -344,7 +400,7 @@ $(eval $(call KernelPackage,drm-kms-helper))
+@@ -372,7 +428,7 @@ $(eval $(call KernelPackage,drm-suballoc-helper))
  define KernelPackage/drm-amdgpu
    SUBMENU:=$(VIDEO_MENU)
    TITLE:=AMDGPU DRM support
 -  DEPENDS:=@TARGET_x86 @DISPLAY_SUPPORT +kmod-backlight +kmod-drm-ttm \
 +  DEPENDS:=@TARGET_x86||TARGET_loongarch64||TARGET_phytium @DISPLAY_SUPPORT +kmod-backlight +kmod-drm-ttm \
  	+kmod-drm-ttm-helper +kmod-drm-kms-helper +kmod-i2c-algo-bit +amdgpu-firmware \
- 	+kmod-drm-display-helper +kmod-drm-buddy +kmod-acpi-video
-   KCONFIG:=CONFIG_DRM_AMDGPU \
-@@ -362,6 +418,15 @@ define KernelPackage/drm-amdgpu/description
+ 	+kmod-drm-display-helper +kmod-drm-buddy +kmod-acpi-video \
+ 	+LINUX_6_6:kmod-drm-exec +LINUX_6_6:kmod-drm-suballoc-helper
+@@ -391,6 +447,15 @@ define KernelPackage/drm-amdgpu/description
    Direct Rendering Manager (DRM) support for AMDGPU Cards
  endef
  
@@ -141,7 +139,7 @@
  $(eval $(call KernelPackage,drm-amdgpu))
  
  
-@@ -442,12 +507,51 @@ endef
+@@ -471,6 +536,45 @@ endef
  
  $(eval $(call KernelPackage,drm-imx-ldb))
  
@@ -187,14 +185,7 @@
  define KernelPackage/drm-radeon
    SUBMENU:=$(VIDEO_MENU)
    TITLE:=Radeon DRM support
-   DEPENDS:=@TARGET_x86 @DISPLAY_SUPPORT +kmod-backlight +kmod-drm-kms-helper \
- 	+kmod-drm-ttm +kmod-drm-ttm-helper +kmod-i2c-algo-bit +radeon-firmware \
--	+kmod-drm-display-helper +kmod-acpi-video
-+	+kmod-drm-display-helper +(LINUX_6_1||LINUX_6_6):kmod-acpi-video
-   KCONFIG:=CONFIG_DRM_RADEON
-   FILES:=$(LINUX_DIR)/drivers/gpu/drm/radeon/radeon.ko
-   AUTOLOAD:=$(call AutoProbe,radeon)
-@@ -459,6 +563,39 @@ endef
+@@ -488,6 +592,39 @@ endef
  
  $(eval $(call KernelPackage,drm-radeon))
  
@@ -234,7 +225,7 @@
  #
  # Video Capture
  #
-@@ -466,7 +603,8 @@ $(eval $(call KernelPackage,drm-radeon))
+@@ -495,7 +632,8 @@ $(eval $(call KernelPackage,drm-radeon))
  define KernelPackage/video-core
    SUBMENU:=$(VIDEO_MENU)
    TITLE=Video4Linux support
@@ -244,7 +235,7 @@
    KCONFIG:= \
  	CONFIG_MEDIA_SUPPORT \
  	CONFIG_MEDIA_CAMERA_SUPPORT=y \
-@@ -1206,3 +1344,40 @@ define KernelPackage/video-tw686x/description
+@@ -1235,3 +1373,40 @@ define KernelPackage/video-tw686x/description
  endef
  
  $(eval $(call KernelPackage,video-tw686x))
