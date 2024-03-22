@@ -1,0 +1,44 @@
+From c9afdcdd2642485a6476906be9da2e811090fc7a Mon Sep 17 00:00:00 2001
+From: Robert Marko <robimarko@gmail.com>
+Date: Fri, 18 Mar 2022 18:06:03 +0100
+Subject: [PATCH] switchdev: remove the transaction structure
+
+Since 5.12 there is no transaction structure anymore, so drop it for
+5.12 and newer.
+
+Signed-off-by: Robert Marko <robimarko@gmail.com>
+---
+ nss_dp_switchdev.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletion(-)
+
+diff --git a/nss_dp_switchdev.c b/nss_dp_switchdev.c
+index 0bc28ce..c4ec246 100644
+--- a/nss_dp_switchdev.c
++++ b/nss_dp_switchdev.c
+@@ -290,7 +290,7 @@ void nss_dp_switchdev_setup(struc
+  * nss_dp_port_attr_set()
+  *	Sets attributes
+  */
+-#if (LINUX_VERSION_CODE < KERNEL_VERSION(6, 1, 0))
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 15, 0))
+ static int nss_dp_port_attr_set(struct net_device *dev,
+ 				const struct switchdev_attr *attr
+ 				,struct switchdev_trans *trans)
+@@ -301,7 +301,7 @@ static int nss_dp_port_attr_set(struc
+ {
+ 	struct nss_dp_dev *dp_priv = (struct nss_dp_dev *)netdev_priv(dev);
+ 
+-#if (LINUX_VERSION_CODE < KERNEL_VERSION(6, 1, 0))
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 15, 0))
+ 	if (switchdev_trans_ph_prepare(trans))
+ 		return 0;
+ #endif
+@@ -337,7 +337,7 @@ static int nss_dp_switchdev_port
+ 		return NOTIFY_DONE;
+ 	}
+ 
+-#if (LINUX_VERSION_CODE < KERNEL_VERSION(6, 1, 0))
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 15, 0))
+ 	err = nss_dp_port_attr_set(netdev, port_attr_info->attr
+ 				   ,port_attr_info->trans);
+ #else
