@@ -161,10 +161,10 @@
    IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 -  DEVICE_PACKAGES += -wpad-basic-mbedtls -uboot-envtools
 +  DEVICE_PACKAGES += -wpad-openssl -uboot-envtools
+   DEFAULT := n
  endef
  
- define Device/ubnt_edgerouter-x
-@@ -2588,7 +2586,7 @@ define Device/unielec_u7621-06-16m
+@@ -2589,7 +2587,7 @@ define Device/unielec_u7621-06-16m
    DEVICE_MODEL := U7621-06
    DEVICE_VARIANT := 16M
    DEVICE_PACKAGES := kmod-ata-ahci kmod-sdhci-mt7620 kmod-usb3 \
@@ -173,7 +173,7 @@
    SUPPORTED_DEVICES += u7621-06-256M-16M unielec,u7621-06-256m-16m
  endef
  TARGET_DEVICES += unielec_u7621-06-16m
-@@ -2601,7 +2599,7 @@ define Device/unielec_u7621-06-32m
+@@ -2602,7 +2600,7 @@ define Device/unielec_u7621-06-32m
    DEVICE_MODEL := U7621-06
    DEVICE_VARIANT := 32M
    DEVICE_PACKAGES := kmod-ata-ahci kmod-sdhci-mt7620 kmod-usb3 \
@@ -182,7 +182,7 @@
    SUPPORTED_DEVICES += unielec,u7621-06-32m
  endef
  TARGET_DEVICES += unielec_u7621-06-32m
-@@ -2614,7 +2612,7 @@ define Device/unielec_u7621-06-64m
+@@ -2615,7 +2613,7 @@ define Device/unielec_u7621-06-64m
    DEVICE_MODEL := U7621-06
    DEVICE_VARIANT := 64M
    DEVICE_PACKAGES := kmod-ata-ahci kmod-sdhci-mt7620 kmod-usb3 \
@@ -191,7 +191,7 @@
    SUPPORTED_DEVICES += unielec,u7621-06-512m-64m
  endef
  TARGET_DEVICES += unielec_u7621-06-64m
-@@ -2852,7 +2850,7 @@ define Device/xiaoyu_xy-c5
+@@ -2853,7 +2851,7 @@ define Device/xiaoyu_xy-c5
    IMAGE_SIZE := 32448k
    DEVICE_VENDOR := XiaoYu
    DEVICE_MODEL := XY-C5
@@ -200,7 +200,7 @@
  	-uboot-envtools
  endef
  TARGET_DEVICES += xiaoyu_xy-c5
-@@ -2863,7 +2861,7 @@ define Device/xzwifi_creativebox-v1
+@@ -2864,7 +2862,7 @@ define Device/xzwifi_creativebox-v1
    DEVICE_VENDOR := CreativeBox
    DEVICE_MODEL := v1
    DEVICE_PACKAGES := kmod-ata-ahci kmod-mt7603 kmod-mt76x2 kmod-sdhci-mt7620 \
