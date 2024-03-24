@@ -1,6 +1,6 @@
 --- a/files/lib/netifd/wireless/mac80211.sh
 +++ b/files/lib/netifd/wireless/mac80211.sh
-@@ -280,22 +280,38 @@ mac80211_hostapd_setup_base() {
+@@ -281,22 +281,38 @@ mac80211_hostapd_setup_base() {
  			vht_center_seg0=$idx
  		;;
  	esac
