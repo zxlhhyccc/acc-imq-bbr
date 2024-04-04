@@ -278,7 +278,7 @@
 +$(eval $(call KernelPackage,drm-i915))
 --- a/modules/virt.mk
 +++ b/modules/virt.mk
-@@ -139,3 +139,49 @@ define KernelPackage/vhost-net
+@@ -140,3 +140,49 @@ define KernelPackage/vhost-net
  endef
  
  $(eval $(call KernelPackage,vhost-net))
