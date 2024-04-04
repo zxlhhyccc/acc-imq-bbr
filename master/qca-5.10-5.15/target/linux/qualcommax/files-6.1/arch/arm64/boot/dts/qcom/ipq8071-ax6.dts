@@ -11,6 +11,13 @@
 
 	aliases {
 		/* Aliases as required by u-boot to patch MAC addresses */
+		serial0 = &blsp1_uart5;
+		led-boot = &led_system_yellow;
+		led-failsafe = &led_system_yellow;
+		led-running = &led_system_blue;
+		led-upgrade = &led_system_yellow;
+		label-mac-device = &dp2;
+
 		ethernet1 = &dp2;
 		ethernet2 = &dp3;
 		ethernet3 = &dp4;
@@ -18,6 +25,7 @@
 	};
 
 	chosen {
+		stdout-path = "serial0:115200n8";
 		bootargs-append = " root=/dev/ubiblock0_1";
 	};
 

@@ -21,17 +21,12 @@
 		led-failsafe = &led_system_yellow;
 		led-running = &led_system_blue;
 		led-upgrade = &led_system_yellow;
-		/* Aliases as required by u-boot to patch MAC addresses */
-		ethernet0 = &dp1;
-		ethernet1 = &dp2;
-		ethernet2 = &dp3;
-		ethernet3 = &dp4;
-		ethernet4 = &dp5;
 		label-mac-device = &dp5;
 	};
 
 	chosen {
-		bootargs-append = " root=/dev/ubiblock0_1";
+		stdout-path = "serial0:115200n8";
+		bootargs-append = " root=/dev/ubiblock0_0";
 	};
 
 	keys {
@@ -54,45 +49,38 @@
 		compatible = "gpio-leds";
 
 		led_system_blue: system-blue {
-			/*label = "blue:system";*/
 			gpios = <&tlmm 48 GPIO_ACTIVE_HIGH>;
 			color = <LED_COLOR_ID_BLUE>;
 		};
 
 		led_system_yellow: system-yellow {
-			/*label = "yellow:system";*/
 			gpios = <&tlmm 52 GPIO_ACTIVE_HIGH>;
 			color = <LED_COLOR_ID_YELLOW>;
 		};
 
 		network-yellow {
-			/*label = "yellow:network";*/
 			gpios = <&tlmm 50 GPIO_ACTIVE_HIGH>;
 			color = <LED_COLOR_ID_YELLOW>;
 		};
 
 		network-blue {
-			/*label = "blue:network";*/
 			gpios = <&tlmm 51 GPIO_ACTIVE_HIGH>;
 			color = <LED_COLOR_ID_BLUE>;
 		};
 
 		top-red {
-			/*label = "red:top";*/
 			gpios = <&tlmm 63 GPIO_ACTIVE_HIGH>;
 			color = <LED_COLOR_ID_RED>;
 			default-state = "keep";
 		};
 
 		top-green {
-			/*label = "green:top";*/
 			gpios = <&tlmm 64 GPIO_ACTIVE_HIGH>;
 			color = <LED_COLOR_ID_GREEN>;
 			default-state = "keep";
 		};
 
 		top-blue {
-			/*label = "blue:top";*/
 			gpios = <&tlmm 66 GPIO_ACTIVE_HIGH>;
 			color = <LED_COLOR_ID_BLUE>;
 			default-state = "keep";
@@ -155,6 +143,20 @@
 &qpic_nand {
 	status = "okay";
 
+	/*
+	 * Bootloader will find the NAND DT node by the compatible and
+	 * then "fixup" it by adding the partitions from the SMEM table
+	 * using the legacy bindings thus making it impossible for us
+	 * to change the partition table or utilize NVMEM for calibration.
+	 * So add a dummy partitions node that bootloader will populate
+	 * and set it as disabled so the kernel ignores it instead of
+	 * printing warnings due to the broken way bootloader adds the
+	 * partitions.
+	 */
+	partitions {
+		status = "disabled";
+	};
+
 	nand@0 {
 		reg = <0>;
 		nand-ecc-strength = <4>;
@@ -162,7 +164,167 @@
 		nand-bus-width = <8>;
 
 		partitions {
-			compatible = "qcom,smem-part";
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			partition@0 {
+				label = "0:sbl1";
+				reg = <0x0 0x100000>;
+				read-only;
+			};
+
+			partition@100000 {
+				label = "0:mibib";
+				reg = <0x100000 0x100000>;
+				read-only;
+			};
+
+			partition@200000 {
+				label = "0:bootconfig";
+				reg = <0x200000 0x80000>;
+				read-only;
+			};
+
+			partition@280000 {
+				label = "0:bootconfig1";
+				reg = <0x280000 0x80000>;
+				read-only;
+			};
+
+			partition@300000 {
+				label = "0:qsee";
+				reg = <0x300000 0x300000>;
+				read-only;
+			};
+
+			partition@600000 {
+				label = "0:qsee_1";
+				reg = <0x600000 0x300000>;
+				read-only;
+			};
+
+			partition@900000 {
+				label = "0:devcfg";
+				reg = <0x900000 0x80000>;
+				read-only;
+			};
+
+			partition@980000 {
+				label = "0:devcfg_1";
+				reg = <0x980000 0x80000>;
+				read-only;
+			};
+
+			partition@a00000 {
+				label = "0:apdp";
+				reg = <0xa00000 0x80000>;
+				read-only;
+			};
+
+			partition@a80000 {
+				label = "0:apdp_1";
+				reg = <0xa80000 0x80000>;
+				read-only;
+			};
+
+			partition@b00000 {
+				label = "0:rpm";
+				reg = <0xb00000 0x80000>;
+				read-only;
+			};
+
+			partition@b80000 {
+				label = "0:rpm_1";
+				reg = <0xb80000 0x80000>;
+				read-only;
+			};
+
+			partition@c00000 {
+				label = "0:cdt";
+				reg = <0xc00000 0x80000>;
+				read-only;
+			};
+
+			partition@c80000 {
+				label = "0:cdt_1";
+				reg = <0xc80000 0x80000>;
+				read-only;
+			};
+
+			partition@d00000 {
+				label = "0:appsblenv";
+				reg = <0xd00000 0x80000>;
+			};
+
+			partition@d80000 {
+				label = "0:appsbl";
+				reg = <0xd80000 0x100000>;
+				read-only;
+			};
+
+			partition@e80000 {
+				label = "0:appsbl_1";
+				reg = <0xe80000 0x100000>;
+				read-only;
+			};
+
+			partition@f80000 {
+				label = "0:art";
+				reg = <0xf80000 0x80000>;
+				read-only;
+
+				nvmem-layout {
+					compatible = "fixed-layout";
+					#address-cells = <1>;
+					#size-cells = <1>;
+
+					macaddr_dp1: macaddr@0 {
+						reg = <0x0 0x6>;
+					};
+
+					macaddr_dp2: macaddr@6 {
+						reg = <0x6 0x6>;
+					};
+
+					macaddr_dp3: macaddr@c {
+						reg = <0xc 0x6>;
+					};
+
+					macaddr_dp4: macaddr@12 {
+						reg = <0x12 0x6>;
+					};
+
+					macaddr_dp5: macaddr@18 {
+						reg = <0x18 0x6>;
+					};
+
+					caldata_qca9889: caldata@4d000 {
+						reg = <0x4d000 0x844>;
+					};
+				};
+			};
+
+			partition@1000000 {
+				label = "bdata";
+				reg = <0x1000000 0x80000>;
+			};
+
+			partition@1080000 {
+				/* This is crash + crash_syslog parts combined */
+				label = "pstore";
+				reg = <0x1080000 0x100000>;
+			};
+
+			partition@1180000 {
+				label = "ubi_kernel";
+				reg = <0x1180000 0x3800000>;
+			};
+
+			partition@4980000 {
+				label = "rootfs";
+				reg = <0x4980000 0xb680000>;
+			};
 		};
 	};
 };
@@ -325,6 +487,8 @@
 	phy-mode = "qsgmii";
 	phy-handle = <&qca8075_0>;
 	label = "lan4";
+	nvmem-cells = <&macaddr_dp1>;
+	nvmem-cell-names = "mac-address";
 };
 
 &dp2 {
@@ -332,6 +496,8 @@
 	phy-mode = "qsgmii";
 	phy-handle = <&qca8075_1>;
 	label = "lan3";
+	nvmem-cells = <&macaddr_dp2>;
+	nvmem-cell-names = "mac-address";
 };
 
 &dp3 {
@@ -339,6 +505,8 @@
 	phy-mode = "qsgmii";
 	phy-handle = <&qca8075_2>;
 	label = "lan2";
+	nvmem-cells = <&macaddr_dp3>;
+	nvmem-cell-names = "mac-address";
 };
 
 &dp4 {
@@ -346,12 +514,17 @@
 	phy-mode = "qsgmii";
 	phy-handle = <&qca8075_3>;
 	label = "lan1";
+	nvmem-cells = <&macaddr_dp4>;
+	nvmem-cell-names = "mac-address";
 };
 
 &dp5 {
 	status = "okay";
+	phy-mode = "sgmii";
 	phy-handle = <&qca8081>;
 	label = "wan";
+	nvmem-cells = <&macaddr_dp5>;
+	nvmem-cell-names = "mac-address";
 };
 
 &pcie_qmp0 {
@@ -403,6 +576,8 @@
 			reg = <0x00010000 0 0 0 0>;
 
 			qcom,ath10k-calibration-variant = "Xiaomi-AX9000";
+			nvmem-cell-names = "calibration";
+			nvmem-cells = <&caldata_qca9889>;
 		};
 	};
 };
