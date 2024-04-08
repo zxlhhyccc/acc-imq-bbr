@@ -1,8 +1,8 @@
 --- a/htdocs/luci-static/resources/view/network/dhcp.js
 +++ b/htdocs/luci-static/resources/view/network/dhcp.js
-@@ -337,12 +337,35 @@ return view.extend({
- 		s.tab('mxhosts', _('MX'));
- 		s.tab('cnamehosts', _('CNAME'));
+@@ -366,12 +366,35 @@ return view.extend({
+ 		s.tab('ipsets', _('IP Sets'));
+ 		s.tab('relay', _('Relay'));
  		s.tab('pxe_tftp', _('PXE/TFTP'));
 +		//s.tab('custom_domain', _('Custom Redirect Domain'));
 +
@@ -36,7 +36,7 @@
  		s.taboption('general', form.Flag, 'authoritative',
  			_('Authoritative'),
  			_('This is the only DHCP server in the local network.'));
-@@ -595,6 +618,16 @@ return view.extend({
+@@ -624,6 +647,16 @@ return view.extend({
  			_('Allocate IP addresses sequentially, starting from the lowest available address.'));
  		o.optional = true;
  
@@ -53,7 +53,7 @@
  		o = s.taboption('filteropts', form.Flag, 'boguspriv',
  			_('Filter private'),
  			customi18n(
-@@ -617,6 +650,7 @@ return view.extend({
+@@ -646,6 +679,7 @@ return view.extend({
  			_('Filter IPv4 A records'),
  			_('Remove IPv4 addresses from the results and only return IPv6 addresses.'));
  		o.optional = true;
@@ -61,7 +61,7 @@
  
  		s.taboption('filteropts', form.Flag, 'localise_queries',
  			_('Localise queries'),
-@@ -730,6 +764,13 @@ return view.extend({
+@@ -759,6 +793,13 @@ return view.extend({
  		o.optional = true;
  		o.placeholder = 3600;
  
