@@ -1,0 +1,28 @@
+From 4f00cd2fb5f63174a2d9323f78d75e4a715b5dd4 Mon Sep 17 00:00:00 2001
+From: Shogo Yamazaki <pgp@mocknen.net>
+Date: Wed, 27 Mar 2024 15:08:17 +0900
+Subject: [PATCH] mwan3: Fix tracking by `nping`
+
+Signed-off-by: Shogo Yamazaki <pgp@mocknen.net>
+---
+ net/mwan3/files/usr/sbin/mwan3track | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/net/mwan3/files/usr/sbin/mwan3track b/net/mwan3/files/usr/sbin/mwan3track
+index 162bdbb7d5599..95e958b5dbc1d 100755
+--- a/net/mwan3/files/usr/sbin/mwan3track
++++ b/net/mwan3/files/usr/sbin/mwan3track
+@@ -304,10 +304,11 @@ main() {
+ 						result=$?
+ 					;;
+ 					nping-*)
+-						WRAP nping -c $count $track_ip --${FAMILY#nping-} > $TRACK_OUTPUT &
++						WRAP nping --${track_method#nping-} -c $count $track_ip > $TRACK_OUTPUT &
+ 						TRACK_PID=$!
+ 						wait $TRACK_PID
+-						result=$(grep $TRACK_OUTPUT Lost | awk '{print $12}')
++						! grep -Eq '^Raw packets sent: [^|]+ \| Rcvd: 0 ' $TRACK_OUTPUT
++						result=$?
+ 					;;
+ 				esac
+ 				do_log=""
