@@ -1,0 +1,39 @@
+From 02b9af96067f20c1a36063e6a7cec45f803b2d12 Mon Sep 17 00:00:00 2001
+From: Maxim Mikityanskiy <maxtram95@gmail.com>
+Date: Tue, 2 Apr 2024 01:01:48 +0300
+Subject: [PATCH] mwan3: Fix awk expression in mwan3_delete_iface_rules
+
+The awk expression in mwan3_delete_iface_rules splits the `ip rule list`
+output by spaces, therefore $1 contains the trailing column (e.g., "1:",
+"1000:"). The < and > operators compare such values as strings instead
+of numbers, producing unexpected results (for example, "1:" > "1000").
+
+Change the field separator to ":" for correct number comparison, so that
+the right rules are removed.
+
+An example error message that may appear before the fix:
+
+Error: argument "1:" is wrong: preference value is invalid
+
+It happens because `substr($1,0,4)` selects short numbers along with
+the colon. In other cases wrong rules may be removed, for example, if
+there is rule 10051, then rule 1005 will be removed.
+
+Signed-off-by: Maxim Mikityanskiy <maxtram95@gmail.com>
+---
+ net/mwan3/files/lib/mwan3/mwan3.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/mwan3/files/lib/mwan3/mwan3.sh b/net/mwan3/files/lib/mwan3/mwan3.sh
+index c69f381ea8513..34eec457377f9 100644
+--- a/files/lib/mwan3/mwan3.sh
++++ b/files/lib/mwan3/mwan3.sh
+@@ -549,7 +549,7 @@ mwan3_delete_iface_rules()
+ 		return
+ 	fi
+ 
+-	for rule_id in $(ip rule list | awk '$1 % 1000 == '$id' && $1 > 1000 && $1 < 4000 {print substr($1,0,4)}'); do
++	for rule_id in $(ip rule list | awk 'BEGIN {FS=":"} $1 % 1000 == '$id' && $1 > 1000 && $1 < 4000 {print $1}'); do
+ 		$IP rule del pref $rule_id
+ 	done
+ }
