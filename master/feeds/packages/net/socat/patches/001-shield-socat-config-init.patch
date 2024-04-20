@@ -1,8 +1,6 @@
-diff --git a/Makefile b/Makefile
-index faf8d30..7de6111 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -84,10 +84,10 @@ CONFIGURE_VARS += \
+@@ -87,10 +87,10 @@ CONFIGURE_VARS += \
  define Package/socat/install
  	$(INSTALL_DIR) $(1)/usr/bin
  	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/socat $(1)/usr/bin/
