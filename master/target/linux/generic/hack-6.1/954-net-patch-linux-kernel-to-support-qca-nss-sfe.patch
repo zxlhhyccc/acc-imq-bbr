@@ -1,6 +1,6 @@
 --- a/include/linux/skbuff.h
 +++ b/include/linux/skbuff.h
-@@ -990,7 +990,7 @@ struct sk_buff {
+@@ -989,7 +989,7 @@ struct sk_buff {
  	__u8			csum_not_inet:1;
  	__u8			scm_io_uring:1;
  
