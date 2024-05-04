@@ -1,32 +1,6 @@
 --- a/modules/netdevices.mk
 +++ b/modules/netdevices.mk
-@@ -978,6 +978,25 @@ endef
- $(eval $(call KernelPackage,iavf))
- 
- 
-+define KernelPackage/ice
-+  SUBMENU:=$(NETWORK_DEVICES_MENU)
-+  TITLE:=Intel(R) Ethernet Controller E810 Series support
-+  DEPENDS:=@PCI_SUPPORT +kmod-ptp @!TARGET_apm821xx
-+  KCONFIG:=\
-+	CONFIG_ICE \
-+	CONFIG_ICE_HWTS=y \
-+	CONFIG_ICE_SWITCHDEV=y
-+  FILES:=$(LINUX_DIR)/drivers/net/ethernet/intel/ice/ice.ko
-+  AUTOLOAD:=$(call AutoProbe,ice)
-+endef
-+
-+define KernelPackage/ice/description
-+  Kernel modules for Intel(R) Ethernet Controller E810 Series
-+endef
-+
-+$(eval $(call KernelPackage,ice))
-+
-+
- define KernelPackage/b44
-   TITLE:=Broadcom 44xx driver
-   KCONFIG:=CONFIG_B44
-@@ -1349,6 +1368,26 @@ endef
+@@ -1349,6 +1349,26 @@ endef
  
  $(eval $(call KernelPackage,bnx2x))
  
@@ -53,22 +27,7 @@
  define KernelPackage/be2net
    SUBMENU:=$(NETWORK_DEVICES_MENU)
    TITLE:=Broadcom Emulex OneConnect 10Gbps NIC
-@@ -1404,12 +1443,13 @@ define KernelPackage/mlx5-core
- 	CONFIG_MLX5_EN_IPSEC=n \
- 	CONFIG_MLX5_EN_RXNFC=y \
- 	CONFIG_MLX5_EN_TLS=n \
--	CONFIG_MLX5_ESWITCH=n \
-+	CONFIG_MLX5_ESWITCH=y \
- 	CONFIG_MLX5_FPGA=n \
- 	CONFIG_MLX5_FPGA_IPSEC=n \
- 	CONFIG_MLX5_FPGA_TLS=n \
- 	CONFIG_MLX5_MPFS=y \
- 	CONFIG_MLX5_SW_STEERING=n \
-+	CONFIG_MLX5_CLS_ACT=n \
- 	CONFIG_MLX5_TC_CT=n \
- 	CONFIG_MLX5_TLS=n \
- 	CONFIG_MLX5_VFIO_PCI=n
-@@ -1572,6 +1612,30 @@ endef
+@@ -1572,6 +1592,30 @@ endef
  $(eval $(call KernelPackage,qlcnic))
  
  
@@ -99,6 +58,28 @@
  define KernelPackage/sfp
    SUBMENU:=$(NETWORK_DEVICES_MENU)
    TITLE:=SFP cage support
+@@ -1637,6 +1681,21 @@ endef
+ 
+ $(eval $(call KernelPackage,igc))
+ 
++define KernelPackage/ice
++  SUBMENU:=$(NETWORK_DEVICES_MENU)
++  TITLE:=Intel(R) Ethernet Controller E810 Series support
++  DEPENDS:=@PCI_SUPPORT +kmod-ptp
++  KCONFIG:=CONFIG_ICE
++  FILES:=$(LINUX_DIR)/drivers/net/ethernet/intel/ice/ice.ko
++  AUTOLOAD:=$(call AutoProbe,ice)
++endef
++
++define KernelPackage/ice/description
++  Kernel modules for Intel(R) Ethernet Controller E810 Series
++endef
++
++$(eval $(call KernelPackage,ice))
++
+ define KernelPackage/sfc
+   SUBMENU:=$(NETWORK_DEVICES_MENU)
+   TITLE:=Solarflare SFC9000/SFC9100/EF100-family support
 --- a/modules/netfilter.mk
 +++ b/modules/netfilter.mk
 @@ -514,6 +514,24 @@ endef

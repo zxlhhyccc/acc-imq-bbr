@@ -89,6 +89,7 @@ DEFAULT_PACKAGES.router:=\
 	firewall \
 	ip6tables \
 	iptables \
+	kmod-ipt-offload \
 	odhcp6c \
 	odhcpd-ipv6only \
 	ppp \
@@ -295,6 +296,11 @@ ifeq ($(DUMP),1)
   ifeq ($(ARCH),riscv64)
     CPU_TYPE ?= riscv64
     CPU_CFLAGS_riscv64:=-mabi=lp64d -march=rv64imafdc
+  endif
+  ifeq ($(ARCH),loongarch64)
+    CPU_TYPE ?= generic
+    CPU_CFLAGS := -O2 -pipe
+    CPU_CFLAGS_generic:=-march=loongarch64
   endif
   ifneq ($(CPU_TYPE),)
     ifndef CPU_CFLAGS_$(CPU_TYPE)

@@ -1,36 +1,6 @@
 --- a/modules/video.mk
 +++ b/modules/video.mk
-@@ -19,19 +19,23 @@ V4L2_MEM2MEM_DIR=platform
- define KernelPackage/acpi-video
-   SUBMENU:=$(VIDEO_MENU)
-   TITLE:=ACPI Extensions For Display Adapters
--  DEPENDS:=@TARGET_x86 +kmod-backlight
-+  DEPENDS:=@TARGET_x86||TARGET_loongarch64||TARGET_phytium +kmod-backlight
-   HIDDEN:=1
--  KCONFIG:=CONFIG_ACPI_VIDEO \
--	CONFIG_ACPI_WMI
--  FILES:=$(LINUX_DIR)/drivers/acpi/video.ko \
--	$(LINUX_DIR)/drivers/platform/x86/wmi.ko
--  AUTOLOAD:=$(call AutoProbe,wmi video)
-+  KCONFIG:=CONFIG_ACPI_VIDEO
-+  FILES:=$(LINUX_DIR)/drivers/acpi/video.ko
-+  AUTOLOAD:=$(call AutoProbe,video)
- endef
- 
- define KernelPackage/acpi-video/description
-   Kernel support for integrated graphics devices.
- endef
- 
-+define KernelPackage/acpi-video/x86
-+  KCONFIG+=CONFIG_ACPI_WMI
-+  FILES+=$(LINUX_DIR)/drivers/platform/x86/wmi.ko
-+  AUTOLOAD:=$(call AutoProbe,wmi video)
-+endef
-+
- $(eval $(call KernelPackage,acpi-video))
- 
- define KernelPackage/backlight
-@@ -240,13 +244,54 @@ endef
+@@ -244,12 +244,51 @@ endef
  $(eval $(call KernelPackage,fb-tft-ili9486))
  
  
@@ -41,7 +11,8 @@
 +  KCONFIG:= \
 +	CONFIG_MEDIA_SUPPORT \
 +	CONFIG_MEDIA_CONTROLLER=y \
-+	CONFIG_MEDIA_CAMERA_SUPPORT=y
++	CONFIG_MEDIA_CAMERA_SUPPORT=y \
++	CONFIG_MEDIA_PLATFORM_DRIVERS=y@ge6.1
 +  FILES:=$(LINUX_DIR)/drivers/media/mc/mc.ko
 +  AUTOLOAD:=$(call AutoProbe,mc)
 +endef
@@ -78,88 +49,25 @@
    HIDDEN:=1
    DEPENDS:=+kmod-dma-buf +kmod-i2c-core +PACKAGE_kmod-backlight:kmod-backlight \
 -	+kmod-fb
--  KCONFIG:=CONFIG_DRM
 +	+(LINUX_5_15||LINUX_6_1||LINUX_6_6):kmod-fb
-+  KCONFIG:=CONFIG_DRM \
-+	CONFIG_DRM_FBDEV_EMULATION=y \
-+	CONFIG_DRM_FBDEV_OVERALLOC=100 \
-+	CONFIG_DRM_PANEL_ORIENTATION_QUIRKS=y
+   KCONFIG:=CONFIG_DRM
    FILES:= \
  	$(LINUX_DIR)/drivers/gpu/drm/drm.ko \
- 	$(LINUX_DIR)/drivers/gpu/drm/drm_panel_orientation_quirks.ko
-@@ -277,7 +322,7 @@ $(eval $(call KernelPackage,drm-buddy))
- define KernelPackage/drm-display-helper
-   SUBMENU:=$(VIDEO_MENU)
-   TITLE:=DRM helpers for display adapters drivers
--  DEPENDS:=@DISPLAY_SUPPORT +kmod-drm-kms-helper @LINUX_6_1||LINUX_6_6
-+  DEPENDS:=@DISPLAY_SUPPORT +kmod-drm-kms-helper +(TARGET_x86||TARGET_loongarch64):kmod-drm-buddy @LINUX_6_1||LINUX_6_6
-   KCONFIG:=CONFIG_DRM_DISPLAY_HELPER
-   FILES:=$(LINUX_DIR)/drivers/gpu/drm/display/drm_display_helper.ko
-   AUTOLOAD:=$(call AutoProbe,drm_display_helper)
-@@ -305,6 +350,17 @@ endef
- 
- $(eval $(call KernelPackage,drm-exec))
- 
-+define KernelPackage/drm-gem-shmem-helper
-+  SUBMENU:=$(VIDEO_MENU)
-+  TITLE:=GEM shmem helper functions
-+  DEPENDS:=@DISPLAY_SUPPORT +kmod-drm @LINUX_6_1||LINUX_6_6
-+  KCONFIG:=CONFIG_DRM_GEM_SHMEM_HELPER
-+  FILES:=$(LINUX_DIR)/drivers/gpu/drm/drm_shmem_helper.ko
-+  AUTOLOAD:=$(call AutoProbe,drm_shmem_helper)
-+endef
-+
-+$(eval $(call KernelPackage,drm-gem-shmem-helper))
-+
- define KernelPackage/drm-ttm
-   SUBMENU:=$(VIDEO_MENU)
-   TITLE:=GPU memory management subsystem
-@@ -372,7 +428,7 @@ $(eval $(call KernelPackage,drm-suballoc-helper))
- define KernelPackage/drm-amdgpu
-   SUBMENU:=$(VIDEO_MENU)
-   TITLE:=AMDGPU DRM support
--  DEPENDS:=@TARGET_x86 @DISPLAY_SUPPORT +kmod-backlight +kmod-drm-ttm \
-+  DEPENDS:=@TARGET_x86||TARGET_loongarch64||TARGET_phytium @DISPLAY_SUPPORT +kmod-backlight +kmod-drm-ttm \
- 	+kmod-drm-ttm-helper +kmod-drm-kms-helper +kmod-i2c-algo-bit +amdgpu-firmware \
- 	+kmod-drm-display-helper +kmod-drm-buddy +kmod-acpi-video \
- 	+LINUX_6_6:kmod-drm-exec +LINUX_6_6:kmod-drm-suballoc-helper
-@@ -391,6 +447,15 @@ define KernelPackage/drm-amdgpu/description
-   Direct Rendering Manager (DRM) support for AMDGPU Cards
- endef
- 
-+define KernelPackage/drm-amdgpu/loongarch64
-+  KCONFIG+=CONFIG_DRM_AMDGPU_USERPTR=y \
-+	CONFIG_DRM_AMD_DC=y \
-+	CONFIG_DRM_AMD_DC_FP=y \
-+	CONFIG_DRM_AMD_DC_SI=y
-+  FILES+=$(LINUX_DIR)/drivers/gpu/drm/amd/amdxcp/amdxcp.ko
-+  AUTOLOAD:=$(call AutoProbe,amdxcp amdgpu)
-+endef
-+
- $(eval $(call KernelPackage,drm-amdgpu))
- 
- 
-@@ -471,6 +536,45 @@ endef
+@@ -482,12 +521,44 @@ endef
  
  $(eval $(call KernelPackage,drm-imx-ldb))
  
 +define KernelPackage/drm-lima
 +  SUBMENU:=$(VIDEO_MENU)
-+  TITLE:=Mali-4xx GPU support
-+  DEPENDS:=@(TARGET_rockchip||TARGET_sunxi) +kmod-drm +LINUX_6_1:kmod-drm-gem-shmem-helper
-+  KCONFIG:= \
-+	CONFIG_DRM_VGEM \
-+	CONFIG_DRM_GEM_CMA_HELPER=y \
-+	CONFIG_DRM_LIMA
-+  FILES:= \
-+	$(LINUX_DIR)/drivers/gpu/drm/vgem/vgem.ko \
-+	$(LINUX_DIR)/drivers/gpu/drm/scheduler/gpu-sched.ko \
-+	$(LINUX_DIR)/drivers/gpu/drm/lima/lima.ko
-+  AUTOLOAD:=$(call AutoProbe,lima vgem)
++  TITLE:=DRM support for ARM Mali 400/450 GPU
++  DEPENDS:=@(TARGET_rockchip||TARGET_sunxi) +kmod-drm-sched
++  KCONFIG:=CONFIG_DRM_LIMA
++  FILES:=$(LINUX_DIR)/drivers/gpu/drm/lima/lima.ko
++  AUTOLOAD:=$(call AutoProbe,lima)
 +endef
 +
 +define KernelPackage/drm-lima/description
-+  Open-source reverse-engineered driver for Mali-4xx GPUs
++  DRM driver for ARM Mali 400/450 GPUs
 +endef
 +
 +$(eval $(call KernelPackage,drm-lima))
@@ -167,11 +75,9 @@
 +define KernelPackage/drm-panfrost
 +  SUBMENU:=$(VIDEO_MENU)
 +  TITLE:=DRM support for ARM Mali Midgard/Bifrost GPUs
-+  DEPENDS:=@(TARGET_rockchip||TARGET_sunxi) +kmod-drm +LINUX_6_1:kmod-drm-gem-shmem-helper
++  DEPENDS:=@(TARGET_rockchip||TARGET_sunxi) +kmod-drm-sched
 +  KCONFIG:=CONFIG_DRM_PANFROST
-+  FILES:= \
-+	$(LINUX_DIR)/drivers/gpu/drm/panfrost/panfrost.ko \
-+	$(LINUX_DIR)/drivers/gpu/drm/scheduler/gpu-sched.ko
++  FILES:=$(LINUX_DIR)/drivers/gpu/drm/panfrost/panfrost.ko
 +  AUTOLOAD:=$(call AutoProbe,panfrost)
 +endef
 +
@@ -185,7 +91,15 @@
  define KernelPackage/drm-radeon
    SUBMENU:=$(VIDEO_MENU)
    TITLE:=Radeon DRM support
-@@ -488,6 +592,39 @@ endef
+   DEPENDS:=@TARGET_x86 @DISPLAY_SUPPORT +kmod-backlight +kmod-drm-kms-helper \
+ 	+kmod-drm-ttm +kmod-drm-ttm-helper +kmod-i2c-algo-bit +radeon-firmware \
+-	+kmod-drm-display-helper +kmod-acpi-video +LINUX_6_6:kmod-drm-suballoc-helper
++	+kmod-drm-display-helper +(LINUX_6_1||LINUX_6_6):kmod-acpi-video \
++	+LINUX_6_6:kmod-drm-suballoc-helper
+   KCONFIG:=CONFIG_DRM_RADEON
+   FILES:=$(LINUX_DIR)/drivers/gpu/drm/radeon/radeon.ko
+   AUTOLOAD:=$(call AutoProbe,radeon)
+@@ -499,6 +570,39 @@ endef
  
  $(eval $(call KernelPackage,drm-radeon))
  
@@ -225,7 +139,7 @@
  #
  # Video Capture
  #
-@@ -495,7 +632,8 @@ $(eval $(call KernelPackage,drm-radeon))
+@@ -506,7 +610,8 @@ $(eval $(call KernelPackage,drm-radeon))
  define KernelPackage/video-core
    SUBMENU:=$(VIDEO_MENU)
    TITLE=Video4Linux support
@@ -235,7 +149,16 @@
    KCONFIG:= \
  	CONFIG_MEDIA_SUPPORT \
  	CONFIG_MEDIA_CAMERA_SUPPORT=y \
-@@ -1235,3 +1373,40 @@ define KernelPackage/video-tw686x/description
+@@ -515,7 +620,7 @@ define KernelPackage/video-core
+ 	CONFIG_MEDIA_PLATFORM_DRIVERS=y@ge6.1
+   FILES:= \
+ 	$(LINUX_DIR)/drivers/media/$(V4L2_DIR)/videodev.ko
+-  AUTOLOAD:=$(call AutoLoad,60,videodev)
++  AUTOLOAD:=$(call AutoLoad,60, videodev v4l2-common)
+ endef
+ 
+ define KernelPackage/video-core/description
+@@ -1246,3 +1351,40 @@ define KernelPackage/video-tw686x/description
  endef
  
  $(eval $(call KernelPackage,video-tw686x))
@@ -243,7 +166,7 @@
 +define KernelPackage/drm-i915
 +  SUBMENU:=$(VIDEO_MENU)
 +  TITLE:=Intel GPU drm support
-+  DEPENDS:=@TARGET_x86 +kmod-drm-ttm +kmod-drm-kms-helper +i915-firmware \
++  DEPENDS:=@TARGET_x86 +kmod-drm-buddy +kmod-drm-ttm +kmod-drm-kms-helper +i915-firmware \
 +	+(LINUX_6_1||LINUX_6_6):kmod-drm-display-helper +(LINUX_6_1||LINUX_6_6):kmod-acpi-video
 +  KCONFIG:= \
 +	CONFIG_INTEL_GTT \
@@ -278,10 +201,41 @@
 +$(eval $(call KernelPackage,drm-i915))
 --- a/modules/virt.mk
 +++ b/modules/virt.mk
-@@ -140,3 +140,49 @@ define KernelPackage/vhost-net
+@@ -140,3 +140,80 @@ define KernelPackage/vhost-net
  endef
  
  $(eval $(call KernelPackage,vhost-net))
++
++
++define KernelPackage/iommu_v2
++  SUBMENU:=Virtualization
++  TITLE:=IOMMU Version 2 driver
++  KCONFIG:=\
++     CONFIG_UACCE=n \
++     CONFIG_IOMMU_DEBUGFS=n \
++     CONFIG_INTEL_IOMMU=y \
++     CONFIG_INTEL_IOMMU_SVM=n \
++     CONFIG_INTEL_IOMMU_DEFAULT_ON=n \
++     CONFIG_INTEL_IOMMU_SCALABLE_MODE_DEFAULT_ON=n \
++     CONFIG_INTEL_TXT=n \
++     CONFIG_HYPERV_IOMMU=n \
++     CONFIG_IOMMU_SUPPORT=y \
++     CONFIG_IOMMU_DEFAULT_PASSTHROUGH=y \
++     CONFIG_AMD_IOMMU=y \
++     CONFIG_IRQ_REMAP=y \
++     CONFIG_AMD_IOMMU_V2=m
++  DEPENDS:= @PCI_SUPPORT @TARGET_x86_64
++  FILES:= $(LINUX_DIR)/drivers/iommu/amd/iommu_v2.ko
++  AUTOLOAD:=$(call AutoProbe,iommu_v2)
++endef
++
++define KernelPackage/iommu_v2/description
++  This option enables support for the AMD/INTEL IOMMUv2 features
++  of the IOMMU hardware. Select this option if you want
++  to use devices that support the PCI PRI and PASID interface.
++endef
++
++$(eval $(call KernelPackage,iommu_v2))
 +
 +
 +define KernelPackage/vfio-mdev

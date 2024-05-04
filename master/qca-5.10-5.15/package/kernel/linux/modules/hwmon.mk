@@ -126,16 +126,15 @@ $(eval $(call KernelPackage,hwmon-drivetemp))
 
 
 define KernelPackage/hwmon-emc2305
-  TITLE:=SMSC EMC2305 fan support
+  TITLE:=Microchip EMC2301/2/3/5 fan controller
   KCONFIG:=CONFIG_SENSORS_EMC2305
-  FILES:= \
-  $(LINUX_DIR)/drivers/hwmon/emc2305.ko
+  FILES:=$(LINUX_DIR)/drivers/hwmon/emc2305.ko
   AUTOLOAD:=$(call AutoProbe,emc2305)
-  $(call AddDepends/hwmon,+kmod-i2c-core +kmod-regmap-i2c)
+  $(call AddDepends/hwmon,+kmod-i2c-core +PACKAGE_kmod-thermal:kmod-thermal +kmod-regmap-i2c @LINUX_6_1||LINUX_6_6)
 endef
 
 define KernelPackage/hwmon-emc2305/description
- SMSC SMSC EMC2301/2/3/5 fan controllers support
+ Kernel module for Microchip EMC2301/EMC2302/EMC2303/EMC2305 fan controllers
 endef
 
 $(eval $(call KernelPackage,hwmon-emc2305))
@@ -452,9 +451,9 @@ define KernelPackage/hwmon-nct6775
   KCONFIG:=CONFIG_SENSORS_NCT6775
   FILES:= \
 	$(LINUX_DIR)/drivers/hwmon/nct6775.ko \
-	$(LINUX_DIR)/drivers/hwmon/nct6775-core.ko@ge5.19
+	$(LINUX_DIR)/drivers/hwmon/nct6775-core.ko
   AUTOLOAD:=$(call AutoProbe,nct6775)
-  $(call AddDepends/hwmon,@PCI_SUPPORT @TARGET_x86 +kmod-hwmon-vid +LINUX_6_1:kmod-regmap-core)
+  $(call AddDepends/hwmon,@PCI_SUPPORT @TARGET_x86 +kmod-hwmon-vid +kmod-regmap-core)
 endef
 
 define KernelPackage/hwmon-nct6775/description
