@@ -1,0 +1,71 @@
+#!/bin/sh /etc/rc.common
+#
+# Copyright (c) 2015-2017, The Linux Foundation. All rights reserved.
+#
+# Permission to use, copy, modify, and/or distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
+#
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+#
+
+START=70
+
+enable_rps() {
+  set_affinity(){
+    awk -v irq_name="$1" -v affinity="$2" -v occurrence="$3" '
+    BEGIN{count=0}
+    $NF==irq_name{
+      if(++count==occurrence){
+        sub(/:$/,"",$1);
+        logger -t "ucitrack"
+        system("logger -t \"qca-nss-drv\" \"Pinning IRQ " irq_name " occurance " occurrence " to core " affinity "\"");
+        system("printf " affinity " > /proc/irq/" $1 "/smp_affinity");
+        exit
+      }
+    }' /proc/interrupts
+  }
+
+  set_affinity_last() {
+    awk "/$1/{sub(/:/,\"\");last=\$1} END{print last}" /proc/interrupts | while read -r irq; do
+      [ -n "$irq" ] && echo "$2" > /proc/irq/"$irq"/smp_affinity
+    done
+  }
+
+  # NSS core 0 queues : CPU1 CPU2 CPU3 CPU0
+  set_affinity 'nss_queue0' 2 1
+  set_affinity 'nss_queue1' 4 1
+  set_affinity 'nss_queue2' 8 1
+  set_affinity 'nss_queue3' 1 1
+
+  # NSS core 1 queues : CPU2 CPU3 CPU0 CPU1
+  set_affinity 'nss_queue0' 4 2
+  set_affinity 'nss_queue1' 8 2
+  set_affinity 'nss_queue2' 1 2
+  set_affinity 'nss_queue3' 2 2
+
+  # NSS core 0 buffer sos/queues : CPU2 + CPU3
+  set_affinity 'nss_empty_buf_sos' 4 1
+  set_affinity 'nss_empty_buf_queue' 8 1
+
+  # NSS core 1 buffer sos/queues : CPU2 + CPU3
+  set_affinity 'nss_empty_buf_sos' 4 2
+  set_affinity 'nss_empty_buf_queue' 8 2
+
+  # Enable NSS RPS
+  sysctl -w dev.nss.rps.enable=1 > /dev/null 2> /dev/null
+}
+
+start() {
+  local rps_enabled
+  rps_enabled="$(uci_get nss @general[0] enable_rps)"
+  if [ "$rps_enabled" -eq 1 ]; then
+    enable_rps
+  fi
+}

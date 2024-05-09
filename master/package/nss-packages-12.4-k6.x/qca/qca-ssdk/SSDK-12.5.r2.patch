@@ -1,0 +1,278 @@
+diff --git a/package/kernel/qca-ssdk/Makefile b/package/kernel/qca-ssdk/Makefile
+index bbe9f12051..85f5493027 100644
+--- a/package/kernel/qca-ssdk/Makefile
++++ b/package/kernel/qca-ssdk/Makefile
+@@ -1,13 +1,13 @@
+ include $(TOPDIR)/rules.mk
+ 
+ PKG_NAME:=qca-ssdk
+-PKG_RELEASE:=6
++PKG_RELEASE:=1
+ 
+ PKG_SOURCE_URL:=https://git.codelinaro.org/clo/qsdk/oss/lklm/qca-ssdk.git
+ PKG_SOURCE_PROTO:=git
+-PKG_SOURCE_DATE:=2023-10-04
+-PKG_SOURCE_VERSION:=23a5aa4a4d5834da7a07efb58baebfbee91786b0
+-PKG_MIRROR_HASH:=53fb201053b3aca004c4da07b06a0608b0b3322a2062b1f7ab3b3a7871ddabcb
++PKG_SOURCE_DATE:=2024-04-17
++PKG_SOURCE_VERSION:=3d060f7a
++PKG_MIRROR_HASH:=6f5e390b294e699491584094f5d7eb941de6237ad8c5320191e9e306fbcd8eb5
+ 
+ PKG_FLAGS:=nonshared
+ PKG_BUILD_PARALLEL:=1
+diff --git a/package/kernel/qca-ssdk/patches/0001-config-identify-kernel-6.6.patch b/package/kernel/qca-ssdk/patches/0001-config-identify-kernel-6.6.patch
+deleted file mode 100644
+index 2dc0923263..0000000000
+--- a/package/kernel/qca-ssdk/patches/0001-config-identify-kernel-6.6.patch
++++ /dev/null
+@@ -1,47 +0,0 @@
+-From f6c0115daaac586740e873a3b8145c5370a73dce Mon Sep 17 00:00:00 2001
+-From: Robert Marko <robimarko@gmail.com>
+-Date: Sat, 17 Feb 2024 13:02:31 +0100
+-Subject: [PATCH] config: identify kernel 6.6
+-
+-Identify kernel 6.6 so it can be compiled against.
+-
+-Signed-off-by: Robert Marko <robimarko@gmail.com>
+----
+- config            | 5 +++++
+- make/linux_opt.mk | 4 ++--
+- 2 files changed, 7 insertions(+), 2 deletions(-)
+-
+---- a/config
+-+++ b/config
+-@@ -27,6 +27,11 @@ endif
+- ifeq ($(KVER),$(filter 6.1%,$(KVER)))
+- 	OS_VER=6_1
+- endif
+-+
+-+ifeq ($(KVER),$(filter 6.6%,$(KVER)))
+-+	OS_VER=6_6
+-+endif
+-+
+- ifeq ($(KVER), 3.4.0)
+- 	OS_VER=3_4
+- endif
+---- a/make/linux_opt.mk
+-+++ b/make/linux_opt.mk
+-@@ -450,7 +450,7 @@ ifeq (KSLIB, $(MODULE_TYPE))
+-       KASAN_SHADOW_SCALE_SHIFT := 3
+-   endif
+- 
+--  ifeq ($(OS_VER),$(filter 5_4 6_1, $(OS_VER)))
+-+  ifeq ($(OS_VER),$(filter 5_4 6_1 6_6, $(OS_VER)))
+-       ifeq ($(ARCH), arm64)
+-           KASAN_OPTION += -DKASAN_SHADOW_SCALE_SHIFT=$(KASAN_SHADOW_SCALE_SHIFT)
+-        endif
+-@@ -481,7 +481,7 @@ ifeq (KSLIB, $(MODULE_TYPE))
+- 
+-   endif
+- 
+--  ifeq ($(OS_VER),$(filter 4_4 5_4 6_1, $(OS_VER)))
+-+  ifeq ($(OS_VER),$(filter 4_4 5_4 6_1 6_6, $(OS_VER)))
+-                 MODULE_CFLAG += -DKVER34
+-                 MODULE_CFLAG += -DKVER32
+-             MODULE_CFLAG += -DLNX26_22
+diff --git a/package/kernel/qca-ssdk/patches/102-qca-ssdk-support-selecting-PCS-channel-for-PORT3-on-.patch b/package/kernel/qca-ssdk/patches/102-qca-ssdk-support-selecting-PCS-channel-for-PORT3-on-.patch
+index 5e390d8ee3..db84ea1422 100644
+--- a/package/kernel/qca-ssdk/patches/102-qca-ssdk-support-selecting-PCS-channel-for-PORT3-on-.patch
++++ b/package/kernel/qca-ssdk/patches/102-qca-ssdk-support-selecting-PCS-channel-for-PORT3-on-.patch
+@@ -24,15 +24,15 @@ Signed-off-by: Mantas Pucka <mantas@8devices.com>
+ 
+ --- a/include/init/ssdk_dts.h
+ +++ b/include/init/ssdk_dts.h
+-@@ -101,6 +101,7 @@ typedef struct
++@@ -99,6 +99,7 @@ typedef struct
+  	a_uint32_t emu_chip_ver; /*only valid when is_emulation is true*/
+  	a_uint32_t clk_mode;
+  	a_uint32_t pcie_hw_base;
+ +	a_uint32_t port3_pcs_channel;
++ 	led_ctrl_pattern_t source_pattern[SSDK_MAX_PORT_NUM][PORT_LED_SOURCE_MAX];
+  } ssdk_dt_cfg;
+  
+- #define SSDK_MAX_NR_ETH 6
+-@@ -162,6 +163,7 @@ a_uint32_t ssdk_device_id_get(a_uint32_t
++@@ -161,6 +162,7 @@ a_uint32_t ssdk_device_id_get(a_uint32_t
+  struct device_node *ssdk_dts_node_get(a_uint32_t dev_id);
+  struct clk *ssdk_dts_essclk_get(a_uint32_t dev_id);
+  struct clk *ssdk_dts_cmnclk_get(a_uint32_t dev_id);
+@@ -62,7 +62,7 @@ Signed-off-by: Mantas Pucka <mantas@8devices.com>
+  					cppe_port_mux_ctrl.bf.port4_pcs_sel =
+ --- a/src/adpt/hppe/adpt_hppe_uniphy.c
+ +++ b/src/adpt/hppe/adpt_hppe_uniphy.c
+-@@ -1122,9 +1122,6 @@ __adpt_hppe_uniphy_psgmii_mode_set(a_uin
++@@ -1160,9 +1160,6 @@ __adpt_hppe_uniphy_psgmii_mode_set(a_uin
+  {
+  	a_uint32_t i;
+  	sw_error_t rv = SW_OK;
+@@ -72,7 +72,7 @@ Signed-off-by: Mantas Pucka <mantas@8devices.com>
+  
+  	union uniphy_mode_ctrl_u uniphy_mode_ctrl;
+  
+-@@ -1134,9 +1131,7 @@ __adpt_hppe_uniphy_psgmii_mode_set(a_uin
++@@ -1172,9 +1169,7 @@ __adpt_hppe_uniphy_psgmii_mode_set(a_uin
+  	SSDK_DEBUG("uniphy %d is psgmii mode\n", uniphy_index);
+  #if defined(CPPE)
+  	if (adpt_ppe_type_get(dev_id) == CPPE_TYPE) {
+@@ -92,14 +92,14 @@ Signed-off-by: Mantas Pucka <mantas@8devices.com>
+ +a_uint32_t ssdk_dts_port3_pcs_channel_get(a_uint32_t dev_id)
+ +{
+ +	ssdk_dt_cfg* cfg = ssdk_dt_global.ssdk_dt_switch_nodes[dev_id];
+-+	
+++
+ +	return cfg->port3_pcs_channel;
+ +}
+ +
+- #ifndef BOARD_AR71XX
+  #if defined(CONFIG_OF) && (LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0))
+  static void ssdk_dt_parse_mac_mode(a_uint32_t dev_id,
+-@@ -306,6 +313,25 @@ static void ssdk_dt_parse_mac_mode(a_uin
++ 		struct device_node *switch_node, ssdk_init_cfg *cfg)
++@@ -305,6 +312,25 @@ static void ssdk_dt_parse_mac_mode(a_uin
+  
+  	return;
+  }
+@@ -109,7 +109,7 @@ Signed-off-by: Mantas Pucka <mantas@8devices.com>
+ +{
+ +	const __be32 *port3_pcs_channel;
+ +	a_uint32_t len = 0;
+-+	
+++
+ +	port3_pcs_channel = of_get_property(switch_node, "port3_pcs_channel", &len);
+ +	if (!port3_pcs_channel) {
+ +		ssdk_dt_global.ssdk_dt_switch_nodes[dev_id]->port3_pcs_channel = 2;
+@@ -125,7 +125,7 @@ Signed-off-by: Mantas Pucka <mantas@8devices.com>
+  #ifdef IN_UNIPHY
+  static void ssdk_dt_parse_uniphy(a_uint32_t dev_id)
+  {
+-@@ -1292,6 +1318,7 @@ sw_error_t ssdk_dt_parse(ssdk_init_cfg *
++@@ -1347,6 +1373,7 @@ sw_error_t ssdk_dt_parse(ssdk_init_cfg *
+  	rv = ssdk_dt_parse_access_mode(switch_node, ssdk_dt_priv);
+  	SW_RTN_ON_ERROR(rv);
+  	ssdk_dt_parse_mac_mode(*dev_id, switch_node, cfg);
+diff --git a/package/kernel/qca-ssdk/patches/103-mdio-adapt-to-C22-and-C45-read-write-split.patch b/package/kernel/qca-ssdk/patches/103-mdio-adapt-to-C22-and-C45-read-write-split.patch
+deleted file mode 100644
+index 7ddca554ec..0000000000
+--- a/package/kernel/qca-ssdk/patches/103-mdio-adapt-to-C22-and-C45-read-write-split.patch
++++ /dev/null
+@@ -1,98 +0,0 @@
+-From bdae481e89cbe551068a99028bb57119b59f5ff4 Mon Sep 17 00:00:00 2001
+-From: Robert Marko <robimarko@gmail.com>
+-Date: Tue, 26 Mar 2024 12:19:49 +0100
+-Subject: [PATCH] mdio: adapt to C22 and C45 read/write split
+-
+-Kernel 6.3 has introduced separate C45 read/write operations, and thus
+-split them out of the C22 operations completely so the old way of marking
+-C45 reads and writes via the register value does not work anymore.
+-
+-This is causing SSDK to fail and find C45 only PHY-s such as Aquantia ones:
+-[   22.187877] ssdk_phy_driver_init[371]:INFO:dev_id = 0, phy_adress = 8, phy_id = 0x0 phytype doesn't match
+-[   22.209924] ssdk_phy_driver_init[371]:INFO:dev_id = 0, phy_adress = 0, phy_id = 0x0 phytype doesn't match
+-
+-This in turn causes USXGMII MAC autoneg bit to not get set and then UNIPHY
+-autoneg will time out, causing the 10G ports not to work:
+-[   37.292784] uniphy autoneg time out!
+-
+-So, lets detect C45 reads and writes by the magic BIT(30) in the register
+-argument and if so call separate C45 mdiobus read/write functions.
+-
+-Signed-off-by: Robert Marko <robimarko@gmail.com>
+----
+- include/init/ssdk_plat.h |  7 +++++++
+- src/init/ssdk_plat.c     | 30 ++++++++++++++++++++++++++++++
+- 2 files changed, 37 insertions(+)
+-
+---- a/include/init/ssdk_plat.h
+-+++ b/include/init/ssdk_plat.h
+-@@ -505,3 +505,10 @@ void ssdk_plat_exit(a_uint32_t dev_id);
+- 
+- #endif
+- /*qca808x_end*/
+-+
+-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6,3,0))
+-+#define MII_ADDR_C45		(1<<30)
+-+#define MII_DEVADDR_C45_SHIFT	16
+-+#define MII_DEVADDR_C45_MASK	GENMASK(20, 16)
+-+#define MII_REGADDR_C45_MASK	GENMASK(15, 0)
+-+#endif
+---- a/src/init/ssdk_plat.c
+-+++ b/src/init/ssdk_plat.c
+-@@ -356,6 +356,18 @@ phy_addr_validation_check(a_uint32_t phy
+- 		return A_TRUE;
+- }
+- 
+-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6,3,0))
+-+static inline u16 mdiobus_c45_regad(u32 regnum)
+-+{
+-+	return FIELD_GET(MII_REGADDR_C45_MASK, regnum);
+-+}
+-+
+-+static inline u16 mdiobus_c45_devad(u32 regnum)
+-+{
+-+	return FIELD_GET(MII_DEVADDR_C45_MASK, regnum);
+-+}
+-+#endif
+-+
+- sw_error_t
+- qca_ar8327_phy_read(a_uint32_t dev_id, a_uint32_t phy_addr,
+-                            a_uint32_t reg, a_uint16_t* data)
+-@@ -371,9 +383,18 @@ qca_ar8327_phy_read(a_uint32_t dev_id, a
+- 	if (!bus)
+- 		return SW_NOT_SUPPORTED;
+- 	phy_addr = TO_PHY_ADDR(phy_addr);
+-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6,3,0))
+-+	mutex_lock(&bus->mdio_lock);
+-+	if (reg & MII_ADDR_C45)
+-+		*data = __mdiobus_c45_read(bus, phy_addr, mdiobus_c45_devad(reg), mdiobus_c45_regad(reg));
+-+	else
+-+		*data = __mdiobus_read(bus, phy_addr, reg);
+-+	mutex_unlock(&bus->mdio_lock);
+-+#else
+- 	mutex_lock(&bus->mdio_lock);
+- 	*data = __mdiobus_read(bus, phy_addr, reg);
+- 	mutex_unlock(&bus->mdio_lock);
+-+#endif
+- 
+- 	return 0;
+- }
+-@@ -393,9 +414,18 @@ qca_ar8327_phy_write(a_uint32_t dev_id,
+- 	if (!bus)
+- 		return SW_NOT_SUPPORTED;
+- 	phy_addr = TO_PHY_ADDR(phy_addr);
+-+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6,3,0))
+-+	mutex_lock(&bus->mdio_lock);
+-+	if (reg & MII_ADDR_C45)
+-+		__mdiobus_c45_write(bus, phy_addr, mdiobus_c45_devad(reg), mdiobus_c45_regad(reg), data);
+-+	else
+-+		__mdiobus_write(bus, phy_addr, reg, data);
+-+	mutex_unlock(&bus->mdio_lock);
+-+#else
+- 	mutex_lock(&bus->mdio_lock);
+- 	__mdiobus_write(bus, phy_addr, reg, data);
+- 	mutex_unlock(&bus->mdio_lock);
+-+#endif
+- 
+- 	return 0;
+- }
+diff --git a/package/kernel/qca-ssdk/patches/201-fix-compile-warnings.patch b/package/kernel/qca-ssdk/patches/201-fix-compile-warnings.patch
+index 48807888fb..5b57f41975 100644
+--- a/package/kernel/qca-ssdk/patches/201-fix-compile-warnings.patch
++++ b/package/kernel/qca-ssdk/patches/201-fix-compile-warnings.patch
+@@ -1,17 +1,3 @@
+---- a/src/adpt/adpt.c
+-+++ b/src/adpt/adpt.c
+-@@ -394,11 +394,6 @@ sw_error_t adpt_init(a_uint32_t dev_id,
+- #endif
+- #endif
+- #if defined(HPPE)
+--#if defined(FALLTHROUGH)
+--			fallthrough;
+--#else
+--			/* fall through */
+--#endif
+- 		case CHIP_HPPE:
+- 			if (g_adpt_api[dev_id] == NULL) {
+- 				g_adpt_api[dev_id] = aos_mem_alloc(sizeof(adpt_api_t));
+ --- a/src/fal/fal_port_ctrl.c
+ +++ b/src/fal/fal_port_ctrl.c
+ @@ -2089,7 +2089,7 @@ fal_port_hibernate_get (a_uint32_t dev_i

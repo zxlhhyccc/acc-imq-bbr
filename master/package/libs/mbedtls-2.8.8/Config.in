@@ -1,0 +1,234 @@
+if PACKAGE_libmbedtls
+
+comment "Option details in source code: include/mbedtls/mbedtls_config.h"
+
+comment "Ciphers - unselect old or less-used ciphers to reduce binary size"
+
+config MBEDTLS_AES_C
+	bool "MBEDTLS_AES_C"
+	default y
+
+config MBEDTLS_CAMELLIA_C
+	bool "MBEDTLS_CAMELLIA_C"
+	default n
+
+config MBEDTLS_CCM_C
+	bool "MBEDTLS_CCM_C"
+	default n
+
+config MBEDTLS_CMAC_C
+	bool "MBEDTLS_CMAC_C (old but used by hostapd)"
+	default y
+
+config MBEDTLS_DES_C
+	bool "MBEDTLS_DES_C (old but used by hostapd)"
+	default y
+
+config MBEDTLS_GCM_C
+	bool "MBEDTLS_GCM_C"
+	default y
+
+config MBEDTLS_NIST_KW_C
+	bool "MBEDTLS_NIST_KW_C (old but used by hostapd)"
+	default y
+
+config MBEDTLS_RIPEMD160_C
+	bool "MBEDTLS_RIPEMD160_C"
+	default n
+
+config MBEDTLS_XTEA_C
+	bool "MBEDTLS_XTEA_C"
+	default n
+
+config MBEDTLS_RSA_NO_CRT
+	bool "MBEDTLS_RSA_NO_CRT"
+	default y
+
+config MBEDTLS_KEY_EXCHANGE_PSK_ENABLED
+	bool "MBEDTLS_KEY_EXCHANGE_PSK_ENABLED"
+	default y
+
+config MBEDTLS_KEY_EXCHANGE_DHE_PSK_ENABLED
+	bool "MBEDTLS_KEY_EXCHANGE_DHE_PSK_ENABLED"
+	default n
+
+config MBEDTLS_KEY_EXCHANGE_ECDHE_PSK_ENABLED
+	bool "MBEDTLS_KEY_EXCHANGE_ECDHE_PSK_ENABLED"
+	default y
+
+config MBEDTLS_KEY_EXCHANGE_RSA_PSK_ENABLED
+	bool "MBEDTLS_KEY_EXCHANGE_RSA_PSK_ENABLED"
+	default n
+
+config MBEDTLS_KEY_EXCHANGE_RSA_ENABLED
+	bool "MBEDTLS_KEY_EXCHANGE_RSA_ENABLED"
+	default n
+
+config MBEDTLS_KEY_EXCHANGE_DHE_RSA_ENABLED
+	bool "MBEDTLS_KEY_EXCHANGE_DHE_RSA_ENABLED"
+	default n
+
+config MBEDTLS_KEY_EXCHANGE_ECDHE_RSA_ENABLED
+	bool "MBEDTLS_KEY_EXCHANGE_ECDHE_RSA_ENABLED"
+	default y
+
+config MBEDTLS_KEY_EXCHANGE_ECDHE_ECDSA_ENABLED
+	bool "MBEDTLS_KEY_EXCHANGE_ECDHE_ECDSA_ENABLED"
+	default y
+
+config MBEDTLS_KEY_EXCHANGE_ECDH_ECDSA_ENABLED
+	bool "MBEDTLS_KEY_EXCHANGE_ECDH_ECDSA_ENABLED"
+	default n
+
+config MBEDTLS_KEY_EXCHANGE_ECDH_RSA_ENABLED
+	bool "MBEDTLS_KEY_EXCHANGE_ECDH_RSA_ENABLED"
+	default n
+
+comment "Curves - unselect old or less-used curves to reduce binary size"
+
+config MBEDTLS_ECP_DP_SECP192R1_ENABLED
+	bool "MBEDTLS_ECP_DP_SECP192R1_ENABLED"
+	default n
+
+config MBEDTLS_ECP_DP_SECP224R1_ENABLED
+	bool "MBEDTLS_ECP_DP_SECP224R1_ENABLED"
+	default n
+
+config MBEDTLS_ECP_DP_SECP256R1_ENABLED
+	bool "MBEDTLS_ECP_DP_SECP256R1_ENABLED"
+	default y
+
+config MBEDTLS_ECP_DP_SECP384R1_ENABLED
+	bool "MBEDTLS_ECP_DP_SECP384R1_ENABLED"
+	default y
+
+config MBEDTLS_ECP_DP_SECP521R1_ENABLED
+	bool "MBEDTLS_ECP_DP_SECP521R1_ENABLED"
+	default y
+
+config MBEDTLS_ECP_DP_SECP192K1_ENABLED
+	bool "MBEDTLS_ECP_DP_SECP192K1_ENABLED"
+	default n
+
+config MBEDTLS_ECP_DP_SECP224K1_ENABLED
+	bool "MBEDTLS_ECP_DP_SECP224K1_ENABLED"
+	default n
+
+config MBEDTLS_ECP_DP_SECP256K1_ENABLED
+	bool "MBEDTLS_ECP_DP_SECP256K1_ENABLED"
+	default y
+
+config MBEDTLS_ECP_DP_BP256R1_ENABLED
+	bool "MBEDTLS_ECP_DP_BP256R1_ENABLED"
+	default n
+
+config MBEDTLS_ECP_DP_BP384R1_ENABLED
+	bool "MBEDTLS_ECP_DP_BP384R1_ENABLED"
+	default n
+
+config MBEDTLS_ECP_DP_BP512R1_ENABLED
+	bool "MBEDTLS_ECP_DP_BP512R1_ENABLED"
+	default n
+
+config MBEDTLS_ECP_DP_CURVE25519_ENABLED
+	bool "MBEDTLS_ECP_DP_CURVE25519_ENABLED"
+	default y
+
+config MBEDTLS_ECP_DP_CURVE448_ENABLED
+	bool "MBEDTLS_ECP_DP_CURVE448_ENABLED"
+	default n
+
+comment "Build Options - unselect features to reduce binary size"
+
+config MBEDTLS_ARMV8CE_AES_C
+	bool
+	default y
+	prompt "Enable use of the ARMv8 Crypto Extensions"
+	depends on aarch64 && !TARGET_bcm27xx
+	help
+	 Use of the ARMv8 Crypto Extensions greatly increase performance
+	 (up to 4x faster on AES-GCM while 10x faster on raw AES).
+
+	 If you don't sure, say Y here.
+
+config MBEDTLS_CERTS_C
+	bool "MBEDTLS_CERTS_C"
+	default n
+
+config MBEDTLS_CIPHER_MODE_OFB
+	bool "MBEDTLS_CIPHER_MODE_OFB"
+	default n
+
+config MBEDTLS_CIPHER_MODE_XTS
+	bool "MBEDTLS_CIPHER_MODE_XTS"
+	default n
+
+config MBEDTLS_DEBUG_C
+	bool "MBEDTLS_DEBUG_C"
+	default n
+	help
+	 This option enables mbedtls library's debug functions.
+
+	 It increases the uncompressed libmbedtls binary size
+	 by around 60 KiB (for an ARMv5 platform).
+
+	 Usually, you don't need this, so don't select this if you're unsure.
+
+config MBEDTLS_HAVE_SSE2
+	bool
+	default y if !TARGET_x86_legacy && !TARGET_x86_geode
+	prompt "Enable use of x86 SSE2 instructions"
+	depends on TARGET_x86_generic || TARGET_x86_64
+	help
+	 Use of SSE2 instructions greatly increase performance (up to
+	 3x faster) with a minimum (~0.2%, or 23KB) increase in package
+	 size, but it will bring no benefit if your hardware does not
+	 support them, such as Geode GX and LX.  In this case you may
+	 save 23KB by saying yes here.  AMD Geode NX, and Intel
+	 Pentium 4 and above support SSE2.
+
+config MBEDTLS_HKDF_C
+	bool "MBEDTLS_HKDF_C (RFC 5869)"
+ 	default n
+	help
+	 This option adds support for the Hashed Message Authentication Code
+	 (HMAC)-based key derivation function (HKDF).
+
+config MBEDTLS_PLATFORM_C
+	bool "MBEDTLS_PLATFORM_C"
+	default n
+
+config MBEDTLS_SELF_TEST
+	bool "MBEDTLS_SELF_TEST"
+	default n
+
+config MBEDTLS_SSL_TRUNCATED_HMAC
+	bool "MBEDTLS_SSL_TRUNCATED_HMAC"
+	default n
+
+config MBEDTLS_THREADING_C
+	bool "MBEDTLS_THREADING_C"
+	default y
+
+config MBEDTLS_THREADING_PTHREAD
+	def_bool MBEDTLS_THREADING_C
+
+config MBEDTLS_VERSION_C
+	bool "MBEDTLS_VERSION_C"
+	default n
+
+config MBEDTLS_VERSION_FEATURES
+	bool "MBEDTLS_VERSION_FEATURES"
+	default n
+
+comment "Build Options"
+
+config MBEDTLS_ENTROPY_FORCE_SHA256
+	bool "MBEDTLS_ENTROPY_FORCE_SHA256"
+	default y
+
+config MBEDTLS_SSL_RENEGOTIATION
+	bool "MBEDTLS_SSL_RENEGOTIATION"
+	default n
+
+endif
