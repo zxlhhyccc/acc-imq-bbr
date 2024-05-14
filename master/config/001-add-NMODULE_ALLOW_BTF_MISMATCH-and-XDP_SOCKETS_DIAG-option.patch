@@ -1,14 +1,14 @@
 --- a/Config-kernel.in
 +++ b/Config-kernel.in
-@@ -431,6 +431,7 @@ config KERNEL_DEBUG_INFO
+@@ -437,6 +437,7 @@ config KERNEL_DEBUG_INFO
  config KERNEL_DEBUG_INFO_BTF
  
  	bool "Enable additional BTF type information"
-+	default y if TARGET_armsr || TARGET_bcm27xx || TARGET_ipq806x_chromium || TARGET_mediatek_filogic || TARGET_mvebu_cortexa53 || TARGET_mvebu_cortexa72 || TARGET_rockchip || TARGET_sunxi || TARGET_x86_64
++	default y if (TARGET_armsr || TARGET_bcm27xx || TARGET_ipq806x_chromium || TARGET_mediatek_filogic || TARGET_mvebu_cortexa53 || TARGET_mvebu_cortexa72 || TARGET_rockchip || TARGET_sunxi || TARGET_x86_64) && BUILDBOT
  	depends on !HOST_OS_MACOS
  	depends on KERNEL_DEBUG_INFO && !KERNEL_DEBUG_INFO_REDUCED
  	select DWARVES
-@@ -444,6 +445,7 @@ config KERNEL_DEBUG_INFO_BTF
+@@ -450,6 +451,7 @@ config KERNEL_DEBUG_INFO_BTF
  config KERNEL_MODULE_ALLOW_BTF_MISMATCH
  	bool "Allow loading modules with non-matching BTF type info"
  	depends on KERNEL_DEBUG_INFO_BTF
@@ -16,16 +16,16 @@
  	help
  	  For modules whose split BTF does not match vmlinux, load without
  	  BTF rather than refusing to load. The default behavior with
-@@ -453,7 +455,7 @@ config KERNEL_MODULE_ALLOW_BTF_MISMATCH
+@@ -459,7 +461,7 @@ config KERNEL_MODULE_ALLOW_BTF_MISMATCH
  
  config KERNEL_DEBUG_INFO_REDUCED
  	bool "Reduce debugging information"
 -	default y
-+	default y if !(TARGET_armsr || TARGET_bcm27xx || TARGET_ipq806x_chromium || TARGET_mediatek_filogic || TARGET_mvebu_cortexa53 || TARGET_mvebu_cortexa72 || TARGET_rockchip || TARGET_sunxi || TARGET_x86_64)
++	default y if !(TARGET_armsr || TARGET_bcm27xx || TARGET_ipq806x_chromium || TARGET_mediatek_filogic || TARGET_mvebu_cortexa53 || TARGET_mvebu_cortexa72 || TARGET_rockchip || TARGET_sunxi || TARGET_x86_64) || !BUILDBOT
  	depends on KERNEL_DEBUG_INFO
  	help
  	  If you say Y here gcc is instructed to generate less debugging
-@@ -541,17 +543,28 @@ config KERNEL_KPROBE_EVENTS
+@@ -547,17 +549,28 @@ config KERNEL_KPROBE_EVENTS
  config KERNEL_BPF_EVENTS
  	bool "Compile the kernel with BPF event support"
  	select KERNEL_KPROBES
@@ -54,7 +54,7 @@
  config KERNEL_AIO
  	bool "Compile the kernel with asynchronous IO support"
  	default y if !SMALL_FLASH
-@@ -1190,6 +1203,7 @@ config KERNEL_NET_L3_MASTER_DEV
+@@ -1196,6 +1209,7 @@ config KERNEL_NET_L3_MASTER_DEV
  
  config KERNEL_XDP_SOCKETS
  	bool "XDP sockets support"
