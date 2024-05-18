@@ -20,29 +20,33 @@ include $(INCLUDE_DIR)/rootfs.mk
 override MAKE:=$(_SINGLE)$(SUBMAKE)
 override NO_TRACE_MAKE:=$(_SINGLE)$(NO_TRACE_MAKE)
 
+exp_units = $(subst k, * 1024,$(subst m, * 1024k,$(subst g, * 1024m,$(1))))
+
 target_params = $(subst +,$(space),$*)
 param_get = $(patsubst $(1)=%,%,$(filter $(1)=%,$(2)))
 param_get_default = $(firstword $(call param_get,$(1),$(2)) $(3))
 param_mangle = $(subst $(space),_,$(strip $(1)))
 param_unmangle = $(subst _,$(space),$(1))
 
-mkfs_packages_id = $(shell echo $(sort $(1)) | mkhash md5 | cut -b1-8)
+mkfs_packages_id = $(shell echo $(sort $(1)) | $(MKHASH) md5 | cut -b1-8)
 mkfs_target_dir = $(if $(call param_get,pkg,$(1)),$(KDIR)/target-dir-$(call param_get,pkg,$(1)),$(TARGET_DIR))
 
 KDIR=$(KERNEL_BUILD_DIR)
+BUILD_DATE_PREFIX := $(shell TZ=UTC-8 date +'%Y%m%d%H%M')
 KDIR_TMP=$(KDIR)/tmp
 DTS_DIR:=$(LINUX_DIR)/arch/$(LINUX_KARCH)/boot/dts
-BUILD_DATE_PREFIX := $(shell date +'%Y%m%d%H%M')
 
 IMG_PREFIX_EXTRA:=$(if $(EXTRA_IMAGE_NAME),$(call sanitize,$(EXTRA_IMAGE_NAME))-)
 IMG_PREFIX_VERNUM:=$(if $(CONFIG_VERSION_FILENAMES),$(call sanitize,$(VERSION_NUMBER))-)
 IMG_PREFIX_VERCODE:=$(if $(CONFIG_VERSION_CODE_FILENAMES),$(call sanitize,$(VERSION_CODE))-)
 
-IMG_PREFIX:=$(BUILD_DATE_PREFIX)-$(VERSION_DIST_SANITIZED)-$(IMG_PREFIX_VERNUM)$(IMG_PREFIX_VERCODE)$(IMG_PREFIX_EXTRA)$(BOARD)$(if $(SUBTARGET),-$(SUBTARGET))
+IMG_PREFIX:=$(BUILD_DATE_PREFIX)-$(VERSION_DIST_SANITIZED)-$(IMG_PREFIX_VERNUM)$(IMG_PREFIX_VERCODE)$(IMG_PREFIX_EXTRA)$(BOARD)-$(SUBTARGET)
 IMG_ROOTFS:=$(IMG_PREFIX)-rootfs
 IMG_COMBINED:=$(IMG_PREFIX)-combined
-IMG_PART_SIGNATURE:=$(shell echo $(SOURCE_DATE_EPOCH)$(LINUX_VERMAGIC) | mkhash md5 | cut -b1-8)
-IMG_PART_DISKGUID:=$(shell echo $(SOURCE_DATE_EPOCH)$(LINUX_VERMAGIC) | mkhash md5 | sed -E 's/(.{8})(.{4})(.{4})(.{4})(.{10})../\1-\2-\3-\4-\500/')
+ifeq ($(DUMP),)
+IMG_PART_SIGNATURE:=$(shell echo $(SOURCE_DATE_EPOCH)$(LINUX_VERMAGIC) | $(MKHASH) md5 | cut -b1-8)
+IMG_PART_DISKGUID:=$(shell echo $(SOURCE_DATE_EPOCH)$(LINUX_VERMAGIC) | $(MKHASH) md5 | sed -E 's/(.{8})(.{4})(.{4})(.{4})(.{10})../\1-\2-\3-\4-\500/')
+endif
 
 MKFS_DEVTABLE_OPT := -D $(INCLUDE_DIR)/device_table.txt
 
@@ -76,6 +80,7 @@ JFFS2OPTS += $(MKFS_DEVTABLE_OPT)
 SQUASHFS_BLOCKSIZE := $(CONFIG_TARGET_SQUASHFS_BLOCK_SIZE)k
 SQUASHFSOPT := -b $(SQUASHFS_BLOCKSIZE)
 SQUASHFSOPT += -p '/dev d 755 0 0' -p '/dev/console c 600 0 0 5 1'
+SQUASHFSOPT += $(if $(CONFIG_SELINUX),-xattrs,-no-xattrs)
 SQUASHFSCOMP := gzip
 LZMA_XZ_OPTIONS := -Xpreset 9 -Xe -Xlc 0 -Xlp 2 -Xpb 2
 ifeq ($(CONFIG_SQUASHFS_XZ),y)
@@ -137,14 +142,6 @@ define Image/BuildKernel/MkuImage
 		-n '$(call toupper,$(ARCH)) $(VERSION_DIST) Linux-$(LINUX_VERSION)' -d $(4) $(5)
 endef
 
-define Image/BuildKernel/MkFIT
-	$(TOPDIR)/scripts/mkits.sh \
-		-D $(1) -o $(KDIR)/fit-$(1).its -k $(2) $(if $(3),-d $(3)) -C $(4) -a $(5) -e $(6) \
-		-c $(if $(DEVICE_DTS_CONFIG),$(DEVICE_DTS_CONFIG),"config-1") \
-		-A $(LINUX_KARCH) -v $(LINUX_VERSION)
-	PATH=$(LINUX_DIR)/scripts/dtc:$(PATH) mkimage -f $(KDIR)/fit-$(1).its $(KDIR)/fit-$(1)$(7).itb
-endef
-
 ifdef CONFIG_TARGET_IMAGES_GZIP
   define Image/Gzip
 	rm -f $(1).gz
@@ -154,25 +151,26 @@ endif
 
 
 # Disable noisy checks by default as in upstream
-DTC_FLAGS += \
+DTC_WARN_FLAGS := \
+  -Wno-interrupt_provider \
+  -Wno-unique_unit_address \
   -Wno-unit_address_vs_reg \
-  -Wno-simple_bus_reg \
-  -Wno-unit_address_format \
-  -Wno-pci_bridge \
-  -Wno-pci_device_bus_num \
-  -Wno-pci_device_reg \
   -Wno-avoid_unnecessary_addr_size \
   -Wno-alias_paths \
   -Wno-graph_child_address \
-  -Wno-graph_port \
-  -Wno-unique_unit_address
+  -Wno-simple_bus_reg
+
+DTC_FLAGS += $(DTC_WARN_FLAGS)
+DTCO_FLAGS += $(DTC_WARN_FLAGS)
 
 define Image/pad-to
 	dd if=$(1) of=$(1).new bs=$(2) conv=sync
 	mv $(1).new $(1)
 endef
 
+ifeq ($(DUMP),)
 ROOTFS_PARTSIZE=$(shell echo $$(($(CONFIG_TARGET_ROOTFS_PARTSIZE)*1024*1024)))
+endif
 
 define Image/pad-root-squashfs
 	$(call Image/pad-to,$(KDIR)/root.squashfs,$(if $(1),$(1),$(ROOTFS_PARTSIZE)))
@@ -182,18 +180,28 @@ endef
 # $(2) target dtb file
 # $(3) extra CPP flags
 # $(4) extra DTC flags
-define Image/BuildDTB
+define Image/BuildDTB/sub
 	$(TARGET_CROSS)cpp -nostdinc -x assembler-with-cpp \
+		$(DTS_CPPFLAGS) \
 		-I$(DTS_DIR) \
 		-I$(DTS_DIR)/include \
 		-I$(LINUX_DIR)/include/ \
+		-I$(LINUX_DIR)/scripts/dtc/include-prefixes \
 		-undef -D__DTS__ $(3) \
 		-o $(2).tmp $(1)
 	$(LINUX_DIR)/scripts/dtc/dtc -O dtb \
-		-i$(dir $(1)) $(DTC_FLAGS) $(4) \
+		-i$(dir $(1)) $(4) \
 	$(if $(CONFIG_HAS_DT_OVERLAY_SUPPORT),-@) \
 		-o $(2) $(2).tmp
 	$(RM) $(2).tmp
+endef
+
+define Image/BuildDTB
+	$(call Image/BuildDTB/sub,$(1),$(2),$(3),$(DTC_FLAGS) $(DEVICE_DTC_FLAGS) $(4))
+endef
+
+define Image/BuildDTBO
+	$(call Image/BuildDTB/sub,$(1),$(2),$(3),$(DTCO_FLAGS) $(DEVICE_DTCO_FLAGS) $(4))
 endef
 
 define Image/mkfs/jffs2/sub-raw
@@ -229,8 +237,7 @@ $(eval $(foreach S,$(NAND_BLOCKSIZE),$(call Image/mkfs/jffs2-nand/template,$(S))
 define Image/mkfs/squashfs-common
 	$(STAGING_DIR_HOST)/bin/mksquashfs4 $(call mkfs_target_dir,$(1)) $@ \
 		-nopad -noappend -root-owned \
-		-comp $(SQUASHFSCOMP) $(SQUASHFSOPT) \
-		-processors $(shell nproc)
+		-comp $(SQUASHFSCOMP) $(SQUASHFSOPT)
 endef
 
 ifeq ($(CONFIG_TARGET_ROOTFS_SECURITY_LABELS),y)
@@ -272,8 +279,18 @@ define Image/mkfs/ext4
 endef
 
 define Image/Manifest
-	$(call opkg,$(TARGET_DIR_ORIG)) list-installed > \
-		$(BIN_DIR)/$(IMG_PREFIX)$(if $(PROFILE_SANITIZED),-$(PROFILE_SANITIZED)).manifest
+	$(if $(CONFIG_USE_APK), \
+		$(call apk,$(TARGET_DIR_ORIG)) list --quiet --manifest --no-network | sort | sed 's/ / - /'  > \
+			$(BIN_DIR)/$(IMG_PREFIX)$(if $(PROFILE_SANITIZED),-$(PROFILE_SANITIZED)).manifest, \
+		$(call opkg,$(TARGET_DIR_ORIG)) list-installed > \
+			$(BIN_DIR)/$(IMG_PREFIX)$(if $(PROFILE_SANITIZED),-$(PROFILE_SANITIZED)).manifest \
+	)
+ifneq ($(CONFIG_JSON_CYCLONEDX_SBOM),)
+	$(SCRIPT_DIR)/package-metadata.pl imgcyclonedxsbom \
+		$(if $(IB),$(TOPDIR)/.packageinfo, $(TMP_DIR)/.packageinfo) \
+		$(BIN_DIR)/$(IMG_PREFIX)$(if $(PROFILE_SANITIZED),-$(PROFILE_SANITIZED)).manifest > \
+		$(BIN_DIR)/$(IMG_PREFIX)$(if $(PROFILE_SANITIZED),-$(PROFILE_SANITIZED)).bom.cdx.json
+endif
 endef
 
 define Image/gzip-ext4-padded-squashfs
@@ -316,7 +333,20 @@ opkg_target = \
 	$(call opkg,$(mkfs_cur_target_dir)) \
 		-f $(mkfs_cur_target_dir).conf
 
+apk_target = $(call apk,$(mkfs_cur_target_dir)) --no-scripts
+
+
 target-dir-%: FORCE
+ifneq ($(CONFIG_USE_APK),)
+	rm -rf $(mkfs_cur_target_dir)
+	$(CP) $(TARGET_DIR_ORIG) $(mkfs_cur_target_dir)
+	mv $(mkfs_cur_target_dir)/etc/apk/repositories $(mkfs_cur_target_dir).repositories
+	$(if $(mkfs_packages_remove), \
+		$(apk_target) del $(mkfs_packages_remove))
+	$(if $(mkfs_packages_add), \
+		$(apk_target) add $(mkfs_packages_add))
+	mv $(mkfs_cur_target_dir).repositories $(mkfs_cur_target_dir)/etc/apk/repositories
+else
 	rm -rf $(mkfs_cur_target_dir) $(mkfs_cur_target_dir).opkg
 	$(CP) $(TARGET_DIR_ORIG) $(mkfs_cur_target_dir)
 	-mv $(mkfs_cur_target_dir)/etc/opkg $(mkfs_cur_target_dir).opkg
@@ -330,6 +360,7 @@ target-dir-%: FORCE
 			$(call opkg_package_files,$(mkfs_packages_add)))
 	-$(CP) -T $(mkfs_cur_target_dir).opkg/ $(mkfs_cur_target_dir)/etc/opkg/
 	rm -rf $(mkfs_cur_target_dir).opkg $(mkfs_cur_target_dir).conf
+endif
 	$(call prepare_rootfs,$(mkfs_cur_target_dir),$(TOPDIR)/files)
 
 $(KDIR)/root.%: kernel_prepare
@@ -341,6 +372,9 @@ define Device/InitProfile
   DEVICE_ALT0_TITLE = $$(DEVICE_ALT0_VENDOR) $$(DEVICE_ALT0_MODEL)$$(if $$(DEVICE_ALT0_VARIANT), $$(DEVICE_ALT0_VARIANT))
   DEVICE_ALT1_TITLE = $$(DEVICE_ALT1_VENDOR) $$(DEVICE_ALT1_MODEL)$$(if $$(DEVICE_ALT1_VARIANT), $$(DEVICE_ALT1_VARIANT))
   DEVICE_ALT2_TITLE = $$(DEVICE_ALT2_VENDOR) $$(DEVICE_ALT2_MODEL)$$(if $$(DEVICE_ALT2_VARIANT), $$(DEVICE_ALT2_VARIANT))
+  DEVICE_ALT3_TITLE = $$(DEVICE_ALT3_VENDOR) $$(DEVICE_ALT3_MODEL)$$(if $$(DEVICE_ALT3_VARIANT), $$(DEVICE_ALT3_VARIANT))
+  DEVICE_ALT4_TITLE = $$(DEVICE_ALT4_VENDOR) $$(DEVICE_ALT4_MODEL)$$(if $$(DEVICE_ALT4_VARIANT), $$(DEVICE_ALT4_VARIANT))
+  DEVICE_ALT5_TITLE = $$(DEVICE_ALT5_VENDOR) $$(DEVICE_ALT5_MODEL)$$(if $$(DEVICE_ALT5_VARIANT), $$(DEVICE_ALT5_VARIANT))
   DEVICE_VENDOR :=
   DEVICE_MODEL :=
   DEVICE_VARIANT :=
@@ -353,6 +387,15 @@ define Device/InitProfile
   DEVICE_ALT2_VENDOR :=
   DEVICE_ALT2_MODEL :=
   DEVICE_ALT2_VARIANT :=
+  DEVICE_ALT3_VENDOR :=
+  DEVICE_ALT3_MODEL :=
+  DEVICE_ALT3_VARIANT :=
+  DEVICE_ALT4_VENDOR :=
+  DEVICE_ALT4_MODEL :=
+  DEVICE_ALT4_VARIANT :=
+  DEVICE_ALT5_VENDOR :=
+  DEVICE_ALT5_MODEL :=
+  DEVICE_ALT5_VARIANT :=
   DEVICE_PACKAGES :=
   DEVICE_DESCRIPTION = Build firmware images for $$(DEVICE_TITLE)
 endef
@@ -367,7 +410,9 @@ define Device/Init
   ARTIFACTS :=
   DEVICE_IMG_PREFIX := $(IMG_PREFIX)-$(1)
   DEVICE_IMG_NAME = $$(DEVICE_IMG_PREFIX)-$$(1)-$$(2)
+  FACTORY_IMG_NAME :=
   IMAGE_SIZE :=
+  NAND_SIZE :=
   KERNEL_PREFIX = $$(DEVICE_IMG_PREFIX)
   KERNEL_SUFFIX := -kernel.bin
   KERNEL_INITRAMFS_SUFFIX = $$(KERNEL_SUFFIX)
@@ -394,14 +439,19 @@ define Device/Init
 
   DEVICE_DTS :=
   DEVICE_DTS_CONFIG :=
+  DEVICE_DTS_DELIMITER :=
   DEVICE_DTS_DIR :=
+  DEVICE_DTS_LOADADDR :=
   DEVICE_DTS_OVERLAY :=
   DEVICE_FDT_NUM :=
+  DEVICE_DTC_FLAGS :=
+  DEVICE_DTCO_FLAGS :=
   SOC :=
 
   BOARD_NAME :=
   UIMAGE_MAGIC :=
   UIMAGE_NAME :=
+  UIMAGE_TIME :=
   DEVICE_COMPAT_VERSION := 1.0
   DEVICE_COMPAT_MESSAGE :=
   SUPPORTED_DEVICES := $(subst _,$(comma),$(1))
@@ -418,16 +468,21 @@ endef
 DEFAULT_DEVICE_VARS := \
   DEVICE_NAME KERNEL KERNEL_INITRAMFS KERNEL_INITRAMFS_IMAGE KERNEL_SIZE \
   CMDLINE UBOOTENV_IN_UBI KERNEL_IN_UBI BLOCKSIZE PAGESIZE SUBPAGESIZE \
-  VID_HDR_OFFSET UBINIZE_OPTS UBINIZE_PARTS MKUBIFS_OPTS DEVICE_DTS \
-  DEVICE_DTS_CONFIG DEVICE_DTS_DIR DEVICE_DTS_OVERLAY DEVICE_FDT_NUM \
-  DEVICE_IMG_PREFIX SOC BOARD_NAME UIMAGE_MAGIC UIMAGE_NAME \
-  SUPPORTED_DEVICES IMAGE_METADATA KERNEL_ENTRY KERNEL_LOADADDR \
-  UBOOT_PATH IMAGE_SIZE \
-  DEVICE_COMPAT_VERSION DEVICE_COMPAT_MESSAGE \
+  VID_HDR_OFFSET UBINIZE_OPTS UBINIZE_PARTS MKUBIFS_OPTS DEVICE_DTC_FLAGS \
+  DEVICE_DTCO_FLAGS DEVICE_DTS DEVICE_DTS_CONFIG DEVICE_DTS_DELIMITER \
+  DEVICE_DTS_DIR DEVICE_DTS_OVERLAY DEVICE_DTS_LOADADDR \
+  DEVICE_FDT_NUM DEVICE_IMG_PREFIX SOC BOARD_NAME UIMAGE_MAGIC UIMAGE_NAME \
+  UIMAGE_TIME SUPPORTED_DEVICES IMAGE_METADATA KERNEL_ENTRY KERNEL_LOADADDR \
+  UBOOT_PATH IMAGE_SIZE NAND_SIZE \
+  FACTORY_IMG_NAME FACTORY_SIZE \
+  DEVICE_PACKAGES DEVICE_COMPAT_VERSION DEVICE_COMPAT_MESSAGE \
   DEVICE_VENDOR DEVICE_MODEL DEVICE_VARIANT \
   DEVICE_ALT0_VENDOR DEVICE_ALT0_MODEL DEVICE_ALT0_VARIANT \
   DEVICE_ALT1_VENDOR DEVICE_ALT1_MODEL DEVICE_ALT1_VARIANT \
-  DEVICE_ALT2_VENDOR DEVICE_ALT2_MODEL DEVICE_ALT2_VARIANT
+  DEVICE_ALT2_VENDOR DEVICE_ALT2_MODEL DEVICE_ALT2_VARIANT \
+  DEVICE_ALT3_VENDOR DEVICE_ALT3_MODEL DEVICE_ALT3_VARIANT \
+  DEVICE_ALT4_VENDOR DEVICE_ALT4_MODEL DEVICE_ALT4_VARIANT \
+  DEVICE_ALT5_VENDOR DEVICE_ALT5_MODEL DEVICE_ALT5_VARIANT
 
 define Device/ExportVar
   $(1) : $(2):=$$($(2))
@@ -441,10 +496,10 @@ endef
 ifdef IB
   DEVICE_CHECK_PROFILE = $(filter $(1),DEVICE_$(PROFILE) $(PROFILE))
 else
-  DEVICE_CHECK_PROFILE = $(CONFIG_TARGET_$(if $(CONFIG_TARGET_MULTI_PROFILE),DEVICE_)$(call target_conf,$(BOARD)$(if $(SUBTARGET),_$(SUBTARGET)))_$(1))
+  DEVICE_CHECK_PROFILE = $(CONFIG_TARGET_$(if $(CONFIG_TARGET_MULTI_PROFILE),DEVICE_)$(call target_conf,$(BOARD)_$(SUBTARGET))_$(1))
 endif
 
-DEVICE_EXTRA_PACKAGES = $(call qstrip,$(CONFIG_TARGET_DEVICE_PACKAGES_$(call target_conf,$(BOARD)$(if $(SUBTARGET),_$(SUBTARGET)))_DEVICE_$(1)))
+DEVICE_EXTRA_PACKAGES = $(call qstrip,$(CONFIG_TARGET_DEVICE_PACKAGES_$(call target_conf,$(BOARD)_$(SUBTARGET))_DEVICE_$(1)))
 
 define merge_packages
   $(1) :=
@@ -479,7 +534,7 @@ define Device/Build/initramfs
 	  $$(if $$(CONFIG_JSON_OVERVIEW_IMAGE_INFO), $(BUILD_DIR)/json_info_files/$$(KERNEL_INITRAMFS_IMAGE).json,))
 
   $(KDIR)/$$(KERNEL_INITRAMFS_NAME):: image_prepare
-  $(1)-images: $(BIN_DIR)/$$(KERNEL_INITRAMFS_IMAGE)
+  $(1)-images: $$(if $$(KERNEL_INITRAMFS),$(BIN_DIR)/$$(KERNEL_INITRAMFS_IMAGE))
   $(BIN_DIR)/$$(KERNEL_INITRAMFS_IMAGE): $(KDIR)/tmp/$$(KERNEL_INITRAMFS_IMAGE)
 	cp $$^ $$@
 
@@ -492,11 +547,11 @@ define Device/Build/initramfs
   $(BUILD_DIR)/json_info_files/$$(KERNEL_INITRAMFS_IMAGE).json: $(BIN_DIR)/$$(KERNEL_INITRAMFS_IMAGE)
 	@mkdir -p $$(shell dirname $$@)
 	DEVICE_ID="$(1)" \
-	BIN_DIR="$(BIN_DIR)" \
 	SOURCE_DATE_EPOCH=$(SOURCE_DATE_EPOCH) \
-	DEVICE_IMG_NAME="$$(notdir $$^)" \
-	IMAGE_TYPE="kernel" \
-	IMAGE_FILESYSTEM="initramfs" \
+	FILE_NAME="$$(notdir $$^)" \
+	FILE_DIR="$(KDIR)/tmp" \
+	FILE_TYPE="kernel" \
+	FILE_FILESYSTEM="initramfs" \
 	DEVICE_IMG_PREFIX="$$(DEVICE_IMG_PREFIX)" \
 	DEVICE_VENDOR="$$(DEVICE_VENDOR)" \
 	DEVICE_MODEL="$$(DEVICE_MODEL)" \
@@ -510,10 +565,19 @@ define Device/Build/initramfs
 	DEVICE_ALT2_VENDOR="$$(DEVICE_ALT2_VENDOR)" \
 	DEVICE_ALT2_MODEL="$$(DEVICE_ALT2_MODEL)" \
 	DEVICE_ALT2_VARIANT="$$(DEVICE_ALT2_VARIANT)" \
+	DEVICE_ALT3_VENDOR="$$(DEVICE_ALT3_VENDOR)" \
+	DEVICE_ALT3_MODEL="$$(DEVICE_ALT3_MODEL)" \
+	DEVICE_ALT3_VARIANT="$$(DEVICE_ALT3_VARIANT)" \
+	DEVICE_ALT4_VENDOR="$$(DEVICE_ALT4_VENDOR)" \
+	DEVICE_ALT4_MODEL="$$(DEVICE_ALT4_MODEL)" \
+	DEVICE_ALT4_VARIANT="$$(DEVICE_ALT4_VARIANT)" \
+	DEVICE_ALT5_VENDOR="$$(DEVICE_ALT5_VENDOR)" \
+	DEVICE_ALT5_MODEL="$$(DEVICE_ALT5_MODEL)" \
+	DEVICE_ALT5_VARIANT="$$(DEVICE_ALT5_VARIANT)" \
 	DEVICE_TITLE="$$(DEVICE_TITLE)" \
 	DEVICE_PACKAGES="$$(DEVICE_PACKAGES)" \
 	TARGET="$(BOARD)" \
-	SUBTARGET="$(if $(SUBTARGET),$(SUBTARGET),generic)" \
+	SUBTARGET="$(SUBTARGET)" \
 	VERSION_NUMBER="$(VERSION_NUMBER)" \
 	VERSION_CODE="$(VERSION_CODE)" \
 	SUPPORTED_DEVICES="$$(SUPPORTED_DEVICES)" \
@@ -524,7 +588,8 @@ endif
 define Device/Build/compile
   $$(_COMPILE_TARGET): $(KDIR)/$(1)
   $(eval $(call Device/Export,$(KDIR)/$(1)))
-  $(KDIR)/$(1):
+  $(KDIR)/$(1): FORCE
+	rm -f $(KDIR)/$(1)
 	$$(call concat_cmd,$(COMPILE/$(1)))
 
 endef
@@ -536,17 +601,34 @@ define Device/Build/dtb
   $(KDIR)/image-$(1).dtb: FORCE
 	$(call Image/BuildDTB,$(strip $(2))/$(strip $(3)).dts,$$@)
 
-  image_prepare: $(KDIR)/image-$(1).dtb
+  compile-dtb: $(KDIR)/image-$(1).dtb
+  endif
+
+endef
+
+define Device/Build/dtbo
+  ifndef BUILD_DTSO_$(1)
+  BUILD_DTSO_$(1) := 1
+  $(KDIR)/image-$(1).dtbo: FORCE
+	$(call Image/BuildDTBO,$(strip $(2))/$(strip $(3)).dtso,$$@)
+
+  compile-dtb: $(KDIR)/image-$(1).dtbo
   endif
 
 endef
 endif
 
 define Device/Build/kernel
-  $$(eval $$(foreach dts,$$(DEVICE_DTS) $$(DEVICE_DTS_OVERLAY), \
+  $$(eval $$(foreach dts,$$(DEVICE_DTS), \
 	$$(call Device/Build/dtb,$$(notdir $$(dts)), \
 		$$(if $$(DEVICE_DTS_DIR),$$(DEVICE_DTS_DIR),$$(DTS_DIR)), \
 		$$(dts) \
+	) \
+  ))
+  $$(eval $$(foreach dtso,$$(DEVICE_DTS_OVERLAY), \
+	$$(call Device/Build/dtbo,$$(notdir $$(dtso)), \
+		$$(if $$(DEVICE_DTS_DIR),$$(DEVICE_DTS_DIR),$$(DTS_DIR)), \
+		$$(dtso) \
 	) \
   ))
 
@@ -599,11 +681,11 @@ define Device/Build/image
   $(BUILD_DIR)/json_info_files/$(call DEVICE_IMG_NAME,$(1),$(2)).json: $(BIN_DIR)/$(call DEVICE_IMG_NAME,$(1),$(2))$$(GZ_SUFFIX)
 	@mkdir -p $$(shell dirname $$@)
 	DEVICE_ID="$(DEVICE_NAME)" \
-	BIN_DIR="$(BIN_DIR)" \
 	SOURCE_DATE_EPOCH=$(SOURCE_DATE_EPOCH) \
-	DEVICE_IMG_NAME="$(DEVICE_IMG_NAME)" \
-	IMAGE_TYPE=$(word 1,$(subst ., ,$(2))) \
-	IMAGE_FILESYSTEM="$(1)" \
+	FILE_NAME="$(DEVICE_IMG_NAME)" \
+	FILE_DIR="$(KDIR)/tmp" \
+	FILE_TYPE=$(word 1,$(subst ., ,$(2))) \
+	FILE_FILESYSTEM="$(1)" \
 	DEVICE_IMG_PREFIX="$(DEVICE_IMG_PREFIX)" \
 	DEVICE_VENDOR="$(DEVICE_VENDOR)" \
 	DEVICE_MODEL="$(DEVICE_MODEL)" \
@@ -617,10 +699,19 @@ define Device/Build/image
 	DEVICE_ALT2_VENDOR="$(DEVICE_ALT2_VENDOR)" \
 	DEVICE_ALT2_MODEL="$(DEVICE_ALT2_MODEL)" \
 	DEVICE_ALT2_VARIANT="$(DEVICE_ALT2_VARIANT)" \
+	DEVICE_ALT3_VENDOR="$(DEVICE_ALT3_VENDOR)" \
+	DEVICE_ALT3_MODEL="$(DEVICE_ALT3_MODEL)" \
+	DEVICE_ALT3_VARIANT="$(DEVICE_ALT3_VARIANT)" \
+	DEVICE_ALT4_VENDOR="$(DEVICE_ALT4_VENDOR)" \
+	DEVICE_ALT4_MODEL="$(DEVICE_ALT4_MODEL)" \
+	DEVICE_ALT4_VARIANT="$(DEVICE_ALT4_VARIANT)" \
+	DEVICE_ALT5_VENDOR="$(DEVICE_ALT5_VENDOR)" \
+	DEVICE_ALT5_MODEL="$(DEVICE_ALT5_MODEL)" \
+	DEVICE_ALT5_VARIANT="$(DEVICE_ALT5_VARIANT)" \
 	DEVICE_TITLE="$(DEVICE_TITLE)" \
 	DEVICE_PACKAGES="$(DEVICE_PACKAGES)" \
 	TARGET="$(BOARD)" \
-	SUBTARGET="$(if $(SUBTARGET),$(SUBTARGET),generic)" \
+	SUBTARGET="$(SUBTARGET)" \
 	VERSION_NUMBER="$(VERSION_NUMBER)" \
 	VERSION_CODE="$(VERSION_CODE)" \
 	SUPPORTED_DEVICES="$(SUPPORTED_DEVICES)" \
@@ -629,7 +720,9 @@ define Device/Build/image
 endef
 
 define Device/Build/artifact
-  $$(_TARGET): $(BIN_DIR)/$(DEVICE_IMG_PREFIX)-$(1)
+  $$(_TARGET): $(if $(CONFIG_JSON_OVERVIEW_IMAGE_INFO), \
+	  $(BUILD_DIR)/json_info_files/$(DEVICE_IMG_PREFIX)-$(1).json, \
+	  $(BIN_DIR)/$(DEVICE_IMG_PREFIX)-$(1))
   $(eval $(call Device/Export,$(KDIR)/tmp/$(DEVICE_IMG_PREFIX)-$(1)))
   $(KDIR)/tmp/$(DEVICE_IMG_PREFIX)-$(1): $$(KDIR_KERNEL_IMAGE) $(2)-images
 	@rm -f $$@
@@ -639,6 +732,44 @@ define Device/Build/artifact
 
   $(BIN_DIR)/$(DEVICE_IMG_PREFIX)-$(1): $(KDIR)/tmp/$(DEVICE_IMG_PREFIX)-$(1)
 	cp $$^ $$@
+
+  $(BUILD_DIR)/json_info_files/$(DEVICE_IMG_PREFIX)-$(1).json: $(BIN_DIR)/$(DEVICE_IMG_PREFIX)-$(1)
+	@mkdir -p $$(shell dirname $$@)
+	DEVICE_ID="$(DEVICE_NAME)" \
+	SOURCE_DATE_EPOCH=$(SOURCE_DATE_EPOCH) \
+	FILE_NAME="$(DEVICE_IMG_PREFIX)-$(1)" \
+	FILE_DIR="$(KDIR)/tmp" \
+	FILE_TYPE="$(1)" \
+	DEVICE_IMG_PREFIX="$(DEVICE_IMG_PREFIX)" \
+	DEVICE_VENDOR="$(DEVICE_VENDOR)" \
+	DEVICE_MODEL="$(DEVICE_MODEL)" \
+	DEVICE_VARIANT="$(DEVICE_VARIANT)" \
+	DEVICE_ALT0_VENDOR="$(DEVICE_ALT0_VENDOR)" \
+	DEVICE_ALT0_MODEL="$(DEVICE_ALT0_MODEL)" \
+	DEVICE_ALT0_VARIANT="$(DEVICE_ALT0_VARIANT)" \
+	DEVICE_ALT1_VENDOR="$(DEVICE_ALT1_VENDOR)" \
+	DEVICE_ALT1_MODEL="$(DEVICE_ALT1_MODEL)" \
+	DEVICE_ALT1_VARIANT="$(DEVICE_ALT1_VARIANT)" \
+	DEVICE_ALT2_VENDOR="$(DEVICE_ALT2_VENDOR)" \
+	DEVICE_ALT2_MODEL="$(DEVICE_ALT2_MODEL)" \
+	DEVICE_ALT2_VARIANT="$(DEVICE_ALT2_VARIANT)" \
+	DEVICE_ALT3_VENDOR="$(DEVICE_ALT3_VENDOR)" \
+	DEVICE_ALT3_MODEL="$(DEVICE_ALT3_MODEL)" \
+	DEVICE_ALT3_VARIANT="$(DEVICE_ALT3_VARIANT)" \
+	DEVICE_ALT4_VENDOR="$(DEVICE_ALT4_VENDOR)" \
+	DEVICE_ALT4_MODEL="$(DEVICE_ALT4_MODEL)" \
+	DEVICE_ALT4_VARIANT="$(DEVICE_ALT4_VARIANT)" \
+	DEVICE_ALT5_VENDOR="$(DEVICE_ALT5_VENDOR)" \
+	DEVICE_ALT5_MODEL="$(DEVICE_ALT5_MODEL)" \
+	DEVICE_ALT5_VARIANT="$(DEVICE_ALT5_VARIANT)" \
+	DEVICE_TITLE="$(DEVICE_TITLE)" \
+	DEVICE_PACKAGES="$(DEVICE_PACKAGES)" \
+	TARGET="$(BOARD)" \
+	SUBTARGET="$(SUBTARGET)" \
+	VERSION_NUMBER="$(VERSION_NUMBER)" \
+	VERSION_CODE="$(VERSION_CODE)" \
+	SUPPORTED_DEVICES="$(SUPPORTED_DEVICES)" \
+	$(TOPDIR)/scripts/json_add_image_info.py $$@
 
 endef
 
@@ -672,6 +803,9 @@ $(if $(strip $(DEVICE_ALT0_TITLE)),Alternative device titles:
 - $(DEVICE_ALT0_TITLE))
 $(if $(strip $(DEVICE_ALT1_TITLE)),- $(DEVICE_ALT1_TITLE))
 $(if $(strip $(DEVICE_ALT2_TITLE)),- $(DEVICE_ALT2_TITLE))
+$(if $(strip $(DEVICE_ALT3_TITLE)),- $(DEVICE_ALT3_TITLE))
+$(if $(strip $(DEVICE_ALT4_TITLE)),- $(DEVICE_ALT4_TITLE))
+$(if $(strip $(DEVICE_ALT5_TITLE)),- $(DEVICE_ALT5_TITLE))
 @@
 
 endef
@@ -687,6 +821,18 @@ $$(info $$(call Device/DumpInfo,$(1)))
 endif
 ifneq ($$(strip $$(DEVICE_ALT2_TITLE)),)
 DEVICE_DISPLAY = $$(DEVICE_ALT2_TITLE) ($$(DEVICE_TITLE))
+$$(info $$(call Device/DumpInfo,$(1)))
+endif
+ifneq ($$(strip $$(DEVICE_ALT3_TITLE)),)
+DEVICE_DISPLAY = $$(DEVICE_ALT3_TITLE) ($$(DEVICE_TITLE))
+$$(info $$(call Device/DumpInfo,$(1)))
+endif
+ifneq ($$(strip $$(DEVICE_ALT4_TITLE)),)
+DEVICE_DISPLAY = $$(DEVICE_ALT4_TITLE) ($$(DEVICE_TITLE))
+$$(info $$(call Device/DumpInfo,$(1)))
+endif
+ifneq ($$(strip $$(DEVICE_ALT5_TITLE)),)
+DEVICE_DISPLAY = $$(DEVICE_ALT5_TITLE) ($$(DEVICE_TITLE))
 $$(info $$(call Device/DumpInfo,$(1)))
 endif
 DEVICE_DISPLAY = $$(DEVICE_TITLE)
@@ -714,24 +860,27 @@ define BuildImage
   download:
   prepare:
   compile:
+  compile-dtb:
   clean:
   image_prepare:
 
   ifeq ($(IB),)
-    .PHONY: download prepare compile clean image_prepare kernel_prepare install install-images
+    .PHONY: download prepare compile compile-dtb clean image_prepare kernel_prepare install install-images
     compile:
 		$(call Build/Compile)
 
     clean:
 		$(call Build/Clean)
 
-    image_prepare: compile
+    compile-dtb:
+    image_prepare: compile compile-dtb
 		mkdir -p $(BIN_DIR) $(KDIR)/tmp
 		rm -rf $(BUILD_DIR)/json_info_files
 		$(call Image/Prepare)
 
   else
     image_prepare:
+		rm -rf $(KDIR)/tmp
 		mkdir -p $(BIN_DIR) $(KDIR)/tmp
   endif
 

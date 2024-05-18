@@ -21,7 +21,6 @@ DEFAULT_PACKAGES:=\
 	logd \
 	mtd \
 	netifd \
-	opkg \
 	uci \
 	uclient-fetch \
 	urandom-seed \
@@ -56,6 +55,12 @@ DEFAULT_PACKAGES:=\
 	ddns-scripts_aliyun \
 	ddns-scripts_dnspod \
 	bind-host
+
+ifdef CONFIG_USE_APK
+DEFAULT_PACKAGES+=apk
+else
+DEFAULT_PACKAGES+=opkg
+endif
 
 ifneq ($(CONFIG_SELINUX),)
 DEFAULT_PACKAGES+=busybox-selinux procd-selinux
