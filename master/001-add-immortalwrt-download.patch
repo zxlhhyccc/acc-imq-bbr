@@ -20,7 +20,7 @@
  	} elsif ($mirror =~ /^\@DEBIAN\/(.+)$/) {
  		push @mirrors, "https://ftp.debian.org/debian/$1";
  		push @mirrors, "https://mirror.leaseweb.com/debian/$1";
-@@ -315,6 +317,11 @@ foreach my $mirror (@ARGV) {
+@@ -317,6 +319,11 @@ foreach my $mirror (@ARGV) {
  	}
  }
  
