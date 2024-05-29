@@ -82,7 +82,15 @@
    TITLE:=Solarflare SFC9000/SFC9100/EF100-family support
 --- a/modules/netfilter.mk
 +++ b/modules/netfilter.mk
-@@ -514,6 +514,24 @@ endef
+@@ -312,6 +312,7 @@ $(eval $(call KernelPackage,ipt-offload))
+ define KernelPackage/ipt-ipopt
+   TITLE:=Modules for matching/changing IP packet options
+   KCONFIG:=$(KCONFIG_IPT_IPOPT)
++  DEPENDS:=+PACKAGE_kmod-nf-conntrack:kmod-nf-conntrack
+   FILES:=$(foreach mod,$(IPT_IPOPT-m),$(LINUX_DIR)/net/$(mod).ko)
+   AUTOLOAD:=$(call AutoProbe,$(notdir $(IPT_IPOPT-m)))
+   $(call AddDepends/ipt)
+@@ -514,6 +515,24 @@ endef
  $(eval $(call KernelPackage,ipt-nat))
  
  
@@ -107,7 +115,7 @@
  define KernelPackage/ipt-raw
    TITLE:=Netfilter IPv4 raw table support
    KCONFIG:=CONFIG_IP_NF_RAW
-@@ -525,6 +543,75 @@ endef
+@@ -525,6 +544,75 @@ endef
  $(eval $(call KernelPackage,ipt-raw))
  
  
