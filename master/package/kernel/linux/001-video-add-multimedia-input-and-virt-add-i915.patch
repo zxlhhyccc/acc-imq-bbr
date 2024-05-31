@@ -1,6 +1,6 @@
 --- a/modules/video.mk
 +++ b/modules/video.mk
-@@ -244,12 +244,51 @@ endef
+@@ -245,12 +245,51 @@ endef
  $(eval $(call KernelPackage,fb-tft-ili9486))
  
  
@@ -53,7 +53,7 @@
    KCONFIG:=CONFIG_DRM
    FILES:= \
  	$(LINUX_DIR)/drivers/gpu/drm/drm.ko \
-@@ -482,12 +521,44 @@ endef
+@@ -483,12 +522,44 @@ endef
  
  $(eval $(call KernelPackage,drm-imx-ldb))
  
@@ -99,7 +99,7 @@
    KCONFIG:=CONFIG_DRM_RADEON
    FILES:=$(LINUX_DIR)/drivers/gpu/drm/radeon/radeon.ko
    AUTOLOAD:=$(call AutoProbe,radeon)
-@@ -499,6 +570,39 @@ endef
+@@ -500,6 +571,39 @@ endef
  
  $(eval $(call KernelPackage,drm-radeon))
  
@@ -139,7 +139,7 @@
  #
  # Video Capture
  #
-@@ -506,7 +610,8 @@ $(eval $(call KernelPackage,drm-radeon))
+@@ -507,7 +611,8 @@ $(eval $(call KernelPackage,drm-radeon))
  define KernelPackage/video-core
    SUBMENU:=$(VIDEO_MENU)
    TITLE=Video4Linux support
@@ -149,7 +149,7 @@
    KCONFIG:= \
  	CONFIG_MEDIA_SUPPORT \
  	CONFIG_MEDIA_CAMERA_SUPPORT=y \
-@@ -515,7 +620,7 @@ define KernelPackage/video-core
+@@ -516,7 +621,7 @@ define KernelPackage/video-core
  	CONFIG_MEDIA_PLATFORM_DRIVERS=y@ge6.1
    FILES:= \
  	$(LINUX_DIR)/drivers/media/$(V4L2_DIR)/videodev.ko
@@ -158,7 +158,7 @@
  endef
  
  define KernelPackage/video-core/description
-@@ -1246,3 +1351,40 @@ define KernelPackage/video-tw686x/description
+@@ -1247,3 +1352,40 @@ define KernelPackage/video-tw686x/description
  endef
  
  $(eval $(call KernelPackage,video-tw686x))
