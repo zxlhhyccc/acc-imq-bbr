@@ -26,19 +26,19 @@
  	option target		REJECT
  	option enabled		false
  
-+config rule 'wan_ssh_allow'
-+	option name		Allow SSH from WAN
++config rule
++	option name		Allow-SSH-from-WAN
 +	option src		wan
 +	option proto		tcp
 +	option dest_port	22
 +	option target		ACCEPT
 +	option enabled		false
 +
-+config rule 'wan_https_allow'
-+	option name		Allow HTTP, HTTPS from WAN
++config rule
++	option name		Allow-HTTP/HTTPS-from-WAN
 +	option src		wan
 +	option proto		tcp
-+	option dest_port	80 443
++	option dest_port	'80 443'
 +	option target		ACCEPT
 +	option enabled		false
 +
