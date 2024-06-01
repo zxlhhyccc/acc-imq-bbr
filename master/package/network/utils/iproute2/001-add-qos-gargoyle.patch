@@ -1,6 +1,14 @@
 --- a/Makefile
 +++ b/Makefile
-@@ -205,6 +205,10 @@ define Build/InstallDev
+@@ -168,6 +168,7 @@ endef
+ 
+ TARGET_LDFLAGS += -Wl,--as-needed
+ TARGET_CPPFLAGS += -I$(STAGING_DIR)/usr/include/libnl-tiny
++TARGET_CFLAGS += -Wno-error=incompatible-pointer-types
+ 
+ MAKE_FLAGS += \
+ 	KERNEL_INCLUDE="$(LINUX_DIR)/include/uapi" \
+@@ -198,6 +199,10 @@ define Build/InstallDev
  	$(CP) $(PKG_BUILD_DIR)/include/{libgenl,libnetlink}.h $(1)/usr/include/
  	$(INSTALL_DIR) $(1)/usr/lib
  	$(CP) $(PKG_BUILD_DIR)/lib/libnetlink.a $(1)/usr/lib/
