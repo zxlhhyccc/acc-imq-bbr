@@ -1,12 +1,12 @@
 --- /dev/null
 +++ b/patches/400-add-nss-qdisc.patch
-@@ -0,0 +1,2093 @@
+@@ -0,0 +1,2092 @@
 +--- a/include/uapi/linux/pkt_sched.h
 ++++ b/include/uapi/linux/pkt_sched.h
 +@@ -119,6 +119,251 @@ enum {
-+
++ 
 + #define TCA_STAB_MAX (__TCA_STAB_MAX - 1)
-+
++ 
 ++enum {
 ++	TCA_NSS_ACCEL_MODE_NSS_FW,
 ++	TCA_NSS_ACCEL_MODE_PPE,
@@ -253,7 +253,7 @@
 ++
 ++
 + /* FIFO section */
-+
++ 
 + struct tc_fifo_qopt {
 +--- a/tc/Makefile
 ++++ b/tc/Makefile
@@ -267,7 +267,7 @@
 + 
 +--- /dev/null
 ++++ b/tc/q_nss.c
-+@@ -0,0 +1,1826 @@
++@@ -0,0 +1,1825 @@
 ++/*
 ++ **************************************************************************
 ++ * Copyright (c) 2015, 2018 The Linux Foundation. All rights reserved.
@@ -313,7 +313,7 @@
 ++	fprintf(stderr, "            nsswred limit BYTES DP NUMBER min BYTES max BYTES avpkt BYTES dscp NUMBER [ probability VALUE ] [ burst PACKETS ]\n");
 ++}
 ++
-++static int nsswred_setup(struct qdisc_util *qu, int argc, char **argv, struct nlmsghdr *n)
+++static int nsswred_setup(const struct qdisc_util *qu, int argc, char **argv, struct nlmsghdr *n)
 ++{
 ++	struct rtattr *tail;
 ++	struct tc_nsswred_qopt opt;
@@ -388,7 +388,7 @@
 ++	return 0;
 ++}
 ++
-++static int nsswred_parse_opt(struct qdisc_util *qu, int argc, char **argv, struct nlmsghdr *n)
+++static int nsswred_parse_opt(const struct qdisc_util *qu, int argc, char **argv, struct nlmsghdr *n, const char *dev)
 ++{
 ++	struct rtattr *tail;
 ++	struct tc_nsswred_qopt opt;
@@ -537,7 +537,7 @@
 ++	return 0;
 ++}
 ++
-++static int nsswred_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+++static int nsswred_print_opt(const struct qdisc_util *qu, FILE *f, struct rtattr *opt)
 ++{
 ++	struct rtattr *tb[TCA_NSSWRED_MAX + 1];
 ++	struct tc_nsswred_qopt *qopt;
@@ -605,7 +605,7 @@
 ++	fprintf(stderr, "Usage: ...  nsspfifo [ limit PACKETS ] [ set_default ] [ accel_mode ]\n");
 ++}
 ++
-++static int nssfifo_parse_opt(struct qdisc_util *qu, int argc, char **argv, struct nlmsghdr *n)
+++static int nssfifo_parse_opt(const struct qdisc_util *qu, int argc, char **argv, struct nlmsghdr *n, const char *dev)
 ++{
 ++	struct rtattr *tail;
 ++	struct tc_nssfifo_qopt opt;
@@ -655,7 +655,7 @@
 ++	return 0;
 ++}
 ++
-++static int nssfifo_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+++static int nssfifo_print_opt(const struct qdisc_util *qu, FILE *f, struct rtattr *opt)
 ++{
 ++	struct rtattr *tb[TCA_NSSFIFO_MAX + 1];
 ++	struct tc_nssfifo_qopt *qopt;
@@ -712,7 +712,7 @@
 ++	fprintf(stderr, "Value of target and interval should be greater than 1ms\n");
 ++}
 ++
-++static int nssfq_codel_parse_opt(struct qdisc_util *qu, int argc, char **argv, struct nlmsghdr *n)
+++static int nssfq_codel_parse_opt(const struct qdisc_util *qu, int argc, char **argv, struct nlmsghdr *n, const char *dev)
 ++{
 ++	struct rtattr *tail;
 ++	struct tc_nsscodel_qopt opt;
@@ -800,7 +800,7 @@
 ++	return 0;
 ++}
 ++
-++static int nssfq_codel_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+++static int nssfq_codel_print_opt(const struct qdisc_util *qu, FILE *f, struct rtattr *opt)
 ++{
 ++	struct rtattr *tb[TCA_NSSCODEL_MAX + 1];
 ++	struct tc_nsscodel_qopt *qopt;
@@ -838,7 +838,7 @@
 ++	return 0;
 ++}
 ++
-++static int nssfq_codel_print_xstats(struct qdisc_util *qu, FILE *f, struct rtattr *xstats)
+++static int nssfq_codel_print_xstats(const struct qdisc_util *qu, FILE *f, struct rtattr *xstats)
 ++{
 ++	struct tc_nssfq_codel_xstats *st;
 ++
@@ -875,7 +875,7 @@
 ++	fprintf(stderr, "Value of target and interval should be greater than 1ms\n");
 ++}
 ++
-++static int nsscodel_parse_opt(struct qdisc_util *qu, int argc, char **argv, struct nlmsghdr *n)
+++static int nsscodel_parse_opt(const struct qdisc_util *qu, int argc, char **argv, struct nlmsghdr *n, const char *dev)
 ++{
 ++	struct rtattr *tail;
 ++	struct tc_nsscodel_qopt opt;
@@ -947,7 +947,7 @@
 ++	return 0;
 ++}
 ++
-++static int nsscodel_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+++static int nsscodel_print_opt(const struct qdisc_util *qu, FILE *f, struct rtattr *opt)
 ++{
 ++	struct rtattr *tb[TCA_NSSCODEL_MAX + 1];
 ++	struct tc_nsscodel_qopt *qopt;
@@ -980,7 +980,7 @@
 ++	return 0;
 ++}
 ++
-++static int nsscodel_print_xstats(struct qdisc_util *qu, FILE *f, struct rtattr *xstats)
+++static int nsscodel_print_xstats(const struct qdisc_util *qu, FILE *f, struct rtattr *xstats)
 ++{
 ++	struct tc_nsscodel_xstats *st;
 ++
@@ -1011,7 +1011,7 @@
 ++	fprintf(stderr, "Usage: ... nsstbl burst BYTES rate BPS [ mtu BYTES ] [ accel_mode ]\n");
 ++}
 ++
-++static int nsstbl_parse_opt(struct qdisc_util *qu, int argc, char **argv, struct nlmsghdr *n)
+++static int nsstbl_parse_opt(const struct qdisc_util *qu, int argc, char **argv, struct nlmsghdr *n, const char *dev)
 ++{
 ++	int ok = 0;
 ++	struct rtattr *tail;
@@ -1111,7 +1111,7 @@
 ++	return 0;
 ++}
 ++
-++static int nsstbl_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+++static int nsstbl_print_opt(const struct qdisc_util *qu, FILE *f, struct rtattr *opt)
 ++{
 ++	struct rtattr *tb[TCA_NSSTBL_MAX + 1];
 ++	struct tc_nsstbl_qopt *qopt;
@@ -1150,7 +1150,7 @@
 ++	fprintf(stderr, "Usage: ... nssprio [ bands NUMBER (default 256) ] [ accel_mode ]\n");
 ++}
 ++
-++static int nssprio_parse_opt(struct qdisc_util *qu, int argc, char **argv, struct nlmsghdr *n)
+++static int nssprio_parse_opt(const struct qdisc_util *qu, int argc, char **argv, struct nlmsghdr *n, const char *dev)
 ++{
 ++	int ok = 0;
 ++	struct rtattr *tail;
@@ -1207,7 +1207,7 @@
 ++	return 0;
 ++}
 ++
-++static int nssprio_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+++static int nssprio_print_opt(const struct qdisc_util *qu, FILE *f, struct rtattr *opt)
 ++{
 ++	struct rtattr *tb[TCA_NSSPRIO_MAX + 1];
 ++	struct tc_nssprio_qopt *qopt;
@@ -1257,7 +1257,7 @@
 ++	fprintf(stderr, "NSSBF: Illegal \"%s\"\n", arg);
 ++}
 ++
-++static int nssbf_parse_opt(struct qdisc_util *qu, int argc, char **argv, struct nlmsghdr *n)
+++static int nssbf_parse_opt(const struct qdisc_util *qu, int argc, char **argv, struct nlmsghdr *n, const char *dev)
 ++{
 ++	struct tc_nssbf_qopt opt;
 ++	struct rtattr *tail;
@@ -1309,7 +1309,7 @@
 ++	return 0;
 ++}
 ++
-++static int nssbf_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+++static int nssbf_print_opt(const struct qdisc_util *qu, FILE *f, struct rtattr *opt)
 ++{
 ++	struct rtattr *tb[TCA_NSSBF_MAX + 1];
 ++	struct tc_nssbf_qopt *qopt;
@@ -1332,7 +1332,7 @@
 ++	return 0;
 ++}
 ++
-++static int nssbf_parse_class_opt(struct qdisc_util *qu, int argc, char **argv, struct nlmsghdr *n)
+++static int nssbf_parse_class_opt(const struct qdisc_util *qu, int argc, char **argv, struct nlmsghdr *n, const char *dev)
 ++{
 ++	int ok = 0;
 ++	struct rtattr *tail;
@@ -1416,7 +1416,7 @@
 ++	return 0;
 ++}
 ++
-++static int nssbf_print_class_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+++static int nssbf_print_class_opt(const struct qdisc_util *qu, FILE *f, struct rtattr *opt)
 ++{
 ++	struct rtattr *tb[TCA_NSSBF_MAX + 1];
 ++	struct tc_nssbf_class_qopt *qopt;
@@ -1462,7 +1462,7 @@
 ++	fprintf(stderr, "Usage (class): ... nsswrr quantum PACKETS ]\n");
 ++}
 ++
-++static int nsswrr_parse_opt(struct qdisc_util *qu, int argc, char **argv, struct nlmsghdr *n)
+++static int nsswrr_parse_opt(const struct qdisc_util *qu, int argc, char **argv, struct nlmsghdr *n, const char *dev)
 ++{
 ++	struct tc_nsswrr_qopt opt;
 ++	bool accel_mode = false;
@@ -1504,7 +1504,7 @@
 ++	return 0;
 ++}
 ++
-++static int nsswrr_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+++static int nsswrr_print_opt(const struct qdisc_util *qu, FILE *f, struct rtattr *opt)
 ++{
 ++	struct rtattr *tb[TCA_NSSWRR_MAX + 1];
 ++	struct tc_nsswrr_qopt *qopt;
@@ -1526,7 +1526,7 @@
 ++	return 0;
 ++}
 ++
-++static int nsswrr_parse_class_opt(struct qdisc_util *qu, int argc, char **argv, struct nlmsghdr *n)
+++static int nsswrr_parse_class_opt(const struct qdisc_util *qu, int argc, char **argv, struct nlmsghdr *n, const char *dev)
 ++{
 ++	int ok = 0;
 ++	struct rtattr *tail;
@@ -1566,7 +1566,7 @@
 ++	return 0;
 ++}
 ++
-++static int nsswrr_print_class_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+++static int nsswrr_print_class_opt(const struct qdisc_util *qu, FILE *f, struct rtattr *opt)
 ++{
 ++	struct rtattr *tb[TCA_NSSWRR_MAX + 1];
 ++	struct tc_nsswrr_class_qopt *qopt;
@@ -1608,7 +1608,7 @@
 ++	fprintf(stderr, "Usage (class): ... nsswfq quantum BYTES ]\n");
 ++}
 ++
-++static int nsswfq_parse_opt(struct qdisc_util *qu, int argc, char **argv, struct nlmsghdr *n)
+++static int nsswfq_parse_opt(const struct qdisc_util *qu, int argc, char **argv, struct nlmsghdr *n, const char *dev)
 ++{
 ++	struct tc_nsswfq_qopt opt;
 ++	bool accel_mode = false;
@@ -1650,7 +1650,7 @@
 ++	return 0;
 ++}
 ++
-++static int nsswfq_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+++static int nsswfq_print_opt(const struct qdisc_util *qu, FILE *f, struct rtattr *opt)
 ++{
 ++	struct rtattr *tb[TCA_NSSWFQ_MAX + 1];
 ++	struct tc_nsswfq_qopt *qopt;
@@ -1672,7 +1672,7 @@
 ++	return 0;
 ++}
 ++
-++static int nsswfq_parse_class_opt(struct qdisc_util *qu, int argc, char **argv, struct nlmsghdr *n)
+++static int nsswfq_parse_class_opt(const struct qdisc_util *qu, int argc, char **argv, struct nlmsghdr *n, const char *dev)
 ++{
 ++	int ok = 0;
 ++	struct rtattr *tail;
@@ -1712,7 +1712,7 @@
 ++	return 0;
 ++}
 ++
-++static int nsswfq_print_class_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+++static int nsswfq_print_class_opt(const struct qdisc_util *qu, FILE *f, struct rtattr *opt)
 ++{
 ++	struct rtattr *tb[TCA_NSSWFQ_MAX + 1];
 ++	struct tc_nsswfq_class_qopt *qopt;
@@ -1764,7 +1764,7 @@
 ++	fprintf(stderr, "NSSHTB: Illegal \"%s\"\n", arg);
 ++}
 ++
-++static int nsshtb_parse_opt(struct qdisc_util *qu, int argc, char **argv, struct nlmsghdr *n)
+++static int nsshtb_parse_opt(const struct qdisc_util *qu, int argc, char **argv, struct nlmsghdr *n, const char *dev)
 ++{
 ++	struct tc_nsshtb_qopt opt;
 ++	struct rtattr *tail;
@@ -1816,7 +1816,7 @@
 ++	return 0;
 ++}
 ++
-++static int nsshtb_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+++static int nsshtb_print_opt(const struct qdisc_util *qu, FILE *f, struct rtattr *opt)
 ++{
 ++	struct rtattr *tb[TCA_NSSHTB_MAX + 1];
 ++	struct tc_nsshtb_qopt *qopt;
@@ -1842,7 +1842,7 @@
 ++	return 0;
 ++}
 ++
-++static int nsshtb_parse_class_opt(struct qdisc_util *qu, int argc, char **argv, struct nlmsghdr *n)
+++static int nsshtb_parse_class_opt(const struct qdisc_util *qu, int argc, char **argv, struct nlmsghdr *n, const char *dev)
 ++{
 ++	int ok = 0;
 ++	struct rtattr *tail;
@@ -1974,11 +1974,10 @@
 ++	return 0;
 ++}
 ++
-++static int nsshtb_print_class_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+++static int nsshtb_print_class_opt(const struct qdisc_util *qu, FILE *f, struct rtattr *opt)
 ++{
 ++	struct rtattr *tb[TCA_NSSHTB_MAX + 1];
 ++	struct tc_nsshtb_class_qopt *qopt;
-++	SPRINT_BUF(b1);
 ++
 ++	if (opt == NULL)
 ++		return 0;
@@ -2019,7 +2018,7 @@
 ++	fprintf(stderr, "Usage: ...  nssblackhole [ set_default ] [ accel_mode ]\n");
 ++}
 ++
-++static int nssblackhole_parse_opt(struct qdisc_util *qu, int argc, char **argv, struct nlmsghdr *n)
+++static int nssblackhole_parse_opt(const struct qdisc_util *qu, int argc, char **argv, struct nlmsghdr *n, const char *dev)
 ++{
 ++	struct rtattr *tail;
 ++	struct tc_nssblackhole_qopt opt;
@@ -2063,7 +2062,7 @@
 ++	return 0;
 ++}
 ++
-++static int nssblackhole_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+++static int nssblackhole_print_opt(const struct qdisc_util *qu, FILE *f, struct rtattr *opt)
 ++{
 ++	struct rtattr *tb[TCA_NSSBLACKHOLE_MAX + 1];
 ++	struct tc_nssblackhole_qopt *qopt;
@@ -2094,9 +2093,6 @@
 ++	.parse_qopt	= nssblackhole_parse_opt,
 ++	.print_qopt	= nssblackhole_print_opt,
 ++};
-diff --git a/patches/500-add-nssmirred.patch b/patches/500-add-nssmirred.patch
-new file mode 100644
-index 0000000..d5b0d23
 --- /dev/null
 +++ b/patches/500-add-nssmirred.patch
 @@ -0,0 +1,243 @@
@@ -2170,7 +2166,7 @@ index 0000000..d5b0d23
 ++ * parse_nss_mirred()
 ++ *	Parse and validate the nssmirred action statement.
 ++ */
-++static int parse_nss_mirred(struct action_util *a, int *argc_p, char ***argv_p,
+++static int parse_nss_mirred(const struct action_util *a, int *argc_p, char ***argv_p,
 ++	     int tca_id, struct nlmsghdr *n)
 ++{
 ++	int idx, argc = *argc_p;
@@ -2244,7 +2240,7 @@ index 0000000..d5b0d23
 ++ * print_nss_mirred()
 ++ *	Print information related to nssmirred action.
 ++ */
-++static int print_nss_mirred(struct action_util *au, FILE * f, struct rtattr *arg)
+++static int print_nss_mirred(const struct action_util *au, FILE * f, struct rtattr *arg)
 ++{
 ++	struct tc_nss_mirred *p;
 ++	struct rtattr *tb[TCA_NSS_MIRRED_MAX + 1];
