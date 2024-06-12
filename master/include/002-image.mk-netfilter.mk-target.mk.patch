@@ -1,5 +1,3 @@
-diff --git a/netfilter.mk b/netfilter.mk
-index 803749d..6b58776 100644
 --- a/netfilter.mk
 +++ b/netfilter.mk
 @@ -106,6 +106,18 @@ $(eval $(call nf_add,IPT_FILTER,CONFIG_NETFILTER_XT_MATCH_STRING, $(P_XT)xt_stri
@@ -21,26 +19,23 @@ index 803749d..6b58776 100644
  # ipopt
  
  $(eval $(call nf_add,IPT_IPOPT,CONFIG_NETFILTER_XT_MATCH_DSCP, $(P_XT)xt_dscp))
-diff --git a/target.mk b/target.mk
-index a2e76f8..8451582 100644
 --- a/target.mk
 +++ b/target.mk
-@@ -17,7 +17,7 @@ DEFAULT_PACKAGES:=\
+@@ -27,14 +27,44 @@ DEFAULT_PACKAGES:=\
  	fstools \
  	libc \
  	libgcc \
--	libustream-wolfssl \
+-	libustream-mbedtls \
 +	libustream-openssl \
  	logd \
  	mtd \
  	netifd \
-@@ -25,7 +25,37 @@ DEFAULT_PACKAGES:=\
++	opkg \
  	uci \
  	uclient-fetch \
  	urandom-seed \
 -	urngd
 +	urngd \
-+	netifd \
 +	coremark \
 +	coreutils \
 +	kmod-nf-nathelper \
@@ -60,7 +55,7 @@ index a2e76f8..8451582 100644
 +	luci-app-upnp \
 +	luci-app-autorebootschedule \
 +	luci-app-vsftpd \
-+	luci-app-ssr-plus-mosdns \
++	luci-app-ssr-plus \
 +	luci-app-arpbind \
 +	luci-app-control-vlmcsd \
 +	luci-app-wol \
@@ -71,9 +66,9 @@ index a2e76f8..8451582 100644
 +	ddns-scripts_dnspod \
 +	bind-host
  
- ifneq ($(CONFIG_SELINUX),)
- DEFAULT_PACKAGES+=busybox-selinux procd-selinux
-@@ -50,13 +80,15 @@ DEFAULT_PACKAGES.nas:=\
+ ifneq ($(CONFIG_USE_APK),)
+ DEFAULT_PACKAGES+=apk-mbedtls
+@@ -65,13 +95,16 @@ DEFAULT_PACKAGES.nas:=\
  	block-mount \
  	fdisk \
  	lsblk \
@@ -91,6 +86,7 @@ index a2e76f8..8451582 100644
 +	firewall \
 +	ip6tables \
 +	iptables \
++	kmod-ipt-offload \
  	odhcp6c \
  	odhcpd-ipv6only \
  	ppp \
