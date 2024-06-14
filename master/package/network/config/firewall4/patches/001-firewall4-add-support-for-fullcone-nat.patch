@@ -8,7 +8,7 @@
 +	+kmod-nft-nat +kmod-nft-fullcone \
  	+nftables-json \
  	+ucode +ucode-mod-fs +ucode-mod-ubus +ucode-mod-uci
-   EXTRA_DEPENDS:=ucode (>= 2022-03-22)
+   EXTRA_DEPENDS:=ucode (>=2022.03.22)
 --- /dev/null
 +++ b/patches/001-firewall4-add-support-for-fullcone-nat.patch
 @@ -0,0 +1,216 @@
