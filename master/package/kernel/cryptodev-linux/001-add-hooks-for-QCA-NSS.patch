@@ -1,6 +1,6 @@
 --- a/Makefile
 +++ b/Makefile
-@@ -41,13 +41,22 @@ define KernelPackage/cryptodev/description
+@@ -40,13 +40,22 @@ define KernelPackage/cryptodev/description
    hardware ciphers by user-space applications.
  endef
  
