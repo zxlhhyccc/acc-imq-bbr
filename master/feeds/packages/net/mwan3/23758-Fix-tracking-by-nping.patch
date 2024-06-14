@@ -8,10 +8,10 @@ Signed-off-by: Shogo Yamazaki <pgp@mocknen.net>
  net/mwan3/files/usr/sbin/mwan3track | 5 +++--
  1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/net/mwan3/files/usr/sbin/mwan3track b/net/mwan3/files/usr/sbin/mwan3track
+diff --git a/files/usr/sbin/mwan3track b/files/usr/sbin/mwan3track
 index 162bdbb7d5599..95e958b5dbc1d 100755
---- a/net/mwan3/files/usr/sbin/mwan3track
-+++ b/net/mwan3/files/usr/sbin/mwan3track
+--- a/files/usr/sbin/mwan3track
++++ b/files/usr/sbin/mwan3track
 @@ -304,10 +304,11 @@ main() {
  						result=$?
  					;;
