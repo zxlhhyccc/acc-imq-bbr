@@ -1,0 +1,29 @@
+From 462b0e7ce7cadef5c14bb16134e43573b169c9b5 Mon Sep 17 00:00:00 2001
+From: Christian Marangi <ansuelsmth@gmail.com>
+Date: Wed, 14 Jun 2023 09:44:29 +0200
+Subject: [PATCH 4/4] wifi: ath11k: add support for QAM-256 in 2.4GHz 802.11n
+
+Ath11k supports non-standard QAM-256 in 2.4GHz in 802.11n. Permit for
+supported client to benefits from these extra bandwidth by enabling
+support for it.
+
+Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+---
+ drivers/net/wireless/ath/ath11k/mac.c | 1 +
+ 1 files changed, 1 insertions(+)
+
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index c947d1c8d8c1..1cadfdd50afc 100644
+--- a/drivers/net/wireless/ath/ath11k/mac.c
++++ b/drivers/net/wireless/ath/ath11k/mac.c
+@@ -5762,6 +5762,7 @@ static void ath11k_mac_setup_ht_vht_cap(struct ath11k *ar,
+ 
+ 		band->vht_cap = ath11k_create_vht_cap(ar, rate_cap_tx_chainmask,
+ 						    rate_cap_rx_chainmask);
++		band->vht_cap.vendor_qam256_supported = true;
+ 	}
+ 
+ 	if (cap->supported_bands & WMI_HOST_WLAN_5G_CAP &&
+-- 
+2.40.1
+
