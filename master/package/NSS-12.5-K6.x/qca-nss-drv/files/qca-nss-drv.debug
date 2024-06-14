@@ -1,0 +1,42 @@
+#!/bin/sh
+# shellcheck disable=2046
+###############################################################################
+# QCA NSS Driver Debug Script
+# version 20240228
+#
+# Requires: NSS Driver 12.1+
+# Usage: /lib/debug/qca-nss-drv (no arguments)
+# Description: Display non-zero NSS statistics with color highlighting
+#             (requires a terminal that supports ANSI escape codes)
+#
+# Maintainer: Qosmio (https://forum.openwrt.org/u/qosmio)
+# NSS Packages Repository: https://github.com/qosmio/nss-packages (branch: NSS-12.4-K6.1)
+#
+
+current=$(sysctl -q -n dev.nss.stats.non_zero_stats)
+sysctl -q dev.nss.stats.non_zero_stats=1
+
+awk '
+function color(c, s) {
+    if ($3 > 0) {
+        if ($4 == "error")           c = 1
+        else if ($4 == "special")    c = 6
+        else if ($4 ~ /drop|common/) c = 3
+        else if ($4 == "port")       c = 0
+        else if ($4 == "exception")  c = 5
+        printf("\033[%d;%d;40m%s\033[0m\n", 1, 30 + c, s)
+        next
+    }
+    print
+}
+{
+    color(0, $0)
+}' $(grep -lrE "= [1-9]+" /sys/kernel/debug/qca-nss-drv/stats)
+
+echo ""
+echo "________________________________________________________________________________"
+echo ""
+cat /sys/kernel/debug/qca-nss-drv/stats/cpu_load_ubi
+echo "________________________________________________________________________________"
+
+sysctl -q dev.nss.stats.non_zero_stats="$current"
