@@ -49,6 +49,8 @@ platform_do_upgrade() {
 	dynalink,dl-wrx36|\
 	edimax,cax1800|\
 	netgear,rax120v2|\
+	netgear,sxr80|\
+	netgear,sxs80|\
 	netgear,wax218|\
 	netgear,wax620|\
 	netgear,wax630)
@@ -76,7 +78,8 @@ platform_do_upgrade() {
 		;;
 	linksys,mx4200v1|\
 	linksys,mx4200v2|\
-	linksys,mx5300)
+	linksys,mx5300|\
+	linksys,mx8500)
 		boot_part="$(fw_printenv -n boot_part)"
 		if [ "$boot_part" -eq "1" ]; then
 			fw_setenv boot_part 2
@@ -91,7 +94,8 @@ platform_do_upgrade() {
 		nand_do_upgrade "$1"
 		;;
 	prpl,haze|\
-	qnap,301w)
+	qnap,301w|\
+	spectrum,sax1v1k)
 		kernelname="0:HLOS"
 		rootfsname="rootfs"
 		mmc_do_upgrade "$1"
@@ -153,6 +157,18 @@ platform_do_upgrade() {
 		# force altbootcmd which handles partition change in u-boot
 		fw_setenv bootcount 3
 		fw_setenv upgrade_available 1
+		nand_do_upgrade "$1"
+		;;
+	zbtlink,zbt-z800ax)
+		local mtdnum="$(find_mtd_index 0:bootconfig)"
+		local alt_mtdnum="$(find_mtd_index 0:bootconfig1)"
+		part_num="$(hexdump -e '1/1 "%01x|"' -n 1 -s 168 -C /dev/mtd$mtdnum | cut -f 1 -d "|" | head -n1)"
+		# vendor firmware may swap the rootfs partition location, u-boot append: ubi.mtd=rootfs
+		# since we use fixed-partitions, need to force boot from the first rootfs partition
+		if [ "$part_num" -eq "1" ]; then
+			mtd erase /dev/mtd$mtdnum
+			mtd erase /dev/mtd$alt_mtdnum
+		fi
 		nand_do_upgrade "$1"
 		;;
 	zte,mf269-factory)

@@ -1,0 +1,27 @@
+--- a/net/ipv4/udp_offload.c
++++ b/net/ipv4/udp_offload.c
+@@ -516,6 +516,15 @@ static struct sk_buff *udp_gro_receive_s
+ 	return NULL;
+ }
+ 
++static bool udp_gro_use_fraglist(struct sk_buff *skb, struct sock *sk)
++{
++	if (sk)
++		return !udp_test_bit(GRO_ENABLED, sk);
++
++	return skb->pkt_type != PACKET_MULTICAST &&
++	       skb->pkt_type != PACKET_BROADCAST;
++}
++
+ struct sk_buff *udp_gro_receive(struct list_head *head, struct sk_buff *skb,
+ 				struct udphdr *uh, struct sock *sk)
+ {
+@@ -539,7 +548,7 @@ struct sk_buff *udp_gro_receive(struct l
+ 			goto out;
+ 
+ 		if (skb->dev->features & NETIF_F_GRO_FRAGLIST)
+-			NAPI_GRO_CB(skb)->is_flist = sk ? !udp_test_bit(GRO_ENABLED, sk) : 1;
++			NAPI_GRO_CB(skb)->is_flist = udp_gro_use_fraglist(skb, sk);
+ 
+ 		if ((!sk && (skb->dev->features & NETIF_F_GRO_UDP_FWD)) ||
+ 		    (sk && udp_test_bit(GRO_ENABLED, sk)) || NAPI_GRO_CB(skb)->is_flist)

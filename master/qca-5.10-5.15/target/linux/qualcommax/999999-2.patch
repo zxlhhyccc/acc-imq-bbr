@@ -1,0 +1,40 @@
+--- a/net/sched/sch_generic.c
++++ b/net/sched/sch_generic.c
+@@ -401,10 +401,23 @@ static inline bool qdisc_restart(struct Qdisc *q, int *packets)
+ 	if (!(q->flags & TCQ_F_NOLOCK))
+ 		root_lock = qdisc_lock(q);
+ 
++	if (likely(skb->fast_qdisc)) {
++		/*
++		 * For SFE fast_qdisc marked packets, we send packets directly
++		 * to physical interface pointed to by skb->dev
++		 * We can clear fast_qdisc since we will not re-enqueue packet in this
++		 * path
++		*/
++			skb->fast_qdisc = 0;
++			if (!sch_direct_xmit_fast(skb, q, skb->dev, root_lock)) {
++				return false;
++		}
++	} else {
+ 	dev = qdisc_dev(q);
+ 	txq = skb_get_tx_queue(dev, skb);
+ 
+ 	return sch_direct_xmit(skb, q, dev, txq, root_lock, validate);
++	}
+ }
+ 
+ void __qdisc_run(struct Qdisc *q)
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -612,8 +612,10 @@ struct sk_buff *__netdev_alloc_skb(struct net_device *dev,
+ 
+ #ifdef CONFIG_SKB_RECYCLER
+ 	skb = skb_recycler_alloc(dev, length);
+-	if (likely(skb))
++	if (likely(skb)) {
++		skb->fast_qdisc = 0;
+ 		return skb;
++	}
+ 
+ 	len = SKB_RECYCLE_SIZE;
+ 	if (unlikely(length > SKB_RECYCLE_SIZE))

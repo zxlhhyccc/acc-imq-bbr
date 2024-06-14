@@ -5,7 +5,7 @@
  	chosen {
  		stdout-path = "serial0:115200n8";
 -		bootargs-append = " root=/dev/ubiblock0_1";
-+		bootargs-append = " coherent_pool=2M swiotlb=noforce root=/dev/ubiblock0_1";
++		bootargs-append = " coherent_pool=1M swiotlb=noforce root=/dev/ubiblock0_1";
  	};
  
  	keys {
@@ -16,7 +16,7 @@
  	chosen {
  		stdout-path = "serial0:115200n8";
 -		bootargs-append = " root=/dev/ubiblock0_1";
-+		bootargs-append = " coherent_pool=2M swiotlb=noforce root=/dev/ubiblock0_1";
++		bootargs-append = " coherent_pool=1M swiotlb=noforce root=/dev/ubiblock0_1";
  	};
  
  	keys {
@@ -27,7 +27,7 @@
  	chosen {
  		stdout-path = "serial0:115200n8";
 -		bootargs-append = " root=/dev/ubiblock0_1";
-+		bootargs-append = " coherent_pool=2M swiotlb=noforce root=/dev/ubiblock0_1";
++		bootargs-append = " coherent_pool=1M swiotlb=noforce root=/dev/ubiblock0_1";
  	};
  
  	keys {
@@ -38,7 +38,7 @@
  	chosen {
  		stdout-path = "serial0:115200n8";
 -		bootargs-append = " root=/dev/ubiblock0_0";
-+		bootargs-append = " coherent_pool=2M swiotlb=noforce root=/dev/ubiblock0_0";
++		bootargs-append = " coherent_pool=1M swiotlb=noforce root=/dev/ubiblock0_0";
  	};
  
  	keys {
@@ -49,7 +49,7 @@
  	chosen {
  		stdout-path = "serial0:115200n8";
 -		bootargs-append = " root=/dev/ubiblock0_0";
-+		bootargs-append = " coherent_pool=2M swiotlb=noforce root=/dev/ubiblock0_0";
++		bootargs-append = " coherent_pool=1M swiotlb=noforce root=/dev/ubiblock0_0";
  	};
  
  	keys {
@@ -60,7 +60,7 @@
  	chosen {
  		stdout-path = "serial0:115200n8";
 -		bootargs-append = " root=/dev/ubiblock0_1";
-+		bootargs-append = " coherent_pool=2M swiotlb=noforce root=/dev/ubiblock0_1";
++		bootargs-append = " coherent_pool=1M swiotlb=noforce root=/dev/ubiblock0_1";
  	};
  
  	keys {
@@ -71,7 +71,7 @@
  		 * That fails to create a UBI block device, so add it here.
  		*/
 -		bootargs-append = " ubi.block=0,rootfs root=/dev/ubiblock0_1";
-+		bootargs-append = " coherent_pool=2M swiotlb=noforce ubi.block=0,rootfs root=/dev/ubiblock0_1";
++		bootargs-append = " coherent_pool=1M swiotlb=noforce ubi.block=0,rootfs root=/dev/ubiblock0_1";
  	};
  
  	keys {
@@ -82,7 +82,7 @@
  	chosen {
  		stdout-path = "serial0:115200n8";
 -		bootargs-append = " root=/dev/ubiblock0_1";
-+		bootargs-append = " coherent_pool=2M swiotlb=noforce root=/dev/ubiblock0_1";
++		bootargs-append = " coherent_pool=1M swiotlb=noforce root=/dev/ubiblock0_1";
  	};
  
  	keys {
@@ -93,7 +93,7 @@
  	chosen {
  		stdout-path = "serial0:115200n8";
 -		bootargs-append = " root=/dev/ubiblock0_0";
-+		bootargs-append = " coherent_pool=2M swiotlb=noforce root=/dev/ubiblock0_0";
++		bootargs-append = " coherent_pool=1M swiotlb=noforce root=/dev/ubiblock0_0";
  	};
  
  	keys {
@@ -104,7 +104,7 @@
  	chosen {
  		stdout-path = "serial0:115200n8";
 -		bootargs-append = " root=/dev/ubiblock0_1";
-+		bootargs-append = " coherent_pool=2M swiotlb=noforce root=/dev/ubiblock0_1";
++		bootargs-append = " coherent_pool=1M swiotlb=noforce root=/dev/ubiblock0_1";
  	};
  
  	leds {
@@ -115,7 +115,7 @@
  	chosen {
  		stdout-path = "serial0:115200n8";
 -		bootargs-append = " root=/dev/ubiblock0_1";
-+		bootargs-append = " coherent_pool=2M swiotlb=noforce root=/dev/ubiblock0_1";
++		bootargs-append = " coherent_pool=1M swiotlb=noforce root=/dev/ubiblock0_1";
  	};
  
  	keys {

@@ -81,7 +81,7 @@
  		     __be16 vlan_proto, u16 vlan_id)
 --- a/include/linux/netdevice.h
 +++ b/include/linux/netdevice.h
-@@ -2855,6 +2855,10 @@ enum netdev_cmd {
+@@ -2853,6 +2853,10 @@ enum netdev_cmd {
  	NETDEV_OFFLOAD_XSTATS_DISABLE,
  	NETDEV_OFFLOAD_XSTATS_REPORT_USED,
  	NETDEV_OFFLOAD_XSTATS_REPORT_DELTA,
@@ -156,7 +156,7 @@
  void fib_del_ifaddr(struct in_ifaddr *, struct in_ifaddr *);
 --- a/net/bridge/br_private.h
 +++ b/net/bridge/br_private.h
-@@ -2172,4 +2172,9 @@ void br_do_proxy_suppress_arp(struct sk_
+@@ -2173,4 +2173,9 @@ void br_do_proxy_suppress_arp(struct sk_
  void br_do_suppress_nd(struct sk_buff *skb, struct net_bridge *br,
  		       u16 vid, struct net_bridge_port *p, struct nd_msg *msg);
  struct nd_msg *br_is_nd_neigh_msg(struct sk_buff *skb, struct nd_msg *m);
@@ -746,6 +746,46 @@
  static inline unsigned short vxlan_get_sk_family(struct vxlan_sock *vs)
  {
  	return vs->sock->sk->sk_family;
+--- a/include/uapi/linux/in.h
++++ b/include/uapi/linux/in.h
+@@ -63,6 +63,8 @@ enum {
+ #define IPPROTO_MTP		IPPROTO_MTP
+   IPPROTO_BEETPH = 94,		/* IP option pseudo header for BEET	*/
+ #define IPPROTO_BEETPH		IPPROTO_BEETPH
++  IPPROTO_ETHERIP = 97,		/* ETHERIP protocol number		*/
++#define IPPROTO_ETHERIP		IPPROTO_ETHERIP
+   IPPROTO_ENCAP = 98,		/* Encapsulation Header			*/
+ #define IPPROTO_ENCAP		IPPROTO_ENCAP
+   IPPROTO_PIM = 103,		/* Protocol Independent Multicast	*/
+@@ -327,7 +329,7 @@ struct sockaddr_in {
+ #endif
+ 
+ /* <asm/byteorder.h> contains the htonl type stuff.. */
+-#include <asm/byteorder.h> 
++#include <asm/byteorder.h>
+ 
+ 
+ #endif /* _UAPI_LINUX_IN_H */
+--- a/tools/include/uapi/linux/in.h
++++ b/tools/include/uapi/linux/in.h
+@@ -63,6 +63,8 @@ enum {
+ #define IPPROTO_MTP		IPPROTO_MTP
+   IPPROTO_BEETPH = 94,		/* IP option pseudo header for BEET	*/
+ #define IPPROTO_BEETPH		IPPROTO_BEETPH
++  IPPROTO_ETHERIP = 97,		/* ETHERIP protocol number		*/
++#define IPPROTO_ETHERIP		IPPROTO_ETHERIP
+   IPPROTO_ENCAP = 98,		/* Encapsulation Header			*/
+ #define IPPROTO_ENCAP		IPPROTO_ENCAP
+   IPPROTO_PIM = 103,		/* Protocol Independent Multicast	*/
+@@ -326,7 +328,7 @@ struct sockaddr_in {
+ #endif
+ 
+ /* <asm/byteorder.h> contains the htonl type stuff.. */
+-#include <asm/byteorder.h> 
++#include <asm/byteorder.h>
+ 
+ 
+ #endif /* _UAPI_LINUX_IN_H */
 --- a/net/netfilter/nf_conntrack_ecache.c
 +++ b/net/netfilter/nf_conntrack_ecache.c
 @@ -367,7 +367,6 @@ void nf_conntrack_register_notifier(stru
