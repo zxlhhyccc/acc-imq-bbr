@@ -1,25 +1,42 @@
+--- a/files/50-dnsmasq-migrate-resolv-conf-auto.sh
++++ b/files/50-dnsmasq-migrate-resolv-conf-auto.sh
+@@ -1,5 +1,10 @@
+ #!/bin/sh
+ 
++uci -q get dhcp.@dnsmasq[0].mini_ttl >"/dev/null" && {
++	uci rename dhcp.@dnsmasq[0].mini_ttl="min_cache_ttl"
++	uci commit dhcp
++}
++
+ [ "$(uci get dhcp.@dnsmasq[0].resolvfile)" = "/tmp/resolv.conf.auto" ] && {
+ 	uci set dhcp.@dnsmasq[0].resolvfile="/tmp/resolv.conf.d/resolv.conf.auto"
+ 	uci commit dhcp
 --- a/files/dhcp.conf
 +++ b/files/dhcp.conf
-@@ -10,7 +10,7 @@ config dnsmasq
+@@ -9,8 +9,10 @@ config dnsmasq
+ 	option local	'/lan/'
  	option domain	'lan'
  	option expandhosts	1
- 	option nonegcache	0
+-	option nonegcache	0
 -	option cachesize	1000
++	option min_cache_ttl	3600
++	option use_stale_cache	3600
 +	option cachesize	8192
++	option nonegcache	1
  	option authoritative	1
  	option readethers	1
  	option leasefile	'/tmp/dhcp.leases'
-@@ -21,9 +21,14 @@ config dnsmasq
+@@ -21,9 +23,14 @@ config dnsmasq
  	#list notinterface	lo
  	#list bogusnxdomain     '64.94.110.11'
  	option localservice	1  # disable to allow DNS requests from non-local subnets
-+	#option min_cache_ttl	3600
 +	option dns_redirect	1
  	option ednspacket_max	1232
 -	option filter_aaaa	0
 -	option filter_a		0
 +	option filter_aaaa	1
 +	option filter_a 	0
++	option port 		53
 +	#option filter_https	1
 +	#option filter_unknown	1
 +	#option mini_ttl 	3600
@@ -37,12 +54,46 @@
  ADD_WAN_FQDN=0
  ADD_LOCAL_FQDN=""
  
-@@ -975,9 +977,12 @@ dnsmasq_start()
+@@ -787,6 +789,28 @@ dhcp_hostrecord_add() {
+ 	xappend "--host-record=$record"
+ }
  
++dhcp_dnsrr_add() {
++	#This adds arbitrary resource record types (of IN class) whose optional data must be hex
++	local cfg="$1"
++	local rrname rrnumber hexdata
++
++	config_get rrname "$cfg" rrname
++	[ -n "$rrname" ] || return 0
++
++	config_get rrnumber "$cfg" rrnumber
++	[ -n "$rrnumber" ] && [ "$rrnumber" -gt 0 ] || return 0
++
++	config_get hexdata "$cfg" hexdata
++
++	# dnsmasq accepts colon XX:XX:.., space XX XX .., or contiguous XXXX.. hex forms or mixtures thereof
++	if [ -n "${hexdata//[0-9a-fA-F\:\ ]/}" ]; then
++		# is invalid hex literal
++		return 1
++	fi
++
++	xappend "--dns-rr=${rrname},${rrnumber}${hexdata:+,$hexdata}"
++}
++
+ dhcp_relay_add() {
+ 	local cfg="$1"
+ 	local local_addr server_addr interface
+@@ -973,11 +997,17 @@ dnsmasq_start()
+ 	append_bool "$cfg" rapidcommit "--dhcp-rapid-commit"
+ 	append_bool "$cfg" scriptarp "--script-arp"
+ 
++	# deprecate or remove filter-X in favor of filter-rr?
  	append_bool "$cfg" filter_aaaa "--filter-AAAA"
  	append_bool "$cfg" filter_a "--filter-A"
 +	# append_bool "$cfg" filter_https "--filter-https"
 +	# append_bool "$cfg" filter_unknown "--filter-unknown"
++	append_parm "$cfg" filter_rr "--filter-rr"
++	append_parm "$cfg" cache_rr "--cache-rr"
  
  	append_parm "$cfg" logfacility "--log-facility"
  	config_get logfacility "$cfg" "logfacility"
@@ -50,7 +101,7 @@
  	append_parm "$cfg" cachesize "--cache-size"
  	append_parm "$cfg" dnsforwardmax "--dns-forward-max"
  	append_parm "$cfg" port "--port"
-@@ -1036,6 +1041,8 @@ dnsmasq_start()
+@@ -1036,6 +1066,8 @@ dnsmasq_start()
  
  	config_get_bool ADD_LOCAL_DOMAIN "$cfg" add_local_domain 1
  	config_get_bool ADD_LOCAL_HOSTNAME "$cfg" add_local_hostname 1
@@ -59,7 +110,15 @@
  	config_get ADD_LOCAL_FQDN "$cfg" add_local_fqdn ""
  	config_get ADD_WAN_FQDN "$cfg" add_wan_fqdn 0
  
-@@ -1192,8 +1199,12 @@ dnsmasq_start()
+@@ -1149,6 +1181,7 @@ dnsmasq_start()
+ 	config_foreach filter_dnsmasq match dhcp_match_add "$cfg"
+ 	config_foreach filter_dnsmasq domain dhcp_domain_add "$cfg"
+ 	config_foreach filter_dnsmasq hostrecord dhcp_hostrecord_add "$cfg"
++	config_foreach filter_dnsmasq dnsrr dhcp_dnsrr_add "$cfg"
+ 	[ -n "$BOOT" ] || config_foreach filter_dnsmasq relay dhcp_relay_add "$cfg"
+ 
+ 	echo >> $CONFIGFILE_TMP
+@@ -1192,8 +1225,12 @@ dnsmasq_start()
  		[ $ADD_LOCAL_DOMAIN -eq 1 ] && [ -n "$DOMAIN" ] && {
  			echo "search $DOMAIN" >> /tmp/resolv.conf
  		}
@@ -74,48 +133,57 @@
  		for DNS_SERVER in $DNS_SERVERS ; do
  			echo "nameserver $DNS_SERVER" >> /tmp/resolv.conf
  		done
-@@ -1225,6 +1236,20 @@ dnsmasq_start()
+@@ -1225,6 +1262,25 @@ dnsmasq_start()
  	[ -e "$hostsfile" ] && procd_add_jail_mount $hostsfile
  
  	procd_close_instance
 +
 +	config_get_bool dns_redirect "$cfg" dns_redirect 0
 +	config_get dns_port "$cfg" port 53
-+	if [ "$dns_redirect" = 1 ]; then
-+		if [ ! -z "$nftsets" ]; then
-+			nft add table inet dnsmasq
-+			nft add chain inet dnsmasq prerouting "{ type nat hook prerouting priority -105; policy accept; }"
-+			nft add rule inet dnsmasq prerouting "meta nfproto { ipv4, ipv6 } udp dport 53 counter redirect to :$dns_port comment \"DNSMASQ HIJACK\""
++
++	if [ "$dns_redirect" -eq 1 ]; then
++		# Check for the presence of fw3
++		if grep -q "fw3" /etc/init.d/firewall; then
++		iptables -t nat -A PREROUTING -m comment --comment "DNSMASQ" -p udp --dport 53 -j REDIRECT --to-ports "$dns_port"
++		[ -n "$(command -v ip6tables)" ] && ip6tables -t nat -A PREROUTING -m comment --comment "DNSMASQ" -p udp --dport 53 -j REDIRECT --to-ports "$dns_port"
 +		fi
-+		if [ ! -z "$ipsets" ]; then
-+			iptables -t nat -A PREROUTING -m comment --comment "DNSMASQ" -p udp --dport 53 -j REDIRECT --to-ports $dns_port
-+			[ -n "$(command -v ip6tables)" ] && ip6tables -t nat -A PREROUTING -m comment --comment "DNSMASQ" -p udp --dport 53 -j REDIRECT --to-ports $dns_port
++
++		# Check for the presence of fw4
++		if grep -q "fw4" /etc/init.d/firewall; then
++		# Use nftables to configure DNS redirection
++		nft add table inet dnsmasq
++		nft add chain inet dnsmasq prerouting "{ type nat hook prerouting priority -105; policy accept; }"
++		nft add rule inet dnsmasq prerouting "meta nfproto { ipv4, ipv6 } udp dport 53 counter redirect to :$dns_port comment \"DNSMASQ HIJACK\""
 +		fi
 +	fi
  }
  
  dnsmasq_stop()
-@@ -1242,6 +1267,19 @@ dnsmasq_stop()
+@@ -1242,6 +1298,23 @@ dnsmasq_stop()
  	rm -f ${BASEDHCPSTAMPFILE}.${cfg}.*.dhcp
  }
  
 +iptables_nftables_clear()
 +{
-+	if [ ! -z "$nftsets" ]; then
-+		! nft --check list table inet dnsmasq > "/dev/null" 2>&1 || \
-+		nft delete table inet dnsmasq
-+	fi
-+	if [ ! -z "$ipsets" ]; then
++	# Check for the presence of fw3
++	if grep -q "fw3" /etc/init.d/firewall; then
 +		config_get dns_port "$cfg" port 53
-+		iptables -t nat -D PREROUTING -m comment --comment "DNSMASQ" -p udp --dport 53 -j REDIRECT --to-ports $dns_port 2>"/dev/null"
-+		[ -n "$(command -v ip6tables)" ] && ip6tables -t nat -D PREROUTING -m comment --comment "DNSMASQ" -p udp --dport 53 -j REDIRECT --to-ports $dns_port 2>"/dev/null"
++		iptables -t nat -D PREROUTING -m comment --comment "DNSMASQ" -p udp --dport 53 -j REDIRECT --to-ports "$dns_port" 2>"/dev/null"
++		[ -n "$(command -v ip6tables)" ] && ip6tables -t nat -D PREROUTING -m comment --comment "DNSMASQ" -p udp --dport 53 -j REDIRECT --to-ports "$dns_port" 2>"/dev/null"
++	fi
++
++	# Check for the presence of fw4
++	if grep -q "fw4" /etc/init.d/firewall; then
++		# Use nftables to delete the DNS redirection table
++		! nft --check list table inet dnsmasq > "/dev/null" 2>&1 || \
++		    nft delete table inet dnsmasq
 +	fi
 +}
 +
  add_interface_trigger()
  {
  	local interface ifname ignore
-@@ -1313,6 +1351,7 @@ start_service() {
+@@ -1313,6 +1386,7 @@ start_service() {
  }
  
  reload_service() {
@@ -123,7 +191,7 @@
  	rc_procd start_service "$@"
  	procd_send_signal dnsmasq "$@"
  }
-@@ -1339,4 +1378,6 @@ stop_service() {
+@@ -1339,4 +1413,6 @@ stop_service() {
  	else
  		config_foreach dnsmasq_stop dnsmasq
  	fi
