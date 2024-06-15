@@ -1,7 +1,7 @@
 diff -ruaN a/net/ipv4/Kconfig b/net/ipv4/Kconfig
 --- a/net/ipv4/Kconfig	2022-10-15 14:02:59.000000000 +0800
 +++ b/net/ipv4/Kconfig	2022-10-19 11:55:45.078906246 +0800
-@@ -679,6 +679,15 @@ config TCP_CONG_BBR
+@@ -678,6 +678,15 @@ config TCP_CONG_BBR
  	  AQM schemes that do not provide a delay signal. It requires the fq
  	  ("Fair Queue") pacing packet scheduler.
  
@@ -17,7 +17,7 @@ diff -ruaN a/net/ipv4/Kconfig b/net/ipv4/Kconfig
  config TCP_CONG_BBRPLUS
          tristate "BBRPLUS TCP"
          default m
-@@ -725,6 +734,9 @@ choice
+@@ -724,6 +733,9 @@ choice
  	config DEFAULT_BBR
  		bool "BBR" if TCP_CONG_BBR=y
  
@@ -27,7 +27,7 @@ diff -ruaN a/net/ipv4/Kconfig b/net/ipv4/Kconfig
          config DEFAULT_BBRPLUS
                  bool "BBRPLUS" if TCP_CONG_BBRPLUS=y
  
-@@ -752,6 +764,7 @@ config DEFAULT_TCP_CONG
+@@ -751,6 +763,7 @@ config DEFAULT_TCP_CONG
  	default "dctcp" if DEFAULT_DCTCP
  	default "cdg" if DEFAULT_CDG
  	default "bbr" if DEFAULT_BBR
@@ -38,7 +38,7 @@ diff -ruaN a/net/ipv4/Kconfig b/net/ipv4/Kconfig
 diff -ruaN a/net/ipv4/Makefile b/net/ipv4/Makefile
 --- a/net/ipv4/Makefile	1970-01-01 08:00:00.000000000 +0800
 +++ b/net/ipv4/Makefile	2022-10-19 12:02:08.333102397 +0800
-@@ -46,6 +46,7 @@ obj-$(CONFIG_INET_TCP_DIAG) += tcp_diag.
+@@ -46,6 +46,7 @@ obj-$(CONFIG_INET_TCP_DIAG) += tcp_diag.o
  obj-$(CONFIG_INET_UDP_DIAG) += udp_diag.o
  obj-$(CONFIG_INET_RAW_DIAG) += raw_diag.o
  obj-$(CONFIG_TCP_CONG_BBR) += tcp_bbr.o
