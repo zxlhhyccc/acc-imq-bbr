@@ -35,7 +35,7 @@
    FILES:= \
  	$(LINUX_DIR)/sound/usb/snd-usbmidi-lib.ko \
  	$(LINUX_DIR)/sound/usb/snd-usb-audio.ko
-@@ -1167,6 +1179,7 @@ endef
+@@ -1183,6 +1195,7 @@ endef
  
  define KernelPackage/usb-net-aqc111
    TITLE:=Support for USB-to-Ethernet Aquantia AQtion 5/2.5GbE
