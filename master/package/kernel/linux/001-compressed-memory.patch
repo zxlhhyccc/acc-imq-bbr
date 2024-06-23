@@ -1,6 +1,6 @@
 --- a/modules/crypto.mk
 +++ b/modules/crypto.mk
-@@ -756,6 +756,7 @@ define KernelPackage/crypto-misc
+@@ -755,6 +755,7 @@ define KernelPackage/crypto-misc
  	CONFIG_CRYPTO_KHAZAD \
  	CONFIG_CRYPTO_SERPENT \
  	CONFIG_CRYPTO_TEA \
@@ -8,7 +8,7 @@
  	CONFIG_CRYPTO_TWOFISH \
  	CONFIG_CRYPTO_TWOFISH_COMMON \
  	CONFIG_CRYPTO_TWOFISH_586 \
-@@ -768,6 +769,7 @@ define KernelPackage/crypto-misc
+@@ -767,6 +768,7 @@ define KernelPackage/crypto-misc
  	$(LINUX_DIR)/crypto/cast6_generic.ko \
  	$(LINUX_DIR)/crypto/khazad.ko \
  	$(LINUX_DIR)/crypto/tea.ko \
@@ -16,7 +16,7 @@
  	$(LINUX_DIR)/crypto/twofish_common.ko \
  	$(LINUX_DIR)/crypto/wp512.ko \
  	$(LINUX_DIR)/crypto/twofish_generic.ko \
-@@ -775,7 +777,7 @@ define KernelPackage/crypto-misc
+@@ -774,7 +776,7 @@ define KernelPackage/crypto-misc
  	$(LINUX_DIR)/crypto/blowfish_generic.ko \
  	$(LINUX_DIR)/crypto/serpent_generic.ko
    AUTOLOAD:=$(call AutoLoad,10,anubis camellia_generic cast_common \
@@ -25,7 +25,7 @@
  	wp512 blowfish_common serpent_generic)
    ifndef CONFIG_TARGET_x86
  	AUTOLOAD+= $(call AutoLoad,10,twofish_generic blowfish_generic)
-@@ -788,9 +790,10 @@ ifndef CONFIG_TARGET_x86_64
+@@ -787,9 +789,10 @@ ifndef CONFIG_TARGET_x86_64
      FILES+= \
  	$(LINUX_DIR)/arch/x86/crypto/twofish-i586.ko \
  	$(LINUX_DIR)/arch/x86/crypto/serpent-sse2-i586.ko \
@@ -37,7 +37,7 @@
  	serpent-sse2-i586 twofish-i586 blowfish_generic)
    endef
  endif
-@@ -877,7 +880,10 @@ $(eval $(call KernelPackage,crypto-rmd160))
+@@ -876,7 +879,10 @@ $(eval $(call KernelPackage,crypto-rmd160))
  
  define KernelPackage/crypto-rng
    TITLE:=CryptoAPI random number generation
@@ -49,7 +49,7 @@
    KCONFIG:= \
  	CONFIG_CRYPTO_DRBG \
  	CONFIG_CRYPTO_DRBG_HMAC=y \
-@@ -1159,3 +1165,37 @@ endef
+@@ -1158,3 +1164,37 @@ endef
  
  $(eval $(call KernelPackage,crypto-xts))
  
