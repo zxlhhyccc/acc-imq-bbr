@@ -21,7 +21,7 @@
  $(eval $(call nf_add,IPT_IPOPT,CONFIG_NETFILTER_XT_MATCH_DSCP, $(P_XT)xt_dscp))
 --- a/target.mk
 +++ b/target.mk
-@@ -27,14 +27,44 @@ DEFAULT_PACKAGES:=\
+@@ -37,14 +37,44 @@ DEFAULT_PACKAGES:=\
  	fstools \
  	libc \
  	libgcc \
@@ -68,7 +68,7 @@
  
  ifneq ($(CONFIG_USE_APK),)
  DEFAULT_PACKAGES+=apk-mbedtls
-@@ -65,13 +95,16 @@ DEFAULT_PACKAGES.nas:=\
+@@ -75,13 +105,16 @@ DEFAULT_PACKAGES.nas:=\
  	block-mount \
  	fdisk \
  	lsblk \
