@@ -1,6 +1,6 @@
 --- a/modules/crypto.mk
 +++ b/modules/crypto.mk
-@@ -755,6 +755,7 @@ define KernelPackage/crypto-misc
+@@ -767,6 +767,7 @@ define KernelPackage/crypto-misc
  	CONFIG_CRYPTO_KHAZAD \
  	CONFIG_CRYPTO_SERPENT \
  	CONFIG_CRYPTO_TEA \
@@ -8,7 +8,7 @@
  	CONFIG_CRYPTO_TWOFISH \
  	CONFIG_CRYPTO_TWOFISH_COMMON \
  	CONFIG_CRYPTO_TWOFISH_586 \
-@@ -767,6 +768,7 @@ define KernelPackage/crypto-misc
+@@ -779,6 +780,7 @@ define KernelPackage/crypto-misc
  	$(LINUX_DIR)/crypto/cast6_generic.ko \
  	$(LINUX_DIR)/crypto/khazad.ko \
  	$(LINUX_DIR)/crypto/tea.ko \
@@ -16,7 +16,7 @@
  	$(LINUX_DIR)/crypto/twofish_common.ko \
  	$(LINUX_DIR)/crypto/wp512.ko \
  	$(LINUX_DIR)/crypto/twofish_generic.ko \
-@@ -774,7 +776,7 @@ define KernelPackage/crypto-misc
+@@ -786,7 +788,7 @@ define KernelPackage/crypto-misc
  	$(LINUX_DIR)/crypto/blowfish_generic.ko \
  	$(LINUX_DIR)/crypto/serpent_generic.ko
    AUTOLOAD:=$(call AutoLoad,10,anubis camellia_generic cast_common \
@@ -25,7 +25,7 @@
  	wp512 blowfish_common serpent_generic)
    ifndef CONFIG_TARGET_x86
  	AUTOLOAD+= $(call AutoLoad,10,twofish_generic blowfish_generic)
-@@ -787,9 +789,10 @@ ifndef CONFIG_TARGET_x86_64
+@@ -799,9 +801,10 @@ ifndef CONFIG_TARGET_x86_64
      FILES+= \
  	$(LINUX_DIR)/arch/x86/crypto/twofish-i586.ko \
  	$(LINUX_DIR)/arch/x86/crypto/serpent-sse2-i586.ko \
@@ -37,7 +37,7 @@
  	serpent-sse2-i586 twofish-i586 blowfish_generic)
    endef
  endif
-@@ -876,7 +879,10 @@ $(eval $(call KernelPackage,crypto-rmd160))
+@@ -888,7 +891,10 @@ $(eval $(call KernelPackage,crypto-rmd160))
  
  define KernelPackage/crypto-rng
    TITLE:=CryptoAPI random number generation
@@ -49,10 +49,11 @@
    KCONFIG:= \
  	CONFIG_CRYPTO_DRBG \
  	CONFIG_CRYPTO_DRBG_HMAC=y \
-@@ -1158,3 +1164,37 @@ endef
+@@ -1182,3 +1188,38 @@ endef
  
- $(eval $(call KernelPackage,crypto-xts))
+ $(eval $(call KernelPackage,crypto-xxhash))
  
++
 +define KernelPackage/crypto-qce
 +  TITLE:=QTI Crypto Engine (QCE)
 +  KCONFIG:= \
@@ -87,39 +88,9 @@
 +
 +$(eval $(call KernelPackage,crypto-zstd))
 +
---- a/modules/lib.mk
-+++ b/modules/lib.mk
-@@ -193,6 +193,27 @@ endef
- $(eval $(call KernelPackage,lib-842))
- 
- 
-+define KernelPackage/lib-lz4hc
-+  SUBMENU:=$(LIB_MENU)
-+  TITLE:=LZ4HC support
-+  DEPENDS:=+kmod-lib-lz4 +kmod-crypto-acompress
-+  HIDDEN:=1
-+  KCONFIG:= \
-+	CONFIG_CRYPTO_LZ4HC \
-+	CONFIG_LZ4HC_COMPRESS
-+  FILES:= \
-+	$(LINUX_DIR)/crypto/lz4hc.ko \
-+	$(LINUX_DIR)/lib/lz4/lz4hc_compress.ko
-+  AUTOLOAD:=$(call AutoProbe,lz4hc lz4hc_compress)
-+endef
-+
-+define KernelPackage/lib-lz4hc/description
-+ Kernel module for LZ4HC compression/decompression support
-+endef
-+
-+$(eval $(call KernelPackage,lib-lz4hc))
-+
-+
- define KernelPackage/lib-raid6
-   SUBMENU:=$(LIB_MENU)
-   TITLE:=RAID6 algorithm support
 --- a/modules/other.mk
 +++ b/modules/other.mk
-@@ -1006,7 +1006,8 @@ $(eval $(call KernelPackage,keys-encrypted))
+@@ -1019,7 +1019,8 @@ $(eval $(call KernelPackage,keys-encrypted))
  define KernelPackage/keys-trusted
    SUBMENU:=$(OTHER_MENU)
    TITLE:=TPM trusted keys on kernel keyring
@@ -129,7 +100,7 @@
    KCONFIG:=CONFIG_TRUSTED_KEYS
    FILES:= $(LINUX_DIR)/security/keys/trusted-keys/trusted.ko
    AUTOLOAD:=$(call AutoLoad,01,trusted-keys,1)
-@@ -1137,3 +1138,97 @@ define KernelPackage/mhi-pci-generic/description
+@@ -1150,3 +1151,97 @@ define KernelPackage/mhi-pci-generic/description
  endef
  
  $(eval $(call KernelPackage,mhi-pci-generic))
