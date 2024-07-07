@@ -60,7 +60,7 @@ Subject: [PATCH] export efivarfs function
  extern bool efivarfs_valid_name(const char *str, int len);
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
-@@ -1063,6 +1063,45 @@ struct efivars {
+@@ -1055,6 +1055,45 @@ struct efivars {
  
  #define EFI_VAR_NAME_LEN	1024
  
