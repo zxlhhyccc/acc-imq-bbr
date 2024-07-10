@@ -44,9 +44,13 @@ netgear,sxs80)
 		ubootenv_add_uci_config "/dev/mtd$idx" "0x0" "0x40000" "0x20000"
 	;;
 redmi,ax6|\
+redmi,ax6-factory|\
 xiaomi,ax3600|\
+xiaomi,ax3600-factory|\
 xiaomi,ax9000|\
-zte,mf269)
+xiaomi,ax9000-factory|\
+zte,mf269|\
+zte,mf269-factory)
 	idx="$(find_mtd_index 0:appsblenv)"
 	[ -n "$idx" ] && \
 		ubootenv_add_uci_config "/dev/mtd$idx" "0x0" "0x10000" "0x20000"
@@ -59,6 +63,7 @@ prpl,haze)
 	[ -n "$mmcpart" ] && \
 		ubootenv_add_uci_config "$mmcpart" "0x0" "0x40000" "0x400" "0x100"
 	;;
+asus,rt-ax89x|\
 qnap,301w)
 	idx="$(find_mtd_index 0:appsblenv)"
 	[ -n "$idx" ] && \
