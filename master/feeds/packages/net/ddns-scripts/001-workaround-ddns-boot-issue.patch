@@ -20,7 +20,7 @@
  endef
 --- a/files/usr/lib/ddns/dynamic_dns_functions.sh
 +++ b/files/usr/lib/ddns/dynamic_dns_functions.sh
-@@ -959,10 +959,17 @@ get_current_ip () {
+@@ -962,10 +962,17 @@ get_current_ip () {
  					# 5: eth1    inet6 fd43:5368:6f6d:6500:a00:27ff:fed0:1032/64 scope global dynamic \       valid_lft 14352sec preferred_lft 14352sec
  					# 5: eth1    inet6 2002:b0c7:f326::a00:27ff:fed0:1032/64 scope global dynamic \       valid_lft 14352sec preferred_lft 14352sec
  
