@@ -33,13 +33,46 @@
  # kernel only
 --- a/target.mk
 +++ b/target.mk
-@@ -37,14 +37,44 @@ DEFAULT_PACKAGES:=\
+@@ -13,34 +13,67 @@ DEVICE_TYPE?=router
+ # Default packages - the really basic set
+ DEFAULT_PACKAGES:=\
+ 	base-files \
++	bind-host \
+ 	ca-bundle \
++	ca-certificates \
++	coremark \
++	coreutils \
++	default-settings \
++	ddns-scripts_aliyun \
++	ddns-scripts_dnspod \
+ 	dropbear \
  	fstools \
++	kmod-nf-nathelper \
++	kmod-nf-nathelper-extra \
++	kmod-ipt-raw \
  	libc \
  	libgcc \
 -	libustream-mbedtls \
 +	libustream-openssl \
  	logd \
++	luci \
++	luci-app-accesscontrol \
++	luci-app-arpbind \
++	luci-app-autorebootschedule \
++	luci-app-control-vlmcsd \
++	luci-app-ddns \
++	luci-app-nlbwmon \
++	luci-app-ramfree \
++	luci-app-sqm \
++	luci-app-ssr-plus \
++	luci-app-upnp \
++	luci-app-vsftpd \
++	luci-app-wol \
++	luci-compat \
++	luci-lib-base \
++	luci-lib-fs \
++	luci-lib-ipkg \
++	luci-proto-relay \
  	mtd \
  	netifd \
 +	opkg \
@@ -48,46 +81,18 @@
  	urandom-seed \
 -	urngd
 +	urngd \
-+	coremark \
-+	coreutils \
-+	kmod-nf-nathelper \
-+	kmod-nf-nathelper-extra \
-+	kmod-ipt-raw \
-+	wget-ssl \
-+	ca-certificates \
-+	default-settings \
-+	luci \
-+	luci-lib-base \
-+	luci-compat \
-+	luci-lib-fs \
-+	luci-lib-ipkg \
-+	luci-proto-relay \
-+	luci-app-ddns \
-+	luci-app-sqm \
-+	luci-app-upnp \
-+	luci-app-autorebootschedule \
-+	luci-app-vsftpd \
-+	luci-app-ssr-plus \
-+	luci-app-arpbind \
-+	luci-app-control-vlmcsd \
-+	luci-app-wol \
-+	luci-app-ramfree \
-+	luci-app-nlbwmon \
-+	luci-app-accesscontrol \
-+	ddns-scripts_aliyun \
-+	ddns-scripts_dnspod \
-+	bind-host
++	wget-ssl
  
- ifneq ($(CONFIG_USE_APK),)
- DEFAULT_PACKAGES+=apk-mbedtls
-@@ -75,13 +105,16 @@ DEFAULT_PACKAGES.nas:=\
+ # For the basic set
+ DEFAULT_PACKAGES.basic:=
+ # For nas targets
+ DEFAULT_PACKAGES.nas:=\
++	automount \
++	autosamba \
  	block-mount \
  	fdisk \
  	lsblk \
--	mdadm
-+	mdadm \
-+	automount \
-+	autosamba
+ 	mdadm
  # For router targets
  DEFAULT_PACKAGES.router:=\
 -	dnsmasq \
@@ -96,8 +101,8 @@
 -	kmod-nft-offload \
 +	dnsmasq-full \
 +	firewall \
-+	ip6tables \
 +	iptables \
++	ip6tables \
 +	kmod-ipt-offload \
  	odhcp6c \
  	odhcpd-ipv6only \

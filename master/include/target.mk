@@ -6,25 +6,6 @@
 ifneq ($(__target_inc),1)
 __target_inc=1
 
-ifneq ($(DUMP),)
-  # Parse generic config that might be set before a .config is generated to modify the
-  # default package configuration
-  # Keep DYNAMIC_DEF_PKG_CONF in sync with toplevel.mk to reflect the same configs
-  DYNAMIC_DEF_PKG_CONF := CONFIG_USE_APK CONFIG_SELINUX CONFIG_SMALL_FLASH CONFIG_SECCOMP
-  ifneq ($(wildcard $(TOPDIR)/.config),)
-    $(foreach config, $(DYNAMIC_DEF_PKG_CONF), \
-      $(eval $(config) := $(shell grep "$(config)=y" $(TOPDIR)/.config 2>/dev/null)) \
-    )
-  # Init config that are enabled by default. Dependency are checked matching the one in
-  # the config.
-  else
-    ifeq ($(filter $(BOARD), uml),)
-    ifneq ($(filter $(ARCH), aarch64 arm armeb mips mipsel mips64 mips64el i386 powerpc x86_64),)
-      CONFIG_SECCOMP := y
-    endif
-    endif
-  endif
-endif
 
 # default device type
 DEVICE_TYPE?=router
@@ -32,13 +13,41 @@ DEVICE_TYPE?=router
 # Default packages - the really basic set
 DEFAULT_PACKAGES:=\
 	base-files \
+	bind-host \
 	ca-bundle \
+	ca-certificates \
+	coremark \
+	coreutils \
+	default-settings \
+	ddns-scripts_aliyun \
+	ddns-scripts_dnspod \
 	dropbear \
 	fstools \
+	kmod-nf-nathelper \
+	kmod-nf-nathelper-extra \
+	kmod-ipt-raw \
 	libc \
 	libgcc \
 	libustream-openssl \
 	logd \
+	luci \
+	luci-app-accesscontrol \
+	luci-app-arpbind \
+	luci-app-autorebootschedule \
+	luci-app-control-vlmcsd \
+	luci-app-ddns \
+	luci-app-nlbwmon \
+	luci-app-ramfree \
+	luci-app-sqm \
+	luci-app-ssr-plus \
+	luci-app-upnp \
+	luci-app-vsftpd \
+	luci-app-wol \
+	luci-compat \
+	luci-lib-base \
+	luci-lib-fs \
+	luci-lib-ipkg \
+	luci-proto-relay \
 	mtd \
 	netifd \
 	opkg \
@@ -46,74 +55,24 @@ DEFAULT_PACKAGES:=\
 	uclient-fetch \
 	urandom-seed \
 	urngd \
-	coremark \
-	coreutils \
-	kmod-nf-nathelper \
-	kmod-nf-nathelper-extra \
-	kmod-ipt-raw \
-	wget-ssl \
-	ca-certificates \
-	default-settings \
-	luci \
-	luci-lib-base \
-	luci-compat \
-	luci-lib-fs \
-	luci-lib-ipkg \
-	luci-proto-relay \
-	luci-app-ddns \
-	luci-app-sqm \
-	luci-app-upnp \
-	luci-app-autorebootschedule \
-	luci-app-vsftpd \
-	luci-app-ssr-plus \
-	luci-app-arpbind \
-	luci-app-control-vlmcsd \
-	luci-app-wol \
-	luci-app-ramfree \
-	luci-app-nlbwmon \
-	luci-app-accesscontrol \
-	ddns-scripts_aliyun \
-	ddns-scripts_dnspod \
-	bind-host
-
-ifneq ($(CONFIG_USE_APK),)
-DEFAULT_PACKAGES+=apk-mbedtls
-else
-DEFAULT_PACKAGES+=opkg
-endif
-
-ifneq ($(CONFIG_SELINUX),)
-DEFAULT_PACKAGES+=busybox-selinux procd-selinux
-else
-DEFAULT_PACKAGES+=busybox procd
-endif
-
-# include ujail on systems with enough storage
-ifeq ($(CONFIG_SMALL_FLASH),)
-DEFAULT_PACKAGES+=procd-ujail
-endif
-
-# include seccomp ld-preload hooks if kernel supports it
-ifneq ($(CONFIG_SECCOMP),)
-DEFAULT_PACKAGES+=procd-seccomp
-endif
+	wget-ssl
 
 # For the basic set
 DEFAULT_PACKAGES.basic:=
 # For nas targets
 DEFAULT_PACKAGES.nas:=\
+	automount \
+	autosamba \
 	block-mount \
 	fdisk \
 	lsblk \
-	mdadm \
-	automount \
-	autosamba
+	mdadm
 # For router targets
 DEFAULT_PACKAGES.router:=\
 	dnsmasq-full \
 	firewall \
-	ip6tables \
 	iptables \
+	ip6tables \
 	kmod-ipt-offload \
 	odhcp6c \
 	odhcpd-ipv6only \
@@ -149,6 +108,47 @@ else
   ifneq ($(SUBTARGET),)
     -include ./$(SUBTARGET)/target.mk
   endif
+endif
+
+ifneq ($(DUMP),)
+  # Parse generic config that might be set before a .config is generated to modify the
+  # default package configuration
+  # Keep DYNAMIC_DEF_PKG_CONF in sync with toplevel.mk to reflect the same configs
+  DYNAMIC_DEF_PKG_CONF := CONFIG_USE_APK CONFIG_SELINUX CONFIG_SMALL_FLASH CONFIG_SECCOMP
+  $(foreach config, $(DYNAMIC_DEF_PKG_CONF), \
+    $(eval $(config) := $(shell grep "$(config)=y" $(TOPDIR)/.config 2>/dev/null)) \
+  )
+  # The config options that are enabled by default and where other default
+  # packages depends on needs to be set if they are missing in the .config.
+  ifeq ($(shell grep "CONFIG_SECCOMP" $(TOPDIR)/.config 2>/dev/null),)
+    ifeq ($(filter $(BOARD), uml),)
+    ifneq ($(filter $(ARCH), aarch64 arm armeb mips mipsel mips64 mips64el i386 powerpc x86_64),)
+      CONFIG_SECCOMP := y
+    endif
+    endif
+  endif
+endif
+
+ifneq ($(CONFIG_USE_APK),)
+DEFAULT_PACKAGES+=apk-mbedtls
+else
+DEFAULT_PACKAGES+=opkg
+endif
+
+ifneq ($(CONFIG_SELINUX),)
+DEFAULT_PACKAGES+=busybox-selinux procd-selinux
+else
+DEFAULT_PACKAGES+=busybox procd
+endif
+
+# include ujail on systems with enough storage
+ifeq ($(CONFIG_SMALL_FLASH),)
+DEFAULT_PACKAGES+=procd-ujail
+endif
+
+# include seccomp ld-preload hooks if kernel supports it
+ifneq ($(CONFIG_SECCOMP),)
+DEFAULT_PACKAGES+=procd-seccomp
 endif
 
 # Add device specific packages (here below to allow device type set from subtarget)
