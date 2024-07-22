@@ -158,7 +158,7 @@
  endef
  
  define KernelPackage/video-core/description
-@@ -1267,3 +1372,40 @@ define KernelPackage/video-tw686x/description
+@@ -1282,3 +1387,40 @@ define KernelPackage/video-tw686x/description
  endef
  
  $(eval $(call KernelPackage,video-tw686x))
