@@ -191,7 +191,7 @@
    SUPPORTED_DEVICES += unielec,u7621-06-512m-64m
  endef
  TARGET_DEVICES += unielec_u7621-06-64m
-@@ -3024,7 +3022,7 @@ define Device/xiaoyu_xy-c5
+@@ -3035,7 +3033,7 @@ define Device/xiaoyu_xy-c5
    IMAGE_SIZE := 32448k
    DEVICE_VENDOR := XiaoYu
    DEVICE_MODEL := XY-C5
@@ -200,7 +200,7 @@
  	-uboot-envtools
  endef
  TARGET_DEVICES += xiaoyu_xy-c5
-@@ -3035,7 +3033,7 @@ define Device/xzwifi_creativebox-v1
+@@ -3046,7 +3044,7 @@ define Device/xzwifi_creativebox-v1
    DEVICE_VENDOR := CreativeBox
    DEVICE_MODEL := v1
    DEVICE_PACKAGES := kmod-ata-ahci kmod-mt7603 kmod-mt76x2 kmod-mmc-mtk \
