@@ -1,3 +1,5 @@
+diff --git a/Config-kernel.in b/Config-kernel.in
+index 9cedd1d..0fad27b 100644
 --- a/Config-kernel.in
 +++ b/Config-kernel.in
 @@ -426,6 +426,7 @@ config KERNEL_DEBUG_INFO
@@ -25,7 +27,7 @@
  	depends on KERNEL_DEBUG_INFO
  	help
  	  If you say Y here gcc is instructed to generate less debugging
-@@ -540,17 +542,28 @@ config KERNEL_KPROBE_EVENTS
+@@ -540,6 +542,7 @@ config KERNEL_KPROBE_EVENTS
  config KERNEL_BPF_EVENTS
  	bool "Compile the kernel with BPF event support"
  	select KERNEL_KPROBES
@@ -33,14 +35,12 @@
  	help
  	  Allows to attach BPF programs to kprobe, uprobe and tracepoint events.
  	  This is required to use BPF maps of type BPF_MAP_TYPE_PERF_EVENT_ARRAY
- 	  for sending data from BPF programs to user-space for post-processing
- 	  or logging.
- 
-+config KERNEL_PROBE_EVENTS_BTF_ARGS
-+	bool
-+	depends on KERNEL_KPROBE_EVENTS && KERNEL_DEBUG_INFO_BTF
+@@ -549,12 +552,18 @@ config KERNEL_BPF_EVENTS
+ config KERNEL_PROBE_EVENTS_BTF_ARGS
+ 	bool "Support BTF function arguments for probe events"
+ 	depends on KERNEL_DEBUG_INFO_BTF && KERNEL_KPROBE_EVENTS && LINUX_6_6
 +	default n
-+
+ 
  config KERNEL_BPF_KPROBE_OVERRIDE
  	bool
  	depends on KERNEL_KPROBES
@@ -54,7 +54,7 @@
  config KERNEL_AIO
  	bool "Compile the kernel with asynchronous IO support"
  	default y if !SMALL_FLASH
-@@ -1189,6 +1202,7 @@ config KERNEL_NET_L3_MASTER_DEV
+@@ -1193,6 +1202,7 @@ config KERNEL_NET_L3_MASTER_DEV
  
  config KERNEL_XDP_SOCKETS
  	bool "XDP sockets support"
