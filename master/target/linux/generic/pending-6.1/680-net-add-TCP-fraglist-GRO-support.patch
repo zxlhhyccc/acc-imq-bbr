@@ -80,7 +80,7 @@ Signe-off-by: Felix Fietkau <nbd@nbd.name>
  #endif /* _NET_IPV6_GRO_H */
 --- a/include/net/tcp.h
 +++ b/include/net/tcp.h
-@@ -2062,7 +2062,10 @@ void tcp_v4_destroy_sock(struct sock *sk
+@@ -2063,7 +2063,10 @@ void tcp_v4_destroy_sock(struct sock *sk
  
  struct sk_buff *tcp_gso_segment(struct sk_buff *skb,
  				netdev_features_t features);

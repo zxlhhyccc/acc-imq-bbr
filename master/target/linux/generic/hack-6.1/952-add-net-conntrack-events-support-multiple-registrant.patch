@@ -156,7 +156,7 @@ Signed-off-by: Zhi Chen <zhichen@codeaurora.org>
  static int __nf_conntrack_eventmask_report(struct nf_conntrack_ecache *e,
  					   const u32 events,
  					   const u32 missed,
-@@ -161,7 +164,37 @@ static int __nf_conntrack_eventmask_repo
+@@ -161,7 +165,37 @@ static int __nf_conntrack_eventmask_repo
  
  	return ret;
  }
@@ -194,7 +194,7 @@ Signed-off-by: Zhi Chen <zhichen@codeaurora.org>
  int nf_conntrack_eventmask_report(unsigned int events, struct nf_conn *ct,
  				  u32 portid, int report)
  {
-@@ -197,10 +229,52 @@ int nf_conntrack_eventmask_report(unsign
+@@ -197,10 +231,52 @@ int nf_conntrack_eventmask_report(unsign
  
  	return ret;
  }
@@ -247,7 +247,7 @@ Signed-off-by: Zhi Chen <zhichen@codeaurora.org>
  void nf_ct_deliver_cached_events(struct nf_conn *ct)
  {
  	struct nf_conntrack_ecache *e;
-@@ -226,6 +300,7 @@ void nf_ct_deliver_cached_events(struct
+@@ -226,6 +302,7 @@ void nf_ct_deliver_cached_events(struct
  	 */
  	__nf_conntrack_eventmask_report(e, events, e->missed, &item);
  }
@@ -255,7 +255,7 @@ Signed-off-by: Zhi Chen <zhichen@codeaurora.org>
  EXPORT_SYMBOL_GPL(nf_ct_deliver_cached_events);
  
  void nf_ct_expect_event_report(enum ip_conntrack_expect_events event,
-@@ -258,20 +333,43 @@ out_unlock:
+@@ -258,20 +335,43 @@ out_unlock:
  	rcu_read_unlock();
  }
  
@@ -301,7 +301,7 @@ Signed-off-by: Zhi Chen <zhichen@codeaurora.org>
  void nf_conntrack_unregister_notifier(struct net *net)
  {
  	mutex_lock(&nf_ct_ecache_mutex);
-@@ -279,6 +377,7 @@ void nf_conntrack_unregister_notifier(st
+@@ -279,6 +379,7 @@ void nf_conntrack_unregister_notifier(st
  	mutex_unlock(&nf_ct_ecache_mutex);
  	/* synchronize_rcu() is called after netns pre_exit */
  }
@@ -347,7 +347,7 @@ Signed-off-by: Zhi Chen <zhichen@codeaurora.org>
  static int ctnetlink_exp_done(struct netlink_callback *cb)
  {
  	if (cb->args[1])
-@@ -3754,11 +3763,17 @@ static int ctnetlink_stat_exp_cpu(struct
+@@ -3755,11 +3764,17 @@ static int ctnetlink_stat_exp_cpu(struct
  }
  
  #ifdef CONFIG_NF_CONNTRACK_EVENTS
@@ -365,7 +365,7 @@ Signed-off-by: Zhi Chen <zhichen@codeaurora.org>
  
  static const struct nfnl_callback ctnl_cb[IPCTNL_MSG_MAX] = {
  	[IPCTNL_MSG_CT_NEW]	= {
-@@ -3857,8 +3872,12 @@ static int __net_init ctnetlink_net_init
+@@ -3858,8 +3873,12 @@ static int __net_init ctnetlink_net_init
  static void ctnetlink_net_pre_exit(struct net *net)
  {
  #ifdef CONFIG_NF_CONNTRACK_EVENTS
