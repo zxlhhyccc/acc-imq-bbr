@@ -76,7 +76,7 @@ diff -ruaN a/net/ipv4/Kconfig b/net/ipv4/Kconfig
  	config DEFAULT_RENO
  		bool "Reno"
  endchoice
-@@ -739,7 +751,8 @@
+@@ -739,7 +751,8 @@ config DEFAULT_TCP_CONG
  	default "dctcp" if DEFAULT_DCTCP
  	default "cdg" if DEFAULT_CDG
  	default "bbr" if DEFAULT_BBR
