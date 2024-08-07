@@ -1319,7 +1319,7 @@ diff -ruaN a/net/ipv4/tcp_bbrplus.c b/net/ipv4/tcp_bbrplus.c
 diff -ruaN a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
 --- a/net/ipv4/tcp_output.c	2022-10-15 14:02:59.000000000 +0800
 +++ b/net/ipv4/tcp_output.c	2022-10-19 11:55:45.078906246 +0800
-@@ -1971,7 +1971,7 @@
+@@ -1971,7 +1971,7 @@ static bool tcp_nagle_check(bool partial
   * for every 2^9 usec (aka 512 us) of RTT, so that the RTT-based allowance
   * is below 1500 bytes after 6 * ~500 usec = 3ms.
   */
@@ -1328,7 +1328,7 @@ diff -ruaN a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
  			    int min_tso_segs)
  {
  	unsigned long bytes;
-@@ -1987,6 +1987,7 @@
+@@ -1987,6 +1987,7 @@ static u32 tcp_tso_autosize(const struct
  
  	return max_t(u32, bytes / mss_now, min_tso_segs);
  }
