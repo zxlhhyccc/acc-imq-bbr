@@ -110,7 +110,7 @@
  	config_get ADD_LOCAL_FQDN "$cfg" add_local_fqdn ""
  	config_get ADD_WAN_FQDN "$cfg" add_wan_fqdn 0
  
-@@ -1149,6 +1181,7 @@ dnsmasq_start()
+@@ -1152,6 +1184,7 @@ dnsmasq_start()
  	config_foreach filter_dnsmasq match dhcp_match_add "$cfg"
  	config_foreach filter_dnsmasq domain dhcp_domain_add "$cfg"
  	config_foreach filter_dnsmasq hostrecord dhcp_hostrecord_add "$cfg"
@@ -118,7 +118,7 @@
  	[ -n "$BOOT" ] || config_foreach filter_dnsmasq relay dhcp_relay_add "$cfg"
  
  	echo >> $CONFIGFILE_TMP
-@@ -1192,8 +1225,12 @@ dnsmasq_start()
+@@ -1195,8 +1228,12 @@ dnsmasq_start()
  		[ $ADD_LOCAL_DOMAIN -eq 1 ] && [ -n "$DOMAIN" ] && {
  			echo "search $DOMAIN" >> /tmp/resolv.conf
  		}
@@ -133,7 +133,7 @@
  		for DNS_SERVER in $DNS_SERVERS ; do
  			echo "nameserver $DNS_SERVER" >> /tmp/resolv.conf
  		done
-@@ -1225,6 +1262,25 @@ dnsmasq_start()
+@@ -1228,6 +1265,25 @@ dnsmasq_start()
  	[ -e "$hostsfile" ] && procd_add_jail_mount $hostsfile
  
  	procd_close_instance
@@ -159,7 +159,7 @@
  }
  
  dnsmasq_stop()
-@@ -1242,6 +1298,23 @@ dnsmasq_stop()
+@@ -1245,6 +1301,23 @@ dnsmasq_stop()
  	rm -f ${BASEDHCPSTAMPFILE}.${cfg}.*.dhcp
  }
  
@@ -183,7 +183,7 @@
  add_interface_trigger()
  {
  	local interface ifname ignore
-@@ -1313,6 +1386,7 @@ start_service() {
+@@ -1316,6 +1389,7 @@ start_service() {
  }
  
  reload_service() {
@@ -191,7 +191,7 @@
  	rc_procd start_service "$@"
  	procd_send_signal dnsmasq "$@"
  }
-@@ -1339,4 +1413,6 @@ stop_service() {
+@@ -1342,4 +1416,6 @@ stop_service() {
  	else
  		config_foreach dnsmasq_stop dnsmasq
  	fi
