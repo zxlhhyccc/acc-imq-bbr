@@ -61,7 +61,7 @@
  
  		s.taboption('filteropts', form.Flag, 'localise_queries',
  			_('Localise queries'),
-@@ -760,6 +794,13 @@ return view.extend({
+@@ -791,6 +825,13 @@ return view.extend({
  		o.optional = true;
  		o.placeholder = 3600;
  
