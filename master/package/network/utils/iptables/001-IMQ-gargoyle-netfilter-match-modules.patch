@@ -55,7 +55,7 @@
 --- /dev/null
 +++ b/patches/601-add-imq-support.patch
 @@ -0,0 +1,138 @@
-+--- a/dev/null
++--- /dev/null
 ++++ b/extensions/libxt_IMQ.c
 +@@ -0,0 +1,105 @@
 ++/* Shared library add-on to iptables to add IMQ target support. */
@@ -163,7 +163,7 @@
 ++	xtables_register_target(&imq_target);
 ++	xtables_register_target(&imq_target6);
 ++}
-+--- a/dev/null
++--- /dev/null
 ++++ b/extensions/libxt_IMQ.man
 +@@ -0,0 +1,15 @@
 ++This target is used to redirect the traffic to the IMQ driver and you can apply
@@ -181,7 +181,7 @@
 ++Redirect incomming traffic from interface eth0 to imq0 and outgoing traffic to imq1:
 ++iptables \-t mangle \-A FORWARD \-i eth0 \-j IMQ \-\-to\-dev 0
 ++iptables \-t mangle \-A FORWARD \-o eth0 \-j IMQ \-\-to\-dev 1
-+--- a/dev/null
++--- /dev/null
 ++++ b/include/linux/netfilter/xt_IMQ.h
 +@@ -0,0 +1,9 @@
 ++#ifndef _XT_IMQ_H
@@ -195,10 +195,10 @@
 ++
 --- /dev/null
 +++ b/patches/608-add-gargoyle-netfilter-match-modules.patch
-@@ -0,0 +1,2811 @@
+@@ -0,0 +1,2714 @@
 +--- /dev/null
 ++++ b/extensions/libipt_bandwidth.c
-+@@ -0,0 +1,657 @@
++@@ -0,0 +1,644 @@
 ++/*  bandwidth --	An iptables extension for bandwidth monitoring/control
 ++ *  			Can be used to efficiently monitor bandwidth and/or implement bandwidth quotas
 ++ *  			Can be queried using the iptbwctl userspace library
@@ -221,7 +221,6 @@
 ++ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ++ */
 ++
-++
 ++#include <stdio.h>
 ++#include <netdb.h>
 ++#include <string.h>
@@ -231,6 +230,7 @@
 ++#include <time.h>
 ++#include <sys/time.h>
 ++#include <limits.h>
+++#include <inttypes.h>
 ++
 ++/*
 ++ * in iptables 1.4.0 and higher, iptables.h includes xtables.h, which
@@ -257,14 +257,11 @@
 ++	#define register_match          xtables_register_match
 ++#endif
 ++
-++
-++
 ++int get_minutes_west(void);
 ++void set_kernel_timezone(void);
 ++int parse_sub(char* subnet_string, uint32_t* subnet, uint32_t* subnet_mask);
 ++static unsigned long get_pow(unsigned long base, unsigned long pow);
 ++static void param_problem_exit_error(char* msg);
-++
 ++
 ++/* Function which prints out usage message. */
 ++static void help(void)
@@ -300,7 +297,6 @@
 ++	{ .name = "bcheck_with_src_dst_swap",	.has_arg = 0, .flag = 0, .val = BANDWIDTH_CHECK_SWAP },
 ++	{ .name = 0 }
 ++};
-++
 ++
 ++/* Function which parses command options; returns true if it
 ++   ate an option */
@@ -397,7 +393,7 @@
 ++			valid_arg =  parse_sub(optarg, &(info->local_subnet), &(info->local_subnet_mask));
 ++			break;
 ++		case BANDWIDTH_LT:
-++			num_read = sscanf(argv[optind-1], "%lld", &read_64);
+++			num_read = sscanf(argv[optind-1], "%" PRIu64, &read_64);
 ++			if(num_read > 0 && (*flags & BANDWIDTH_CMP) == 0)
 ++			{
 ++				info->cmp = BANDWIDTH_LT;
@@ -407,7 +403,7 @@
 ++			c = BANDWIDTH_CMP; //only need one flag for less_than/greater_than
 ++			break;
 ++		case BANDWIDTH_GT:
-++			num_read = sscanf(argv[optind-1], "%lld", &read_64);
+++			num_read = sscanf(argv[optind-1], "%" PRIu64, &read_64);
 ++			if(num_read > 0  && (*flags & BANDWIDTH_CMP) == 0)
 ++			{
 ++				info->cmp = BANDWIDTH_GT;
@@ -435,7 +431,7 @@
 ++			c = BANDWIDTH_CMP;
 ++			break;
 ++		case BANDWIDTH_CURRENT:
-++			num_read = sscanf(argv[optind-1], "%lld", &read_64);
+++			num_read = sscanf(argv[optind-1], "%" PRIu64, &read_64);
 ++			if(num_read > 0 )
 ++			{
 ++				info->current_bandwidth = read_64;
@@ -510,7 +506,6 @@
 ++	}
 ++	*flags = *flags + (unsigned int)c;
 ++
-++
 ++	//if we have both reset_interval & reset_time, check reset_time is in valid range
 ++	if((*flags & BANDWIDTH_RESET_TIME) == BANDWIDTH_RESET_TIME && (*flags & BANDWIDTH_RESET_INTERVAL) == BANDWIDTH_RESET_INTERVAL)
 ++	{
@@ -535,8 +530,6 @@
 ++	return valid_arg;
 ++}
 ++
-++
-++
 ++static void print_bandwidth_args( struct ipt_bandwidth_info* info )
 ++{
 ++	if(info->cmp == BANDWIDTH_CHECK)
@@ -551,8 +544,6 @@
 ++		}
 ++	}
 ++	printf("--id %s ", info->id);
-++
-++
 ++
 ++	if(info->cmp != BANDWIDTH_CHECK)
 ++	{
@@ -583,7 +574,6 @@
 ++			printf("--type individual_remote ");
 ++		}
 ++
-++
 ++		if(info->local_subnet != 0)
 ++		{
 ++			unsigned char* sub = (unsigned char*)(&(info->local_subnet));
@@ -598,11 +588,11 @@
 ++		}
 ++		if(info->cmp == BANDWIDTH_GT)
 ++		{
-++			printf("--greater_than %lld ", info->bandwidth_cutoff);
+++			printf("--greater_than %" PRIu64 " ", info->bandwidth_cutoff);
 ++		}
 ++		if(info->cmp == BANDWIDTH_LT)
 ++		{
-++			printf("--less_than %lld ", info->bandwidth_cutoff);
+++			printf("--less_than %" PRIu64 " ", info->bandwidth_cutoff);
 ++		}
 ++		if (info->type == BANDWIDTH_COMBINED) /* too much data to print for multi types, have to use socket to get/set data */
 ++		{
@@ -616,7 +606,7 @@
 ++			}
 ++			else 
 ++			{
-++				printf("--current_bandwidth %lld ", info->current_bandwidth);
+++				printf("--current_bandwidth %" PRIu64 " ", info->current_bandwidth);
 ++			}
 ++		}
 ++		if(info->reset_is_constant_interval)
@@ -752,7 +742,6 @@
 ++	return ret;
 ++}
 ++
-++
 ++int parse_sub(char* subnet_string, uint32_t* subnet, uint32_t* subnet_mask)
 ++{
 ++
@@ -807,8 +796,6 @@
 ++	return valid;
 ++}
 ++
-++
-++
 ++int get_minutes_west(void)
 ++{
 ++	time_t now;
@@ -846,7 +833,7 @@
 ++	struct timezone old_tz;
 ++	struct timezone new_tz;
 ++
-++	new_tz.tz_minuteswest = get_minutes_west();;
+++	new_tz.tz_minuteswest = get_minutes_west();
 ++	new_tz.tz_dsttime = 0;
 ++
 ++	/* Get tv to pass to settimeofday(2) to be sure we avoid hour-sized warp */
@@ -856,10 +843,9 @@
 ++	/* set timezone */
 ++	settimeofday(&tv, &new_tz);
 ++}
-+
 +--- /dev/null
 ++++ b/include/linux/netfilter_ipv4/ipt_bandwidth.h
-+@@ -0,0 +1,106 @@
++@@ -0,0 +1,99 @@
 ++/*  bandwidth --	An iptables extension for bandwidth monitoring/control
 ++ *  			Can be used to efficiently monitor bandwidth and/or implement bandwidth quotas
 ++ *  			Can be queried using the iptbwctl userspace library
@@ -895,7 +881,6 @@
 ++#define BANDWIDTH_RESET_TIME		  64
 ++#define BANDWIDTH_LAST_BACKUP		 128
 ++
-++
 ++/* parameter defs that don't map to flag bits */
 ++#define BANDWIDTH_TYPE			  70
 ++#define BANDWIDTH_ID			  71
@@ -922,8 +907,6 @@
 ++#define BANDWIDTH_INDIVIDUAL_LOCAL	  93
 ++#define BANDWIDTH_INDIVIDUAL_REMOTE	  94
 ++
-++
-++
 ++/* socket id parameters (for userspace i/o) */
 ++#define BANDWIDTH_SET 			2048
 ++#define BANDWIDTH_GET 			2049
@@ -934,7 +917,6 @@
 ++/* 4 bytes for total number of entries, 100 entries of 12 bytes each, + 1 byte indicating whether all have been dumped */
 ++#define BANDWIDTH_QUERY_LENGTH		1205 
 ++#define BANDWIDTH_ENTRY_LENGTH		  12
-++
 ++
 ++struct ipt_bandwidth_info
 ++{
@@ -956,20 +938,16 @@
 ++
 ++	uint32_t num_intervals_to_save;
 ++
-++
 ++	unsigned long hashed_id;
 ++	void* iam;
 ++	uint64_t* combined_bw;
 ++	struct ipt_bandwidth_info* non_const_self;
 ++	unsigned long* ref_count;
-++
-++
 ++};
 ++#endif /*_IPT_BANDWIDTH_H*/
-+
 +--- /dev/null
 ++++ b/extensions/libipt_timerange.c
-+@@ -0,0 +1,876 @@
++@@ -0,0 +1,851 @@
 ++/*  timerange --	An iptables extension to match multiple timeranges within a week
 ++ *  			Originally designed for use with Gargoyle router firmware (gargoyle-router.com)
 ++ *
@@ -990,7 +968,6 @@
 ++ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ++ */
 ++
-++
 ++#include <stdio.h>
 ++#include <netdb.h>
 ++#include <string.h>
@@ -999,7 +976,6 @@
 ++#include <ctype.h>
 ++#include <time.h>
 ++#include <sys/time.h>
-++
 ++
 ++/*
 ++ * in iptables 1.4.0 and higher, iptables.h includes xtables.h, which
@@ -1030,7 +1006,6 @@
 ++static int  my_check_inverse(const char option[], int* invert, int *my_optind, int argc);
 ++static void param_problem_exit_error(char* msg);
 ++
-++
 ++long* parse_time_ranges(char* time_ranges, unsigned char is_weekly_range);
 ++void merge_adjacent_time_ranges(long* time_ranges, unsigned char is_weekly_range);
 ++unsigned long parse_time(char* time_str);
@@ -1055,7 +1030,6 @@
 ++	{ .name = "weekly_ranges", .has_arg = 1, .flag = 0, .val = WEEKLY_RANGE },
 ++	{ .name = 0 }
 ++};
-++
 ++
 ++/* Function which parses command options; returns true if it
 ++   ate an option */
@@ -1106,7 +1080,6 @@
 ++			}
 ++			break;
 ++
-++
 ++		case WEEKDAYS:
 ++			parsed = parse_weekdays(argv[optind-1]);
 ++			if(parsed != NULL && (*flags & WEEKDAYS) == 0 && (*flags & WEEKLY_RANGE) == 0)
@@ -1149,8 +1122,6 @@
 ++
 ++	return valid_arg;
 ++}
-++
-++
 ++	
 ++static void print_timerange_args(	struct ipt_timerange_info* info )
 ++{
@@ -1366,7 +1337,6 @@
 ++	return weekdays;	
 ++}
 ++
-++
 ++/* is_weekly_range indicates whether we're parsing hours within a single day or a range over a whole week */
 ++long* parse_time_ranges(char* time_ranges, unsigned char is_weekly_range)
 ++{
@@ -1374,8 +1344,6 @@
 ++	int num_pieces = 0;
 ++	for(num_pieces = 0; pieces[num_pieces] != NULL; num_pieces++) {};
 ++	long *parsed = (long*)malloc( (1+(num_pieces*2)) * sizeof(long));
-++
-++
 ++	
 ++	int piece_index = 0;
 ++	for(piece_index = 0; pieces[piece_index] != NULL; piece_index++)
@@ -1400,7 +1368,6 @@
 ++	}
 ++	free(pieces);
 ++	parsed[ (num_pieces*2) ] = -1; // terminated with -1 
-++
 ++
 ++	// make sure there is no overlap -- this will invalidate ranges 
 ++	int range_index = 0;
@@ -1460,7 +1427,6 @@
 ++	// merge time ranges where end of first = start of second 
 ++	merge_adjacent_time_ranges(parsed, is_weekly_range);
 ++
-++
 ++	// if always active, free & return NULL 
 ++	int max_multiple = is_weekly_range ? 7 : 1;
 ++	if(parsed[0] == 0 && parsed[1] == max_multiple*24*60*60)
@@ -1468,7 +1434,6 @@
 ++		free(parsed);
 ++		parsed = NULL;
 ++	}
-++
 ++
 ++	//adjust so any range that crosses end of range is split in two
 ++	int num_range_indices=0;
@@ -1500,8 +1465,6 @@
 ++	
 ++	return adjusted_range;
 ++}
-++
-++
 ++
 ++void merge_adjacent_time_ranges(long* time_ranges, unsigned char is_weekly_range)
 ++{
@@ -1539,9 +1502,6 @@
 ++	free(merged_indices);
 ++
 ++}
-++
-++
-++
 ++
 ++/* 
 ++ * assumes 24hr time, not am/pm, in format:
@@ -1667,7 +1627,6 @@
 ++		split_index = 0;
 ++		split[split_index] = NULL;
 ++
-++
 ++		dup_line = strdup(line_str);
 ++		start = dup_line;
 ++		non_separator_found = 0;
@@ -1723,7 +1682,6 @@
 ++				split_index++;
 ++			}
 ++
-++
 ++			/* find next non-separator index, indicating start of next piece */
 ++			start = start+ first_separator_index;
 ++			non_separator_found = 0;
@@ -1752,7 +1710,6 @@
 ++	return split;
 ++}
 ++
-++
 ++char* trim_flanking_whitespace(char* str)
 ++{
 ++	int new_start = 0;
@@ -1760,7 +1717,6 @@
 ++
 ++	char whitespace[5] = { ' ', '\t', '\n', '\r', '\0' };
 ++	int num_whitespace_chars = 4;
-++	
 ++	
 ++	int str_index = 0;
 ++	int is_whitespace = 1;
@@ -1777,7 +1733,6 @@
 ++	}
 ++	new_start = str_index;
 ++
-++
 ++	str_index = strlen(str) - 1;
 ++	is_whitespace = 1;
 ++	while( str_index >= new_start && is_whitespace == 1)
@@ -1791,7 +1746,6 @@
 ++		str_index = is_whitespace == 1 ? str_index-1 : str_index;
 ++	}
 ++	new_length = str[new_start] == '\0' ? 0 : str_index + 1 - new_start;
-++	
 ++
 ++	if(new_start > 0)
 ++	{
@@ -1844,12 +1798,10 @@
 ++
 ++	/* set timezone */
 ++	settimeofday(&tv, &new_tz);
-++
 ++}
-+
 +--- /dev/null
 ++++ b/include/linux/netfilter_ipv4/ipt_timerange.h
-+@@ -0,0 +1,43 @@
++@@ -0,0 +1,38 @@
 ++/*  timerange --	An iptables extension to match multiple timeranges within a week
 ++ *  			Originally designed for use with Gargoyle router firmware (gargoyle-router.com)
 ++ *
@@ -1870,12 +1822,8 @@
 ++ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ++ */
 ++
-++
-++
-++
 ++#ifndef _IPT_TIMERANGE_H
 ++#define _IPT_TIMERANGE_H
-++
 ++
 ++#define RANGE_LENGTH 51
 ++
@@ -1883,7 +1831,6 @@
 ++#define WEEKDAYS 2
 ++#define DAYS_HOURS (HOURS+WEEKDAYS)
 ++#define WEEKLY_RANGE 4
-++
 ++
 ++struct ipt_timerange_info
 ++{
@@ -1893,10 +1840,9 @@
 ++	unsigned char invert;
 ++};
 ++#endif /*_IPT_TIMERANGE_H*/
-+
 +--- /dev/null
 ++++ b/extensions/libipt_webmon.c
-+@@ -0,0 +1,700 @@
++@@ -0,0 +1,679 @@
 ++/*  webmon --	An iptables extension to match URLs in HTTP(S) requests
 ++ *  		This module can match using string match or regular expressions
 ++ *  		Originally designed for use with Gargoyle router firmware (gargoyle-router.com)
@@ -1918,12 +1864,12 @@
 ++ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ++ */
 ++
-++
 ++#include <stdio.h>
 ++#include <netdb.h>
 ++#include <string.h>
 ++#include <stdlib.h>
 ++#include <getopt.h>
+++#include <unistd.h>
 ++
 ++#include <arpa/inet.h>
 ++
@@ -1952,7 +1898,6 @@
 ++	#define register_match          xtables_register_match
 ++#endif
 ++
-++
 ++#define STRIP "%d.%d.%d.%d"
 ++#define NIPQUAD(addr) \
 ++	((unsigned char *)&addr)[0], \
@@ -1960,11 +1905,8 @@
 ++	((unsigned char *)&addr)[2], \
 ++	((unsigned char *)&addr)[3]
 ++
-++
-++
 ++/* utility functions necessary for module to work across multiple iptables versions */
-++static void param_problem_exit_error(char* msg);
-++
+++static void param_problem_exit_error(char* msg) __attribute__((unused));
 ++
 ++void parse_ips_and_ranges(char* addr_str, struct ipt_webmon_info *info);
 ++
@@ -2020,7 +1962,6 @@
 ++	info->exclude_type = WEBMON_EXCLUDE;
 ++	info->ref_count = NULL;
 ++}
-++
 ++
 ++/* Function which parses command options; returns true if it ate an option */
 ++static int parse(	int c, 
@@ -2091,8 +2032,6 @@
 ++	return valid_arg;
 ++
 ++}
-++
-++
 ++	
 ++static void print_webmon_args(	struct ipt_webmon_info* info )
 ++{
@@ -2117,7 +2056,6 @@
 ++		printf(" ");
 ++	}
 ++}
-++
 ++
 ++static void do_load(char* file, uint32_t max, unsigned char type)
 ++{
@@ -2150,7 +2088,7 @@
 ++				uint32_t* maxp = (uint32_t*)(data+1);
 ++				data[0] = type;
 ++				*maxp = max;
-++				sprintf( (data+1+sizeof(uint32_t)),  "%s", file_data);
+++				sprintf((char *)(data + 1 + sizeof(uint32_t)), "%s", file_data);
 ++			
 ++				sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_RAW);
 ++				if(sockfd >= 0)
@@ -2165,7 +2103,6 @@
 ++	}
 ++
 ++}
-++
 ++
 ++static void final_check(unsigned int flags)
 ++{
@@ -2222,7 +2159,6 @@
 ++	register_match(&webmon);
 ++}
 ++
-++
 ++#ifndef TRUE
 ++#define TRUE 1
 ++#endif
@@ -2230,13 +2166,7 @@
 ++#define FALSE 0
 ++#endif
 ++
-++
-++
-++
-++
-++
-++
-++static void param_problem_exit_error(char* msg)
+++static void param_problem_exit_error(char *msg)
 ++{
 ++	#ifdef xtables_error
 ++		xtables_error(PARAMETER_PROBLEM, "%s", msg);
@@ -2378,8 +2308,6 @@
 ++	
 ++}
 ++
-++
-++
 ++/*
 ++ * line_str is the line to be parsed -- it is not modified in any way
 ++ * max_pieces indicates number of pieces to return, if negative this is determined dynamically
@@ -2509,8 +2437,6 @@
 ++	return split;
 ++}
 ++
-++
-++
 ++char* trim_flanking_whitespace(char* str)
 ++{
 ++	int new_start = 0;
@@ -2518,7 +2444,6 @@
 ++
 ++	char whitespace[5] = { ' ', '\t', '\n', '\r', '\0' };
 ++	int num_whitespace_chars = 4;
-++	
 ++	
 ++	int str_index = 0;
 ++	int is_whitespace = 1;
@@ -2597,10 +2522,9 @@
 ++	return read_string;
 ++}
 ++
-+
 +--- /dev/null
 ++++ b/include/linux/netfilter_ipv4/ipt_webmon.h
-+@@ -0,0 +1,63 @@
++@@ -0,0 +1,58 @@
 ++/*  webmon --	A netfilter module to match URLs in HTTP(S) requests
 ++ *  		This module can match using string match or regular expressions
 ++ *  		Originally designed for use with Gargoyle router firmware (gargoyle-router.com)
@@ -2622,12 +2546,8 @@
 ++ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ++ */
 ++
-++
-++
-++
 ++#ifndef _IPT_WEBMON_H
 ++#define _IPT_WEBMON_H
-++
 ++
 ++#define WEBMON_MAX_IPS           256
 ++#define WEBMON_MAX_IP_RANGES      16
@@ -2660,14 +2580,12 @@
 ++	uint32_t num_exclude_ranges;
 ++	unsigned char exclude_type;
 ++	uint32_t* ref_count;
-++
 ++};
 ++
 ++#endif /*_IPT_WEBMON_H*/
-+
 +--- /dev/null
 ++++ b/extensions/libipt_weburl.c
-+@@ -0,0 +1,290 @@
++@@ -0,0 +1,280 @@
 ++/*  weburl --	An iptables extension to match URLs in HTTP(S) requests
 ++ *  		This module can match using string match or regular expressions
 ++ *  		Originally designed for use with Gargoyle router firmware (gargoyle-router.com)
@@ -2689,13 +2607,11 @@
 ++ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ++ */
 ++
-++
 ++#include <stdio.h>
 ++#include <netdb.h>
 ++#include <string.h>
 ++#include <stdlib.h>
 ++#include <getopt.h>
-++
 ++
 ++/*
 ++ * in iptables 1.4.0 and higher, iptables.h includes xtables.h, which
@@ -2722,12 +2638,9 @@
 ++	#define register_match          xtables_register_match
 ++#endif
 ++
-++
 ++/* utility functions necessary for module to work across multiple iptables versions */
 ++static int  my_check_inverse(const char option[], int* invert, int *my_optind, int argc);
-++static void param_problem_exit_error(char* msg);
-++
-++
+++static void param_problem_exit_error(char* msg) __attribute__((unused));
 ++
 ++/* Function which prints out usage message. */
 ++static void help(void)
@@ -2744,7 +2657,6 @@
 ++	{ .name = "path_only",		.has_arg = 0, .flag = 0, .val = WEBURL_PATH_PART },	//only match path portion of url
 ++	{ .name = 0 }
 ++};
-++
 ++
 ++/* Function which parses command options; returns true if it
 ++   ate an option */
@@ -2821,8 +2733,6 @@
 ++	
 ++	return valid_arg;
 ++}
-++
-++
 ++	
 ++static void print_weburl_args(	struct ipt_weburl_info* info )
 ++{
@@ -2920,7 +2830,6 @@
 ++	register_match(&weburl);
 ++}
 ++
-++
 ++#ifndef TRUE
 ++#define TRUE 1
 ++#endif
@@ -2957,11 +2866,9 @@
 ++	#endif
 ++}
 ++
-++
-+
 +--- /dev/null
 ++++ b/include/linux/netfilter_ipv4/ipt_weburl.h
-+@@ -0,0 +1,45 @@
++@@ -0,0 +1,41 @@
 ++/*  weburl --	A netfilter module to match URLs in HTTP(S) requests
 ++ *  		This module can match using string match or regular expressions
 ++ *  		Originally designed for use with Gargoyle router firmware (gargoyle-router.com)
@@ -2983,12 +2890,8 @@
 ++ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ++ */
 ++
-++
-++
-++
 ++#ifndef _IPT_WEBURL_H
 ++#define _IPT_WEBURL_H
-++
 ++
 ++#define MAX_TEST_STR 1024
 ++
@@ -3083,3 +2986,28 @@
 + }
 + 
 + static int MASQUERADE_xlate(struct xt_xlate *xl,
+--- /dev/null
++++ b/patches/999-xshared-Fix-build-inline-Winline.patch
+@@ -0,0 +1,22 @@
++--- a/iptables/xshared.c
+++++ b/iptables/xshared.c
++@@ -418,7 +418,7 @@ bool tokenize_rule_counters(char **buffe
++ 	return true;
++ }
++ 
++-inline bool xs_has_arg(int argc, char *argv[])
+++__attribute__((always_inline)) inline bool xs_has_arg(int argc, char *argv[])
++ {
++ 	return optind < argc &&
++ 	       argv[optind][0] != '-' &&
++--- a/include/linux/kernel.h
+++++ b/include/linux/kernel.h
++@@ -4,7 +4,7 @@
++ /*
++  * 'kernel.h' contains some often-used function prototypes etc
++  */
++-#define __ALIGN_KERNEL(x, a)		__ALIGN_KERNEL_MASK(x, (typeof(x))(a) - 1)
+++#define __ALIGN_KERNEL(x, a)		__ALIGN_KERNEL_MASK(x, (__typeof__(x))(a) - 1)
++ #define __ALIGN_KERNEL_MASK(x, mask)	(((x) + (mask)) & ~(mask))
++ 
++ 
