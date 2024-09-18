@@ -262,7 +262,7 @@
 + #endif
 +--- a/include/iwinfo.h
 ++++ b/include/iwinfo.h
-+@@ -412,6 +412,7 @@ extern const struct iwinfo_ops wext_ops;
++@@ -429,6 +429,7 @@ extern const struct iwinfo_ops wext_ops;
 + extern const struct iwinfo_ops madwifi_ops;
 + extern const struct iwinfo_ops nl80211_ops;
 + extern const struct iwinfo_ops wl_ops;
@@ -272,7 +272,7 @@
 + 
 +--- a/iwinfo_lib.c
 ++++ b/iwinfo_lib.c
-+@@ -388,6 +388,9 @@ static const struct iwinfo_ops *backends
++@@ -395,6 +395,9 @@ static const struct iwinfo_ops *backends
 + #ifdef USE_MADWIFI
 + 	&madwifi_ops,
 + #endif
@@ -284,7 +284,7 @@
 + #endif
 +--- a/iwinfo_lua.c
 ++++ b/iwinfo_lua.c
-+@@ -686,6 +686,35 @@ static int iwinfo_L_countrylist(lua_Stat
++@@ -697,6 +697,35 @@ static int iwinfo_L_countrylist(lua_Stat
 + 	return 1;
 + }
 + 
@@ -320,7 +320,7 @@
 + 
 + #ifdef USE_WL
 + /* Broadcom */
-+@@ -906,6 +935,40 @@ static const luaL_reg
++@@ -917,6 +946,40 @@ static const luaL_reg
 + };
 + #endif
 + 
@@ -361,7 +361,7 @@
 + /* Wext table */
 + #ifdef USE_WEXT
 + static const luaL_reg R_wext[] = {
-+@@ -950,6 +1013,14 @@ static const luaL_reg R_common[] = {
++@@ -961,6 +1024,14 @@ static const luaL_reg R_common[] = {
 + LUALIB_API int luaopen_iwinfo(lua_State *L) {
 + 	luaL_register(L, IWINFO_META, R_common);
 + 
@@ -1505,7 +1505,7 @@
 + 	struct iwinfo_freqlist_entry *e = NULL;
 +--- a/iwinfo_utils.c
 ++++ b/iwinfo_utils.c
-+@@ -407,7 +407,8 @@ int iwinfo_hardware_id_from_mtd(struct i
++@@ -423,7 +423,8 @@ int iwinfo_hardware_id_from_mtd(struct i
 + 
 + 				/* subsystem from EEPROM_NIC_CONF0_RF_TYPE */
 + 				id->subsystem_device_id = (bc[off + 0x1a] & 0x0f00) >> 8;
