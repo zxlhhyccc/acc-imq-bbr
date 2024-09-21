@@ -1,6 +1,6 @@
 --- a/modules/video.mk
 +++ b/modules/video.mk
-@@ -246,12 +246,51 @@ endef
+@@ -246,6 +246,45 @@ endef
  $(eval $(call KernelPackage,fb-tft-ili9486))
  
  
@@ -12,7 +12,7 @@
 +	CONFIG_MEDIA_SUPPORT \
 +	CONFIG_MEDIA_CONTROLLER=y \
 +	CONFIG_MEDIA_CAMERA_SUPPORT=y \
-+	CONFIG_MEDIA_PLATFORM_DRIVERS=y@ge6.1
++	CONFIG_MEDIA_PLATFORM_DRIVERS=y
 +  FILES:=$(LINUX_DIR)/drivers/media/mc/mc.ko
 +  AUTOLOAD:=$(call AutoProbe,mc)
 +endef
@@ -46,14 +46,7 @@
  define KernelPackage/drm
    SUBMENU:=$(VIDEO_MENU)
    TITLE:=Direct Rendering Manager (DRM) support
-   HIDDEN:=1
-   DEPENDS:=+kmod-dma-buf +kmod-i2c-core +PACKAGE_kmod-backlight:kmod-backlight \
--	+kmod-fb
-+	+(LINUX_5_15||LINUX_6_1||LINUX_6_6):kmod-fb
-   KCONFIG:=CONFIG_DRM
-   FILES:= \
- 	$(LINUX_DIR)/drivers/gpu/drm/drm.ko \
-@@ -487,12 +526,44 @@ endef
+@@ -486,6 +525,37 @@ endef
  
  $(eval $(call KernelPackage,drm-imx-ldb))
  
@@ -91,15 +84,7 @@
  define KernelPackage/drm-radeon
    SUBMENU:=$(VIDEO_MENU)
    TITLE:=Radeon DRM support
-   DEPENDS:=@TARGET_x86 @DISPLAY_SUPPORT +kmod-backlight +kmod-drm-kms-helper \
- 	+kmod-drm-ttm +kmod-drm-ttm-helper +kmod-i2c-algo-bit +radeon-firmware \
--	+kmod-drm-display-helper +kmod-acpi-video +LINUX_6_6:kmod-drm-suballoc-helper
-+	+kmod-drm-display-helper +(LINUX_6_1||LINUX_6_6):kmod-acpi-video \
-+	+LINUX_6_6:kmod-drm-suballoc-helper
-   KCONFIG:=CONFIG_DRM_RADEON
-   FILES:=$(LINUX_DIR)/drivers/gpu/drm/radeon/radeon.ko
-   AUTOLOAD:=$(call AutoProbe,radeon)
-@@ -504,6 +575,39 @@ endef
+@@ -503,6 +573,39 @@ endef
  
  $(eval $(call KernelPackage,drm-radeon))
  
@@ -110,7 +95,7 @@
 +  HIDDEN:=1
 +  KCONFIG:=CONFIG_DRM_SCHED
 +  FILES:= \
-+	$(LINUX_DIR)/drivers/gpu/drm/drm_shmem_helper.ko@gt5.17 \
++	$(LINUX_DIR)/drivers/gpu/drm/drm_shmem_helper.ko \
 +	$(LINUX_DIR)/drivers/gpu/drm/scheduler/gpu-sched.ko
 +  AUTOLOAD:=$(call AutoProbe,gpu-sched)
 +endef
@@ -120,7 +105,7 @@
 +define KernelPackage/drm-nouveau
 +  SUBMENU:=$(VIDEO_MENU)
 +  TITLE:=nouveau DRM support
-+  DEPENDS:=@TARGET_x86 @DISPLAY_SUPPORT +kmod-drm-kms-helper +(LINUX_6_1||LINUX_6_6):kmod-acpi-video
++  DEPENDS:=@TARGET_x86 @DISPLAY_SUPPORT +kmod-drm-kms-helper +kmod-acpi-video
 +  KCONFIG:=CONFIG_DRM_NOUVEAU \
 +	NOUVEAU_DEBUG=5 \
 +	NOUVEAU_DEBUG_DEFAULT=3 \
@@ -139,18 +124,18 @@
  #
  # Video Capture
  #
-@@ -511,7 +615,8 @@ $(eval $(call KernelPackage,drm-radeon))
+@@ -510,7 +613,8 @@ $(eval $(call KernelPackage,drm-radeon))
  define KernelPackage/video-core
    SUBMENU:=$(VIDEO_MENU)
    TITLE=Video4Linux support
 -  DEPENDS:=+PACKAGE_kmod-i2c-core:kmod-i2c-core
 +  DEPENDS:=+PACKAGE_kmod-i2c-core:kmod-i2c-core \
-+	+LINUX_6_1||LINUX_6_6:kmod-media-core
++	+kmod-media-core
    KCONFIG:= \
  	CONFIG_MEDIA_SUPPORT \
  	CONFIG_MEDIA_CAMERA_SUPPORT=y \
-@@ -520,7 +625,7 @@ define KernelPackage/video-core
- 	CONFIG_MEDIA_PLATFORM_DRIVERS=y@ge6.1
+@@ -519,7 +623,7 @@ define KernelPackage/video-core
+ 	CONFIG_MEDIA_PLATFORM_DRIVERS=y
    FILES:= \
  	$(LINUX_DIR)/drivers/media/$(V4L2_DIR)/videodev.ko
 -  AUTOLOAD:=$(call AutoLoad,60,videodev)
@@ -158,7 +143,7 @@
  endef
  
  define KernelPackage/video-core/description
-@@ -1282,3 +1387,40 @@ define KernelPackage/video-tw686x/description
+@@ -1278,3 +1382,40 @@ define KernelPackage/video-tw686x/description
  endef
  
  $(eval $(call KernelPackage,video-tw686x))
@@ -167,7 +152,7 @@
 +  SUBMENU:=$(VIDEO_MENU)
 +  TITLE:=Intel GPU drm support
 +  DEPENDS:=@TARGET_x86 +kmod-drm-buddy +kmod-drm-ttm +kmod-drm-kms-helper +i915-firmware \
-+	+(LINUX_6_1||LINUX_6_6):kmod-drm-display-helper +(LINUX_6_1||LINUX_6_6):kmod-acpi-video
++	+kmod-drm-display-helper +kmod-acpi-video
 +  KCONFIG:= \
 +	CONFIG_INTEL_GTT \
 +	CONFIG_DRM_I915 \
