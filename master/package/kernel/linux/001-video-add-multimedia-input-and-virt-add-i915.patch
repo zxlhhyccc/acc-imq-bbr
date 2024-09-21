@@ -46,7 +46,7 @@
  define KernelPackage/drm
    SUBMENU:=$(VIDEO_MENU)
    TITLE:=Direct Rendering Manager (DRM) support
-@@ -486,6 +525,37 @@ endef
+@@ -484,6 +523,37 @@ endef
  
  $(eval $(call KernelPackage,drm-imx-ldb))
  
@@ -84,7 +84,7 @@
  define KernelPackage/drm-radeon
    SUBMENU:=$(VIDEO_MENU)
    TITLE:=Radeon DRM support
-@@ -503,6 +573,39 @@ endef
+@@ -501,6 +571,39 @@ endef
  
  $(eval $(call KernelPackage,drm-radeon))
  
@@ -124,7 +124,7 @@
  #
  # Video Capture
  #
-@@ -510,7 +613,8 @@ $(eval $(call KernelPackage,drm-radeon))
+@@ -508,7 +611,8 @@ $(eval $(call KernelPackage,drm-radeon))
  define KernelPackage/video-core
    SUBMENU:=$(VIDEO_MENU)
    TITLE=Video4Linux support
@@ -134,7 +134,7 @@
    KCONFIG:= \
  	CONFIG_MEDIA_SUPPORT \
  	CONFIG_MEDIA_CAMERA_SUPPORT=y \
-@@ -519,7 +623,7 @@ define KernelPackage/video-core
+@@ -517,7 +621,7 @@ define KernelPackage/video-core
  	CONFIG_MEDIA_PLATFORM_DRIVERS=y
    FILES:= \
  	$(LINUX_DIR)/drivers/media/$(V4L2_DIR)/videodev.ko
@@ -143,7 +143,7 @@
  endef
  
  define KernelPackage/video-core/description
-@@ -1278,3 +1382,40 @@ define KernelPackage/video-tw686x/description
+@@ -1276,3 +1380,40 @@ define KernelPackage/video-tw686x/description
  endef
  
  $(eval $(call KernelPackage,video-tw686x))
@@ -186,7 +186,7 @@
 +$(eval $(call KernelPackage,drm-i915))
 --- a/modules/virt.mk
 +++ b/modules/virt.mk
-@@ -140,3 +140,80 @@ define KernelPackage/vhost-net
+@@ -139,3 +139,80 @@ define KernelPackage/vhost-net
  endef
  
  $(eval $(call KernelPackage,vhost-net))

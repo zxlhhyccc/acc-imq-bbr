@@ -27,15 +27,7 @@
    KCONFIG:= CONFIG_USB_DWC3_QCOM
    FILES:= $(LINUX_DIR)/drivers/usb/dwc3/dwc3-qcom.ko
    AUTOLOAD:=$(call AutoLoad,53,dwc3-qcom,1)
-@@ -576,6 +587,7 @@ define KernelPackage/usb-audio
- 	CONFIG_SND_USB_AUDIO
-   $(call AddDepends/usb)
-   $(call AddDepends/sound)
-+  DEPENDS += +LINUX_6_1:kmod-media-core
-   FILES:= \
- 	$(LINUX_DIR)/sound/usb/snd-usbmidi-lib.ko \
- 	$(LINUX_DIR)/sound/usb/snd-usb-audio.ko
-@@ -1183,6 +1195,7 @@ endef
+@@ -1182,6 +1193,7 @@ endef
  
  define KernelPackage/usb-net-aqc111
    TITLE:=Support for USB-to-Ethernet Aquantia AQtion 5/2.5GbE
