@@ -151,7 +151,7 @@
 +define KernelPackage/drm-i915
 +  SUBMENU:=$(VIDEO_MENU)
 +  TITLE:=Intel GPU drm support
-+  DEPENDS:=@TARGET_x86 +kmod-drm-buddy +kmod-drm-ttm +kmod-drm-kms-helper +i915-firmware \
++  DEPENDS:=@TARGET_x86 +kmod-drm-buddy +kmod-drm-ttm +kmod-drm-kms-helper +intel-igpu-firmware-dmc +intel-igpu-firmware-guc +intel-igpu-firmware-huc \
 +	+kmod-drm-display-helper +kmod-acpi-video
 +  KCONFIG:= \
 +	CONFIG_INTEL_GTT \
