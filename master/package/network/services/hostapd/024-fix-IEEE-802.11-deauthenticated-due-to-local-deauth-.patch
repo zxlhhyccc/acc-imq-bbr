@@ -13,15 +13,15 @@ diff --git a/src/ap/ieee802_11.c b/src/ap/ieee802_11.c
 index 83d80c1..838a901 100644
 --- a/src/ap/ieee802_11.c
 +++ b/src/ap/ieee802_11.c
-@@ -6474,7 +6474,7 @@ static void handle_assoc_cb(struct hostapd_data *hapd,
- 		if (status == WLAN_STATUS_SUCCESS)
+@@ -6507,7 +6507,7 @@ static void handle_assoc_cb(struct hostapd_data *hapd,
+ 		if (link->status == WLAN_STATUS_SUCCESS)
  			hostapd_drv_sta_remove(hapd, sta->addr);
  
 -		return;
 +	//	return;
  	}
  
- 	if (status != WLAN_STATUS_SUCCESS)
+ 	if (link->status != WLAN_STATUS_SUCCESS)
 -- 
 2.32.0 (Apple Git-132)
 
