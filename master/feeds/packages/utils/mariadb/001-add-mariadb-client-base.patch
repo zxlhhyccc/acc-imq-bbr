@@ -27,7 +27,7 @@
  define Package/mariadb-client-extra
    $(call Package/mariadb/Default)
    TITLE:=MariaDB database client extra
-@@ -467,6 +487,11 @@ define Package/mariadb-client/install
+@@ -471,6 +491,11 @@ define Package/mariadb-client/install
  	cd $(1)/usr/bin; $(LN) mysqlcheck mysqloptimize
  endef
  
@@ -39,7 +39,7 @@
  define Package/mariadb-client-extra/install
  	$(INSTALL_DIR) $(1)/usr/bin
  	$(foreach b,$(MARIADB_CLIENT_EXTRA),$(call Package/mariadb/install/bin,$(1),$(b));)
-@@ -543,6 +568,7 @@ endef
+@@ -547,6 +572,7 @@ endef
  
  $(eval $(call HostBuild))
  $(eval $(call BuildPackage,mariadb-client))
