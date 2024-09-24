@@ -1,0 +1,12 @@
+--- a/Makefile
++++ b/Makefile
+@@ -32,6 +32,9 @@ HOST_CONFIGURE_ARGS += \
+ 	--enable-threads=pth \
+ 	--disable-fuse2fs
+ 
++HOST_CONFIGURE_VARS += \
++	ac_cv_lib_uuid_uuid_generate=yes
++
+ define Host/Prepare
+ 	$(call Host/Prepare/Default)
+ 	rm -rf $(HOST_BUILD_DIR)/doc

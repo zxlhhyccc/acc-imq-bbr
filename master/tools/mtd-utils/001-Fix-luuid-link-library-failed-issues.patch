@@ -1,0 +1,12 @@
+--- a/Makefile
++++ b/Makefile
+@@ -37,6 +37,9 @@ HOST_CONFIGURE_ARGS+= \
+ 	--without-lzo \
+ 	--with-lzma
+ 
++HOST_CONFIGURE_VARS += \
++	UUID_LIBS="-L$(STAGING_DIR_HOST)/lib -luuid -lpthread"
++
+ HOST_MAKE_FLAGS += \
+ 	PROGRAMS="mkfs.jffs2 ubinize mkfs.ubifs"
+ 
