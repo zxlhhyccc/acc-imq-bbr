@@ -11,7 +11,7 @@
  endef
 --- a/files/ppp.sh
 +++ b/files/ppp.sh
-@@ -234,7 +234,15 @@ proto_pppoe_setup() {
+@@ -237,7 +237,15 @@ proto_pppoe_setup() {
  	json_get_var padi_attempts padi_attempts
  	json_get_var padi_timeout padi_timeout
  
