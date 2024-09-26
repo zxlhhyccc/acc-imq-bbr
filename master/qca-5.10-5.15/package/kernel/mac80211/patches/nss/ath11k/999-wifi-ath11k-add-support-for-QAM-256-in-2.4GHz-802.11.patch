@@ -12,11 +12,9 @@ Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
  drivers/net/wireless/ath/ath11k/mac.c | 1 +
  1 files changed, 1 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index c947d1c8d8c1..1cadfdd50afc 100644
 --- a/drivers/net/wireless/ath/ath11k/mac.c
 +++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -5762,6 +5762,7 @@ static void ath11k_mac_setup_ht_vht_cap(struct ath11k *ar,
+@@ -5752,6 +5752,7 @@ static void ath11k_mac_setup_ht_vht_cap(
  
  		band->vht_cap = ath11k_create_vht_cap(ar, rate_cap_tx_chainmask,
  						    rate_cap_rx_chainmask);
@@ -24,6 +22,3 @@ index c947d1c8d8c1..1cadfdd50afc 100644
  	}
  
  	if (cap->supported_bands & WMI_HOST_WLAN_5G_CAP &&
--- 
-2.40.1
-
