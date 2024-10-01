@@ -1,0 +1,11 @@
+--- a/Makefile
++++ b/Makefile
+@@ -14,7 +14,7 @@ SFE_IPV6_OBJS += sfe_ipv6_tunipip6.o sfe
+ endif
+ endif
+ 
+-ifeq ($(findstring 4.4, $(KERNELVERSION)),)
++ifneq ($(findstring 4.4, $(KERNELVERSION)),)
+   SFE_IPV4_OBJS += sfe_ipv4_gre.o
+   SFE_IPV6_OBJS += sfe_ipv6_gre.o
+   ccflags-y += -DSFE_GRE_TUN_ENABLE

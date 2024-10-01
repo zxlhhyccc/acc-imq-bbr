@@ -1,0 +1,24 @@
+From 01ec275bd0942ddc6b80e1d3671cdc66be670f57 Mon Sep 17 00:00:00 2001
+From: Robert Marko <robimarko@gmail.com>
+Date: Fri, 1 Sep 2023 12:23:58 +0200
+Subject: [PATCH] nss-dp: include <net/netdev_rx_queue.h>
+
+Since 6.5 netdev_rx_queue was moved out of netdevice.h so include the new
+header since that is where it lives now.
+
+Signed-off-by: Robert Marko <robimarko@gmail.com>
+---
+ nss_dp_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletions(-)
+
+--- a/nss_dp_main.c
++++ b/nss_dp_main.c
+@@ -31,7 +31,7 @@
+ #include <ref/ref_vsi.h>
+ #endif
+ #include <net/switchdev.h>
+-#if (LINUX_VERSION_CODE > KERNEL_VERSION(6, 6, 0))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 6, 0))
+ #include <net/netdev_rx_queue.h>
+ #endif
+ #if defined(NSS_DP_MAC_POLL_SUPPORT)

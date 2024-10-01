@@ -1,0 +1,116 @@
+--- a/sfe.c
++++ b/sfe.c
+@@ -47,7 +47,6 @@
+ 
+ extern int max_ipv4_conn;
+ extern int max_ipv6_conn;
+-extern bool fast_tc_filter;
+ 
+ #define SFE_MESSAGE_VERSION 0x1
+ #define sfe_ipv6_addr_copy(src, dest) memcpy((void *)(dest), (void *)(src), 16)
+@@ -2055,7 +2054,6 @@ int sfe_recv(struct sk_buff *skb)
+ 	 *   set and hence this check should be skipped.
+ 	 *
+ 	 */
+-	if (likely(!fast_tc_filter)) {
+ #ifdef CONFIG_NET_CLS_ACT
+ 		/*
+ 		 * If ingress Qdisc configured, and packet not processed by ingress Qdisc yet
+@@ -2072,7 +2070,6 @@ int sfe_recv(struct sk_buff *skb)
+ 		}
+ #endif
+ #endif
+-	} else {
+ 		/*
+ 		 * Update Vlan l2 info by parsing vlan netdev
+ 		 */
+@@ -2087,7 +2084,6 @@ int sfe_recv(struct sk_buff *skb)
+ 		if ((sfe_l2_parse_flag_check(&l2_info, SFE_L2_PARSE_FLAGS_VLAN_HW_TAG_SET))) {
+ 			goto sfe_l2_parse;
+ 		}
+-	}
+ 
+ 	/*
+ 	 * If l2_feature is enabled, we need not check if src dev is L3 interface since bridge flow offload is supported.
+@@ -2241,65 +2237,6 @@ bool sfe_is_l2_feature_enabled()
+ }
+ EXPORT_SYMBOL(sfe_is_l2_feature_enabled);
+ 
+-/*
+- * sfe_get_fast_tc_filter()
+- *	fast_tc feature is enabled/disabled
+- */
+-ssize_t sfe_get_fast_tc_filter(struct device *dev,
+-				     struct device_attribute *attr,
+-				     char *buf)
+-{
+-	ssize_t len;
+-
+-	len = snprintf(buf, (ssize_t)(PAGE_SIZE), "fast tc filter feature is %s\n", fast_tc_filter ? "enabled" : "disabled");
+-	return len;
+-}
+-
+-/*
+- * sfe_set_fast_tc_filter()
+- *	Enable or disable fast tc filter feature.
+- */
+-ssize_t sfe_set_fast_tc_filter(struct device *dev, struct device_attribute *attr,
+-			 const char *buf, size_t count)
+-{
+-	unsigned long val;
+-	int ret;
+-	ret = sscanf(buf, "%lu", &val);
+-
+-	if (ret != 1) {
+-		pr_err("Wrong input, %s\n", buf);
+-		return -EINVAL;
+-	}
+-
+-	if (val != 1 && val != 0) {
+-		pr_err("Input should be either 1 or 0, (%s)\n", buf);
+-		return -EINVAL;
+-	}
+-
+-
+-	if (fast_tc_filter == true && val) {
+-		pr_err("fast tc filter feature is already enabled\n");
+-		return -EINVAL;
+-	}
+-
+-	if (fast_tc_filter == false && !val) {
+-		pr_err("fast tc filter feature is already disabled\n");
+-		return -EINVAL;
+-	}
+-
+-
+-	if (val) {
+-		fast_tc_filter = true;
+-	} else {
+-		fast_tc_filter = false;
+-	}
+-
+-	return count;
+-}
+-
+-static const struct device_attribute fast_tc_filter_attr =
+-	__ATTR(fast_tc_filter,  0644, sfe_get_fast_tc_filter, sfe_set_fast_tc_filter);
+-
+ /*
+  * sfe_get_l2_feature()
+  *	L2 feature is enabled/disabled
+@@ -2547,15 +2484,6 @@ int sfe_init_if(void)
+ 		goto exit2;
+ 	}
+ 
+-	/*
+-	 * Create sys/sfe/fast_tc_filter
+-	 */
+-	result = sysfs_create_file(sfe_ctx->sys_sfe, &fast_tc_filter_attr.attr);
+-	if (result) {
+-		DEBUG_ERROR("failed to register tc filter enable feature flag sysfs file: %d\n", result);
+-		goto exit2;
+-	}
+-
+ 	/*
+ 	 * Create sys/sfe/l2_feature
+ 	 */
