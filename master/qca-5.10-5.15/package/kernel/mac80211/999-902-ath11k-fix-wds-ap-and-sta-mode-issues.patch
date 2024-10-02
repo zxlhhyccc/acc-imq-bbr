@@ -1,0 +1,60 @@
+--- a/drivers/net/wireless/ath/ath11k/mac.c     2024-09-02 13:51:42.695857992 +0700
++++ b/drivers/net/wireless/ath/ath11k/mac.c     2024-09-02 14:21:34.274369836 +0700
+@@ -5185,13 +5185,19 @@ skip_nss_ext:
+ 	 * AP vif of the AP_VLAN vif
+ 	 */
+ 	ret = ath11k_wmi_vdev_set_param_cmd(ar, arvif->vdev_id,
+-					    WMI_VDEV_PARAM_AP_ENABLE_NAWDS,
+-					    MIN_IDLE_INACTIVE_TIME_SECS);
++					    WMI_VDEV_PARAM_WDS,
++					    1);
+ 	if (ret) {
+-		ath11k_warn(ab, "failed to set vdev %i nawds parameters: %d\n",
++		ath11k_warn(ab, "failed to set vdev %i wds parameters: %d\n",
+ 			    arvif->vdev_id, ret);
+ 		goto ext_vdev_down;
+ 	}
++       ret = ath11k_nss_vdev_set_cmd(arvif,
++                                     ATH11K_NSS_WIFI_VDEV_CFG_WDS_BACKHAUL_CMD,
++                                     true);
++       if (ret) {
++               ath11k_warn(ab, "failed to cfg wds backhaul in nss %d\n", ret);
++       }
+ 
+ 	return;
+ 
+@@ -7107,6 +71113,21 @@ static int ath11k_mac_op_add_interface(s
+ 		goto err_vdev_del;
+ 	}
+ 
++       ret = ath11k_wmi_vdev_set_param_cmd(ar, arvif->vdev_id,
++                                           WMI_VDEV_PARAM_WDS,
++                                           1);
++       if(ret) {
++               ath11k_warn(ab, "failed to enable wds%d\n", ret);
++       }
++
++       ret = ath11k_wmi_vdev_set_param_cmd(ar, arvif->vdev_id,
++                                           WMI_VDEV_PARAM_CAPABILITIES, WMI_VDEV_WDS_LRN_ENABLED);
++       if (ret) {
++               ath11k_warn(ab, "failed to set vdev %d capability 0x%x, nss %d :%d\n",
++                           arvif->vdev_id, WMI_VDEV_WDS_LRN_ENABLED, nss, ret);
++               goto err_vdev_del;
++       }
++
+ 	nss = get_num_chains(ar->cfg_tx_chainmask) ? : 1;
+ 	ret = ath11k_wmi_vdev_set_param_cmd(ar, arvif->vdev_id,
+ 					    WMI_VDEV_PARAM_NSS, nss);
+--- a/drivers/net/wireless/ath/ath11k/nss.c     2024-09-02 13:51:42.695857992 +0700
++++ b/drivers/net/wireless/ath/ath11k/nss.c     2024-09-02 14:19:02.680318084 +0700
+@@ -3271,6 +3271,14 @@ int ath11k_nss_ext_vdev_create(struct at
+                   "nss ext vdev interface created ctx %pK, ifnum %d\n",
+                   arvif->nss.ctx, arvif->nss.if_num);
+
++       ret = ath11k_nss_vdev_set_cmd(arvif,
++                             ATH11K_NSS_WIFI_VDEV_CFG_WDS_BACKHAUL_CMD,
++                             true);
++       if (ret) {
++               ath11k_warn(ab, "failed to enable wds backhaul %d\n",
++                           ret);
++       }

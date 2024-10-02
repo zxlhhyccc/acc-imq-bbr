@@ -1,0 +1,783 @@
+Index: core.c
+===================================================================
+--- a/drivers/net/wireless/ath/ath11k/core.c     (revision 8024)
++++ b/drivers/net/wireless/ath/ath11k/core.c      (working copy)
+@@ -24,6 +24,10 @@ module_param_named(nss_offload, nss_offload, uint,
+ MODULE_PARM_DESC(nss_offload, "Enable NSS Offload support");
+ #endif
+ 
++static int poweroffset=0;
++module_param_named(poweroffset, poweroffset, uint, 0644);
++MODULE_PARM_DESC(poweroffset, "power offset for power table. negative values are permitted. units in 0.25db");
++
+ unsigned int ath11k_debug_mask;
+ EXPORT_SYMBOL(ath11k_debug_mask);
+ module_param_named(debug_mask, ath11k_debug_mask, uint, 0644);
+@@ -1436,6 +1440,686 @@ int ath11k_core_fetch_board_data_api_1(struct ath1
+ 	return 0;
+ }
+ 
++static void calcrawchecksum(const void *caldata, int offset, int size)
++{
++       int i;
++       u16 *cdata = (u16 *)caldata;
++       u16 *ptr_eeprom = (u16 *)caldata;
++       u16 crc = 0;
++       cdata[offset] = 0;
++       for (i = 0; i < size; i += 2) {
++               crc ^= le16_to_cpu(*ptr_eeprom);
++               ptr_eeprom++;
++       }
++       crc = ~crc;
++       cdata[offset] = cpu_to_le16(crc);
++}
++
++static void calcchecksum(void *caldata, int size)
++{
++       calcrawchecksum(caldata, 5, size);
++}
++
++void *getsectionbyid(const void *bd, u16 id, u16 *nvlen)
++{
++       u16 *section = (u16 *)bd;
++       u8 *data = (u8 *)bd;
++       while (section[0] <= id) {
++               if (section[0] == id) {
++                       if (nvlen)
++                               *nvlen = section[1] - 4;
++                       return data + 8; // return without header
++               }
++               data += section[1] + 4;
++               section = (u16 *)data;
++       }
++       return NULL;
++}
++
++struct bdfmacaddr {
++       u8 val[6];
++} __packed;
++
++struct bdfhcaconfig {
++       u16 type;
++       u16 id;
++       u32 hwId;
++       u32 revId;
++       u32 chainMask;
++} __packed;
++
++struct bdfradardetconfig {
++       u16 radar_pd_ma_th_low;
++       u16 radar_pd_ma_th_high;
++       u16 radar_pd_jump_th;
++       u16 radar_pd_ma_th_high_dur_cac;
++       u16 radar_pd_jump_th_dur_cac;
++       u8 radar_time_amp_th;
++       u8 radar_time_amp_th_ext;
++       u8 radar_time_amp_th_dur_cac;
++       u8 radar_time_amp_th_ext_dur_cac;
++       u8 radar_zero_cross_noise_thr;
++       u8 reserved[5];
++} __packed;
++
++struct baseheader_8074 {
++       u16 nvId;
++       u16 nvLen;
++       u32 nvFlag;
++       u16 length;
++       u16 checksum;
++       u8 templateVerMinor;
++       u8 templateVerMajor;
++       struct bdfmacaddr macaddr[6];
++       u8 reserved[2];
++       u32 regDmn;
++       u8 refDesignId;
++       u8 customerId;
++       u8 projectId;
++       u8 boardDataRev;
++       u8 rfSilent;
++       u8 wlanLedGpio;
++       u8 nvMacFlag;
++       u8 calSmVersion;
++       u32 concurrencyModeMask;
++       u32 commonBoardFlags;
++       u16 overwriteCdacIn;
++       u16 overwriteCdacOut;
++       u16 otpCdacIn;
++       u16 otpCdacOut;
++       u8 fineCorrectionCdacIn;
++       u8 fineCorrectionCdacOut;
++       u16 checkTrainingStatusDelay;
++       u8 intPaConfig_rtcExSel;
++       u8 mipiPowerMode;
++       u8 calRFId;
++       u8 calBBId;
++       u8 dbsTableSelect[4];
++       u8 future;
++       u8 swreg;
++       u8 clkOutDriveStrengh;
++       u8 spectralShapingSelect;
++       s8 xtalCapInterval[4];
++       u8 custData[20];
++       u32 hwCReserved;
++       u32 boardFlags;
++       struct bdfhcaconfig hcaconfig[16];
++       s16 normal_maxCCApwr[8][4];
++       s16 dtim_maxCCApwr[8];
++       s8 rssiOffset[8];
++       u8 coexFlags;
++       u8 coexConfig;
++       s16 normal_maxCCApwr_1x1[8][4];
++       u32 swreg32;
++       u16 tpcCalVersion;
++       u16 calVersion;
++       u16 iniVersion;
++       u8 numMacAddr;
++       u8 numPhy;
++       u32 fwVersion;
++       u16 bdfVersion;
++       u8 cck_fir_wb_sel;
++       u8 defaultRFMode;
++       u8 fenType;
++       u8 bdfTemplateVer[3];
++       u8 regMismatchFeatureEnable;
++       u8 regMismatchIndicator;
++       u8 DfsRssiThreshold;
++       u8 enableRegulatory5Dot9;
++       u8 perPacketCMFeatureEnable;
++       struct bdfradardetconfig radarDetConfig[2];
++       u8 DfsRssiThresholdExtFlag;
++       u8 DfsRssiThreshold40;
++       u8 DfsRssiThreshold80;
++       u8 DfsRssiThreshold160;
++       u8 pad;
++       u32 custBoardSpecificFlags[4];
++       u8 futurebd[404];
++} __packed;
++
++struct perphysection_8074 {
++       u32 opflags;
++       u32 featureenable;
++       u32 miscconfig;
++       u32 reserved;
++       u16 txmask2g;
++       u16 rxmask2g;
++       u16 txmask5g;
++       u16 rxmask5g;
++       u8 reserved1[4][10];
++       u8 tpc_flag;
++       u8 xtalSettleTime;
++       s8 smartAntennaEnable;
++       s8 ccaThresh;
++       s8 dbsConcurrencyBackoff[4];
++       u32 regDmn;
++       s8 sensitivityAdjustment;
++       s8 minSensitivityLevel;
++       s8 maxSensitivityLevel;
++       u8 selfGenChainMask;
++       u32 chains_0_7_tx;
++       u32 chains_0_7_rx;
++       u32 reserved2[2];
++       u8 enableDynEdcca;
++       u8 perPhyFuture[71];
++} __packed;
++
++struct perphysection_5018 {
++       u32 opflags;
++       u32 featureenable;
++       u32 miscconfig;
++       u32 reserved;
++       u16 txmask;
++       u16 rxmask;
++       u8 reserved1[4][10];
++       u8 tpc_flag;
++       u8 xtalSettleTime;
++       s8 smartAntennaEnable;
++       s8 ccaThresh;
++       u32 regDmn;
++       s8 sensitivityAdjustment;
++       s8 minSensitivityLevel;
++       s8 maxSensitivityLevel;
++       u8 selfGenChainMask;
++       s16 temperatureSlope0;
++       s16 temperatureSlope1;
++       u8 crossPolar_enablePolDiversity;
++       u8 crossPolar_CTL_degreeOfFreedom;
++       u8 crossPolar_pad[2];
++       u32 crossPolar_antennaChainsToAxisMapping;
++       u8 crossPolarFuture[12];
++       u8 enableDynEdcca;
++       u8 perPhyFuture[71];
++} __packed;
++
++struct perphysection_6018 {
++       u32 opflags;
++       u32 featureenable;
++       u32 miscconfig;
++       u32 reserved;
++       u16 txmask2g;
++       u16 rxmask2g;
++       u16 txmask5g;
++       u16 rxmask5g;
++       u8 reserved1[4][10];
++       u8 tpc_flag;
++       u8 xtalSettleTime;
++       s8 smartAntennaEnable;
++       s8 ccaThresh;
++       s8 dbsConcurrencyBackoff[2];
++       u32 regDmn;
++       s8 sensitivityAdjustment;
++       s8 minSensitivityLevel;
++       s8 maxSensitivityLevel;
++       s16 temperatureSlope0;
++       s16 temperatureSlope1;
++       u8 enableDynEdcca;
++       u8 rxGainLutSel;
++       u8 perPhyFuture[85];
++} __packed;
++
++struct perphysection_9074 {
++       u32 opflags;
++       u32 featureenable;
++       u32 miscconfig;
++       u32 reserved;
++       u16 txmask;
++       u16 rxmask;
++       u8 reserved1[4][10];
++
++       u8 tpc_flag;
++       u8 xtalSettleTime;
++       s8 smartAntennaEnable;
++       s8 ccaThresh;
++       u32 regDmn;
++       s8 sensitivityAdjustment;
++       s8 minSensitivityLevel;
++       s8 maxSensitivityLevel;
++       u8 selfGenChainMask;
++       u8 dfsDisable;
++       u8 pad[3];
++       u32 chains_0_7_tx;
++       u32 chains_0_7_rx;
++       u32 reserved2[2];
++       u8 crossPolar_enablePolDiversity;
++       u8 crossPolar_CTL_degreeOfFreedom;
++       u8 crossPolar_pad[2];
++       u32 crossPolar_antennaChainsToAxisMapping;
++       u8 crossPolarFuture[12];
++       u8 enableDynEdcca;
++       u8 perPhyFuture[55];
++} __packed;
++
++static void removeregdomain(struct ath11k_base *ab, const void *data)
++{
++       struct baseheader_8074 *header = (struct baseheader_8074 *)data;
++       u16 *s = (u16 *)data;
++       u8 *s1 = (u8 *)data;
++       if (header->regDmn)
++               ath11k_info(ab, "remove regdomain0 0x%04x\n", header->regDmn);
++       header->regDmn = 0;
++       struct perphysection_8074 *section_8074 = (struct perphysection_8074 *)getsectionbyid(data, 2, NULL);
++       struct perphysection_5018 *section_5018 = (struct perphysection_5018 *)section_8074;
++       struct perphysection_6018 *section_6018 = (struct perphysection_6018 *)section_8074;
++       struct perphysection_9074 *section_9074 = (struct perphysection_9074 *)section_8074;
++
++       switch (ab->hw_rev) {
++       case ATH11K_HW_IPQ8074:
++               if (section_8074[0].regDmn)
++                       ath11k_info(ab, "remove regdomain1 0x%04x\n", section_8074[0].regDmn);
++               section_8074[0].regDmn = 0;
++
++               if (section_8074[1].regDmn)
++                       ath11k_info(ab, "remove regdomain2 0x%04x\n", section_8074[1].regDmn);
++               section_8074[1].regDmn = 0;
++
++               if (section_8074[2].regDmn)
++                       ath11k_info(ab, "remove regdomain3 0x%04x\n", section_8074[2].regDmn);
++               section_8074[2].regDmn = 0;
++
++               break;
++       case ATH11K_HW_IPQ5018_HW10:
++               if (section_5018->regDmn)
++                       ath11k_info(ab, "remove regdomain1 0x%04x\n", section_5018->regDmn);
++               section_5018->regDmn = 0;
++               break;
++       case ATH11K_HW_QCN9074_HW10:
++               if (section_9074->regDmn)
++                       ath11k_info(ab, "remove regdomain1 0x%04x\n", section_9074->regDmn);
++               section_9074->regDmn = 0;
++               break;
++       case ATH11K_HW_IPQ6018_HW10:
++               if (section_6018[0].regDmn)
++                       ath11k_info(ab, "remove regdomain1 0x%04x\n", section_6018[0].regDmn);
++               section_6018[0].regDmn = 0;
++               if (section_6018[1].regDmn)
++                       ath11k_info(ab, "remove regdomain2 0x%04x\n", section_6018[1].regDmn);
++               section_6018[1].regDmn = 0;
++               break;
++       default:
++               break;
++       }
++}
++enum {
++       WHAL_OPFLAGS_11A = 0x00000001,
++       WHAL_OPFLAGS_11G = 0x00000002,
++       WHAL_OPFLAGS_5G_HT40 = 0x00000004,
++       WHAL_OPFLAGS_2G_HT40 = 0x00000008,
++       WHAL_OPFLAGS_5G_HT20 = 0x00000010,
++       WHAL_OPFLAGS_2G_HT20 = 0x00000020,
++       WHAL_OPFLAGS_5G_VHT20 = 0x00000040,
++       WHAL_OPFLAGS_2G_VHT20 = 0x00000080,
++       WHAL_OPFLAGS_5G_VHT40 = 0x00000100,
++       WHAL_OPFLAGS_2G_VHT40 = 0x00000200,
++       WHAL_OPFLAGS_5G_VHT80 = 0x00000400,
++       WHAL_OPFLAGS_5G_VHT80P80 = 0x00000800,
++       WHAL_OPFLAGS_5G_VHT160 = 0x00001000
++};
++
++struct regdb_entry_8074 {
++       u16 country_code;
++       u16 reg_dmn_pair_id;
++       u8 alpha[3];
++       u8 alpha2_11d[3];
++       u8 max_bw_2g;
++       u8 max_bw_5g;
++       u8 phymode_bitmap;
++       u8 pad;
++};
++
++struct regdb_entry_9074 {
++       u16 country_code;
++       u16 reg_dmn_pair_id;
++       u8 super_dmn_6g_id;
++       u8 alpha[3];
++       u8 alpha2_11d[3];
++       u8 max_bw_2g;
++       u8 max_bw_5g;
++       u8 max_bw_6g;
++       u8 phymode_bitmap;
++       u8 flags;
++};
++
++struct regdb_8074 {
++       u16 nvid;
++       u16 nvlen;
++       u32 nvflag;
++       struct regdb_entry_8074 entry[0];
++};
++struct regdb_9074 {
++       u16 nvid;
++       u16 nvlen;
++       u32 nvflag;
++       struct regdb_entry_9074 entry[0];
++};
++
++void patchrawregdb(struct ath11k_base *ab, const void *bd)
++{
++       struct regdb_entry_8074 *regdb1 = (struct regdb_entry_8074 *)bd;
++       struct regdb_entry_9074 *regdb2 = (struct regdb_entry_9074 *)bd;
++
++       /*
++        * we detect here which format is used. since some chipsets like 9074 do make use of both formats
++        * so easiest way is to check for the reg domain code which is always identical as first entry
++        */
++       if (regdb1[0].alpha[0] == 65 && regdb1[0].alpha[1] == 70) {
++               int i;
++               ath11k_info(ab, "patch reg db in ipq8074 format\n");
++               for (i = 0; i < 220; i++) {
++                       if (regdb1[i].max_bw_5g == 80) {
++                               ath11k_info(ab, "patch entry %d\n", i);
++                               regdb1[i].max_bw_5g = 160;
++                       }
++               }
++       } else if (regdb2[0].alpha[0] == 65 && regdb2[0].alpha[1] == 70) {
++               int i;
++               ath11k_info(ab, "patch reg db in qcn9074 format\n");
++               for (i = 0; i < 220; i++) {
++                       if (regdb2[i].max_bw_5g == 80) {
++                               ath11k_info(ab, "patch entry %d\n", i);
++                               regdb2[i].max_bw_5g = 160;
++                       }
++               }
++       } else {
++               ath11k_info(ab, "something wrong. did not find a regdb\n");
++       }
++}
++
++void patchregdb(struct ath11k_base *ab, void *bd)
++{
++       int id;
++       int i;
++       switch (ab->hw_rev) {
++       case ATH11K_HW_IPQ8074:
++               id = 20;
++               break;
++       case ATH11K_HW_IPQ6018_HW10:
++               id = 20;
++               break;
++       case ATH11K_HW_QCN9074_HW10:
++               id = 19;
++               break;
++       case ATH11K_HW_IPQ5018_HW10:
++               id = 20;
++               break;
++       default:
++               return;
++       }
++       patchrawregdb(ab, getsectionbyid(bd, id, NULL));
++}
++
++struct targetpower {
++       s8 power[0];
++};
++
++static void showdbm(struct ath11k_base *ab, const char *lead, int val)
++{
++       ath11k_info(ab, "%s %d.%d dbm\n", lead, val / 4, (((val % 4) * 10) % 4) ? ((val % 4) * 100) / 4 : ((val % 4) * 10) / 4);
++}
++/* units in 0.25 db */
++static void patchpower(struct ath11k_base *ab, const void *bd, int poweroffset)
++{
++       int id;
++       int i;
++       u16 nvlen;
++       struct targetpower *power;
++       switch (ab->hw_rev) {
++       case ATH11K_HW_IPQ8074:
++               id = 12;
++               break;
++       case ATH11K_HW_IPQ6018_HW10:
++               id = 12;
++               break;
++       case ATH11K_HW_QCN9074_HW10:
++               id = 11;
++               break;
++       case ATH11K_HW_IPQ5018_HW10:
++               id = 11;
++               break;
++       default:
++               return;
++       }
++       power = (struct targetpower *)getsectionbyid(bd, id, &nvlen);
++       int max = -255;
++       for (i = 0; i < nvlen; i++) {
++               if ((power->power[i]) > max)
++                       max = power->power[i];
++       }
++       showdbm(ab, "maximum calibrated power", max);
++       if (max + poweroffset > 126) {
++               poweroffset = 126 - max;
++               showdbm(ab, "limit poweroffset to", poweroffset);
++       }
++       for (i = 0; i < nvlen; i++) {
++               int newpower = power->power[i] + poweroffset;
++               if (power->power[i] && newpower >= -40 && newpower <= 126)
++                       power->power[i] = newpower;
++       }
++       if (poweroffset) {
++               max = -255;
++               for (i = 0; i < nvlen; i++) {
++                       if ((power->power[i]) > max)
++                               max = power->power[i];
++               }
++               showdbm(ab, "new maximum calibrated power is", max);
++       }
++}
++#if 0
++struct gainperchanperchain {
++       u8 gain[4];
++};
++struct perchain2g {
++       u8 gainfreq[3];
++       u8 pad;
++       struct gainperchanperchain gain[3];
++};
++struct perchain5g {
++       u8 gainfreq[8];
++       struct gainperchanperchain gain[8];
++};
++struct antennagain_8074 {
++       u16 nvid;
++       u16 nvlen;
++       u32 nvflag;
++       struct perchain5g gain5g[3];
++       struct perchain2g gain2g;
++       u8 featureenable;
++};
++
++
++/* units in 0.25 db */
++static void patchantennagain(struct ath11k_base *ab, const void *bd)
++{
++       int id;
++       int i;
++       u16 nvlen;
++       struct targetpower *power;
++       switch (ab->hw_rev) {
++       case ATH11K_HW_IPQ8074:
++               id = 22;
++               break;
++       case ATH11K_HW_IPQ6018_HW10:
++               id = 22;
++               break;
++       case ATH11K_HW_QCN9074_HW10:
++               id = 20;
++               break;
++       case ATH11K_HW_IPQ5018_HW10:
++               id = 21;
++               break;
++       default:
++               return;
++       }
++       power = (struct targetpower *)getsectionbyid(bd, id, &nvlen);
++       int max = 0;
++       for (i = 0; i < nvlen; i++) {
++               if ((power->power[i]) > max)
++                       max = power->power[i];
++       }
++       showdbm(ab, "antenna gain", max);
++}
++#endif
++
++static void patchradiolimits(struct ath11k_base *ab, const void *bd)
++{
++       u8 *data = (u8 *)bd;
++       if (ab->hw_rev != ATH11K_HW_IPQ8074)
++               return;
++       switch (data[557]) {
++       case 0:
++               ath11k_info(ab, "RF_MODE: PHYA Only\n");
++               break;
++       case 1:
++               ath11k_info(ab, "RF_MODE: DBS PHYA=5G, PHYB=2.4G\n");
++               break;
++       case 2:
++               ath11k_info(ab, "RF_MODE: SBS PHYA0=5G, PHYA1=5G\n");
++               break;
++       case 3:
++               ath11k_info(ab, "RF_MODE: PHYB Only\n");
++               break;
++       case 4:
++               ath11k_info(ab, "RF_MODE: DBS_SBS PHYA0=5G (lower freq), PHYA1=5G (upper freq), PHYB=2.4G\n");
++               //              ath11k_info(ab, "patch to mode 5\n");
++               //              data[557] = 5;
++               break;
++       case 5:
++               ath11k_info(ab, "RF_MODE: DBS OR SBS PHYA0=5G, PHYA1=5G, PHYB=2.4G\n");
++               break;
++       }
++}
++
++struct boardflags {
++       u32 opflags;
++       u32 featureenable;
++       u32 miscconfig;
++       u32 reserved;
++       u16 txmask2g;
++       u16 rxmask2g;
++       u16 txmask5g;
++       u16 rxmask5g;
++};
++
++struct feature6g {
++       u8 enable7115Chan; //    1
++       u8 afc_local_rsvd; //    0
++       u8 Deployment_Enable; //         1
++       u8 Deployment_Type; //   1
++       u8 Power_mode_mask; //   7
++};
++
++void patchvht160(struct ath11k_base *ab, const void *data, int phynum, int type)
++{
++       u8 *s = (u8 *)data;
++       u32 *tmp;
++       u8 *regdb = (u8 *)data;
++       struct perphysection_8074 *phy = (struct perphysection_8074 *)getsectionbyid(data, 2, NULL);
++       struct feature6g *f6g = (struct feature6g *)&regdb[603];
++       struct baseheader_8074 *header = (struct baseheader_8074 *)data;
++       if (!data)
++               return;
++       header->commonBoardFlags &= ~(1 << 13);
++       switch (phynum) {
++       case 0:
++               if ((phy->opflags & WHAL_OPFLAGS_5G_VHT80) && !(phy->opflags & WHAL_OPFLAGS_5G_VHT160)) {
++                       ath11k_info(ab, "patch board1 flags %X to %X\n", phy->opflags,
++                                   phy->opflags | WHAL_OPFLAGS_5G_VHT80P80 | WHAL_OPFLAGS_5G_VHT160);
++                       phy->opflags |= WHAL_OPFLAGS_5G_VHT80P80;
++                       phy->opflags |= WHAL_OPFLAGS_5G_VHT160;
++               }
++               /*              if (type) {OA
++                       f->miscconfig |= 0x400; // 6ghz
++                       f6g->enable7115Chan=1;
++                       f6g->Deployment_Enable=1;
++                       f6g->Deployment_Type=1;
++                       f6g->Power_mode_mask=7;
++               }*/
++               break;
++       case 1:
++               if ((phy[1].opflags & WHAL_OPFLAGS_5G_VHT80) && !(phy[1].opflags & WHAL_OPFLAGS_5G_VHT160)) {
++                       ath11k_info(ab, "patch board2 flags %X to %X\n", phy[1].opflags,
++                                   phy[1].opflags | WHAL_OPFLAGS_5G_VHT80P80 | WHAL_OPFLAGS_5G_VHT160);
++                       phy[1].opflags |= WHAL_OPFLAGS_5G_VHT80P80;
++                       phy[1].opflags |= WHAL_OPFLAGS_5G_VHT160;
++               }
++               break;
++       case 2:
++               if ((phy[2].opflags & WHAL_OPFLAGS_5G_VHT80) && !(phy[2].opflags & WHAL_OPFLAGS_5G_VHT160)) {
++                       ath11k_info(ab, "patch board3 flags %X to %X\n", phy[2].opflags,
++                                   phy[2].opflags | WHAL_OPFLAGS_5G_VHT80P80 | WHAL_OPFLAGS_5G_VHT160);
++                       phy[2].opflags |= WHAL_OPFLAGS_5G_VHT80P80;
++                       phy[2].opflags |= WHAL_OPFLAGS_5G_VHT160;
++               }
++               break;
++       }
++       /* patch max bw 5g to 160 */
++       patchregdb(ab, regdb);
++}
++
++void show_bdf_version(const char *name, struct ath11k_base *ab, const void *bd)
++{
++       u8 *data = (u8 *)bd;
++       u32 offset;
++       u8 patch[3];
++       u32 size = 0x10000;
++       if (!bd)
++               return;
++       switch (ab->hw_rev) {
++       case ATH11K_HW_IPQ8074:
++               patch[0] = 7;
++               patch[1] = 2;
++               patch[2] = 3;
++               offset = 559;
++               size = 0x20000;
++               removeregdomain(ab, bd);
++               patchvht160(ab, bd, 0, 0);
++               patchvht160(ab, bd, 1, 0);
++               patchvht160(ab, bd, 2, 0);
++               break;
++       case ATH11K_HW_IPQ6018_HW10:
++               patch[0] = 1;
++               patch[1] = 4;
++               patch[2] = 3;
++               offset = 495;
++               size = 0x10000;
++               removeregdomain(ab, bd);
++               break;
++       case ATH11K_HW_QCN9074_HW10:
++               patch[0] = 4;
++               patch[1] = 2;
++               patch[2] = 0;
++               offset = 555;
++               size = 0x20000;
++               removeregdomain(ab, bd);
++               patchvht160(ab, bd, 0, 1);
++               break;
++       case ATH11K_HW_IPQ5018_HW10:
++               patch[0] = 3;
++               patch[1] = 4;
++               patch[2] = 0;
++               offset = 0x1eb;
++               size = 0x20000;
++               removeregdomain(ab, bd);
++               break;
++       default:
++               return;
++       }
++
++       if (data) {
++               //              if (data[offset] != patch[0]) {
++               //                      ath11k_info(ab, "warning. incompatible bdf template revision v%d.%d.%d, boardrev %d (major version must be %d)\n", data[offset], data[offset+1], data[offset+2], data[59], patch[0]);
++               //              } else
++               {
++                       ath11k_info(ab, "%s template revision v%d.%d.%d, boardrev %d, patch to v%d.%d.%d\n", name, data[offset],
++                                   data[offset + 1], data[offset + 2], data[59], patch[0], patch[1], patch[2]);
++                       memcpy(&data[offset], patch, 3);
++                       patchpower(ab, data, poweroffset);
++                       patchradiolimits(ab, data);
++                       calcchecksum(data, size);
++               }
++       }
++}
++
+ #define BOARD_NAME_SIZE 200
+ int ath11k_core_fetch_bdf(struct ath11k_base *ab, struct ath11k_board_data *bd)
+ {
+@@ -1462,8 +2146,10 @@ int ath11k_core_fetch_bdf(struct ath11k_base *ab,
+ 						 ATH11K_BD_IE_BOARD,
+ 						 ATH11K_BD_IE_BOARD_NAME,
+ 						 ATH11K_BD_IE_BOARD_DATA);
+-	if (!ret)
++	if (!ret) {
++		show_bdf_version("bdf", ab, bd->data);
+ 		goto exit;
++	}
+ 
+ 	fallback_boardname = kzalloc(BOARD_NAME_SIZE, GFP_KERNEL);
+ 	if (!fallback_boardname) {
+@@ -1482,8 +2168,10 @@ int ath11k_core_fetch_bdf(struct ath11k_base *ab,
+ 						 ATH11K_BD_IE_BOARD,
+ 						 ATH11K_BD_IE_BOARD_NAME,
+ 						 ATH11K_BD_IE_BOARD_DATA);
+-	if (!ret)
++	if (!ret) {
++		show_bdf_version("bdf", ab, bd->data);
+ 		goto exit;
++	}
+ 
+ 	chip_id_boardname = kzalloc(BOARD_NAME_SIZE, GFP_KERNEL);
+ 	if (!chip_id_boardname) {
+@@ -1503,8 +2191,10 @@ int ath11k_core_fetch_bdf(struct ath11k_base *ab,
+ 						 ATH11K_BD_IE_BOARD_NAME,
+ 						 ATH11K_BD_IE_BOARD_DATA);
+ 
+-	if (!ret)
++	if (!ret) {
++		show_bdf_version("bdf", ab, bd->data);
+ 		goto exit;
++	}
+ 
+ 	bd_api = 1;
+ 	ret = ath11k_core_fetch_board_data_api_1(ab, bd, ATH11K_DEFAULT_BOARD_FILE);
+@@ -1522,6 +2212,8 @@ int ath11k_core_fetch_bdf(struct ath11k_base *ab,
+ 
+ 		ath11k_err(ab, "failed to fetch board.bin from %s\n",
+ 			   ab->hw_params.fw.dir);
++	} else {
++		show_bdf_version("bdf", ab, bd->data);
+ 	}
+ 
+ exit:
+@@ -1551,8 +2243,11 @@ int ath11k_core_fetch_regdb(struct ath11k_base *
+ 						 ATH11K_BD_IE_REGDB,
+ 						 ATH11K_BD_IE_REGDB_NAME,
+ 						 ATH11K_BD_IE_REGDB_DATA);
+-	if (!ret)
++	if (!ret) {
++		patchrawregdb(ab, (u8*)bd->data+2);
++		calcrawchecksum(bd->data, 0, bd->len);
+ 		goto exit;
++	}
+ 
+ 	ret = ath11k_core_create_bus_type_board_name(ab, default_boardname,
+ 						     BOARD_NAME_SIZE);
+@@ -1566,14 +2261,19 @@ int ath11k_core_fetch_regdb(struct ath11k_base *
+ 						 ATH11K_BD_IE_REGDB,
+ 						 ATH11K_BD_IE_REGDB_NAME,
+ 						 ATH11K_BD_IE_REGDB_DATA);
+-	if (!ret)
++	if (!ret){
++		patchrawregdb(ab, (u8*)bd->data+2);
++		calcrawchecksum(bd->data, 0, bd->len);
+ 		goto exit;
+-
++	}
+ 	ret = ath11k_core_fetch_board_data_api_1(ab, bd, ATH11K_REGDB_FILE_NAME);
+ 	if (ret)
+ 		ath11k_dbg(ab, ATH11K_DBG_BOOT, "failed to fetch %s from %s\n",
+ 			   ATH11K_REGDB_FILE_NAME, ab->hw_params.fw.dir);
+-
++	else  {
++		patchrawregdb(ab, (u8*)bd->data+2);
++		calcrawchecksum(bd->data, 0, bd->len);
++	}
+ exit:
+ 	if (!ret)
+ 		ath11k_dbg(ab, ATH11K_DBG_BOOT, "fetched regdb\n");

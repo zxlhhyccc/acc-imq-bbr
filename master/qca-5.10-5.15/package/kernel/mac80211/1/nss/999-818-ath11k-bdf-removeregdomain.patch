@@ -1,0 +1,13 @@
+--- a/drivers/net/wireless/ath/ath11k/core.c
++++ b/drivers/net/wireless/ath/ath11k/core.c
+@@ -24,6 +24,10 @@ module_param_named(nss_offload, nss_offl
+ MODULE_PARM_DESC(nss_offload, "Enable NSS Offload support");
+ #endif
+ 
++static int poweroffset=0;
++module_param_named(poweroffset, poweroffset, uint, 0644);
++MODULE_PARM_DESC(poweroffset, "power offset for power table. negative values are permitted. units in 0.25db");
++
+ unsigned int ath11k_debug_mask;
+ EXPORT_SYMBOL(ath11k_debug_mask);
+ module_param_named(debug_mask, ath11k_debug_mask, uint, 0644);
