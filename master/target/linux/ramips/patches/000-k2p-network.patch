@@ -146,7 +146,7 @@
    SUPPORTED_DEVICES += timecloud
  endef
  TARGET_DEVICES += thunder_timecloud
-@@ -2735,7 +2733,7 @@ define Device/tplink_er605-v2
+@@ -2737,7 +2735,7 @@ define Device/tplink_er605-v2
    DEVICE_VENDOR := TP-Link
    DEVICE_MODEL := ER605
    DEVICE_VARIANT := v2
@@ -155,7 +155,7 @@
    KERNEL_IN_UBI := 1
    KERNEL_LOADADDR := 0x82000000
    KERNEL := kernel-bin | relocate-kernel $(loadaddr-y) | lzma | \
-@@ -2843,7 +2841,7 @@ define Device/ubnt_edgerouter_common
+@@ -2845,7 +2843,7 @@ define Device/ubnt_edgerouter_common
    KERNEL_INITRAMFS := $$(KERNEL) | \
  	ubnt-erx-factory-image $(KDIR)/tmp/$$(KERNEL_INITRAMFS_PREFIX)-factory.tar
    IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
@@ -164,7 +164,7 @@
    DEFAULT := n
  endef
  
-@@ -2929,7 +2927,7 @@ define Device/unielec_u7621-06-16m
+@@ -2931,7 +2929,7 @@ define Device/unielec_u7621-06-16m
    DEVICE_MODEL := U7621-06
    DEVICE_VARIANT := 16M
    DEVICE_PACKAGES := kmod-ata-ahci kmod-mmc-mtk kmod-usb3 \
@@ -173,7 +173,7 @@
    SUPPORTED_DEVICES += u7621-06-256M-16M unielec,u7621-06-256m-16m
  endef
  TARGET_DEVICES += unielec_u7621-06-16m
-@@ -2942,7 +2940,7 @@ define Device/unielec_u7621-06-32m
+@@ -2944,7 +2942,7 @@ define Device/unielec_u7621-06-32m
    DEVICE_MODEL := U7621-06
    DEVICE_VARIANT := 32M
    DEVICE_PACKAGES := kmod-ata-ahci kmod-mmc-mtk kmod-usb3 \
@@ -182,7 +182,7 @@
    SUPPORTED_DEVICES += unielec,u7621-06-32m
  endef
  TARGET_DEVICES += unielec_u7621-06-32m
-@@ -2955,7 +2953,7 @@ define Device/unielec_u7621-06-64m
+@@ -2957,7 +2955,7 @@ define Device/unielec_u7621-06-64m
    DEVICE_MODEL := U7621-06
    DEVICE_VARIANT := 64M
    DEVICE_PACKAGES := kmod-ata-ahci kmod-mmc-mtk kmod-usb3 \
@@ -191,7 +191,7 @@
    SUPPORTED_DEVICES += unielec,u7621-06-512m-64m
  endef
  TARGET_DEVICES += unielec_u7621-06-64m
-@@ -3214,7 +3212,7 @@ define Device/xiaoyu_xy-c5
+@@ -3216,7 +3214,7 @@ define Device/xiaoyu_xy-c5
    IMAGE_SIZE := 32448k
    DEVICE_VENDOR := XiaoYu
    DEVICE_MODEL := XY-C5
@@ -200,7 +200,7 @@
  	-uboot-envtools
  endef
  TARGET_DEVICES += xiaoyu_xy-c5
-@@ -3225,7 +3223,7 @@ define Device/xzwifi_creativebox-v1
+@@ -3227,7 +3225,7 @@ define Device/xzwifi_creativebox-v1
    DEVICE_VENDOR := CreativeBox
    DEVICE_MODEL := v1
    DEVICE_PACKAGES := kmod-ata-ahci kmod-mt7603 kmod-mt76x2 kmod-mmc-mtk \
