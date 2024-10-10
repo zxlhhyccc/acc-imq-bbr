@@ -1,6 +1,6 @@
 --- a/modules/netdevices.mk
 +++ b/modules/netdevices.mk
-@@ -1499,6 +1499,26 @@ endef
+@@ -1516,6 +1516,26 @@ endef
  
  $(eval $(call KernelPackage,bnx2x))
  
@@ -27,7 +27,7 @@
  define KernelPackage/be2net
    SUBMENU:=$(NETWORK_DEVICES_MENU)
    TITLE:=Broadcom Emulex OneConnect 10Gbps NIC
-@@ -1716,6 +1736,30 @@ endef
+@@ -1733,6 +1753,30 @@ endef
  $(eval $(call KernelPackage,qlcnic))
  
  
@@ -58,7 +58,7 @@
  define KernelPackage/sfp
    SUBMENU:=$(NETWORK_DEVICES_MENU)
    TITLE:=SFP cage support
-@@ -1781,6 +1825,21 @@ endef
+@@ -1798,6 +1842,21 @@ endef
  
  $(eval $(call KernelPackage,igc))
  
