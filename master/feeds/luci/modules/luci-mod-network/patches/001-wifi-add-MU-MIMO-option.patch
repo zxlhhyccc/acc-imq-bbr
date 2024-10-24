@@ -1,6 +1,6 @@
 --- a/htdocs/luci-static/resources/view/network/wireless.js
 +++ b/htdocs/luci-static/resources/view/network/wireless.js
-@@ -985,6 +985,9 @@ return view.extend({
+@@ -1019,6 +1019,9 @@ return view.extend({
  					o.value('2', _('High'));
  					o.value('3', _('Very High'));
  
@@ -10,7 +10,7 @@
  					o = ss.taboption('advanced', form.Value, 'distance', _('Distance Optimization'), _('Distance to farthest network member in meters. Set only for distances above one kilometer; otherwise it is harmful.'));
  					o.datatype = 'or(range(0,114750),"auto")';
  					o.placeholder = 'auto';
-@@ -1004,6 +1007,9 @@ return view.extend({
+@@ -1038,6 +1041,9 @@ return view.extend({
  					o.datatype = 'range(15,65535)';
  					o.placeholder = 100;
  					o.rmempty = true;
@@ -30,7 +30,7 @@
  		return true;
  	}
  
-@@ -891,6 +892,20 @@ return view.extend({
+@@ -861,6 +862,20 @@ return view.extend({
  					so.depends('ra', 'server');
  					so.depends({ ra: 'hybrid', master: '0' });
  
@@ -51,7 +51,7 @@
  					so = ss.taboption('ipv6-ra', form.Value, 'ra_maxinterval', _('Max <abbr title="Router Advertisement">RA</abbr> interval'), _('Maximum time allowed  between sending unsolicited <abbr title="Router Advertisement, ICMPv6 Type 134">RA</abbr>. Default is 600 seconds.'));
  					so.optional = true;
  					so.datatype = 'uinteger';
-@@ -1033,18 +1048,6 @@ return view.extend({
+@@ -1005,18 +1020,6 @@ return view.extend({
  					so = ss.taboption('ipv6', form.Flag, 'ndproxy_slave', _('NDP-Proxy slave'), _('Set interface as NDP-Proxy external slave. Default is off.'));
  					so.depends({ ndp: 'relay', master: '0' });
  					so.depends({ ndp: 'hybrid', master: '0' });

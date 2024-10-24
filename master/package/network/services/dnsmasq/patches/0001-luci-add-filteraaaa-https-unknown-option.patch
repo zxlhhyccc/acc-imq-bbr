@@ -1,6 +1,6 @@
 --- a/htdocs/luci-static/resources/view/network/dhcp.js
 +++ b/htdocs/luci-static/resources/view/network/dhcp.js
-@@ -367,12 +367,35 @@ return view.extend({
+@@ -398,6 +398,25 @@ return view.extend({
  		s.tab('ipsets', _('IP Sets'));
  		s.tab('relay', _('Relay'));
  		s.tab('pxe_tftp', _('PXE/TFTP'));
@@ -24,8 +24,9 @@
 +		//so = ss.option(form.Value, 'comments', _('Comments'));
 +		//so.rmempty  = true;
  
- 		s.taboption('filteropts', form.Flag, 'domainneeded',
- 			_('Domain required'),
+ 		o = s.taboption('cache', form.MultiValue, 'cache_rr',
+ 			_('Cache arbitrary RR'), _('By default, dnsmasq caches A, AAAA, CNAME and SRV DNS record types.') + '<br/>' +
+@@ -415,6 +434,10 @@ return view.extend({
  			_('Never forward DNS queries which lack dots or domain parts.') + '<br />' +
  			customi18n(_('Names not in {etc_hosts} are answered {not_found}.') )
  		);
@@ -36,7 +37,7 @@
  		s.taboption('general', form.Flag, 'authoritative',
  			_('Authoritative'),
  			_('This is the only DHCP server in the local network.'));
-@@ -625,6 +648,16 @@ return view.extend({
+@@ -667,6 +690,16 @@ return view.extend({
  			_('Allocate IP addresses sequentially, starting from the lowest available address.'));
  		o.optional = true;
  
@@ -53,15 +54,15 @@
  		o = s.taboption('filteropts', form.Flag, 'boguspriv',
  			_('Filter private'),
  			customi18n(
-@@ -647,6 +680,7 @@ return view.extend({
+@@ -689,6 +722,7 @@ return view.extend({
  			_('Filter IPv4 A records'),
  			_('Remove IPv4 addresses from the results and only return IPv6 addresses.'));
  		o.optional = true;
 +		o.depends('filter_aaaa', '0');
  
- 		s.taboption('filteropts', form.Flag, 'localise_queries',
- 			_('Localise queries'),
-@@ -791,6 +825,13 @@ return view.extend({
+ 		o = s.taboption('filteropts', form.MultiValue, 'filter_rr',
+ 			_('Filter arbitrary RR'), _('Removes records of the specified type(s) from answers.'));
+@@ -843,6 +877,13 @@ return view.extend({
  		o.optional = true;
  		o.placeholder = 3600;
  
