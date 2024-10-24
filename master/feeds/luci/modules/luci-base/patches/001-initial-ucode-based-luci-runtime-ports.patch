@@ -24,7 +24,7 @@
  				br2684ctl:  access('/usr/sbin/br2684ctl') == true,
  				swconfig:   access('/sbin/swconfig') == true,
  				odhcpd:     access('/usr/sbin/odhcpd') == true,
-@@ -542,44 +545,119 @@ const methods = {
+@@ -543,44 +546,119 @@ const methods = {
  
  	getBuiltinEthernetPorts: {
  		call: function() {
