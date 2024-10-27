@@ -14,9 +14,9 @@
  			s.option(form.ListValue, 'output', _('Output')),
 --- a/po/zh_Hans/firewall.po
 +++ b/po/zh_Hans/firewall.po
-@@ -1525,6 +1525,24 @@ msgstr "最多 65536 个条目。"
- msgid "valid firewall mark"
- msgstr "有效的防火墙标记"
+@@ -1540,6 +1540,24 @@ msgstr "最多 65536 个条目。"
+ #~ msgid "Software based offloading for routing/NAT"
+ #~ msgstr "基于软件的 路由/NAT 分载"
  
 +msgid "Enable FullCone NAT"
 +msgstr "启用 FullCone NAT"
