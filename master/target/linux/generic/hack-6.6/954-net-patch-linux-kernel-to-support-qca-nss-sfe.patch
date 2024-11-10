@@ -52,7 +52,7 @@
  	}
  #endif
  
-@@ -5367,7 +5367,7 @@ void netdev_rx_handler_unregister(struct
+@@ -5371,7 +5371,7 @@ void netdev_rx_handler_unregister(struct
  }
  EXPORT_SYMBOL_GPL(netdev_rx_handler_unregister);
  
@@ -61,7 +61,7 @@
  int (*athrs_fast_nat_recv)(struct sk_buff *skb) __rcu __read_mostly;
  EXPORT_SYMBOL_GPL(athrs_fast_nat_recv);
  #endif
-@@ -5420,7 +5420,7 @@ static int __netif_receive_skb_core(stru
+@@ -5424,7 +5424,7 @@ static int __netif_receive_skb_core(stru
  	int ret = NET_RX_DROP;
  	__be16 type;
  
@@ -70,7 +70,7 @@
  	int (*fast_recv)(struct sk_buff *skb);
  #endif
  
-@@ -5461,7 +5461,7 @@ another_round:
+@@ -5465,7 +5465,7 @@ another_round:
  			goto out;
  	}
  

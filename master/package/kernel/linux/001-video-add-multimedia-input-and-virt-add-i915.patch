@@ -46,9 +46,9 @@
  define KernelPackage/drm
    SUBMENU:=$(VIDEO_MENU)
    TITLE:=Direct Rendering Manager (DRM) support
-@@ -484,6 +523,37 @@ endef
+@@ -534,6 +573,37 @@ endef
  
- $(eval $(call KernelPackage,drm-imx-ldb))
+ $(eval $(call KernelPackage,drm-panel-mipi-dbi))
  
 +define KernelPackage/drm-lima
 +  SUBMENU:=$(VIDEO_MENU)
@@ -84,7 +84,7 @@
  define KernelPackage/drm-radeon
    SUBMENU:=$(VIDEO_MENU)
    TITLE:=Radeon DRM support
-@@ -501,6 +571,39 @@ endef
+@@ -551,6 +621,39 @@ endef
  
  $(eval $(call KernelPackage,drm-radeon))
  
@@ -124,7 +124,7 @@
  #
  # Video Capture
  #
-@@ -508,7 +611,8 @@ $(eval $(call KernelPackage,drm-radeon))
+@@ -558,7 +661,8 @@ $(eval $(call KernelPackage,drm-radeon))
  define KernelPackage/video-core
    SUBMENU:=$(VIDEO_MENU)
    TITLE=Video4Linux support
@@ -134,7 +134,7 @@
    KCONFIG:= \
  	CONFIG_MEDIA_SUPPORT \
  	CONFIG_MEDIA_CAMERA_SUPPORT=y \
-@@ -517,7 +621,7 @@ define KernelPackage/video-core
+@@ -567,7 +671,7 @@ define KernelPackage/video-core
  	CONFIG_MEDIA_PLATFORM_DRIVERS=y
    FILES:= \
  	$(LINUX_DIR)/drivers/media/$(V4L2_DIR)/videodev.ko
@@ -143,7 +143,7 @@
  endef
  
  define KernelPackage/video-core/description
-@@ -1276,3 +1380,40 @@ define KernelPackage/video-tw686x/description
+@@ -1326,3 +1430,40 @@ define KernelPackage/video-tw686x/description
  endef
  
  $(eval $(call KernelPackage,video-tw686x))
