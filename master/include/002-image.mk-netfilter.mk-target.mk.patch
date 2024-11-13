@@ -33,8 +33,8 @@
  # kernel only
 --- a/target.mk
 +++ b/target.mk
-@@ -13,34 +13,67 @@ DEVICE_TYPE?=router
- # Default packages - the really basic set
+@@ -20,19 +20,49 @@ DEVICE_TYPE?=router
+ ##
  DEFAULT_PACKAGES:=\
  	base-files \
 +	bind-host \
@@ -83,17 +83,20 @@
 +	urngd \
 +	wget-ssl
  
- # For the basic set
- DEFAULT_PACKAGES.basic:=
- # For nas targets
+ ##@
+ # @brief Default packages for @DEVICE_TYPE basic.
+@@ -42,6 +72,8 @@ DEFAULT_PACKAGES.basic:=
+ # @brief Default packages for @DEVICE_TYPE nas.
+ ##
  DEFAULT_PACKAGES.nas:=\
 +	automount \
 +	autosamba \
  	block-mount \
  	fdisk \
  	lsblk \
- 	mdadm
- # For router targets
+@@ -50,10 +82,11 @@ DEFAULT_PACKAGES.nas:=\
+ # @brief Default packages for @DEVICE_TYPE router.
+ ##
  DEFAULT_PACKAGES.router:=\
 -	dnsmasq \
 -	firewall4 \
