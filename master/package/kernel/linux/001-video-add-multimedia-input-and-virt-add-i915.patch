@@ -1,9 +1,25 @@
 --- a/modules/video.mk
 +++ b/modules/video.mk
-@@ -246,6 +246,45 @@ endef
- $(eval $(call KernelPackage,fb-tft-ili9486))
+@@ -558,6 +558,97 @@ endef
  
+ $(eval $(call KernelPackage,drm-imx-ldb))
  
++define KernelPackage/drm-lima
++  SUBMENU:=$(VIDEO_MENU)
++  TITLE:=DRM support for ARM Mali 400/450 GPU
++  DEPENDS:=@(TARGET_rockchip||TARGET_sunxi) +kmod-drm-sched
++  KCONFIG:=CONFIG_DRM_LIMA
++  FILES:=$(LINUX_DIR)/drivers/gpu/drm/lima/lima.ko
++  AUTOLOAD:=$(call AutoProbe,lima)
++endef
++
++define KernelPackage/drm-lima/description
++  DRM driver for ARM Mali 400/450 GPUs
++endef
++
++$(eval $(call KernelPackage,drm-lima))
++
++
 +define KernelPackage/media-core
 +  SUBMENU:=$(VIDEO_MENU)
 +  TITLE=Multimedia support
@@ -43,65 +59,6 @@
 +$(eval $(call KernelPackage,multimedia-input))
 +
 +
- define KernelPackage/drm
-   SUBMENU:=$(VIDEO_MENU)
-   TITLE:=Direct Rendering Manager (DRM) support
-@@ -534,6 +573,37 @@ endef
- 
- $(eval $(call KernelPackage,drm-panel-mipi-dbi))
- 
-+define KernelPackage/drm-lima
-+  SUBMENU:=$(VIDEO_MENU)
-+  TITLE:=DRM support for ARM Mali 400/450 GPU
-+  DEPENDS:=@(TARGET_rockchip||TARGET_sunxi) +kmod-drm-sched
-+  KCONFIG:=CONFIG_DRM_LIMA
-+  FILES:=$(LINUX_DIR)/drivers/gpu/drm/lima/lima.ko
-+  AUTOLOAD:=$(call AutoProbe,lima)
-+endef
-+
-+define KernelPackage/drm-lima/description
-+  DRM driver for ARM Mali 400/450 GPUs
-+endef
-+
-+$(eval $(call KernelPackage,drm-lima))
-+
-+define KernelPackage/drm-panfrost
-+  SUBMENU:=$(VIDEO_MENU)
-+  TITLE:=DRM support for ARM Mali Midgard/Bifrost GPUs
-+  DEPENDS:=@(TARGET_rockchip||TARGET_sunxi) +kmod-drm-sched
-+  KCONFIG:=CONFIG_DRM_PANFROST
-+  FILES:=$(LINUX_DIR)/drivers/gpu/drm/panfrost/panfrost.ko
-+  AUTOLOAD:=$(call AutoProbe,panfrost)
-+endef
-+
-+define KernelPackage/drm-panfrost/description
-+  DRM driver for ARM Mali Midgard (T6xx, T7xx, T8xx) and
-+  Bifrost (G3x, G5x, G7x) GPUs
-+endef
-+
-+$(eval $(call KernelPackage,drm-panfrost))
-+
- define KernelPackage/drm-radeon
-   SUBMENU:=$(VIDEO_MENU)
-   TITLE:=Radeon DRM support
-@@ -551,6 +621,39 @@ endef
- 
- $(eval $(call KernelPackage,drm-radeon))
- 
-+define KernelPackage/drm-sched
-+  SUBMENU:=$(VIDEO_MENU)
-+  TITLE:=DRM helper for ARM GPUs
-+  DEPENDS:=+kmod-drm
-+  HIDDEN:=1
-+  KCONFIG:=CONFIG_DRM_SCHED
-+  FILES:= \
-+	$(LINUX_DIR)/drivers/gpu/drm/drm_shmem_helper.ko \
-+	$(LINUX_DIR)/drivers/gpu/drm/scheduler/gpu-sched.ko
-+  AUTOLOAD:=$(call AutoProbe,gpu-sched)
-+endef
-+
-+$(eval $(call KernelPackage,drm-sched))
-+
 +define KernelPackage/drm-nouveau
 +  SUBMENU:=$(VIDEO_MENU)
 +  TITLE:=nouveau DRM support
@@ -121,10 +78,48 @@
 +
 +$(eval $(call KernelPackage,drm-nouveau))
 +
++
++define KernelPackage/drm-panfrost
++  SUBMENU:=$(VIDEO_MENU)
++  TITLE:=DRM support for ARM Mali Midgard/Bifrost GPUs
++  DEPENDS:=@(TARGET_rockchip||TARGET_sunxi) +kmod-drm-sched
++  KCONFIG:=CONFIG_DRM_PANFROST
++  FILES:=$(LINUX_DIR)/drivers/gpu/drm/panfrost/panfrost.ko
++  AUTOLOAD:=$(call AutoProbe,panfrost)
++endef
++
++define KernelPackage/drm-panfrost/description
++  DRM driver for ARM Mali Midgard (T6xx, T7xx, T8xx) and
++  Bifrost (G3x, G5x, G7x) GPUs
++endef
++
++$(eval $(call KernelPackage,drm-panfrost))
++
+ define KernelPackage/drm-panel-mipi-dbi
+   SUBMENU:=$(VIDEO_MENU)
+   TITLE:=Generic MIPI DBI LCD panel
+@@ -593,6 +684,20 @@ endef
+ 
+ $(eval $(call KernelPackage,drm-radeon))
+ 
++define KernelPackage/drm-sched
++  SUBMENU:=$(VIDEO_MENU)
++  TITLE:=DRM helper for ARM GPUs
++  DEPENDS:=+kmod-drm
++  HIDDEN:=1
++  KCONFIG:=CONFIG_DRM_SCHED
++  FILES:= \
++	$(LINUX_DIR)/drivers/gpu/drm/drm_shmem_helper.ko \
++	$(LINUX_DIR)/drivers/gpu/drm/scheduler/gpu-sched.ko
++  AUTOLOAD:=$(call AutoProbe,gpu-sched)
++endef
++
++$(eval $(call KernelPackage,drm-sched))
++
  #
  # Video Capture
  #
-@@ -558,7 +661,8 @@ $(eval $(call KernelPackage,drm-radeon))
+@@ -600,7 +705,8 @@ $(eval $(call KernelPackage,drm-radeon))
  define KernelPackage/video-core
    SUBMENU:=$(VIDEO_MENU)
    TITLE=Video4Linux support
@@ -134,7 +129,7 @@
    KCONFIG:= \
  	CONFIG_MEDIA_SUPPORT \
  	CONFIG_MEDIA_CAMERA_SUPPORT=y \
-@@ -567,7 +671,7 @@ define KernelPackage/video-core
+@@ -609,7 +715,7 @@ define KernelPackage/video-core
  	CONFIG_MEDIA_PLATFORM_DRIVERS=y
    FILES:= \
  	$(LINUX_DIR)/drivers/media/$(V4L2_DIR)/videodev.ko
@@ -143,47 +138,6 @@
  endef
  
  define KernelPackage/video-core/description
-@@ -1326,3 +1430,40 @@ define KernelPackage/video-tw686x/description
- endef
- 
- $(eval $(call KernelPackage,video-tw686x))
-+
-+define KernelPackage/drm-i915
-+  SUBMENU:=$(VIDEO_MENU)
-+  TITLE:=Intel GPU drm support
-+  DEPENDS:=@TARGET_x86 +kmod-drm-buddy +kmod-drm-ttm +kmod-drm-kms-helper +intel-igpu-firmware-dmc +intel-igpu-firmware-guc +intel-igpu-firmware-huc \
-+	+kmod-drm-display-helper +kmod-acpi-video
-+  KCONFIG:= \
-+	CONFIG_INTEL_GTT \
-+	CONFIG_DRM_I915 \
-+	CONFIG_DRM_I915_CAPTURE_ERROR \
-+	CONFIG_DRM_I915_COMPRESS_ERROR \
-+	CONFIG_DRM_I915_DEBUG=n \
-+	CONFIG_DRM_I915_DEBUG_GUC=n \
-+	CONFIG_DRM_I915_DEBUG_MMIO=n \
-+	CONFIG_DRM_I915_DEBUG_RUNTIME_PM=n \
-+	CONFIG_DRM_I915_DEBUG_VBLANK_EVADE=n \
-+	CONFIG_DRM_I915_GVT=y \
-+	CONFIG_DRM_I915_LOW_LEVEL_TRACEPOINTS=n \
-+	CONFIG_DRM_I915_SELFTEST=n \
-+	CONFIG_DRM_I915_SW_FENCE_CHECK_DAG=n \
-+	CONFIG_DRM_I915_SW_FENCE_DEBUG_OBJECTS=n \
-+	CONFIG_DRM_I915_USERPTR=y \
-+	CONFIG_DRM_I915_WERROR=n
-+  FILES:= \
-+      $(LINUX_DIR)/drivers/gpu/drm/i915/i915.ko
-+  AUTOLOAD:=$(call AutoProbe,i915)
-+endef
-+
-+define KernelPackage/drm-i915/description
-+  Direct Rendering Manager (DRM) support for "Intel Graphics
-+  Media Accelerator" or "HD Graphics" integrated graphics,
-+  including 830M, 845G, 852GM, 855GM, 865G, 915G, 945G, 965G,
-+  G35, G41, G43, G45 chipsets and Celeron, Pentium, Core i3,
-+  Core i5, Core i7 as well as Atom CPUs with integrated graphics.
-+endef
-+
-+$(eval $(call KernelPackage,drm-i915))
 --- a/modules/virt.mk
 +++ b/modules/virt.mk
 @@ -139,3 +139,80 @@ define KernelPackage/vhost-net
