@@ -1,8 +1,6 @@
-diff --git a/Makefile b/Makefile
-index a80eccd..502eb83 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -53,6 +53,7 @@ define Package/ntfs-3g/description
+@@ -49,6 +49,7 @@ define Package/ntfs-3g/description
    Contains:
     - ntfs-3g
     - ntfs-3g.probe
@@ -10,7 +8,7 @@ index a80eccd..502eb83 100644
     - mount.ntfs-3g (symlink to ntfs-3g)
  
  endef
-@@ -160,6 +161,7 @@ define Package/ntfs-3g/install
+@@ -156,6 +157,7 @@ define Package/ntfs-3g/install
  	$(INSTALL_DIR) $(1)/usr/lib
  	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libntfs-3g.so.* $(1)/usr/lib/
  	$(INSTALL_DIR) $(1)/sbin
