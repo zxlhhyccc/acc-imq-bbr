@@ -50,7 +50,7 @@
  	CONFIG_BT_HCIBTUSB_MTK=y \
  	CONFIG_BT_HCIBTUSB_RTL=y \
  	CONFIG_BT_HCIUART \
-@@ -1020,7 +1020,8 @@ $(eval $(call KernelPackage,keys-encrypted))
+@@ -1021,7 +1021,8 @@ $(eval $(call KernelPackage,keys-encrypted))
  define KernelPackage/keys-trusted
    SUBMENU:=$(OTHER_MENU)
    TITLE:=TPM trusted keys on kernel keyring
@@ -60,7 +60,7 @@
    KCONFIG:=CONFIG_TRUSTED_KEYS
    FILES:= $(LINUX_DIR)/security/keys/trusted-keys/trusted.ko
    AUTOLOAD:=$(call AutoLoad,01,trusted-keys,1)
-@@ -1151,3 +1152,97 @@ define KernelPackage/mhi-pci-generic/description
+@@ -1152,3 +1153,97 @@ define KernelPackage/mhi-pci-generic/description
  endef
  
  $(eval $(call KernelPackage,mhi-pci-generic))
