@@ -1,6 +1,6 @@
---- a/Config-kernel.in
-+++ b/Config-kernel.in
-@@ -426,6 +426,7 @@ config KERNEL_DEBUG_INFO
+--- a/config/Config-kernel.in
++++ b/config/Config-kernel.in
+@@ -445,6 +445,7 @@ config KERNEL_DEBUG_INFO
  
  config KERNEL_DEBUG_INFO_BTF
  	bool "Enable additional BTF type information"
@@ -8,7 +8,7 @@
  	depends on !HOST_OS_MACOS
  	depends on KERNEL_DEBUG_INFO && !KERNEL_DEBUG_INFO_REDUCED
  	select DWARVES
-@@ -443,6 +444,7 @@ config KERNEL_DEBUG_INFO_BTF_MODULES
+@@ -462,6 +463,7 @@ config KERNEL_DEBUG_INFO_BTF_MODULES
  config KERNEL_MODULE_ALLOW_BTF_MISMATCH
  	bool "Allow loading modules with non-matching BTF type info"
  	depends on KERNEL_DEBUG_INFO_BTF_MODULES
@@ -16,7 +16,7 @@
  	help
  	  For modules whose split BTF does not match vmlinux, load without
  	  BTF rather than refusing to load. The default behavior with
-@@ -452,7 +454,7 @@ config KERNEL_MODULE_ALLOW_BTF_MISMATCH
+@@ -471,7 +473,7 @@ config KERNEL_MODULE_ALLOW_BTF_MISMATCH
  
  config KERNEL_DEBUG_INFO_REDUCED
  	bool "Reduce debugging information"
@@ -25,7 +25,7 @@
  	depends on KERNEL_DEBUG_INFO
  	help
  	  If you say Y here gcc is instructed to generate less debugging
-@@ -540,6 +542,7 @@ config KERNEL_KPROBE_EVENTS
+@@ -559,6 +561,7 @@ config KERNEL_KPROBE_EVENTS
  config KERNEL_BPF_EVENTS
  	bool "Compile the kernel with BPF event support"
  	select KERNEL_KPROBES
@@ -33,7 +33,7 @@
  	help
  	  Allows to attach BPF programs to kprobe, uprobe and tracepoint events.
  	  This is required to use BPF maps of type BPF_MAP_TYPE_PERF_EVENT_ARRAY
-@@ -549,12 +552,18 @@ config KERNEL_BPF_EVENTS
+@@ -568,12 +571,18 @@ config KERNEL_BPF_EVENTS
  config KERNEL_PROBE_EVENTS_BTF_ARGS
  	bool "Support BTF function arguments for probe events"
  	depends on KERNEL_DEBUG_INFO_BTF && KERNEL_KPROBE_EVENTS && LINUX_6_6
@@ -52,7 +52,7 @@
  config KERNEL_AIO
  	bool "Compile the kernel with asynchronous IO support"
  	default y if !SMALL_FLASH
-@@ -1195,6 +1204,7 @@ config KERNEL_NET_L3_MASTER_DEV
+@@ -1214,6 +1223,7 @@ config KERNEL_NET_L3_MASTER_DEV
  
  config KERNEL_XDP_SOCKETS
  	bool "XDP sockets support"
