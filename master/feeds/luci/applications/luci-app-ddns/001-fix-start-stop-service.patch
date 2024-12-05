@@ -3,7 +3,7 @@
 @@ -168,8 +168,10 @@ return view.extend({
  
  	handleToggleDDns: function(m, ev) {
- 		return this.callInitAction('ddns', 'enabled')
+ 		return this.callInitAction('ddns', 'enable')
 -			.then(L.bind(function (action) { return this.callInitAction('ddns', action ? 'disable' : 'enable')}, this))
 -			.then(L.bind(function (action) { return this.callInitAction('ddns', action ? 'stop' : 'start')}, this))
 +			.then(L.bind(function (action) {
