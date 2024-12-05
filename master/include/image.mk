@@ -32,13 +32,13 @@ target_params = $(subst +,$(space),$*)
 param_get = $(patsubst $(1)=%,%,$(filter $(1)=%,$(2)))
 param_get_default = $(firstword $(call param_get,$(1),$(2)) $(3))
 param_mangle = $(subst $(space),_,$(strip $(1)))
-BUILD_DATE_PREFIX := $(shell TZ=UTC-8 date +'%Y%m%d%H%M')
 param_unmangle = $(subst _,$(space),$(1))
 
 mkfs_packages_id = $(shell echo $(sort $(1)) | $(MKHASH) md5 | cut -b1-8)
 mkfs_target_dir = $(if $(call param_get,pkg,$(1)),$(KDIR)/target-dir-$(call param_get,pkg,$(1)),$(TARGET_DIR))
 
 KDIR=$(KERNEL_BUILD_DIR)
+BUILD_DATE_PREFIX := $(shell TZ=UTC-8 date +'%Y%m%d%H%M')
 KDIR_TMP=$(KDIR)/tmp
 DTS_DIR:=$(LINUX_DIR)/arch/$(LINUX_KARCH)/boot/dts
 
