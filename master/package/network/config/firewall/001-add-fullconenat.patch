@@ -24,7 +24,7 @@
  
 @@ -140,6 +142,22 @@ config rule
  	option target		REJECT
- 	option enabled		false
+ 	option enabled		0
  
 +config rule
 +	option name		Allow-SSH-from-WAN
