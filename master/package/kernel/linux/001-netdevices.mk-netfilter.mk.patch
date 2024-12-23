@@ -1,33 +1,6 @@
 --- a/modules/netdevices.mk
 +++ b/modules/netdevices.mk
-@@ -1525,6 +1525,26 @@ endef
- 
- $(eval $(call KernelPackage,bnx2x))
- 
-+define KernelPackage/bnxt-en
-+  SUBMENU:=$(NETWORK_DEVICES_MENU)
-+  TITLE:=BCM 574xx/575xx 10/25/50-Gigabit ethernet adapter driver
-+  DEPENDS:=@PCI_SUPPORT +kmod-lib-crc32c +kmod-mdio +kmod-ptp +kmod-lib-zlib-inflate +kmod-hwmon-core
-+  FILES:=$(LINUX_DIR)/drivers/net/ethernet/broadcom/bnxt/bnxt_en.ko
-+  KCONFIG:= \
-+	CONFIG_BNXT \
-+	CONFIG_BNXT_SRIOV=y \
-+	CONFIG_BNXT_FLOWER_OFFLOAD=y \
-+	CONFIG_BNXT_DCB=n \
-+	CONFIG_BNXT_HWMON=y
-+  AUTOLOAD:=$(call AutoProbe,bnxt_en)
-+endef
-+
-+define KernelPackage/bnxt-en/description
-+  Broadcom 573xx/574xx/575xx 10/25/40/50-Gigabit ethernet adapter Driver
-+endef
-+
-+$(eval $(call KernelPackage,bnxt-en))
-+
- define KernelPackage/be2net
-   SUBMENU:=$(NETWORK_DEVICES_MENU)
-   TITLE:=Broadcom Emulex OneConnect 10Gbps NIC
-@@ -1742,6 +1762,30 @@ endef
+@@ -1764,6 +1784,30 @@ endef
  $(eval $(call KernelPackage,qlcnic))
  
  
@@ -58,7 +31,7 @@
  define KernelPackage/sfp
    SUBMENU:=$(NETWORK_DEVICES_MENU)
    TITLE:=SFP cage support
-@@ -1807,6 +1851,21 @@ endef
+@@ -1829,6 +1873,21 @@ endef
  
  $(eval $(call KernelPackage,igc))
  
