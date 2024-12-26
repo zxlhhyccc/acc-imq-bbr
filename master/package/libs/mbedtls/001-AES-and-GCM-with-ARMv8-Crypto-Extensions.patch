@@ -1,6 +1,6 @@
 --- a/Config.in
 +++ b/Config.in
-@@ -136,6 +136,17 @@ config MBEDTLS_ECP_DP_CURVE448_ENABLED
+@@ -140,6 +140,17 @@ config MBEDTLS_ECP_DP_CURVE448_ENABLED
  
  comment "Build Options - unselect features to reduce binary size"
  
@@ -18,7 +18,7 @@
  config MBEDTLS_CIPHER_MODE_OFB
  	bool "MBEDTLS_CIPHER_MODE_OFB"
  	default n
-@@ -147,10 +158,33 @@ config MBEDTLS_CIPHER_MODE_XTS
+@@ -151,10 +132,33 @@ config MBEDTLS_CIPHER_MODE_XTS
  config MBEDTLS_DEBUG_C
  	bool "MBEDTLS_DEBUG_C"
  	default n
