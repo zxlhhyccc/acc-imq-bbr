@@ -18,7 +18,7 @@
  define KernelPackage/usb-ssb
    TITLE:=Support for SSB USB controllers
    DEPENDS:=@USB_SUPPORT @TARGET_bcm47xx
-@@ -521,7 +532,7 @@ $(eval $(call KernelPackage,usb-dwc3))
+@@ -538,7 +549,7 @@ $(eval $(call KernelPackage,usb-dwc3))
  
  define KernelPackage/usb-dwc3-qcom
    TITLE:=DWC3 Qualcomm USB driver
@@ -27,7 +27,7 @@
    KCONFIG:= CONFIG_USB_DWC3_QCOM
    FILES:= $(LINUX_DIR)/drivers/usb/dwc3/dwc3-qcom.ko
    AUTOLOAD:=$(call AutoLoad,53,dwc3-qcom,1)
-@@ -1183,6 +1194,7 @@ endef
+@@ -1200,6 +1211,7 @@ endef
  
  define KernelPackage/usb-net-aqc111
    TITLE:=Support for USB-to-Ethernet Aquantia AQtion 5/2.5GbE
