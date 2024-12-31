@@ -4,10 +4,10 @@
    DEPENDS+= +libopenssl +librt
    TITLE+= (with SSL support)
    VARIANT:=ssl
--  ALTERNATIVES:=300:/usr/bin/wget:/usr/libexec/wget-ssl
+-  ALTERNATIVES:=400:/usr/bin/wget:/usr/libexec/wget-ssl
 +  ALTERNATIVES:=\
-+    300:/usr/bin/wget:/usr/libexec/wget-ssl \
-+    300:/usr/bin/wget-ssl:/usr/libexec/wget-ssl
++    400:/usr/bin/wget:/usr/libexec/wget-ssl \
++    400:/usr/bin/wget-ssl:/usr/libexec/wget-ssl
  endef
  
  define Package/wget-ssl/description
