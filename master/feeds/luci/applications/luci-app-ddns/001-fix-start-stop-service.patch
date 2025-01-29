@@ -1,6 +1,6 @@
 --- a/htdocs/luci-static/resources/view/ddns/overview.js
 +++ b/htdocs/luci-static/resources/view/ddns/overview.js
-@@ -168,8 +168,10 @@ return view.extend({
+@@ -179,8 +179,10 @@ return view.extend({
  
  	handleToggleDDns: function(m, ev) {
  		return this.callInitAction('ddns', 'enable')
