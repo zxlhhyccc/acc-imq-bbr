@@ -1312,7 +1312,7 @@
 +MODULE_DESCRIPTION("TCP BBR (Bottleneck Bandwidth and RTT)");
 --- a/net/ipv4/tcp_output.c
 +++ b/net/ipv4/tcp_output.c
-@@ -1977,7 +1977,7 @@ static bool tcp_nagle_check(bool partial
+@@ -1980,7 +1980,7 @@ static bool tcp_nagle_check(bool partial
   * for every 2^9 usec (aka 512 us) of RTT, so that the RTT-based allowance
   * is below 1500 bytes after 6 * ~500 usec = 3ms.
   */
@@ -1321,7 +1321,7 @@
  			    int min_tso_segs)
  {
  	unsigned long bytes;
-@@ -1993,6 +1993,7 @@ static u32 tcp_tso_autosize(const struct
+@@ -1996,6 +1996,7 @@ static u32 tcp_tso_autosize(const struct
  
  	return max_t(u32, bytes / mss_now, min_tso_segs);
  }
