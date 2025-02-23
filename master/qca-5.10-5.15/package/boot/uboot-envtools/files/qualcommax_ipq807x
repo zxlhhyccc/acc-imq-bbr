@@ -43,7 +43,9 @@ tplink,eap620hd-v1|\
 tplink,eap660hd-v1)
 	ubootenv_add_mtd "0:appsblenv" "0x0" "0x40000" "0x20000"
 	;;
-edimax,cax1800)
+edimax,cax1800|\
+zte,mf269|\
+zte,mf269-factory)
 	ubootenv_add_mtd "0:appsblenv" "0x0" "0x10000" "0x20000"
 	;;
 linksys,homewrk)
@@ -63,9 +65,7 @@ redmi,ax6-factory|\
 xiaomi,ax3600|\
 xiaomi,ax3600-factory|\
 xiaomi,ax9000|\
-xiaomi,ax9000-factory|\
-zte,mf269|\
-zte,mf269-factory)
+xiaomi,ax9000-factory)
 	ubootenv_add_mtd "0:appsblenv" "0x0" "0x10000" "0x20000"
 	ubootenv_add_sys_mtd "bdata" "0x0" "0x10000" "0x20000"
 	;;
