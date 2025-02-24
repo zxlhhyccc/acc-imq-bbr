@@ -41,16 +41,7 @@
 +
 --- a/modules/other.mk
 +++ b/modules/other.mk
-@@ -39,7 +39,7 @@ define KernelPackage/bluetooth
- 	CONFIG_BT_RFCOMM \
- 	CONFIG_BT_BNEP \
- 	CONFIG_BT_HCIBTUSB \
--	CONFIG_BT_HCIBTUSB_BCM=n \
-+	CONFIG_BT_HCIBTUSB_BCM=y \
- 	CONFIG_BT_HCIBTUSB_MTK=y \
- 	CONFIG_BT_HCIBTUSB_RTL=y \
- 	CONFIG_BT_HCIUART \
-@@ -1021,7 +1021,8 @@ $(eval $(call KernelPackage,keys-encrypted))
+@@ -907,7 +907,8 @@ $(eval $(call KernelPackage,keys-encrypted))
  define KernelPackage/keys-trusted
    SUBMENU:=$(OTHER_MENU)
    TITLE:=TPM trusted keys on kernel keyring
@@ -60,7 +51,7 @@
    KCONFIG:=CONFIG_TRUSTED_KEYS
    FILES:= $(LINUX_DIR)/security/keys/trusted-keys/trusted.ko
    AUTOLOAD:=$(call AutoLoad,01,trusted-keys,1)
-@@ -1152,3 +1153,97 @@ define KernelPackage/mhi-pci-generic/description
+@@ -1038,3 +1039,97 @@ define KernelPackage/mhi-pci-generic/description
  endef
  
  $(eval $(call KernelPackage,mhi-pci-generic))
