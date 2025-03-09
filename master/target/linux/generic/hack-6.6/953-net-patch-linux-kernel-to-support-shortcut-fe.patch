@@ -111,7 +111,7 @@
  
  #ifdef CONFIG_ETHERNET_PACKET_MANGLE
  	if (dev->eth_mangle_tx && !(skb = dev->eth_mangle_tx(dev, skb)))
-@@ -5398,6 +5404,11 @@ void netdev_rx_handler_unregister(struct
+@@ -5396,6 +5404,11 @@ void netdev_rx_handler_unregister(struct
  }
  EXPORT_SYMBOL_GPL(netdev_rx_handler_unregister);
  
