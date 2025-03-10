@@ -27,7 +27,7 @@
    KCONFIG:= CONFIG_USB_DWC3_QCOM
    FILES:= $(LINUX_DIR)/drivers/usb/dwc3/dwc3-qcom.ko
    AUTOLOAD:=$(call AutoLoad,53,dwc3-qcom,1)
-@@ -1200,6 +1211,7 @@ endef
+@@ -1199,6 +1210,7 @@ endef
  
  define KernelPackage/usb-net-aqc111
    TITLE:=Support for USB-to-Ethernet Aquantia AQtion 5/2.5GbE
