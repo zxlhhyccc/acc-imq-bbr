@@ -1,6 +1,6 @@
 --- a/modules/netdevices.mk
 +++ b/modules/netdevices.mk
-@@ -1849,6 +1860,30 @@ endef
+@@ -1844,6 +1860,30 @@ endef
  $(eval $(call KernelPackage,qlcnic))
  
  
@@ -31,7 +31,7 @@
  define KernelPackage/sfp
    SUBMENU:=$(NETWORK_DEVICES_MENU)
    TITLE:=SFP cage support
-@@ -1914,6 +1938,21 @@ endef
+@@ -1909,6 +1933,21 @@ endef
  
  $(eval $(call KernelPackage,igc))
  
