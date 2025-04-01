@@ -1,6 +1,6 @@
 --- a/Makefile
 +++ b/Makefile
-@@ -373,6 +373,8 @@ define Package/ddns-scripts/postinst
+@@ -387,6 +387,8 @@ define Package/ddns-scripts/postinst
  if [ -z "$${IPKG_INSTROOT}" ]; then
  	/etc/init.d/ddns enabled
  	/etc/init.d/ddns start
@@ -9,7 +9,7 @@
  fi
  exit 0
  endef
-@@ -382,6 +384,8 @@ define Package/ddns-scripts/prerm
+@@ -396,6 +398,8 @@ define Package/ddns-scripts/prerm
  if [ -n "$${IPKG_INSTROOT}" ]; then
  	/etc/init.d/ddns stop
  	/etc/init.d/ddns disable
