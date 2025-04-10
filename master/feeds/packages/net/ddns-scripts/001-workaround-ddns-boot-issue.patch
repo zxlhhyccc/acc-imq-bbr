@@ -1,6 +1,6 @@
 --- a/Makefile
 +++ b/Makefile
-@@ -387,6 +387,8 @@ define Package/ddns-scripts/postinst
+@@ -388,6 +388,8 @@ define Package/ddns-scripts/postinst
  if [ -z "$${IPKG_INSTROOT}" ]; then
  	/etc/init.d/ddns enabled
  	/etc/init.d/ddns start
@@ -9,7 +9,7 @@
  fi
  exit 0
  endef
-@@ -396,6 +398,8 @@ define Package/ddns-scripts/prerm
+@@ -397,6 +399,8 @@ define Package/ddns-scripts/prerm
  if [ -n "$${IPKG_INSTROOT}" ]; then
  	/etc/init.d/ddns stop
  	/etc/init.d/ddns disable
@@ -20,7 +20,7 @@
  endef
 --- a/files/usr/lib/ddns/dynamic_dns_functions.sh
 +++ b/files/usr/lib/ddns/dynamic_dns_functions.sh
-@@ -962,10 +962,17 @@ get_current_ip () {
+@@ -952,10 +952,17 @@ get_current_ip () {
  					# 5: eth1    inet6 fd43:5368:6f6d:6500:a00:27ff:fed0:1032/64 scope global dynamic \       valid_lft 14352sec preferred_lft 14352sec
  					# 5: eth1    inet6 2002:b0c7:f326::a00:27ff:fed0:1032/64 scope global dynamic \       valid_lft 14352sec preferred_lft 14352sec
  
