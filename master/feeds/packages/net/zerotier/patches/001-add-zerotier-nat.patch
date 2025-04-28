@@ -1,0 +1,22 @@
+--- a/files/etc/init.d/zerotier
++++ b/files/etc/init.d/zerotier
+@@ -9,7 +9,10 @@ CONFIG_PATH=/var/lib/zerotier-one
+ 
+ join_network() {
+ 	local section="${1}"
+-	local id allow_managed allow_global allow_default allow_dns
++	local enabled id allow_managed allow_global allow_default allow_dns
++
++	config_get_bool enabled "${section}" 'enabled' 0
++	[ ${enabled} -eq 1 ] || return
+ 
+ 	config_get id "${section}" 'id'
+ 	config_get_bool allow_managed "${section}" 'allow_managed' 1
+@@ -96,6 +99,7 @@ start_service() {
+ 
+ stop_service() {
+ 	rm -rf "${CONFIG_PATH}"
++	zerotier-nat stop
+ }
+ 
+ reload_service() {
