@@ -32,7 +32,7 @@
 +net.ipv4.tcp_congestion_control=tsunamio
 --- a/modules/netsupport.mk
 +++ b/modules/netsupport.mk
-@@ -1108,6 +1108,125 @@ endef
+@@ -1109,6 +1109,126 @@ endef
  $(eval $(call KernelPackage,tls))
  
  
@@ -128,6 +128,7 @@
 +
 +define KernelPackage/tcp-bbrplus
 +  SUBMENU:=$(NETWORK_SUPPORT_MENU)
++  DEPENDS:=@!LINUX_6_12
 +  TITLE:=BBRPLUS TCP congestion control
 +  KCONFIG:= \
 +            CONFIG_TCP_CONG_BBRPLUS \
