@@ -36,7 +36,7 @@
 @@ -568,12 +571,18 @@ config KERNEL_BPF_EVENTS
  config KERNEL_PROBE_EVENTS_BTF_ARGS
  	bool "Support BTF function arguments for probe events"
- 	depends on KERNEL_DEBUG_INFO_BTF && KERNEL_KPROBE_EVENTS && LINUX_6_6
+ 	depends on KERNEL_DEBUG_INFO_BTF && KERNEL_KPROBE_EVENTS
 +	default n
  
  config KERNEL_BPF_KPROBE_OVERRIDE
@@ -52,7 +52,7 @@
  config KERNEL_AIO
  	bool "Compile the kernel with asynchronous IO support"
  	default y if !SMALL_FLASH
-@@ -1264,6 +1273,7 @@ config KERNEL_NET_L3_MASTER_DEV
+@@ -1273,6 +1282,7 @@ config KERNEL_NET_L3_MASTER_DEV
  
  config KERNEL_XDP_SOCKETS
  	bool "XDP sockets support"
