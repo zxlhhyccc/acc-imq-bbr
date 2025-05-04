@@ -1,8 +1,8 @@
 --- a/files/adblock.init
 +++ b/files/adblock.init
-@@ -50,10 +50,12 @@ start_service() {
- 
+@@ -51,10 +51,12 @@ start_service() {
  restart() {
+ 	stop_service "restart"
  	rc_procd start_service restart
 +	/etc/init.d/adblock report >/dev/null 2>&1
  }
