@@ -52,7 +52,7 @@
  config KERNEL_AIO
  	bool "Compile the kernel with asynchronous IO support"
  	default y if !SMALL_FLASH
-@@ -1273,6 +1282,7 @@ config KERNEL_NET_L3_MASTER_DEV
+@@ -1280,6 +1289,7 @@ config KERNEL_NET_L3_MASTER_DEV
  
  config KERNEL_XDP_SOCKETS
  	bool "XDP sockets support"
