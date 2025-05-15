@@ -1,6 +1,6 @@
 --- a/include/linux/skbuff.h
 +++ b/include/linux/skbuff.h
-@@ -985,7 +985,7 @@ struct sk_buff {
+@@ -988,7 +988,7 @@ struct sk_buff {
  	__u8			csum_not_inet:1;
  #endif
  

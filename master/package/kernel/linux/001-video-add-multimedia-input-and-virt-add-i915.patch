@@ -1,6 +1,8 @@
+diff --git a/modules/video.mk b/modules/video.mk
+index 9bb030b..8b35c90 100644
 --- a/modules/video.mk
 +++ b/modules/video.mk
-@@ -601,6 +601,97 @@ endef
+@@ -615,6 +615,97 @@ endef
  
  $(eval $(call KernelPackage,drm-imx-ldb))
  
@@ -98,7 +100,7 @@
  define KernelPackage/drm-panel-mipi-dbi
    SUBMENU:=$(VIDEO_MENU)
    TITLE:=Generic MIPI DBI LCD panel
-@@ -636,6 +727,20 @@ endef
+@@ -650,6 +741,20 @@ endef
  
  $(eval $(call KernelPackage,drm-radeon))
  
@@ -119,7 +121,7 @@
  #
  # Video Capture
  #
-@@ -644,6 +749,7 @@ define KernelPackage/video-core
+@@ -658,6 +763,7 @@ define KernelPackage/video-core
    SUBMENU:=$(VIDEO_MENU)
    TITLE=Video4Linux support
 -  DEPENDS:=+PACKAGE_kmod-i2c-core:kmod-i2c-core +kmod-media-controller
@@ -128,7 +130,7 @@
    KCONFIG:= \
  	CONFIG_MEDIA_CAMERA_SUPPORT=y \
  	CONFIG_VIDEO_DEV \
-@@ -651,7 +757,7 @@ define KernelPackage/video-core
+@@ -665,7 +771,7 @@ define KernelPackage/video-core
  	CONFIG_MEDIA_PLATFORM_DRIVERS=y
    FILES:= \
  	$(LINUX_DIR)/drivers/media/$(V4L2_DIR)/videodev.ko
