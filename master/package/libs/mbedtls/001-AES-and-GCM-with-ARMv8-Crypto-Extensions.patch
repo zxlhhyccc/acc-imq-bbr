@@ -72,7 +72,7 @@
 @@ -130,6 +132,9 @@ CSR generation (gen_key, cert_req)
  endef
  
- TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS))
+ TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -Wno-unterminated-string-initialization
 +ifneq ($(CONFIG_MBEDTLS_AESCE_C),)
 +  TARGET_CFLAGS := $(filter-out -march=%,$(TARGET_CFLAGS)) -march=armv8-a+crypto
 +endif
