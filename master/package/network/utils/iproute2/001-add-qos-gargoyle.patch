@@ -7,7 +7,7 @@
 +#TARGET_CFLAGS += -Wno-error=incompatible-pointer-types
  
  MAKE_FLAGS += \
- 	KERNEL_INCLUDE="$(LINUX_DIR)/include/uapi" \
+ 	KERNEL_INCLUDE="$(TOOLCHAIN_ROOT_DIR)/usr/include" \
 @@ -198,6 +199,10 @@ define Build/InstallDev
  	$(CP) $(PKG_BUILD_DIR)/include/{libgenl,libnetlink}.h $(1)/usr/include/
  	$(INSTALL_DIR) $(1)/usr/lib
