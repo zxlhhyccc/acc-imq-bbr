@@ -51,25 +51,10 @@
    KCONFIG:=CONFIG_TRUSTED_KEYS
    FILES:= $(LINUX_DIR)/security/keys/trusted-keys/trusted.ko
    AUTOLOAD:=$(call AutoLoad,01,trusted-keys,1)
-@@ -1063,3 +1064,97 @@ define KernelPackage/mhi-pci-generic/description
+@@ -1080,3 +1081,82 @@ define KernelPackage/mhi-pci-generic/description
  endef
  
- $(eval $(call KernelPackage,mhi-pci-generic))
-+
-+
-+define KernelPackage/qcom-qmi-helpers
-+  SUBMENU:=$(OTHER_MENU)
-+  TITLE:=Qualcomm QMI Helpers
-+  KCONFIG:=CONFIG_QCOM_QMI_HELPERS
-+  FILES:=$(LINUX_DIR)/drivers/soc/qcom/qmi_helpers.ko
-+  AUTOLOAD:=$(call AutoProbe,qmi_helpers)
-+endef
-+
-+define KernelPackage/qcom-qmi-helpers/description
-+  Qualcomm QMI Helpers
-+endef
-+
-+$(eval $(call KernelPackage,qcom-qmi-helpers))
+ $(eval $(call KernelPackage,regulator-userspace-consumer))
 +
 +
 +define KernelPackage/zsmalloc
