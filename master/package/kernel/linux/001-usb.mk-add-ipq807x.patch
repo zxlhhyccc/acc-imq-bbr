@@ -1,6 +1,6 @@
 --- a/modules/usb.mk
 +++ b/modules/usb.mk
-@@ -331,6 +331,17 @@ define KernelPackage/usb-bcma
+@@ -341,6 +341,17 @@ define KernelPackage/usb-bcma
  endef
  $(eval $(call KernelPackage,usb-bcma))
  
@@ -18,7 +18,7 @@
  define KernelPackage/usb-ssb
    TITLE:=Support for SSB USB controllers
    DEPENDS:=@USB_SUPPORT @TARGET_bcm47xx
-@@ -538,7 +549,7 @@ $(eval $(call KernelPackage,usb-dwc3))
+@@ -561,7 +572,7 @@ $(eval $(call KernelPackage,usb-dwc3))
  
  define KernelPackage/usb-dwc3-qcom
    TITLE:=DWC3 Qualcomm USB driver
@@ -27,7 +27,7 @@
    KCONFIG:= CONFIG_USB_DWC3_QCOM
    FILES:= $(LINUX_DIR)/drivers/usb/dwc3/dwc3-qcom.ko
    AUTOLOAD:=$(call AutoLoad,53,dwc3-qcom,1)
-@@ -1214,6 +1225,7 @@ endef
+@@ -1237,6 +1248,7 @@ endef
  
  define KernelPackage/usb-net-aqc111
    TITLE:=Support for USB-to-Ethernet Aquantia AQtion 5/2.5GbE
