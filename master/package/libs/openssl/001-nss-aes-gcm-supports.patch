@@ -1,6 +1,7 @@
---- a/Config.in
-+++ b/Config.in
-@@ -4,7 +4,7 @@ comment "Build Options"
+diff -uNr 1/Config.in 2/Config.in
+--- 1/Config.in	2025-08-10 20:36:28.254572430 +0800
++++ 2/Config.in	2025-06-12 23:39:59.139546000 +0800
+@@ -4,7 +4,7 @@
  
  config OPENSSL_OPTIMIZE_SPEED
  	bool
@@ -9,7 +10,7 @@
  	prompt "Enable optimization for speed instead of size"
  	select OPENSSL_WITH_ASM
  	help
-@@ -38,9 +38,9 @@ config OPENSSL_WITH_ASM
+@@ -38,9 +38,9 @@
  
  config OPENSSL_WITH_SSE2
  	bool
@@ -21,7 +22,33 @@
  	help
  		Use of SSE2 instructions greatly increase performance with a
  		minimum increase in package size, but it will bring no benefit
-@@ -133,7 +133,7 @@ config OPENSSL_WITH_CHACHA_POLY1305
+@@ -112,6 +112,25 @@
+ 		Cryptographic Message Syntax (CMS) is used to digitally sign,
+ 		digest, authenticate, or encrypt arbitrary message content.
+ 
++config OPENSSL_WITH_QUIC
++	bool
++	prompt "Enable QUIC support"
++	select OPENSSL_WITH_TLS13
++	help
++		Enable support for QUIC (Quick UDP Internet Connections) in OpenSSL 3.
++		This allows OpenSSL to provide cryptographic support for QUIC-based protocols,
++		such as HTTP/3. QUIC requires TLSv1.3 to be enabled.
++
++config OPENSSL_WITH_KTLS
++	bool
++	prompt "Enable KTLS support"
++	depends on PACKAGE_kmod-tls
++	select OPENSSL_WITH_TLS13
++	help
++		Enable Kernel TLS (kTLS) offload support. This allows OpenSSL to
++		offload TLS record processing to the kernel, reducing CPU usage
++		and improving performance for high-traffic TLS connections.
++
+ comment "Algorithm Selection"
+ 
+ config OPENSSL_WITH_EC2M
+@@ -133,7 +152,7 @@
  
  config OPENSSL_PREFER_CHACHA_OVER_GCM
  	bool
@@ -30,7 +57,7 @@
  	prompt "Prefer ChaCha20-Poly1305 over AES-GCM by default"
  	depends on OPENSSL_WITH_CHACHA_POLY1305
  	help
-@@ -261,6 +261,7 @@ config OPENSSL_ENGINE
+@@ -261,6 +280,7 @@
  
  config OPENSSL_ENGINE_BUILTIN
  	bool "Build chosen engines into libcrypto"
@@ -38,7 +65,7 @@
  	depends on OPENSSL_ENGINE
  	help
  		This builds all chosen engines into libcrypto.so, instead of building
-@@ -270,6 +271,7 @@ config OPENSSL_ENGINE_BUILTIN
+@@ -270,6 +290,7 @@
  
  config OPENSSL_ENGINE_BUILTIN_AFALG
  	bool
@@ -46,7 +73,7 @@
  	prompt "Acceleration support through AF_ALG sockets engine"
  	depends on OPENSSL_ENGINE_BUILTIN && KERNEL_AIO
  	select PACKAGE_libopenssl-conf
-@@ -279,6 +281,7 @@ config OPENSSL_ENGINE_BUILTIN_AFALG
+@@ -279,6 +300,7 @@
  
  config OPENSSL_ENGINE_BUILTIN_DEVCRYPTO
  	bool
@@ -54,3 +81,47 @@
  	prompt "Acceleration support through /dev/crypto"
  	depends on OPENSSL_ENGINE_BUILTIN
  	select PACKAGE_libopenssl-conf
+diff -uNr 1/Makefile 2/Makefile
+--- 1/Makefile	2025-08-10 20:32:24.366915000 +0800
++++ 2/Makefile	2025-08-10 20:42:04.909170877 +0800
+@@ -49,9 +49,11 @@
+ 	CONFIG_OPENSSL_WITH_EC2M \
+ 	CONFIG_OPENSSL_WITH_ERROR_MESSAGES \
+ 	CONFIG_OPENSSL_WITH_IDEA \
++	CONFIG_OPENSSL_WITH_KTLS \
+ 	CONFIG_OPENSSL_WITH_MDC2 \
+ 	CONFIG_OPENSSL_WITH_NPN \
+ 	CONFIG_OPENSSL_WITH_PSK \
++	CONFIG_OPENSSL_WITH_QUIC \
+ 	CONFIG_OPENSSL_WITH_RFC3779 \
+ 	CONFIG_OPENSSL_WITH_SEED \
+ 	CONFIG_OPENSSL_WITH_SM234 \
+@@ -215,7 +217,8 @@
+ The engine_id is "padlock"
+ endef
+ 
+-OPENSSL_OPTIONS:= shared no-tests
++TARGET_LDFLAGS += -lpthread
++OPENSSL_OPTIONS := shared no-tests no-docs threads
+ 
+ ifndef CONFIG_OPENSSL_WITH_BLAKE2
+   OPENSSL_OPTIONS += no-blake2
+@@ -352,6 +355,18 @@
+   endif
+ endif
+ 
++ifndef CONFIG_OPENSSL_WITH_QUIC
++  OPENSSL_OPTIONS += no-quic
++else
++  OPENSSL_OPTIONS += enable-quic
++endif
++
++ifndef CONFIG_OPENSSL_WITH_KTLS
++  OPENSSL_OPTIONS += no-ktls
++else
++  OPENSSL_OPTIONS += enable-ktls
++endif
++
+ OPENSSL_TARGET:=linux-$(call qstrip,$(CONFIG_ARCH))-openwrt
+ 
+ STAMP_CONFIGURED := $(STAMP_CONFIGURED)_$(shell echo $(OPENSSL_OPTIONS) | $(MKHASH) md5)
