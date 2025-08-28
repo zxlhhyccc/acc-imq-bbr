@@ -7,6 +7,6 @@ index f934221..6f59048 100644
    SUBMENU:=BitTorrent
    DEPENDS:=+transmission-daemon
 -  CONFLICTS:=transmission-web
-   TITLE:=Transmission Web Control
+   TITLE:=A custom web UI for Transmission
    URL:=https://github.com/ronggang/transmission-web-control
    PKGARCH:=all
