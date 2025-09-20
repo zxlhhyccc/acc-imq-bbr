@@ -34,7 +34,7 @@
  
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -3624,7 +3624,7 @@ static int xmit_one(struct sk_buff *skb,
+@@ -3636,7 +3636,7 @@ static int xmit_one(struct sk_buff *skb,
  {
  	unsigned int len;
  	int rc;
@@ -43,7 +43,7 @@
  	/* If this skb has been fast forwarded then we don't want it to
  	 * go to any taps (by definition we're trying to bypass them).
  	 */
-@@ -3632,7 +3632,7 @@ static int xmit_one(struct sk_buff *skb,
+@@ -3644,7 +3644,7 @@ static int xmit_one(struct sk_buff *skb,
  #endif
  	if (dev_nit_active(dev))
  		dev_queue_xmit_nit(skb, dev);
@@ -52,7 +52,7 @@
  	}
  #endif
  
-@@ -5404,7 +5404,7 @@ void netdev_rx_handler_unregister(struct
+@@ -5416,7 +5416,7 @@ void netdev_rx_handler_unregister(struct
  }
  EXPORT_SYMBOL_GPL(netdev_rx_handler_unregister);
  
@@ -61,7 +61,7 @@
  int (*athrs_fast_nat_recv)(struct sk_buff *skb) __rcu __read_mostly;
  EXPORT_SYMBOL_GPL(athrs_fast_nat_recv);
  #endif
-@@ -5457,7 +5457,7 @@ static int __netif_receive_skb_core(stru
+@@ -5469,7 +5469,7 @@ static int __netif_receive_skb_core(stru
  	int ret = NET_RX_DROP;
  	__be16 type;
  
@@ -70,7 +70,7 @@
  	int (*fast_recv)(struct sk_buff *skb);
  #endif
  
-@@ -5498,7 +5498,7 @@ another_round:
+@@ -5510,7 +5510,7 @@ another_round:
  			goto out;
  	}
  
