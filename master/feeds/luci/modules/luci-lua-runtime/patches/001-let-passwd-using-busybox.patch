@@ -1,6 +1,6 @@
 --- a/luasrc/sys.lua
 +++ b/luasrc/sys.lua
-@@ -531,7 +531,7 @@ function user.checkpasswd(username, pass)
+@@ -535,7 +535,7 @@ function user.checkpasswd(username, pass)
  end
  
  function user.setpasswd(username, password)
