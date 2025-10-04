@@ -1,6 +1,6 @@
 --- a/Makefile
 +++ b/Makefile
-@@ -199,6 +199,39 @@ Includes support for:
+@@ -213,6 +213,39 @@ Includes support for:
  
  endef
  
@@ -40,7 +40,7 @@
  define Package/iptables-mod-ipopt
  $(call Package/iptables/Module, +kmod-ipt-ipopt)
    TITLE:=IP/Packet option extensions
-@@ -741,6 +774,11 @@ $(eval $(call BuildPlugin,iptables-mod-conntrack-label,$(IPT_CONNTRACK_LABEL-m))
+@@ -752,6 +785,11 @@ $(eval $(call BuildPlugin,iptables-mod-conntrack-label,$(IPT_CONNTRACK_LABEL-m))
  $(eval $(call BuildPlugin,iptables-mod-extra,$(IPT_EXTRA-m)))
  $(eval $(call BuildPlugin,iptables-mod-physdev,$(IPT_PHYSDEV-m)))
  $(eval $(call BuildPlugin,iptables-mod-filter,$(IPT_FILTER-m)))

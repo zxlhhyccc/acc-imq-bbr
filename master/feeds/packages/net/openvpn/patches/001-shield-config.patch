@@ -24,7 +24,7 @@ diff --git a/files/openvpn.options b/files/openvpn.options
 index 7c641f7..35e4fd6 100644
 --- a/files/openvpn.options
 +++ b/files/openvpn.options
-@@ -114,6 +114,7 @@ socks_proxy
+@@ -115,6 +115,7 @@ socks_proxy
  status
  status_version
  syslog
