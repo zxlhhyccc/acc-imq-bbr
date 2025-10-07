@@ -1,13 +1,13 @@
 --- a/Makefile
 +++ b/Makefile
-@@ -168,6 +168,7 @@ endef
+@@ -163,6 +163,7 @@ endef
  
  TARGET_LDFLAGS += -Wl,--as-needed
  TARGET_CPPFLAGS += -I$(STAGING_DIR)/usr/include/libnl-tiny
 +#TARGET_CFLAGS += -Wno-error=incompatible-pointer-types
  
- MAKE_FLAGS += \
- 	KERNEL_INCLUDE="$(TOOLCHAIN_ROOT_DIR)/usr/include" \
+ CONFIGURE_VARS += \
+ 	HAVE_ELF=$(HAVE_ELF) \
 @@ -198,6 +199,10 @@ define Build/InstallDev
  	$(CP) $(PKG_BUILD_DIR)/include/{libgenl,libnetlink}.h $(1)/usr/include/
  	$(INSTALL_DIR) $(1)/usr/lib
