@@ -22,7 +22,7 @@
  
 --- a/htdocs/luci-static/resources/view/network/interfaces.js
 +++ b/htdocs/luci-static/resources/view/network/interfaces.js
-@@ -245,6 +245,7 @@ function has_sourcefilter(proto) {
+@@ -248,6 +248,7 @@ function has_sourcefilter(proto) {
  	case 'pppoe':
  	case 'pptp':
  	case 'qmi':
