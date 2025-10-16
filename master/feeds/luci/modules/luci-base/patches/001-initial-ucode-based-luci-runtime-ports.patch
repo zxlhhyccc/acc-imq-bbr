@@ -24,7 +24,7 @@
  				br2684ctl:  access('/usr/sbin/br2684ctl') == true,
  				swconfig:   access('/sbin/swconfig') == true,
  				zram:       access('/sys/class/zram-control') == true,
-@@ -597,44 +600,121 @@ const methods = {
+@@ -598,44 +601,121 @@ const methods = {
  
  	getBuiltinEthernetPorts: {
  		call: function() {
