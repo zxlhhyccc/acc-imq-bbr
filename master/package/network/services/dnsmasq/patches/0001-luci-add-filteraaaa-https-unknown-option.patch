@@ -1,28 +1,18 @@
 --- a/htdocs/luci-static/resources/view/network/dhcp.js
 +++ b/htdocs/luci-static/resources/view/network/dhcp.js
-@@ -293,6 +293,7 @@
- 		s.tab('leases', _('Static Leases'));
+@@ -371,6 +371,7 @@
+ 		s.tab('logging', _('Log'));
+ 		s.tab('files', _('Files'));
  		s.tab('relay', _('Relay'));
- 		s.tab('pxe_tftp', _('PXE/TFTP'));
 +		//s.tab('custom_domain', _('Custom Redirect Domain'));
  
- 		var ipaddrs = {};
- 
-@@ -303,6 +304,10 @@
- 				ipaddrs[addrs[i]] = hosts[mac].name || mac;
- 		});
- 
-+		s.taboption('general', form.Flag, 'dns_redirect',
-+			_('DNS Redirect'),
-+			_('Force redirect all local DNS queries to DNSMasq, a.k.a. DNS Hijacking.'));
-+
  		// Begin general
  		s.taboption('general', form.Flag, 'authoritative',
- 			_('Authoritative'),
-@@ -769,6 +774,23 @@
- 		so.value('41', _('41: ARM rpiboot'));
+@@ -607,6 +608,26 @@
+ 		});
  		// End pxe_tftp
  
++		// Begin custom_domain
 +		//o = s.taboption('custom_domain', form.SectionValue, 'domain', form.GridSection, 'domain', null,
 +			//_('Define a custom domain name and the corresponding PTR record'));
 +
@@ -40,12 +30,25 @@
 +
 +		//so = ss.option(form.Value, 'comments', _('Comments'));
 +		//so.rmempty  = true;
++		// End custom_domain
++
+ 		return s;
+ 	},
  
- 		return m.render().then(function(mapEl) {
- 			poll.add(function() {
 --- a/htdocs/luci-static/resources/view/network/dns.js
 +++ b/htdocs/luci-static/resources/view/network/dns.js
-@@ -624,6 +624,16 @@
+@@ -209,6 +209,10 @@
+ 		s.tab('ipsets', _('IP Sets'));
+ 
+ 		// Begin general
++		s.taboption('general', form.Flag, 'dns_redirect',
++			_('DNS Redirect'),
++			_('Force redirect all local DNS queries to DNSMasq, a.k.a. DNS Hijacking.'));
++
+ 		o = s.taboption('general', form.Value, 'local',
+ 			_('Resolve these locally'),
+ 			_('Never forward these matching domains or subdomains; resolve from DHCP or hosts files only.'));
+@@ -624,6 +628,16 @@
  		o.optional = false;
  		o.rmempty = false;
  
@@ -62,7 +65,7 @@
  		o = s.taboption('filteropts', form.Flag, 'boguspriv',
  			_('Filter private'),
  			customi18n(
-@@ -646,6 +656,7 @@
+@@ -646,6 +660,7 @@
  			_('Filter IPv4 A records'),
  			_('Remove IPv4 addresses from the results and only return IPv6 addresses.'));
  		o.optional = true;
@@ -70,7 +73,7 @@
  
  		o = s.taboption('filteropts', form.MultiValue, 'filter_rr',
  			_('Filter arbitrary RR'), _('Removes records of the specified type(s) from answers.'));
-@@ -757,6 +768,13 @@
+@@ -757,6 +772,13 @@
  		o.placeholder = 3600;
  		// End limits
  
