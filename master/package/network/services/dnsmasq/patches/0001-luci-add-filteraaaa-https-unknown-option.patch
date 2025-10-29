@@ -1,6 +1,6 @@
 --- a/htdocs/luci-static/resources/view/network/dhcp.js
 +++ b/htdocs/luci-static/resources/view/network/dhcp.js
-@@ -389,6 +389,7 @@
+@@ -341,6 +341,7 @@
  		s.tab('logging', _('Log'));
  		s.tab('files', _('Files'));
  		s.tab('relay', _('Relay'));
@@ -8,7 +8,7 @@
  
  		// Begin general
  		s.taboption('general', form.Flag, 'authoritative',
-@@ -625,6 +626,26 @@
+@@ -566,6 +567,26 @@
  		});
  		// End pxe_tftp
  
@@ -37,7 +37,7 @@
  
 --- a/htdocs/luci-static/resources/view/network/dns.js
 +++ b/htdocs/luci-static/resources/view/network/dns.js
-@@ -209,6 +209,10 @@
+@@ -205,6 +205,10 @@
  		s.tab('ipsets', _('IP Sets'));
  
  		// Begin general
@@ -48,7 +48,7 @@
  		o = s.taboption('general', form.Value, 'local',
  			_('Resolve these locally'),
  			_('Never forward these matching domains or subdomains; resolve from DHCP or hosts files only.'));
-@@ -624,6 +628,16 @@
+@@ -623,6 +627,16 @@
  		o.optional = false;
  		o.rmempty = false;
  
@@ -65,7 +65,7 @@
  		o = s.taboption('filteropts', form.Flag, 'boguspriv',
  			_('Filter private'),
  			customi18n(
-@@ -646,6 +660,7 @@
+@@ -645,6 +659,7 @@
  			_('Filter IPv4 A records'),
  			_('Remove IPv4 addresses from the results and only return IPv6 addresses.'));
  		o.optional = true;
@@ -73,7 +73,7 @@
  
  		o = s.taboption('filteropts', form.MultiValue, 'filter_rr',
  			_('Filter arbitrary RR'), _('Removes records of the specified type(s) from answers.'));
-@@ -757,6 +772,13 @@
+@@ -756,6 +771,13 @@
  		o.placeholder = 3600;
  		// End limits
  
