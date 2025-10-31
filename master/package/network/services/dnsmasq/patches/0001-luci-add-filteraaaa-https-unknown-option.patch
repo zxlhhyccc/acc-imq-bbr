@@ -1,6 +1,6 @@
 --- a/htdocs/luci-static/resources/view/network/dhcp.js
 +++ b/htdocs/luci-static/resources/view/network/dhcp.js
-@@ -341,6 +341,7 @@
+@@ -343,6 +343,7 @@
  		s.tab('logging', _('Log'));
  		s.tab('files', _('Files'));
  		s.tab('relay', _('Relay'));
@@ -8,7 +8,7 @@
  
  		// Begin general
  		s.taboption('general', form.Flag, 'authoritative',
-@@ -566,6 +567,26 @@
+@@ -568,6 +569,26 @@
  		});
  		// End pxe_tftp
  
