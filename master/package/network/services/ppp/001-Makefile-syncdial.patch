@@ -12,7 +12,7 @@
 
 --- a/files/ppp.sh
 +++ b/files/ppp.sh
-@@ -233,7 +233,15 @@ proto_pppoe_setup() {
+@@ -249,7 +249,15 @@ proto_pppoe_setup() {
  	json_get_var padi_attempts padi_attempts
  	json_get_var padi_timeout padi_timeout
  
