@@ -22,7 +22,7 @@
  # Uncomment this line to disable ipv6 rules
  #	option disable_ipv6	1
  
-@@ -140,6 +142,22 @@ config rule
+@@ -141,6 +143,22 @@ config rule
  	option target		REJECT
  	option enabled		0
  
