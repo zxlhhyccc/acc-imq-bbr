@@ -8,7 +8,7 @@
  
  		// Begin general
  		s.taboption('general', form.Flag, 'authoritative',
-@@ -568,6 +569,26 @@
+@@ -573,6 +574,26 @@
  		});
  		// End pxe_tftp
  
