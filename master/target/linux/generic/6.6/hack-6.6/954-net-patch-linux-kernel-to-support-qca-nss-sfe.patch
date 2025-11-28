@@ -1,0 +1,81 @@
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -988,7 +988,7 @@ struct sk_buff {
+ 	__u8			csum_not_inet:1;
+ #endif
+ 
+-#ifdef CONFIG_SHORTCUT_FE
++#if defined (CONFIG_SHORTCUT_FE) || defined (CONFIG_QCA_NSS_SFE)
+ 	__u8			fast_forwarded:1;
+ #endif
+ 
+--- a/include/linux/timer.h
++++ b/include/linux/timer.h
+@@ -18,7 +18,7 @@ struct timer_list {
+ 	void			(*function)(struct timer_list *);
+ 	u32			flags;
+ 
+-#ifdef CONFIG_SHORTCUT_FE
++#if defined (CONFIG_SHORTCUT_FE) || defined (CONFIG_QCA_NSS_SFE)
+ 	unsigned long		cust_data;
+ #endif
+ 
+--- a/net/Kconfig
++++ b/net/Kconfig
+@@ -504,6 +504,9 @@ config FAILOVER
+ 	  migration of VMs with direct attached VFs by failing over to the
+ 	  paravirtual datapath when the VF is unplugged.
+ 
++config QCA_NSS_SFE
++	bool "Enables kernel network stack path for Shortcut  Forwarding Engine"
++
+ config SHORTCUT_FE
+ 	bool "Enables kernel network stack path for Shortcut  Forwarding Engine"
+ 
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -3636,7 +3636,7 @@ static int xmit_one(struct sk_buff *skb,
+ {
+ 	unsigned int len;
+ 	int rc;
+-#ifdef CONFIG_SHORTCUT_FE
++#if defined (CONFIG_SHORTCUT_FE) || defined (CONFIG_QCA_NSS_SFE)
+ 	/* If this skb has been fast forwarded then we don't want it to
+ 	 * go to any taps (by definition we're trying to bypass them).
+ 	 */
+@@ -3644,7 +3644,7 @@ static int xmit_one(struct sk_buff *skb,
+ #endif
+ 	if (dev_nit_active(dev))
+ 		dev_queue_xmit_nit(skb, dev);
+-#ifdef CONFIG_SHORTCUT_FE
++#if defined (CONFIG_SHORTCUT_FE) || defined (CONFIG_QCA_NSS_SFE)
+ 	}
+ #endif
+ 
+@@ -5416,7 +5416,7 @@ void netdev_rx_handler_unregister(struct
+ }
+ EXPORT_SYMBOL_GPL(netdev_rx_handler_unregister);
+ 
+-#ifdef CONFIG_SHORTCUT_FE
++#if defined (CONFIG_SHORTCUT_FE) || defined (CONFIG_QCA_NSS_SFE)
+ int (*athrs_fast_nat_recv)(struct sk_buff *skb) __rcu __read_mostly;
+ EXPORT_SYMBOL_GPL(athrs_fast_nat_recv);
+ #endif
+@@ -5469,7 +5469,7 @@ static int __netif_receive_skb_core(stru
+ 	int ret = NET_RX_DROP;
+ 	__be16 type;
+ 
+-#ifdef CONFIG_SHORTCUT_FE
++#if defined (CONFIG_SHORTCUT_FE) || defined (CONFIG_QCA_NSS_SFE)
+ 	int (*fast_recv)(struct sk_buff *skb);
+ #endif
+ 
+@@ -5510,7 +5510,7 @@ another_round:
+ 			goto out;
+ 	}
+ 
+-#ifdef CONFIG_SHORTCUT_FE
++#if defined (CONFIG_SHORTCUT_FE) || defined (CONFIG_QCA_NSS_SFE)
+ 	fast_recv = rcu_dereference(athrs_fast_nat_recv);
+ 	if (fast_recv) {
+ 		if (fast_recv(skb)) {
