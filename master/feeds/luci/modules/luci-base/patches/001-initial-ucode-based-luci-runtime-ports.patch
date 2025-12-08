@@ -8,7 +8,7 @@
  import { cursor } from 'uci';
  
  import { init_list, init_index, init_enabled, init_action, conntrack_list, process_list } from 'luci.sys';
-@@ -76,6 +77,7 @@ const methods = {
+@@ -77,6 +78,7 @@
  		call: function(request) {
  			switch (request.args.action) {
  			case 'enable':
@@ -16,7 +16,7 @@
  			case 'disable':
  			case 'start':
  			case 'stop':
-@@ -228,6 +230,7 @@ const methods = {
+@@ -229,6 +231,7 @@
  				bonding:    access('/sys/module/bonding'),
  				mii_tool:   access('/usr/sbin/mii-tool'),
  				offloading: access('/sys/module/xt_FLOWOFFLOAD/refcnt') == true || access('/sys/module/nft_flow_offload/refcnt') == true,
@@ -24,7 +24,7 @@
  				br2684ctl:  access('/usr/sbin/br2684ctl') == true,
  				swconfig:   access('/sbin/swconfig') == true,
  				zram:       access('/sys/class/zram-control') == true,
-@@ -613,44 +616,121 @@ const methods = {
+@@ -615,44 +618,121 @@
  
  	getBuiltinEthernetPorts: {
  		call: function() {

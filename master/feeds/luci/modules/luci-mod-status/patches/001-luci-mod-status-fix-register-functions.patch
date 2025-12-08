@@ -15,8 +15,8 @@
  				"/www/luci-static/resources/view/status/include": [ "list" ]
  			},
  			"ubus": {
--				"luci": [ "getVersion", "getUnixtime" ],
-+				"luci": [ "getVersion", "getUnixtime", "getBuiltinEthernetPorts" ],
+-				"luci": [ "getVersion", "getUnixtime", "getOdhcp6cStats" ],
++				"luci": [ "getVersion", "getUnixtime", "getOdhcp6cStats", "getBuiltinEthernetPorts" ],
  				"file": [ "list", "read" ],
  				"system": [ "board", "info" ]
  			}
