@@ -1,6 +1,6 @@
 --- a/config/Config-build.in
 +++ b/config/Config-build.in
-@@ -248,6 +248,20 @@ menu "Global build settings"
+@@ -249,6 +249,20 @@ menu "Global build settings"
  		  make the system libraries incompatible with most of the packages that are
  		  not selected during the build process.
  
@@ -20,7 +20,7 @@
 +
  	comment "Hardening build options"
  
- 	config PKG_CHECK_FORMAT_SECURITY
+ 	config PKG_FANALYZER
 --- a/include/uclibc++.mk
 +++ b/include/uclibc++.mk
 @@ -1,2 +1,16 @@
