@@ -1,6 +1,6 @@
 --- a/htdocs/luci-static/resources/view/status/include/30_network.js
 +++ b/htdocs/luci-static/resources/view/status/include/30_network.js
-@@ -13,6 +13,11 @@
+@@ -14,6 +14,11 @@
  	expect: { '': {} },
  });
  
@@ -12,7 +12,7 @@
  function progressbar(value, max, byte) {
  	const vn = parseInt(value) || 0;
  	const mn = parseInt(max) || 100;
-@@ -81,24 +86,35 @@
+@@ -85,24 +90,35 @@
  			network.getWANNetworks(),
  			network.getWAN6Networks(),
  			callOdhcp6cStats(),
