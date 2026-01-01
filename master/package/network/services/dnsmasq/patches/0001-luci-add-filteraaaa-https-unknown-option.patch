@@ -1,16 +1,16 @@
 --- a/htdocs/luci-static/resources/view/network/dhcp.js
 +++ b/htdocs/luci-static/resources/view/network/dhcp.js
-@@ -359,6 +359,7 @@
- 		s.tab('logging', _('Log'));
+@@ -390,6 +390,7 @@
  		s.tab('files', _('Files'));
  		s.tab('relay', _('Relay'));
+ 		s.tab('tagsparent', _('Tags'));
 +		//s.tab('custom_domain', _('Custom Redirect Domain'));
  
  		// Begin general
  		s.taboption('general', form.Flag, 'authoritative',
-@@ -589,6 +590,26 @@
- 		});
- 		// End pxe_tftp
+@@ -806,6 +807,26 @@
+ 
+ 		// End Tags
  
 +		// Begin custom_domain
 +		//o = s.taboption('custom_domain', form.SectionValue, 'domain', form.GridSection, 'domain', null,
