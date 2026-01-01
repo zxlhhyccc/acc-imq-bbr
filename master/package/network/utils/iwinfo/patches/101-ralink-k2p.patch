@@ -263,7 +263,7 @@
 + #endif
 +--- a/include/iwinfo.h
 ++++ b/include/iwinfo.h
-+@@ -429,6 +429,7 @@ extern const struct iwinfo_ops wext_ops;
++@@ -437,6 +437,7 @@ extern const struct iwinfo_ops wext_ops;
 + extern const struct iwinfo_ops madwifi_ops;
 + extern const struct iwinfo_ops nl80211_ops;
 + extern const struct iwinfo_ops wl_ops;
@@ -273,7 +273,7 @@
 + 
 +--- a/iwinfo_lib.c
 ++++ b/iwinfo_lib.c
-+@@ -395,6 +395,9 @@ static const struct iwinfo_ops *backends
++@@ -403,6 +403,9 @@ static const struct iwinfo_ops *backends
 + #ifdef USE_MADWIFI
 + 	&madwifi_ops,
 + #endif
