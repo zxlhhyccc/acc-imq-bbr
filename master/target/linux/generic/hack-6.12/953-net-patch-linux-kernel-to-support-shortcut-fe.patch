@@ -1,8 +1,8 @@
 --- a/include/linux/if_bridge.h
 +++ b/include/linux/if_bridge.h
-@@ -72,6 +72,9 @@ void brioctl_set(int (*hook)(struct net
- int br_ioctl_call(struct net *net, struct net_bridge *br, unsigned int cmd,
- 		  struct ifreq *ifr, void __user *uarg);
+@@ -70,6 +70,9 @@ void brioctl_set(int (*hook)(struct net
+ 			     void __user *uarg));
+ int br_ioctl_call(struct net *net, unsigned int cmd, void __user *uarg);
  
 +extern void br_dev_update_stats(struct net_device *dev,
 +				struct rtnl_link_stats64 *nlstats);
@@ -12,29 +12,15 @@
  			       struct list_head *br_ip_list);
 --- a/include/linux/skbuff.h
 +++ b/include/linux/skbuff.h
-@@ -988,6 +988,10 @@ struct sk_buff {
+@@ -1011,6 +1011,9 @@ struct sk_buff {
  	__u8			csum_not_inet:1;
  #endif
- 
+ 	__u8			unreadable:1;
 +#ifdef CONFIG_SHORTCUT_FE
 +	__u8			fast_forwarded:1;
 +#endif
-+
  #if defined(CONFIG_NET_SCHED) || defined(CONFIG_NET_XGRESS)
  	__u16			tc_index;	/* traffic control index */
- #endif
---- a/include/linux/timer.h
-+++ b/include/linux/timer.h
-@@ -18,6 +18,10 @@ struct timer_list {
- 	void			(*function)(struct timer_list *);
- 	u32			flags;
- 
-+#ifdef CONFIG_SHORTCUT_FE
-+	unsigned long		cust_data;
-+#endif
-+
- #ifdef CONFIG_LOCKDEP
- 	struct lockdep_map	lockdep_map;
  #endif
 --- a/include/net/netfilter/nf_conntrack_ecache.h
 +++ b/include/net/netfilter/nf_conntrack_ecache.h
@@ -49,7 +35,7 @@
  				   const struct nf_ct_event_notifier *nb);
 --- a/net/Kconfig
 +++ b/net/Kconfig
-@@ -504,6 +504,9 @@ config FAILOVER
+@@ -521,6 +521,9 @@ config FAILOVER
  	  migration of VMs with direct attached VFs by failing over to the
  	  paravirtual datapath when the VF is unplugged.
  
@@ -58,10 +44,10 @@
 +
  config ETHTOOL_NETLINK
  	bool "Netlink interface for ethtool"
- 	default y
+ 	select DIMLIB
 --- a/net/bridge/br_if.c
 +++ b/net/bridge/br_if.c
-@@ -764,6 +764,28 @@ void br_port_flags_change(struct net_bri
+@@ -765,6 +765,28 @@ void br_port_flags_change(struct net_bri
  		br_recalculate_neigh_suppress_enabled(br);
  }
  
@@ -92,7 +78,7 @@
  	struct net_bridge_port *p;
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -3624,9 +3624,17 @@ static int xmit_one(struct sk_buff *skb,
+@@ -3654,9 +3654,17 @@ static int xmit_one(struct sk_buff *skb,
  {
  	unsigned int len;
  	int rc;
@@ -111,7 +97,7 @@
  
  #ifdef CONFIG_ETHERNET_PACKET_MANGLE
  	if (dev->eth_mangle_tx && !(skb = dev->eth_mangle_tx(dev, skb)))
-@@ -5396,6 +5404,11 @@ void netdev_rx_handler_unregister(struct
+@@ -5505,6 +5513,11 @@ void netdev_rx_handler_unregister(struct
  }
  EXPORT_SYMBOL_GPL(netdev_rx_handler_unregister);
  
@@ -123,7 +109,7 @@
  /*
   * Limit the use of PFMEMALLOC reserves to those protocols that implement
   * the special handling of PFMEMALLOC skbs.
-@@ -5444,6 +5457,10 @@ static int __netif_receive_skb_core(stru
+@@ -5553,6 +5566,10 @@ static int __netif_receive_skb_core(stru
  	int ret = NET_RX_DROP;
  	__be16 type;
  
@@ -131,10 +117,10 @@
 +	int (*fast_recv)(struct sk_buff *skb);
 +#endif
 +
- 	net_timestamp_check(!READ_ONCE(netdev_tstamp_prequeue), skb);
+ 	net_timestamp_check(!READ_ONCE(net_hotdata.tstamp_prequeue), skb);
  
  	trace_netif_receive_skb(skb);
-@@ -5481,6 +5498,15 @@ another_round:
+@@ -5591,6 +5608,15 @@ another_round:
  			goto out;
  	}
  
