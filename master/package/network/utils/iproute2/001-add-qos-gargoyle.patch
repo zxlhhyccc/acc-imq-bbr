@@ -1,6 +1,6 @@
 --- a/Makefile
 +++ b/Makefile
-@@ -163,6 +163,7 @@ endef
+@@ -173,6 +173,7 @@ endef
  
  TARGET_LDFLAGS += -Wl,--as-needed
  TARGET_CPPFLAGS += -I$(STAGING_DIR)/usr/include/libnl-tiny
@@ -8,7 +8,7 @@
  
  CONFIGURE_VARS += \
  	HAVE_ELF=$(HAVE_ELF) \
-@@ -198,6 +199,10 @@ define Build/InstallDev
+@@ -208,6 +209,10 @@ define Build/InstallDev
  	$(CP) $(PKG_BUILD_DIR)/include/{libgenl,libnetlink}.h $(1)/usr/include/
  	$(INSTALL_DIR) $(1)/usr/lib
  	$(CP) $(PKG_BUILD_DIR)/lib/libnetlink.a $(1)/usr/lib/
