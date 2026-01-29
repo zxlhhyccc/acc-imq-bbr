@@ -51,7 +51,7 @@
    KCONFIG:=CONFIG_TRUSTED_KEYS
    FILES:= $(LINUX_DIR)/security/keys/trusted-keys/trusted.ko
    AUTOLOAD:=$(call AutoLoad,01,trusted-keys,1)
-@@ -1102,3 +1103,82 @@ define KernelPackage/mhi-pci-generic/description
+@@ -1123,3 +1124,82 @@ define KernelPackage/mhi-pci-generic/description
  endef
  
  $(eval $(call KernelPackage,regulator-userspace-consumer))
