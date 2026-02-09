@@ -14,7 +14,7 @@
  			s.option(form.ListValue, 'output', _('Output')),
 --- a/po/zh_Hans/firewall.po
 +++ b/po/zh_Hans/firewall.po
-@@ -1551,3 +1551,21 @@ msgstr "最多 65536 个条目。"
+@@ -1552,3 +1552,21 @@ msgstr "最多 65536 个条目。"
  #: applications/luci-app-firewall/htdocs/luci-static/resources/tools/firewall.js:339
  msgid "valid firewall mark"
  msgstr "有效的防火墙标记"
