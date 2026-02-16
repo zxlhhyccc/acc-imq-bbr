@@ -8,7 +8,7 @@
  
  		// Begin general
  		s.taboption('general', form.Flag, 'authoritative',
-@@ -806,6 +807,26 @@
+@@ -805,6 +806,26 @@
  
  		// End Tags
  
@@ -48,7 +48,7 @@
  		o = s.taboption('general', form.Value, 'local',
  			_('Resolve these locally'),
  			_('Never forward these matching domains or subdomains; resolve from DHCP or hosts files only.'));
-@@ -623,6 +627,16 @@
+@@ -625,6 +629,16 @@
  		o.optional = false;
  		o.rmempty = false;
  
@@ -65,7 +65,7 @@
  		o = s.taboption('filteropts', form.Flag, 'boguspriv',
  			_('Filter private'),
  			customi18n(
-@@ -645,6 +659,7 @@
+@@ -647,6 +661,7 @@
  			_('Filter IPv4 A records'),
  			_('Remove IPv4 addresses from the results and only return IPv6 addresses.'));
  		o.optional = true;
@@ -73,7 +73,7 @@
  
  		o = s.taboption('filteropts', form.MultiValue, 'filter_rr',
  			_('Filter arbitrary RR'), _('Removes records of the specified type(s) from answers.'));
-@@ -756,6 +771,13 @@
+@@ -758,6 +773,13 @@
  		o.placeholder = 3600;
  		// End limits
  
