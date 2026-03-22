@@ -176,10 +176,10 @@
  define KernelPackage/video-core/description
 --- a/modules/virt.mk
 +++ b/modules/virt.mk
-@@ -139,3 +139,80 @@ define KernelPackage/vhost-net
+@@ -195,3 +195,80 @@ define KernelPackage/vhost-net
  endef
  
- $(eval $(call KernelPackage,vhost-net))
+ $(eval $(call KernelPackage,vsock-virtio))
 +
 +
 +define KernelPackage/iommu_v2

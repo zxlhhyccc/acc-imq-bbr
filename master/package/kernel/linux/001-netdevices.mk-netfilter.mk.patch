@@ -1,6 +1,6 @@
 --- a/modules/netdevices.mk
 +++ b/modules/netdevices.mk
-@@ -2049,6 +2049,30 @@ endef
+@@ -2107,6 +2107,30 @@ endef
  $(eval $(call KernelPackage,qlcnic))
  
  

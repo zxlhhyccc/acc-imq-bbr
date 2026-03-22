@@ -1,6 +1,6 @@
 --- a/Makefile
 +++ b/Makefile
-@@ -87,10 +87,10 @@ CONFIGURE_VARS += \
+@@ -85,10 +85,10 @@ CONFIGURE_VARS += \
  define Package/socat/install
  	$(INSTALL_DIR) $(1)/usr/bin
  	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/socat $(1)/usr/bin/

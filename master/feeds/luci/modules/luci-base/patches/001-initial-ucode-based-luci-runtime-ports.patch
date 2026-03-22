@@ -1,14 +1,54 @@
---- a/root/usr/share/rpcd/ucode/luci
-+++ b/root/usr/share/rpcd/ucode/luci
-@@ -4,6 +4,7 @@
- 'use strict';
+diff -uNr a/root/usr/share/luci/menu.d/luci-base.json b/root/usr/share/luci/menu.d/luci-base.json
+--- a/root/usr/share/luci/menu.d/luci-base.json	2026-01-10 21:52:55.101491000 +0800
++++ b/root/usr/share/luci/menu.d/luci-base.json	2026-01-10 23:12:46.692707402 +0800
+@@ -34,16 +34,16 @@
  
- import { stdin, access, dirname, basename, open, popen, glob, lsdir, readfile, readlink, error } from 'fs';
-+import { connect } from 'ubus';
- import { cursor } from 'uci';
+ 	"admin/services": {
+ 		"title": "Services",
+-		"order": 40,
++		"order": 30,
+ 		"action": {
+ 			"type": "firstchild",
+ 			"recurse": true
+ 		}
+ 	},
  
- import { init_list, init_index, init_enabled, init_action, conntrack_list, process_list } from 'luci.sys';
-@@ -77,6 +78,7 @@
+-	"admin/network": {
+-		"title": "Network",
+-		"order": 50,
++	"admin/nas": {
++		"title": "NAS",
++		"order": 40,
+ 		"action": {
+ 			"type": "firstchild",
+ 			"recurse": true
+@@ -52,7 +52,16 @@
+ 
+ 	"admin/vpn": {
+ 		"title": "VPN",
+-		"order": 70,
++		"order": 50,
++		"action": {
++			"type": "firstchild",
++			"recurse": true
++		}
++	},
++
++	"admin/network": {
++		"title": "Network",
++		"order": 60,
+ 		"action": {
+ 			"type": "firstchild",
+ 			"recurse": true
+@@ -151,3 +160,4 @@
+ 		"auth": {}
+ 	}
+ }
++
+diff -uNr a/root/usr/share/rpcd/ucode/luci b/root/usr/share/rpcd/ucode/luci
+--- a/root/usr/share/rpcd/ucode/luci	2026-01-10 21:52:55.101491000 +0800
++++ b/root/usr/share/rpcd/ucode/luci	2026-01-10 23:15:21.905848096 +0800
+@@ -77,6 +77,7 @@
  		call: function(request) {
  			switch (request.args.action) {
  			case 'enable':
@@ -16,7 +56,7 @@
  			case 'disable':
  			case 'start':
  			case 'stop':
-@@ -229,6 +231,7 @@
+@@ -229,6 +230,7 @@
  				bonding:    access('/sys/module/bonding'),
  				mii_tool:   access('/usr/sbin/mii-tool'),
  				offloading: access('/sys/module/xt_FLOWOFFLOAD/refcnt') == true || access('/sys/module/nft_flow_offload/refcnt') == true,
@@ -24,7 +64,7 @@
  				br2684ctl:  access('/usr/sbin/br2684ctl') == true,
  				swconfig:   access('/sbin/swconfig') == true,
  				zram:       access('/sys/class/zram-control') == true,
-@@ -615,44 +618,121 @@
+@@ -615,40 +617,38 @@
  
  	getBuiltinEthernetPorts: {
  		call: function() {
@@ -37,6 +77,30 @@
 -			for (let k in [ 'lan', 'wan' ]) {
 -				if (!board?.network?.[k])
 -					continue;
+-
+-				if (type(board.network[k].ports) == 'array') {
+-					for (let ifname in board.network[k].ports) {
+-						push(ports, { role: k, device: ifname });
+-					}
+-				}
+-				else if (type(board.network[k].device) == 'string') {
+-					push(ports, { role: k, device: board.network[k].device });
+-				}
+-			}
+-
+-			/* Workaround for targets that do not enumerate  all netdevs in board.json */
+-			if (uname().machine in [ 'x86_64' ] &&
+-			    match(ports[0]?.device, /^eth\d+$/)) {
+-				let bus = realpath(`/sys/class/net/${ports[0].device}/device/subsystem`);
+-
+-				for (let netdev in lsdir('/sys/class/net')) {
+-					if (!match(netdev, /^eth\d+$/))
+-						continue;
+-
+-					if (length(filter(ports, port => port.device == netdev)))
+-						continue;
+-
+-					if (realpath(`/sys/class/net/${netdev}/device/subsystem`) != bus)
 +			if (
 +				(type(sysboard) !== 'object') ||
 +				match(sysboard.release.target, /^(armsr|bcm27xx|mvebu|rockchip|sifiveu|sunxi|x86)/)
@@ -57,66 +121,49 @@
 +				const board = fd ? json(fd) : {};
 +				for (let k in [ 'lan', 'wan' ]) {
 +					if (!board?.network?.[k])
-+						continue;
+ 						continue;
  
--				if (type(board.network[k].ports) == 'array') {
--					for (let ifname in board.network[k].ports) {
--						push(ports, { role: k, device: ifname });
+-					push(ports, { role: 'unknown', device: netdev });
 +					if (type(board.network[k].ports) == 'array') {
 +						for (let ifname in board.network[k].ports)
 +							push(ports, { role: k, device: ifname });
 +					} else if (type(board.network[k].device) == 'string') {
 +						push(ports, { role: k, device: board.network[k].device });
- 					}
++					}
  				}
--				else if (type(board.network[k].device) == 'string') {
--					push(ports, { role: k, device: board.network[k].device });
--				}
  			}
  
--			/* Workaround for targets that do not enumerate  all netdevs in board.json */
--			if (uname().machine in [ 'x86_64' ] &&
--			    match(ports[0]?.device, /^eth\d+$/)) {
--				let bus = readlink(`/sys/class/net/${ports[0].device}/device/subsystem`);
-+			return { result: ports };
-+		}
-+	},
+@@ -679,6 +679,85 @@
  
--				for (let netdev in lsdir('/sys/class/net')) {
--					if (!match(netdev, /^eth\d+$/))
--						continue;
+ 			return { result: dev_stats };
+ 		}
++	},
++
 +	getCPUBench: {
 +		call: function() {
 +			return { cpubench: readfile('/etc/bench.log') || '' };
 +		}
 +	},
- 
--					if (length(filter(ports, port => port.device == netdev)))
--						continue;
++
 +	getCPUInfo: {
 +		call: function() {
 +			if (!access('/sbin/cpuinfo'))
 +				return {};
- 
--					if (readlink(`/sys/class/net/${netdev}/device/subsystem`) != bus)
--						continue;
++
 +			const fd = popen('/sbin/cpuinfo');
 +			if (fd) {
 +				let cpuinfo = fd.read('all');
 +				if (!cpuinfo)
 +					cpuinfo = '?';
 +				fd.close();
- 
--					push(ports, { role: 'unknown', device: netdev });
--				}
++
 +				return { cpuinfo: cpuinfo };
 +			} else {
 +				return { cpuinfo: error() };
- 			}
++			}
 +		}
 +	},
- 
--			return { result: ports };
++
 +	getCPUUsage: {
 +		call: function() {
 +			const fd = popen('top -n1 | awk \'/^CPU/ {printf("%d%", 100 - $8)}\'');
@@ -168,6 +215,7 @@
 +			} else {
 +				return { onlineusers: error() };
 +			}
- 		}
- 	},
++		}
+ 	}
+ };
  
