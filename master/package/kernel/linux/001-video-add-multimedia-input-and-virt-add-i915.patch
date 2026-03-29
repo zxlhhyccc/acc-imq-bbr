@@ -1,7 +1,7 @@
 --- a/modules/video.mk
 +++ b/modules/video.mk
-@@ -280,6 +280,25 @@
- $(eval $(call KernelPackage,fb-tft-ili9486))
+@@ -297,6 +297,25 @@
+  $(eval $(call KernelPackage,cec-core))
  
  
 +define KernelPackage/multimedia-input
@@ -26,7 +26,7 @@
  define KernelPackage/drm
    SUBMENU:=$(VIDEO_MENU)
    TITLE:=Direct Rendering Manager (DRM) support
-@@ -347,6 +366,20 @@
+@@ -365,6 +384,20 @@
  
  $(eval $(call KernelPackage,drm-exec))
  
@@ -47,7 +47,7 @@
  define KernelPackage/drm-dma-helper
    SUBMENU:=$(VIDEO_MENU)
    HIDDEN:=1
-@@ -661,6 +694,107 @@
+@@ -680,6 +713,107 @@
  
  $(eval $(call KernelPackage,drm-imx-ldb))
  

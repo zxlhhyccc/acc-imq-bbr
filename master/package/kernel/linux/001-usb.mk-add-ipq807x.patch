@@ -25,9 +25,9 @@
 -  DEPENDS:=@(TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax||TARGET_qualcommbe) +kmod-usb-dwc3
 +  DEPENDS:=@(TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax||TARGET_qualcommbe||TARGET_ipq60xx) +kmod-usb-dwc3
    KCONFIG:= CONFIG_USB_DWC3_QCOM
-   FILES:= $(LINUX_DIR)/drivers/usb/dwc3/dwc3-qcom.ko
-   AUTOLOAD:=$(call AutoLoad,53,dwc3-qcom,1)
-@@ -1255,6 +1266,7 @@ endef
+   FILES:= \
+ 	$(LINUX_DIR)/drivers/usb/dwc3/dwc3-qcom.ko \
+@@ -1257,6 +1268,7 @@ endef
  
  define KernelPackage/usb-net-aqc111
    TITLE:=Support for USB-to-Ethernet Aquantia AQtion 5/2.5GbE

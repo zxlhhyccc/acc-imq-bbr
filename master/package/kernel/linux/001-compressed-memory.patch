@@ -1,6 +1,6 @@
 --- a/modules/crypto.mk
 +++ b/modules/crypto.mk
-@@ -1206,3 +1206,38 @@ endef
+@@ -1230,3 +1230,38 @@ endef
  
  $(eval $(call KernelPackage,crypto-xxhash))
  
@@ -41,7 +41,7 @@
 +
 --- a/modules/other.mk
 +++ b/modules/other.mk
-@@ -955,7 +955,8 @@ $(eval $(call KernelPackage,keys-encrypted))
+@@ -956,7 +956,8 @@ $(eval $(call KernelPackage,keys-encrypted))
  define KernelPackage/keys-trusted
    SUBMENU:=$(OTHER_MENU)
    TITLE:=TPM trusted keys on kernel keyring
@@ -51,7 +51,7 @@
    KCONFIG:=CONFIG_TRUSTED_KEYS
    FILES:= $(LINUX_DIR)/security/keys/trusted-keys/trusted.ko
    AUTOLOAD:=$(call AutoLoad,01,trusted-keys,1)
-@@ -1123,3 +1124,82 @@ define KernelPackage/mhi-pci-generic/description
+@@ -1124,3 +1125,82 @@ define KernelPackage/mhi-pci-generic/description
  endef
  
  $(eval $(call KernelPackage,regulator-userspace-consumer))
