@@ -64,7 +64,7 @@ diff -uNr a/root/usr/share/rpcd/ucode/luci b/root/usr/share/rpcd/ucode/luci
  				br2684ctl:  access('/usr/sbin/br2684ctl') == true,
  				swconfig:   access('/sbin/swconfig') == true,
  				zram:       access('/sys/class/zram-control') == true,
-@@ -615,40 +617,38 @@
+@@ -616,40 +618,38 @@
  
  	getBuiltinEthernetPorts: {
  		call: function() {
@@ -133,7 +133,7 @@ diff -uNr a/root/usr/share/rpcd/ucode/luci b/root/usr/share/rpcd/ucode/luci
  				}
  			}
  
-@@ -679,6 +679,85 @@
+@@ -680,6 +680,85 @@
  
  			return { result: dev_stats };
  		}
