@@ -71,9 +71,10 @@
  config MBEDTLS_SSL_PROTO_TLS1_2
  	bool "MBEDTLS_SSL_PROTO_TLS1_2"
  	default y
---- a/Makefile
-+++ b/Makefile
-@@ -63,10 +63,12 @@ MBEDTLS_BUILD_OPTS_CIPHERS= \
+diff -uNr a/Makefile b/Makefile
+--- a/Makefile	2026-04-08 20:03:37.458046000 +0800
++++ b/Makefile	2026-04-08 20:17:27.196411228 +0800
+@@ -64,10 +64,12 @@
  MBEDTLS_BUILD_OPTS= \
    $(MBEDTLS_BUILD_OPTS_CURVES) \
    $(MBEDTLS_BUILD_OPTS_CIPHERS) \
@@ -86,7 +87,7 @@
    CONFIG_MBEDTLS_HKDF_C \
    CONFIG_MBEDTLS_PLATFORM_C \
    CONFIG_MBEDTLS_SELF_TEST \
-@@ -77,6 +79,8 @@ MBEDTLS_BUILD_OPTS= \
+@@ -78,6 +80,8 @@
    CONFIG_MBEDTLS_VERSION_FEATURES \
    CONFIG_MBEDTLS_PSA_CRYPTO_CLIENT \
    CONFIG_MBEDTLS_DEPRECATED_WARNING \
@@ -95,3 +96,14 @@
    CONFIG_MBEDTLS_SSL_PROTO_TLS1_2 \
    CONFIG_MBEDTLS_SSL_PROTO_TLS1_3 \
    CONFIG_MBEDTLS_SSL_TLS1_3_COMPATIBILITY_MODE
+@@ -130,7 +134,9 @@
+ CSR generation (gen_key, cert_req)
+ endef
+ 
+-TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -Wno-unterminated-string-initialization
++TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) \
++	-Wno-unterminated-string-initialization \
++	$(if $(findstring cortex-a53,$(CONFIG_CPU_TYPE)),-march=armv8-a)
+ 
+ CMAKE_OPTIONS += \
+ 	-DCMAKE_POSITION_INDEPENDENT_CODE=ON \
