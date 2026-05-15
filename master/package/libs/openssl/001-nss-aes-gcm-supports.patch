@@ -26,7 +26,7 @@ diff -uNr a/Config.in b/Config.in
  config OPENSSL_WITH_ASM
  	bool
  	default y
-@@ -46,9 +55,9 @@
+@@ -45,9 +54,9 @@
  
  config OPENSSL_WITH_SSE2
  	bool
@@ -38,7 +38,7 @@ diff -uNr a/Config.in b/Config.in
  	help
  		Use of SSE2 instructions greatly increase performance with a
  		minimum increase in package size, but it will bring no benefit
-@@ -141,7 +150,7 @@
+@@ -140,7 +149,7 @@
  
  config OPENSSL_PREFER_CHACHA_OVER_GCM
  	bool
@@ -47,7 +47,7 @@ diff -uNr a/Config.in b/Config.in
  	prompt "Prefer ChaCha20-Poly1305 over AES-GCM by default"
  	depends on OPENSSL_WITH_CHACHA_POLY1305
  	help
-@@ -269,6 +278,7 @@
+@@ -268,6 +277,7 @@
  
  config OPENSSL_ENGINE_BUILTIN
  	bool "Build chosen engines into libcrypto"
@@ -55,7 +55,7 @@ diff -uNr a/Config.in b/Config.in
  	depends on OPENSSL_ENGINE
  	help
  		This builds all chosen engines into libcrypto.so, instead of building
-@@ -278,6 +288,7 @@
+@@ -277,6 +287,7 @@
  
  config OPENSSL_ENGINE_BUILTIN_AFALG
  	bool
@@ -63,7 +63,7 @@ diff -uNr a/Config.in b/Config.in
  	prompt "Acceleration support through AF_ALG sockets engine"
  	depends on OPENSSL_ENGINE_BUILTIN && KERNEL_AIO
  	select PACKAGE_libopenssl-conf
-@@ -287,6 +298,7 @@
+@@ -286,6 +297,7 @@
  
  config OPENSSL_ENGINE_BUILTIN_DEVCRYPTO
  	bool
