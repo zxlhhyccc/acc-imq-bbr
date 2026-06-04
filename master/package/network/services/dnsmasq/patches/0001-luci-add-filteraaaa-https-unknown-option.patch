@@ -8,7 +8,7 @@
  
  		// Begin general
  		s.taboption('general', form.Flag, 'authoritative',
-@@ -805,6 +806,26 @@
+@@ -806,6 +807,26 @@
  
  		// End Tags
  
