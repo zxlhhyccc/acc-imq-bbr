@@ -1,6 +1,6 @@
 --- a/modules/crypto.mk
 +++ b/modules/crypto.mk
-@@ -1222,3 +1222,38 @@ endef
+@@ -1127,3 +1127,38 @@ endef
  
  $(eval $(call KernelPackage,crypto-xxhash))
  

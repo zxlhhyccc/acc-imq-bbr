@@ -1,6 +1,6 @@
 --- a/htdocs/luci-static/resources/view/network/wireless.js
 +++ b/htdocs/luci-static/resources/view/network/wireless.js
-@@ -1013,6 +1013,9 @@ return view.extend({
+@@ -1037,6 +1037,9 @@ return view.extend({
  					o.value('2', _('High'));
  					o.value('3', _('Very High'));
  
@@ -10,7 +10,7 @@
  					o = ss.taboption('advanced', form.Value, 'distance', _('Distance Optimization'), _('Distance to farthest network member in meters. Set only for distances above one kilometer; otherwise it is harmful.'));
  					o.datatype = 'or(range(0,114750),"auto")';
  					o.placeholder = 'auto';
-@@ -1039,6 +1042,9 @@ return view.extend({
+@@ -1063,6 +1066,9 @@ return view.extend({
  					o = ss.taboption('advanced', form.Flag, 'ldpc', _('Tx LDPC'));
  					o.depends({'rxldpc': '1'});
  					o.default = '1';
@@ -22,7 +22,7 @@
  
 --- a/htdocs/luci-static/resources/view/network/interfaces.js
 +++ b/htdocs/luci-static/resources/view/network/interfaces.js
-@@ -256,6 +256,7 @@ function has_sourcefilter(proto) {
+@@ -255,6 +255,7 @@ function has_sourcefilter(proto) {
  	case 'pppoe':
  	case 'pptp':
  	case 'qmi':
