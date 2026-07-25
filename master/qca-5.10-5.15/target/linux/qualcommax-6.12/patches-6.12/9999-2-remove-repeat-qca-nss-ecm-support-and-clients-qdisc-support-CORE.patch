@@ -1,0 +1,43 @@
+--- a/include/linux/if_bridge.h
++++ b/include/linux/if_bridge.h
+@@ -73,9 +73,6 @@ extern void br_dev_update_stats(struct n
+ 				struct rtnl_link_stats64 *nlstats);
+ extern bool br_is_hairpin_enabled(struct net_device *dev);
+ 
+-extern void br_dev_update_stats(struct net_device *dev,
+-				struct rtnl_link_stats64 *nlstats);
+-
+ #if IS_ENABLED(CONFIG_BRIDGE) && IS_ENABLED(CONFIG_BRIDGE_IGMP_SNOOPING)
+ int br_multicast_list_adjacent(struct net_device *dev,
+ 			       struct list_head *br_ip_list);
+--- a/net/bridge/br_if.c
++++ b/net/bridge/br_if.c
+@@ -775,28 +775,6 @@ void br_port_flags_change(struct net_bri
+ 		br_recalculate_neigh_suppress_enabled(br);
+ }
+ 
+-void br_dev_update_stats(struct net_device *dev,
+-			 struct rtnl_link_stats64 *nlstats)
+-{
+-	
+-	struct pcpu_sw_netstats *stats;
+-
+-	/* Is this a bridge? */
+-	if (!(dev->priv_flags & IFF_EBRIDGE))
+-		return;
+-
+-	
+-	stats = this_cpu_ptr(dev->tstats);
+-
+-	u64_stats_update_begin(&stats->syncp);
+-	u64_stats_add(&stats->rx_packets, nlstats->rx_packets);
+-	u64_stats_add(&stats->rx_bytes, nlstats->rx_bytes);
+-	u64_stats_add(&stats->tx_packets, nlstats->tx_packets);
+-	u64_stats_add(&stats->tx_bytes, nlstats->tx_bytes);
+-	u64_stats_update_end(&stats->syncp);
+-}
+-EXPORT_SYMBOL_GPL(br_dev_update_stats);
+-
+ bool br_port_flag_is_set(const struct net_device *dev, unsigned long flag)
+ {
+ 	struct net_bridge_port *p;
