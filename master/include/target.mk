@@ -41,7 +41,7 @@ DEFAULT_PACKAGES:=\
 	luci-app-accesscontrol \
 	luci-app-arpbind \
 	luci-app-autorebootschedule \
-	luci-app-control-vlmcsd \
+	luci-app-vlmcsd \
 	luci-app-ddns \
 	luci-app-nlbwmon \
 	luci-app-ramfree \

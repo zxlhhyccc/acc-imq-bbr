@@ -146,7 +146,7 @@
    SUPPORTED_DEVICES += timecloud
  endef
  TARGET_DEVICES += thunder_timecloud
-@@ -3135,7 +3133,7 @@ define Device/tplink_er605-v2
+@@ -3147,7 +3145,7 @@ define Device/tplink_er605-v2
    DEVICE_ALT0_VENDOR := TP-Link
    DEVICE_ALT0_MODEL := FR205
    DEVICE_ALT0_VARIANT := v1
@@ -155,7 +155,7 @@
    KERNEL_IN_UBI := 1
    KERNEL_LOADADDR := 0x82000000
    KERNEL := kernel-bin | relocate-kernel $(loadaddr-y) | lzma | \
-@@ -3255,7 +3253,7 @@ define Device/ubnt_edgerouter_common
+@@ -3267,7 +3265,7 @@ define Device/ubnt_edgerouter_common
    FILESYSTEMS := squashfs
    KERNEL_SIZE := 6144k
    IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
@@ -164,7 +164,7 @@
    DEVICE_COMPAT_VERSION := 2.0
    DEVICE_COMPAT_MESSAGE :=  Partition table has been changed due to kernel size restrictions. \
      Refer to the wiki page for instructions to migrate to the new layout: \
-@@ -3347,7 +3345,7 @@ define Device/unielec_u7621-06-16m
+@@ -3359,7 +3357,7 @@ define Device/unielec_u7621-06-16m
    DEVICE_MODEL := U7621-06
    DEVICE_VARIANT := 16M
    DEVICE_PACKAGES := kmod-ata-ahci kmod-mmc-mtk kmod-usb3 \
@@ -173,7 +173,7 @@
    SUPPORTED_DEVICES += u7621-06-256M-16M unielec,u7621-06-256m-16m
  endef
  TARGET_DEVICES += unielec_u7621-06-16m
-@@ -3360,7 +3358,7 @@ define Device/unielec_u7621-06-32m
+@@ -3372,7 +3370,7 @@ define Device/unielec_u7621-06-32m
    DEVICE_MODEL := U7621-06
    DEVICE_VARIANT := 32M
    DEVICE_PACKAGES := kmod-ata-ahci kmod-mmc-mtk kmod-usb3 \
@@ -182,7 +182,7 @@
    SUPPORTED_DEVICES += unielec,u7621-06-32m
  endef
  TARGET_DEVICES += unielec_u7621-06-32m
-@@ -3373,7 +3371,7 @@ define Device/unielec_u7621-06-64m
+@@ -3385,7 +3383,7 @@ define Device/unielec_u7621-06-64m
    DEVICE_MODEL := U7621-06
    DEVICE_VARIANT := 64M
    DEVICE_PACKAGES := kmod-ata-ahci kmod-mmc-mtk kmod-usb3 \
@@ -191,7 +191,7 @@
    SUPPORTED_DEVICES += unielec,u7621-06-512m-64m
  endef
  TARGET_DEVICES += unielec_u7621-06-64m
-@@ -3641,7 +3639,7 @@ define Device/xiaoyu_xy-c5
+@@ -3653,7 +3651,7 @@ define Device/xiaoyu_xy-c5
    IMAGE_SIZE := 32448k
    DEVICE_VENDOR := XiaoYu
    DEVICE_MODEL := XY-C5
@@ -200,7 +200,7 @@
  	-uboot-envtools
  endef
  TARGET_DEVICES += xiaoyu_xy-c5
-@@ -3652,7 +3650,7 @@ define Device/xzwifi_creativebox-v1
+@@ -3664,7 +3662,7 @@ define Device/xzwifi_creativebox-v1
    DEVICE_VENDOR := CreativeBox
    DEVICE_MODEL := v1
    DEVICE_PACKAGES := kmod-ata-ahci kmod-mt7603 kmod-mt76x2 kmod-mmc-mtk \

@@ -128,7 +128,7 @@
 +
 +define KernelPackage/tcp-bbrplus
 +  SUBMENU:=$(NETWORK_SUPPORT_MENU)
-+  DEPENDS:=@!LINUX_6_12
++  DEPENDS:=@(!LINUX_6_12||!LINUX_6_18)
 +  TITLE:=BBRPLUS TCP congestion control
 +  KCONFIG:= \
 +            CONFIG_TCP_CONG_BBRPLUS \

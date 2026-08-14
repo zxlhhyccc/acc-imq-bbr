@@ -48,15 +48,7 @@ diff -uNr a/root/usr/share/luci/menu.d/luci-base.json b/root/usr/share/luci/menu
 diff -uNr a/root/usr/share/rpcd/ucode/luci b/root/usr/share/rpcd/ucode/luci
 --- a/root/usr/share/rpcd/ucode/luci	2026-01-10 21:52:55.101491000 +0800
 +++ b/root/usr/share/rpcd/ucode/luci	2026-01-10 23:15:21.905848096 +0800
-@@ -140,6 +140,7 @@
- 		call: function(request) {
- 			switch (request.args.action) {
- 			case 'enable':
-+			case 'enabled':
- 			case 'disable':
- 			case 'start':
- 			case 'stop':
-@@ -292,6 +293,7 @@
+@@ -269,6 +269,7 @@
  				bonding:    access('/sys/module/bonding'),
  				mii_tool:   access('/usr/sbin/mii-tool'),
  				offloading: access('/sys/module/xt_FLOWOFFLOAD/refcnt') == true || access('/sys/module/nft_flow_offload/refcnt') == true,
@@ -64,7 +56,7 @@ diff -uNr a/root/usr/share/rpcd/ucode/luci b/root/usr/share/rpcd/ucode/luci
  				br2684ctl:  access('/usr/sbin/br2684ctl') == true,
  				swconfig:   access('/sbin/swconfig') == true,
  				zram:       access('/sys/class/zram-control') == true,
-@@ -727,40 +729,38 @@
+@@ -704,40 +705,38 @@
  
  	getBuiltinEthernetPorts: {
  		call: function() {
@@ -133,7 +125,7 @@ diff -uNr a/root/usr/share/rpcd/ucode/luci b/root/usr/share/rpcd/ucode/luci
  				}
  			}
  
-@@ -791,6 +791,85 @@
+@@ -768,6 +767,85 @@
  
  			return { result: dev_stats };
  		}
