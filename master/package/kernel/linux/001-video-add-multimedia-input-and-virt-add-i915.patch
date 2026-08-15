@@ -1,6 +1,6 @@
 --- a/modules/video.mk
 +++ b/modules/video.mk
-@@ -293,6 +293,25 @@
+@@ -308,6 +308,25 @@
  $(eval $(call KernelPackage,cec-core))
  
  
@@ -26,7 +26,7 @@
  define KernelPackage/drm
    SUBMENU:=$(VIDEO_MENU)
    TITLE:=Direct Rendering Manager (DRM) support
-@@ -377,6 +396,20 @@
+@@ -392,6 +411,20 @@
  
  $(eval $(call KernelPackage,drm-exec))
  
@@ -47,7 +47,7 @@
  define KernelPackage/drm-dma-helper
    SUBMENU:=$(VIDEO_MENU)
    HIDDEN:=1
-@@ -693,6 +726,107 @@
+@@ -708,6 +741,107 @@
  
  $(eval $(call KernelPackage,drm-imx-ldb))
  
@@ -155,7 +155,7 @@
  define KernelPackage/drm-panel-mipi-dbi
    SUBMENU:=$(VIDEO_MENU)
    TITLE:=Generic MIPI DBI LCD panel
-@@ -792,7 +926,8 @@
+@@ -807,7 +941,8 @@
  define KernelPackage/video-core
    SUBMENU:=$(VIDEO_MENU)
    TITLE=Video4Linux support
@@ -165,7 +165,7 @@
    KCONFIG:= \
  	CONFIG_MEDIA_CAMERA_SUPPORT=y \
  	CONFIG_VIDEO_DEV \
-@@ -800,7 +935,7 @@
+@@ -815,7 +950,7 @@
  	CONFIG_MEDIA_PLATFORM_DRIVERS=y
    FILES:= \
  	$(LINUX_DIR)/drivers/media/v4l2-core/videodev.ko
