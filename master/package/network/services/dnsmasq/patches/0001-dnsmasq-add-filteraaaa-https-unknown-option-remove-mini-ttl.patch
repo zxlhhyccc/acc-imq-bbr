@@ -45,7 +45,7 @@
  config dhcp lan
 --- a/files/dnsmasq.init
 +++ b/files/dnsmasq.init
-@@ -8,6 +8,8 @@ PROG=/usr/sbin/dnsmasq
+@@ -8,6 +8,8 @@
  
  ADD_LOCAL_DOMAIN=1
  ADD_LOCAL_HOSTNAME=1
@@ -54,7 +54,7 @@
  ADD_WAN_FQDN=0
  ADD_LOCAL_FQDN=""
  
-@@ -1020,11 +1022,14 @@ dnsmasq_start()
+@@ -1020,11 +1022,14 @@
  	# deprecate or remove filter-X in favor of filter-rr?
  	append_bool "$cfg" filter_aaaa "--filter-AAAA"
  	append_bool "$cfg" filter_a "--filter-A"
@@ -69,7 +69,7 @@
  	append_parm "$cfg" cachesize "--cache-size"
  	append_parm "$cfg" dnsforwardmax "--dns-forward-max"
  	append_parm "$cfg" port "--port"
-@@ -1086,6 +1091,8 @@ dnsmasq_start()
+@@ -1086,6 +1091,8 @@
  
  	config_get_bool ADD_LOCAL_DOMAIN "$cfg" add_local_domain 1
  	config_get_bool ADD_LOCAL_HOSTNAME "$cfg" add_local_hostname 1
@@ -78,7 +78,7 @@
  	config_get ADD_LOCAL_FQDN "$cfg" add_local_fqdn ""
  	config_get ADD_WAN_FQDN "$cfg" add_wan_fqdn 0
  
-@@ -1254,8 +1261,12 @@ dnsmasq_start()
+@@ -1254,8 +1261,12 @@
  		[ $ADD_LOCAL_DOMAIN -eq 1 ] && [ -n "$DOMAIN" ] && {
  			echo "search $DOMAIN" >> /tmp/resolv.conf
  		}
@@ -93,7 +93,7 @@
  		for DNS_SERVER in $DNS_SERVERS ; do
  			echo "nameserver $DNS_SERVER" >> /tmp/resolv.conf
  		done
-@@ -1287,6 +1298,25 @@ dnsmasq_start()
+@@ -1287,6 +1298,34 @@
  	[ -e "$hostsfile" ] && procd_add_jail_mount $hostsfile
  
  	procd_close_instance
@@ -104,22 +104,31 @@
 +	if [ "$dns_redirect" -eq 1 ]; then
 +		# Check for the presence of fw3
 +		if grep -q "fw3" /etc/init.d/firewall; then
-+		iptables -t nat -A PREROUTING -m comment --comment "DNSMASQ" -p udp --dport 53 -j REDIRECT --to-ports "$dns_port"
-+		[ -n "$(command -v ip6tables)" ] && ip6tables -t nat -A PREROUTING -m comment --comment "DNSMASQ" -p udp --dport 53 -j REDIRECT --to-ports "$dns_port"
++			# Use `iptables-save` to find and remove all DNSMASQ rules.
++			iptables-save -t nat | grep -E "^-A PREROUTING.*DNSMASQ" | while read -r line; do
++				rule=$(echo "$line" | sed 's/^-A //')
++				iptables -t nat -D $rule 2>/dev/null
++			done
++			[ -n "$(command -v ip6tables)" ] && ip6tables-save -t nat | grep -E "^-A PREROUTING.*DNSMASQ" | while read -r line; do
++				rule=$(echo "$line" | sed 's/^-A //')
++				ip6tables -t nat -D $rule 2>/dev/null
++			done
++			iptables -t nat -A PREROUTING -m comment --comment "DNSMASQ" -p udp --dport 53 -j REDIRECT --to-ports "$dns_port"
++			[ -n "$(command -v ip6tables)" ] && ip6tables -t nat -A PREROUTING -m comment --comment "DNSMASQ" -p udp --dport 53 -j REDIRECT --to-ports "$dns_port"
 +		fi
-+
 +		# Check for the presence of fw4
 +		if grep -q "fw4" /etc/init.d/firewall; then
-+		# Use nftables to configure DNS redirection
-+		nft add table inet dnsmasq
-+		nft add chain inet dnsmasq prerouting "{ type nat hook prerouting priority -105; policy accept; }"
-+		nft add rule inet dnsmasq prerouting "meta nfproto { ipv4, ipv6 } udp dport 53 counter redirect to :$dns_port comment \"DNSMASQ HIJACK\""
++			# Use nftables to configure DNS redirection
++			nft delete table inet dnsmasq 2>/dev/null
++			nft add table inet dnsmasq
++			nft add chain inet dnsmasq prerouting "{ type nat hook prerouting priority -95; policy accept; }"
++			nft add rule inet dnsmasq prerouting "meta nfproto { ipv4, ipv6 } udp dport 53 counter redirect to :$dns_port comment \"DNSMASQ HIJACK\""
 +		fi
 +	fi
  }
  
  dnsmasq_stop()
-@@ -1304,6 +1334,23 @@ dnsmasq_stop()
+@@ -1304,6 +1343,23 @@
  	rm -f ${BASEDHCPSTAMPFILE}.${cfg}.*.dhcp
  }
  
@@ -143,7 +152,7 @@
  add_interface_trigger()
  {
  	local interface ifname ignore
-@@ -1375,6 +1422,7 @@ start_service() {
+@@ -1375,6 +1431,7 @@
  }
  
  reload_service() {
@@ -151,7 +160,7 @@
  	rc_procd start_service "$@"
  	procd_send_signal dnsmasq "$@"
  }
-@@ -1401,4 +1449,6 @@ stop_service() {
+@@ -1401,4 +1458,6 @@
  	else
  		config_foreach dnsmasq_stop dnsmasq
  	fi

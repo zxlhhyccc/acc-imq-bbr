@@ -6,9 +6,9 @@ PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL=$(PROJECT_GIT)/project/firmware/qca-wireless.git
-PKG_SOURCE_DATE:=2026-08-15
-PKG_SOURCE_VERSION:=ec3c6fec867e891cb6f0b1ecf7f34ede8730c793
-PKG_MIRROR_HASH:=d35ea28f534e2f72b51ad8295aa114fcb6ec6a2ee3a6bb499f3923f68bf04d1e
+PKG_SOURCE_DATE:=2026-09-10
+PKG_SOURCE_VERSION:=04dff0ab979f153a4605095b5e449a9ac5494a17
+PKG_MIRROR_HASH:=b5ddee6924921861fbb20e2e46c965794e7e12908364141330ff01bc4bdbaa72
 PKG_FLAGS:=nonshared
 
 include $(INCLUDE_DIR)/package.mk
@@ -32,6 +32,7 @@ ALLWIFIBOARDS:= \
 	alfa-network_ap120c-ax \
 	aliyun_ap8220 \
 	arcadyan_aw1000 \
+	askey_sbe1v1k \
 	asus_rt-ax89x \
 	buffalo_wxr-5950ax12 \
 	cambiumnetworks_xe34 \
@@ -75,6 +76,7 @@ ALLWIFIBOARDS:= \
 	netgear_rbk350 \
 	netgear_rbk40 \
 	netgear_rbk750 \
+	netgear_rbk850 \
 	netgear_sxk80 \
 	netgear_sxr80 \
 	netgear_wax214 \
@@ -90,10 +92,12 @@ ALLWIFIBOARDS:= \
 	skspruce_wia3300-20 \
 	spectrum_sax1v1k \
 	tcl_linkhub-hh500v \
+	tplink_archer-ax55-v1 \
 	tplink_archer-c59-v1 \
 	tplink_archer-c6-v2 \
 	tplink_archer-c60-v1 \
 	tplink_archer-c60-v2 \
+	tplink_archer-c60-v3 \
 	tplink_deco-x80-5g \
 	tplink_eap225-wall-v2 \
 	tplink_eap610-outdoor \
@@ -234,6 +238,7 @@ $(eval $(call generate-ipq-wifi-package,8devices_mango,8devices Mango))
 $(eval $(call generate-ipq-wifi-package,alfa-network_ap120c-ax,ALFA Network AP120C-AX))
 $(eval $(call generate-ipq-wifi-package,aliyun_ap8220,Aliyun AP8220))
 $(eval $(call generate-ipq-wifi-package,arcadyan_aw1000,Arcadyan AW1000))
+$(eval $(call generate-ipq-wifi-package,askey_sbe1v1k,Askey SBE1V1K))
 $(eval $(call generate-ipq-wifi-package,asus_rt-ax89x,Asus RT-AX89X))
 $(eval $(call generate-ipq-wifi-package,buffalo_wxr-5950ax12,Buffalo WXR-5950AX12))
 $(eval $(call generate-ipq-wifi-package,cambiumnetworks_xe34,Cambium Networks XE3-4))
@@ -277,6 +282,7 @@ $(eval $(call generate-ipq-wifi-package,netgear_rbk20,Netgear RBK20))
 $(eval $(call generate-ipq-wifi-package,netgear_rbk350,Netgear RBK350))
 $(eval $(call generate-ipq-wifi-package,netgear_rbk40,Netgear RBK40))
 $(eval $(call generate-ipq-wifi-package,netgear_rbk750,Netgear RBK750))
+$(eval $(call generate-ipq-wifi-package,netgear_rbk850,Netgear RBK850))
 $(eval $(call generate-ipq-wifi-package,netgear_sxk80,Netgear SXK80))
 $(eval $(call generate-ipq-wifi-package,netgear_sxr80,Netgear SXR80))
 $(eval $(call generate-ipq-wifi-package,netgear_wax214,Netgear WAX214))
@@ -292,10 +298,12 @@ $(eval $(call generate-ipq-wifi-package,redmi_ax6,Redmi AX6))
 $(eval $(call generate-ipq-wifi-package,skspruce_wia3300-20,SKSpruce WIA3300-20))
 $(eval $(call generate-ipq-wifi-package,spectrum_sax1v1k,Spectrum SAX1V1K))
 $(eval $(call generate-ipq-wifi-package,tcl_linkhub-hh500v,TCL LINKHUB HH500V))
+$(eval $(call generate-ipq-wifi-package,tplink_archer-ax55-v1,TP-Link Archer AX55 v1))
 $(eval $(call generate-ipq-wifi-package,tplink_archer-c59-v1,TP-Link Archer C59 V1))
 $(eval $(call generate-ipq-wifi-package,tplink_archer-c6-v2,TP-Link Archer C6 V2))
 $(eval $(call generate-ipq-wifi-package,tplink_archer-c60-v1,TP-Link Archer C60 V1))
 $(eval $(call generate-ipq-wifi-package,tplink_archer-c60-v2,TP-Link Archer C60 V2))
+$(eval $(call generate-ipq-wifi-package,tplink_archer-c60-v3,TP-Link Archer C60 V3))
 $(eval $(call generate-ipq-wifi-package,tplink_deco-x80-5g,TP-Link Deco X80-5G))
 $(eval $(call generate-ipq-wifi-package,tplink_eap225-wall-v2,TP-Link EAP225-Wall v2))
 $(eval $(call generate-ipq-wifi-package,tplink_eap610-outdoor,TPLink EAP610-Outdoor))

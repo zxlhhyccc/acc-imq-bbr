@@ -257,7 +257,7 @@ This reverts commit bffcc6882a1bb2be8c9420184966f4c2c822078e.
  	struct ovs_header *ovs_reply_header;
  	struct nlattr **a = info->attrs;
  	struct dp_meter *meter;
-@@ -538,7 +538,7 @@ exit_unlock:
+@@ -540,7 +540,7 @@ exit_unlock:
  
  static int ovs_meter_cmd_del(struct sk_buff *skb, struct genl_info *info)
  {
