@@ -1,0 +1,55 @@
+--- a/drivers/net/wireless/ath/ath11k/ahb.c
++++ b/drivers/net/wireless/ath/ath11k/ahb.c
+@@ -12,6 +12,7 @@
+ #include <linux/of_reserved_mem.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/iommu.h>
++#include <linux/version.h>
+ #include "ahb.h"
+ #include "debug.h"
+ #include "hif.h"
+@@ -401,7 +402,11 @@ static void ath11k_ahb_ext_irq_enable(st
+ 		struct ath11k_ext_irq_grp *irq_grp = &ab->ext_irq_grp[i];
+ 
+ 		if (!irq_grp->napi_enabled) {
++#if LINUX_VERSION_IS_LESS(6,18,0)
++			dev_set_threaded(irq_grp->napi_ndev, true);
++#else
+ 			dev_set_threaded(irq_grp->napi_ndev, NETDEV_NAPI_THREADED_ENABLED);
++#endif
+ 			napi_enable(&irq_grp->napi);
+ 			irq_grp->napi_enabled = true;
+ 		}
+--- a/drivers/net/wireless/ath/ath11k/nss.c
++++ b/drivers/net/wireless/ath/ath11k/nss.c
+@@ -1351,7 +1351,7 @@ static int ath11k_nss_vdev_register(stru
+ 	return 0;
+ }
+ 
+-void ath11k_nss_vdev_free(struct ath11k_vif *arvif)
++static void ath11k_nss_vdev_free(struct ath11k_vif *arvif)
+ {
+ 	struct ath11k_base *ab = arvif->ar->ab;
+ 	nss_tx_status_t status;
+--- a/drivers/net/wireless/ath/ath11k/pcic.c
++++ b/drivers/net/wireless/ath/ath11k/pcic.c
+@@ -6,6 +6,7 @@
+  */
+ 
+ #include <linux/export.h>
++#include <linux/version.h>
+ #include "core.h"
+ #include "pcic.h"
+ #include "debug.h"
+@@ -498,7 +499,11 @@ void ath11k_pcic_ext_irq_enable(struct a
+ 		struct ath11k_ext_irq_grp *irq_grp = &ab->ext_irq_grp[i];
+ 
+ 		if (!irq_grp->napi_enabled) {
++#if LINUX_VERSION_IS_LESS(6,18,0)
++			dev_set_threaded(irq_grp->napi_ndev, true);
++#else
+ 			dev_set_threaded(irq_grp->napi_ndev, NETDEV_NAPI_THREADED_ENABLED);
++#endif
+ 			napi_enable(&irq_grp->napi);
+ 			irq_grp->napi_enabled = true;
+ 		}
