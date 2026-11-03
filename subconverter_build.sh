@@ -14,3 +14,27 @@ sed -i 's/j4/j1/g' /root/src/subconverter/scripts/build.alpine.release.sh
 sed -i 's/j2/j1/g' /root/src/subconverter/scripts/build.alpine.release.sh
 docker pull multiarch/alpine:amd64-latest-stable
 docker run -v /root/src/subconverter:/root/workdir multiarch/alpine:amd64-latest-stable /bin/sh -c "apk add bash git nodejs npm && cd /root/workdir && chmod +x scripts/build.alpine.release.sh && bash scripts/build.alpine.release.sh"
+
+在sub目录外执行
+docker run -v /home/lin/1/sub:/root/workdir multiarch/alpine:amd64-latest-stable /bin/sh -c "apk add bash git nodejs npm && cd /root/workdir && chmod +x scripts/build.alpine.release.sh && bash scripts/build.alpine.release.sh"
+
+清理Subconverter的编译：
+cd /home/lin/1/sub
+
+ls -la
+git status
+
+# 先看会删什么
+git clean -ndx
+
+# 改归属
+sudo chown -R lin:lin ~/1/sub
+
+# 删 git 未跟踪文件
+git clean -fdx
+
+# 删 root 创建的依赖目录
+sudo rm -rf curl libcron quickjspp toml11 yaml-cpp
+
+# 确认
+ls -la

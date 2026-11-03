@@ -1,6 +1,6 @@
 --- a/modules/netdevices.mk
 +++ b/modules/netdevices.mk
-@@ -2191,6 +2191,30 @@ endef
+@@ -2202,6 +2202,30 @@ endef
  $(eval $(call KernelPackage,qlcnic))
  
  
@@ -33,7 +33,7 @@
    TITLE:=SFP cage support
 --- a/modules/netfilter.mk
 +++ b/modules/netfilter.mk
-@@ -338,6 +338,7 @@ $(eval $(call KernelPackage,ipt-offload))
+@@ -309,6 +309,7 @@ $(eval $(call KernelPackage,ipt-offload))
  define KernelPackage/ipt-ipopt
    TITLE:=Modules for matching/changing IP packet options
    KCONFIG:=$(KCONFIG_IPT_IPOPT)
@@ -41,7 +41,7 @@
    FILES:=$(foreach mod,$(IPT_IPOPT-m),$(LINUX_DIR)/net/$(mod).ko)
    AUTOLOAD:=$(call AutoProbe,$(notdir $(IPT_IPOPT-m)))
    $(call AddDepends/ipt)
-@@ -540,6 +541,24 @@ endef
+@@ -511,6 +512,24 @@ endef
  $(eval $(call KernelPackage,ipt-nat))
  
  
@@ -66,7 +66,7 @@
  define KernelPackage/ipt-raw
    TITLE:=Netfilter IPv4 raw table support
    KCONFIG:=CONFIG_IP_NF_RAW
-@@ -551,6 +570,75 @@ endef
+@@ -522,6 +541,75 @@ endef
  $(eval $(call KernelPackage,ipt-raw))
  
  

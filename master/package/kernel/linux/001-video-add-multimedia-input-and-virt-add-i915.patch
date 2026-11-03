@@ -1,6 +1,6 @@
 --- a/modules/video.mk
 +++ b/modules/video.mk
-@@ -308,6 +308,25 @@
+@@ -305,6 +305,25 @@
  $(eval $(call KernelPackage,cec-core))
  
  
@@ -26,7 +26,7 @@
  define KernelPackage/drm
    SUBMENU:=$(VIDEO_MENU)
    TITLE:=Direct Rendering Manager (DRM) support
-@@ -392,6 +411,20 @@
+@@ -372,6 +391,20 @@
  
  $(eval $(call KernelPackage,drm-exec))
  
@@ -47,7 +47,7 @@
  define KernelPackage/drm-dma-helper
    SUBMENU:=$(VIDEO_MENU)
    HIDDEN:=1
-@@ -708,6 +741,107 @@
+@@ -813,6 +846,107 @@
  
  $(eval $(call KernelPackage,drm-imx-ldb))
  
@@ -155,28 +155,28 @@
  define KernelPackage/drm-panel-mipi-dbi
    SUBMENU:=$(VIDEO_MENU)
    TITLE:=Generic MIPI DBI LCD panel
-@@ -807,7 +941,8 @@
+@@ -933,7 +1067,8 @@
  define KernelPackage/video-core
    SUBMENU:=$(VIDEO_MENU)
    TITLE=Video4Linux support
--  DEPENDS:=+PACKAGE_kmod-i2c-core:kmod-i2c-core +kmod-media-controller
-+  DEPENDS:=+PACKAGE_kmod-i2c-core:kmod-i2c-core +kmod-media-controller \
+-  DEPENDS:=+PACKAGE_kmod-i2c-core:kmod-i2c-core +kmod-media-controller +kmod-lib-rational
++  DEPENDS:=+PACKAGE_kmod-i2c-core:kmod-i2c-core +kmod-media-controller +kmod-lib-rational \
 +	+kmod-media-core
    KCONFIG:= \
  	CONFIG_MEDIA_CAMERA_SUPPORT=y \
  	CONFIG_VIDEO_DEV \
-@@ -815,7 +950,7 @@
- 	CONFIG_MEDIA_PLATFORM_DRIVERS=y
+@@ -942,7 +1077,7 @@
    FILES:= \
- 	$(LINUX_DIR)/drivers/media/v4l2-core/videodev.ko
--  AUTOLOAD:=$(call AutoLoad,60,videodev)
-+  AUTOLOAD:=$(call AutoLoad,60, videodev v4l2-common)
+ 	$(LINUX_DIR)/drivers/media/v4l2-core/videodev.ko \
+ 	$(LINUX_DIR)/drivers/media/v4l2-core/v4l2-dv-timings.ko
+-  AUTOLOAD:=$(call AutoLoad,60,videodev v4l2-dv-timings)
++  AUTOLOAD:=$(call AutoLoad,60, videodev v4l2-dv-timings v4l2-common)
  endef
  
  define KernelPackage/video-core/description
 --- a/modules/virt.mk
 +++ b/modules/virt.mk
-@@ -195,3 +195,80 @@ define KernelPackage/vhost-net
+@@ -194,3 +194,80 @@ define KernelPackage/vhost-net
  endef
  
  $(eval $(call KernelPackage,vsock-virtio))

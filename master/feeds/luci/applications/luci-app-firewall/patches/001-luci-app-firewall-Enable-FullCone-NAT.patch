@@ -1,6 +1,6 @@
 --- a/htdocs/luci-static/resources/view/firewall/zones.js
 +++ b/htdocs/luci-static/resources/view/firewall/zones.js
-@@ -58,6 +58,11 @@ return view.extend({
+@@ -56,6 +56,11 @@
  
  		o = s.option(form.Flag, 'drop_invalid', _('Drop invalid packets'));
  
@@ -9,16 +9,15 @@
 +		o.value('1', _('Compatible Mode'));
 +		o.value('2', _('High Performing Mode'));
 +
- 		var p = [
- 			s.option(form.ListValue, 'input', _('Input')),
- 			s.option(form.ListValue, 'output', _('Output')),
+ 		let p = [
+ 			s.option(form.ListValue, 'input', _('Input', 'firewall input')),
+ 			s.option(form.ListValue, 'output', _('Output', 'firewall output')),
 --- a/po/zh_Hans/firewall.po
 +++ b/po/zh_Hans/firewall.po
-@@ -1552,3 +1552,21 @@ msgstr "最多 65536 个条目。"
- #: applications/luci-app-firewall/htdocs/luci-static/resources/tools/firewall.js:339
+@@ -1555,6 +1555,24 @@
  msgid "valid firewall mark"
  msgstr "有效的防火墙标记"
-+
+ 
 +msgid "Enable FullCone NAT"
 +msgstr "启用 FullCone NAT"
 +
@@ -36,3 +35,7 @@
 +
 +msgid "High Performing Mode"
 +msgstr "高性能模式"
++
+ #~ msgid "Forward"
+ #~ msgstr "转发"
+ 

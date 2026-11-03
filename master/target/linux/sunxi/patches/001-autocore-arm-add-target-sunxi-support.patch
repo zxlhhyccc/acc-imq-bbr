@@ -6,9 +6,9 @@
  
 -DEFAULT_PACKAGES += uboot-envtools
 +DEFAULT_PACKAGES += autocore-arm uboot-envtools
- DEFAULT_PACKAGES += partx-utils mkf2fs e2fsprogs
+ DEFAULT_PACKAGES += mkf2fs e2fsprogs
+ DEFAULT_PACKAGES += video-support
  
- $(eval $(call BuildTarget))
 --- a/modules.mk
 +++ b/modules.mk
 @@ -56,7 +56,7 @@ $(eval $(call KernelPackage,rtc-sunxi))
@@ -19,4 +19,4 @@
 +    DEPENDS:=@(TARGET_sunxi&&RTC_SUPPORT) +kmod-multimedia-input
      KCONFIG:= \
  	CONFIG_MEDIA_SUPPORT=y \
- 	CONFIG_MEDIA_RC_SUPPORT=y \
+ 	CONFIG_RC_DEVICES=y \

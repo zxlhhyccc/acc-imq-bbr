@@ -54,7 +54,7 @@
  ADD_WAN_FQDN=0
  ADD_LOCAL_FQDN=""
  
-@@ -1020,11 +1022,14 @@
+@@ -1034,11 +1036,14 @@
  	# deprecate or remove filter-X in favor of filter-rr?
  	append_bool "$cfg" filter_aaaa "--filter-AAAA"
  	append_bool "$cfg" filter_a "--filter-A"
@@ -69,7 +69,7 @@
  	append_parm "$cfg" cachesize "--cache-size"
  	append_parm "$cfg" dnsforwardmax "--dns-forward-max"
  	append_parm "$cfg" port "--port"
-@@ -1086,6 +1091,8 @@
+@@ -1100,6 +1105,8 @@
  
  	config_get_bool ADD_LOCAL_DOMAIN "$cfg" add_local_domain 1
  	config_get_bool ADD_LOCAL_HOSTNAME "$cfg" add_local_hostname 1
@@ -78,9 +78,9 @@
  	config_get ADD_LOCAL_FQDN "$cfg" add_local_fqdn ""
  	config_get ADD_WAN_FQDN "$cfg" add_wan_fqdn 0
  
-@@ -1254,8 +1261,12 @@
+@@ -1268,8 +1275,12 @@
  		[ $ADD_LOCAL_DOMAIN -eq 1 ] && [ -n "$DOMAIN" ] && {
- 			echo "search $DOMAIN" >> /tmp/resolv.conf
+ 			echo "search $DOMAIN" >> "$RESOLVCONF.$cfg"
  		}
 -		DNS_SERVERS="$DNS_SERVERS 127.0.0.1"
 -		[ -e /proc/sys/net/ipv6 ] && DNS_SERVERS="$DNS_SERVERS ::1"
@@ -91,9 +91,9 @@
 +			DNS_SERVERS="$DNS_SERVERS ::1"
 +		}
  		for DNS_SERVER in $DNS_SERVERS ; do
- 			echo "nameserver $DNS_SERVER" >> /tmp/resolv.conf
+ 			echo "nameserver $DNS_SERVER" >> "$RESOLVCONF.$cfg"
  		done
-@@ -1287,6 +1298,34 @@
+@@ -1306,6 +1317,34 @@
  	[ -e "$hostsfile" ] && procd_add_jail_mount $hostsfile
  
  	procd_close_instance
@@ -128,7 +128,7 @@
  }
  
  dnsmasq_stop()
-@@ -1304,6 +1343,23 @@
+@@ -1327,6 +1366,23 @@
  	rm -f ${BASEDHCPSTAMPFILE}.${cfg}.*.dhcp
  }
  
@@ -152,7 +152,7 @@
  add_interface_trigger()
  {
  	local interface ifname ignore
-@@ -1375,6 +1431,7 @@
+@@ -1422,6 +1478,7 @@
  }
  
  reload_service() {
@@ -160,7 +160,7 @@
  	rc_procd start_service "$@"
  	procd_send_signal dnsmasq "$@"
  }
-@@ -1401,4 +1458,6 @@
+@@ -1448,4 +1505,6 @@
  	else
  		config_foreach dnsmasq_stop dnsmasq
  	fi
