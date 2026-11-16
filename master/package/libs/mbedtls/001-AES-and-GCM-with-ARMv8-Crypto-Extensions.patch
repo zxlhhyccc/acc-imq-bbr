@@ -1,6 +1,6 @@
 --- a/Config.in
 +++ b/Config.in
-@@ -140,6 +140,17 @@ config MBEDTLS_ECP_DP_CURVE448_ENABLED
+@@ -147,6 +147,17 @@ config MBEDTLS_ECP_DP_CURVE448_ENABLED
  
  comment "Build Options - unselect features to reduce binary size"
  
@@ -8,7 +8,7 @@
 +	bool
 +	default y
 +	prompt "Enable use of the ARMv8 Crypto Extensions"
-+	depends on aarch64 && !TARGET_bcm27xx
++	depends on aarch64 && !TARGET_bcm27xx_bcm2710 && !TARGET_bcm27xx_bcm2711
 +	help
 +	 Use of the ARMv8 Crypto Extensions greatly increase performance
 +	 (up to 4x faster on AES-GCM while 10x faster on raw AES).
@@ -18,7 +18,7 @@
  config MBEDTLS_CIPHER_MODE_OFB
  	bool "MBEDTLS_CIPHER_MODE_OFB"
  	default n
-@@ -151,10 +162,33 @@ config MBEDTLS_CIPHER_MODE_XTS
+@@ -158,10 +169,33 @@ config MBEDTLS_CIPHER_MODE_XTS
  config MBEDTLS_DEBUG_C
  	bool "MBEDTLS_DEBUG_C"
  	default n
@@ -54,56 +54,3 @@
  
  config MBEDTLS_PLATFORM_C
  	bool "MBEDTLS_PLATFORM_C"
-@@ -186,6 +220,16 @@ config MBEDTLS_DEPRECATED_WARNING
- 	bool "MBEDTLS_DEPRECATED_WARNING"
- 	default n
- 
-+config MBEDTLS_SHA256_USE_ARMV8_A_CRYPTO_IF_PRESENT
-+	bool "MBEDTLS_SHA256_USE_ARMV8_A_CRYPTO_IF_PRESENT"
-+	default y
-+	depends on aarch64 && !TARGET_bcm27xx_bcm2710 && !TARGET_bcm27xx_bcm2711
-+
-+config MBEDTLS_SHA512_USE_A64_CRYPTO_IF_PRESENT
-+	bool "MBEDTLS_SHA512_USE_A64_CRYPTO_IF_PRESENT"
-+	default y
-+	depends on aarch64 && !TARGET_bcm27xx_bcm2710 && !TARGET_bcm27xx_bcm2711
-+
- config MBEDTLS_SSL_PROTO_TLS1_2
- 	bool "MBEDTLS_SSL_PROTO_TLS1_2"
- 	default y
-diff -uNr a/Makefile b/Makefile
---- a/Makefile	2026-04-08 20:03:37.458046000 +0800
-+++ b/Makefile	2026-04-08 20:17:27.196411228 +0800
-@@ -64,10 +64,12 @@
- MBEDTLS_BUILD_OPTS= \
-   $(MBEDTLS_BUILD_OPTS_CURVES) \
-   $(MBEDTLS_BUILD_OPTS_CIPHERS) \
-+  CONFIG_MBEDTLS_AESCE_C \
-   CONFIG_MBEDTLS_CIPHER_MODE_OFB \
-   CONFIG_MBEDTLS_CIPHER_MODE_XTS \
-   CONFIG_MBEDTLS_DEBUG_C \
-   CONFIG_MBEDTLS_ENTROPY_FORCE_SHA256 \
-+  CONFIG_MBEDTLS_HAVE_SSE2 \
-   CONFIG_MBEDTLS_HKDF_C \
-   CONFIG_MBEDTLS_PLATFORM_C \
-   CONFIG_MBEDTLS_SELF_TEST \
-@@ -78,6 +80,8 @@
-   CONFIG_MBEDTLS_VERSION_FEATURES \
-   CONFIG_MBEDTLS_PSA_CRYPTO_CLIENT \
-   CONFIG_MBEDTLS_DEPRECATED_WARNING \
-+  CONFIG_MBEDTLS_SHA256_USE_ARMV8_A_CRYPTO_IF_PRESENT \
-+  CONFIG_MBEDTLS_SHA512_USE_A64_CRYPTO_IF_PRESENT \
-   CONFIG_MBEDTLS_SSL_PROTO_TLS1_2 \
-   CONFIG_MBEDTLS_SSL_PROTO_TLS1_3 \
-   CONFIG_MBEDTLS_SSL_TLS1_3_COMPATIBILITY_MODE
-@@ -130,7 +134,9 @@
- CSR generation (gen_key, cert_req)
- endef
- 
--TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -Wno-unterminated-string-initialization
-+TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) \
-+	-Wno-unterminated-string-initialization \
-+	$(if $(findstring cortex-a53,$(CONFIG_CPU_TYPE)),-march=armv8-a)
- 
- CMAKE_OPTIONS += \
- 	-DCMAKE_POSITION_INDEPENDENT_CODE=ON \

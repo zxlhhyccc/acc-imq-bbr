@@ -1,6 +1,6 @@
 --- a/Makefile
 +++ b/Makefile
-@@ -51,7 +51,7 @@ endef
+@@ -50,7 +50,7 @@ endef
  
  define Package/ppp
  $(call Package/ppp/Default)
@@ -12,7 +12,7 @@
  endef
 --- a/files/ppp.sh
 +++ b/files/ppp.sh
-@@ -311,7 +311,15 @@ proto_pppoe_setup() {
+@@ -305,7 +305,15 @@ proto_pppoe_setup() {
  	json_get_var padi_attempts padi_attempts
  	json_get_var padi_timeout padi_timeout
  
